@@ -1,439 +1,259 @@
 ---
-description: 'AngularFire integration best practices for Firebase services (Auth, Firestore, Storage, Functions) in Angular 20+ applications with standalone components'
+description: 'AngularFire enforcement: inject() pattern requirement, toSignal() for observables, async I/O, security rules validation, NO hardcoded secrets'
 applyTo: '**/*.ts, **/environment*.ts'
 ---
 
-# AngularFire Integration Guidelines
+# AngularFire Rules
 
-## Overview
+## CRITICAL: Dependency Injection
 
-AngularFire is the official Angular library for Firebase. This guide covers best practices for integrating Firebase services (Authentication, Firestore, Storage, Functions, Analytics) with Angular 20+ standalone applications.
+ALL Firebase services MUST use inject() pattern. Direct SDK imports are FORBIDDEN.
 
-## Setup and Configuration
-
-### Installation
-
-```bash
-pnpm install @angular/fire firebase
+**REQUIRED:**
+```typescript
+private firestore = inject(Firestore);
+private auth = inject(Auth);
+private storage = inject(Storage);
+private functions = inject(Functions);
 ```
 
-### Environment Configuration
-
+**FORBIDDEN:**
 ```typescript
-// src/environments/environment.ts
-export const environment = {
-  production: false,
-  firebase: {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "your-app.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-app.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef",
-    measurementId: "G-XXXXXXXXXX"
-  }
-};
-
-// ⚠️ NEVER commit actual credentials to version control
-// Use environment variables or secrets management
-```
-
-### App Configuration (Standalone)
-
-```typescript
-// app.config.ts
-import { ApplicationConfig } from '@angular/core';
-import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { provideAuth, getAuth } from '@angular/fire/auth';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import { provideStorage, getStorage } from '@angular/fire/storage';
-import { provideFunctions, getFunctions } from '@angular/fire/functions';
-import { environment } from './environments/environment';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage()),
-    provideFunctions(() => getFunctions()),
-  ]
-};
-```
-
-## Authentication
-
-### Auth Service Pattern
-
-```typescript
-import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-         signOut, user, User, GoogleAuthProvider, signInWithPopup } from '@angular/fire/auth';
-import { inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-
-export class AuthService {
-  private auth = inject(Auth);
-  
-  // Convert user observable to signal
-  user = toSignal(user(this.auth), { initialValue: null });
-  
-  async signIn(email: string, password: string) {
-    try {
-      const credential = await signInWithEmailAndPassword(this.auth, email, password);
-      return credential.user;
-    } catch (error: any) {
-      this.handleAuthError(error);
-      throw error;
-    }
-  }
-  
-  async signUp(email: string, password: string) {
-    try {
-      const credential = await createUserWithEmailAndPassword(this.auth, email, password);
-      return credential.user;
-    } catch (error: any) {
-      this.handleAuthError(error);
-      throw error;
-    }
-  }
-  
-  async signInWithGoogle() {
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(this.auth, provider);
-      return result.user;
-    } catch (error: any) {
-      this.handleAuthError(error);
-      throw error;
-    }
-  }
-  
-  async signOut() {
-    await signOut(this.auth);
-  }
-  
-  private handleAuthError(error: any) {
-    const errorCode = error.code;
-    switch (errorCode) {
-      case 'auth/user-not-found':
-        throw new Error('User not found');
-      case 'auth/wrong-password':
-        throw new Error('Invalid password');
-      case 'auth/email-already-in-use':
-        throw new Error('Email already in use');
-      case 'auth/weak-password':
-        throw new Error('Password is too weak');
-      default:
-        throw new Error('Authentication failed');
-    }
-  }
-}
-```
-
-### Auth Guard
-
-```typescript
-import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { Auth, user } from '@angular/fire/auth';
-import { map } from 'rxjs/operators';
-
-export const authGuard = () => {
-  const auth = inject(Auth);
-  const router = inject(Router);
-  
-  return user(auth).pipe(
-    map(user => {
-      if (user) {
-        return true;
-      } else {
-        router.navigate(['/login']);
-        return false;
-      }
-    })
-  );
-};
-```
-
-## Firestore
-
-### Firestore Service Pattern
-
-```typescript
-import { Firestore, collection, collectionData, doc, docData,
-         addDoc, setDoc, updateDoc, deleteDoc, query, where,
-         orderBy, limit, QueryConstraint } from '@angular/fire/firestore';
-import { inject } from '@angular/core';
-import { Observable } from 'rxjs';
-
-export interface Task {
-  id?: string;
-  title: string;
-  completed: boolean;
-  createdAt: Date;
-  userId: string;
-}
-
-export class TasksFirestoreService {
-  private firestore = inject(Firestore);
-  private tasksCollection = collection(this.firestore, 'tasks');
-  
-  // Get all tasks as observable
-  getTasks(): Observable<Task[]> {
-    return collectionData(this.tasksCollection, { idField: 'id' }) as Observable<Task[]>;
-  }
-  
-  // Get tasks with query
-  getUserTasks(userId: string, filters?: {
-    status?: 'completed' | 'active';
-    limit?: number;
-  }): Observable<Task[]> {
-    const constraints: QueryConstraint[] = [
-      where('userId', '==', userId)
-    ];
-    
-    if (filters?.status) {
-      constraints.push(
-        where('completed', '==', filters.status === 'completed')
-      );
-    }
-    
-    constraints.push(orderBy('createdAt', 'desc'));
-    
-    if (filters?.limit) {
-      constraints.push(limit(filters.limit));
-    }
-    
-    const userTasksQuery = query(this.tasksCollection, ...constraints);
-    return collectionData(userTasksQuery, { idField: 'id' }) as Observable<Task[]>;
-  }
-  
-  // Get single task
-  getTask(id: string): Observable<Task> {
-    const taskDoc = doc(this.firestore, `tasks/${id}`);
-    return docData(taskDoc, { idField: 'id' }) as Observable<Task>;
-  }
-  
-  // Add new task
-  async addTask(task: Omit<Task, 'id'>) {
-    return await addDoc(this.tasksCollection, {
-      ...task,
-      createdAt: new Date()
-    });
-  }
-  
-  // Update task
-  async updateTask(id: string, data: Partial<Task>) {
-    const taskDoc = doc(this.firestore, `tasks/${id}`);
-    await updateDoc(taskDoc, data);
-  }
-  
-  // Delete task
-  async deleteTask(id: string) {
-    const taskDoc = doc(this.firestore, `tasks/${id}`);
-    await deleteDoc(taskDoc);
-  }
-}
-```
-
-### Integration with NgRx Signals
-
-```typescript
-import { signalStore, withState, withMethods } from '@ngrx/signals';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, tap } from 'rxjs';
-import { tapResponse } from '@ngrx/operators';
-
-export const TasksStore = signalStore(
-  { providedIn: 'root' },
-  withState({
-    tasks: [] as Task[],
-    loading: false,
-    error: null as string | null
-  }),
-  withMethods((store, firestoreService = inject(TasksFirestoreService)) => ({
-    loadTasks: rxMethod<string>(
-      pipe(
-        tap(() => patchState(store, { loading: true, error: null })),
-        switchMap((userId) => firestoreService.getUserTasks(userId)),
-        tapResponse({
-          next: (tasks) => patchState(store, { tasks, loading: false }),
-          error: (error: Error) => patchState(store, { 
-            error: error.message, 
-            loading: false 
-          })
-        })
-      )
-    ),
-    
-    async addTask(task: Omit<Task, 'id'>) {
-      try {
-        await firestoreService.addTask(task);
-      } catch (error: any) {
-        patchState(store, { error: error.message });
-      }
-    }
-  }))
-);
-```
-
-## Cloud Storage
-
-### Storage Service Pattern
-
-```typescript
-import { Storage, ref, uploadBytes, uploadBytesResumable,
-         getDownloadURL, deleteObject, listAll } from '@angular/fire/storage';
-import { inject } from '@angular/core';
-import { Observable } from 'rxjs';
-
-export class StorageService {
-  private storage = inject(Storage);
-  
-  async uploadFile(file: File, path: string): Promise<string> {
-    const storageRef = ref(this.storage, path);
-    const snapshot = await uploadBytes(storageRef, file);
-    return await getDownloadURL(snapshot.ref);
-  }
-  
-  uploadFileWithProgress(file: File, path: string): Observable<number> {
-    const storageRef = ref(this.storage, path);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-    
-    return new Observable<number>(observer => {
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          observer.next(progress);
-        },
-        (error) => observer.error(error),
-        async () => {
-          observer.complete();
-        }
-      );
-    });
-  }
-  
-  async deleteFile(path: string): Promise<void> {
-    const storageRef = ref(this.storage, path);
-    await deleteObject(storageRef);
-  }
-  
-  async getFileURL(path: string): Promise<string> {
-    const storageRef = ref(this.storage, path);
-    return await getDownloadURL(storageRef);
-  }
-}
-```
-
-## Cloud Functions
-
-### Functions Service Pattern
-
-```typescript
-import { Functions, httpsCallable } from '@angular/fire/functions';
-import { inject } from '@angular/core';
-
-export class FunctionsService {
-  private functions = inject(Functions);
-  
-  async sendEmail(data: { to: string; subject: string; body: string }) {
-    const sendEmailFn = httpsCallable(this.functions, 'sendEmail');
-    const result = await sendEmailFn(data);
-    return result.data;
-  }
-  
-  async processPayment(paymentData: any) {
-    const processPaymentFn = httpsCallable(
-      this.functions,
-      'processPayment',
-      { timeout: 60000 }
-    );
-    
-    try {
-      const result = await processPaymentFn(paymentData);
-      return result.data;
-    } catch (error) {
-      console.error('Payment processing error:', error);
-      throw error;
-    }
-  }
-}
-```
-
-## Best Practices
-
-### 1. Use Dependency Injection
-
-```typescript
-// ✅ Good - Use inject()
-export class MyService {
-  private firestore = inject(Firestore);
-  private auth = inject(Auth);
-  private storage = inject(Storage);
-}
-
-// ❌ Bad - Don't import Firebase directly
 import { getFirestore } from 'firebase/firestore';
-const firestore = getFirestore();
+const firestore = getFirestore(); // VIOLATION
 ```
 
-### 2. Convert Observables to Signals
+**VIOLATION consequences:**
+- Runtime initialization errors
+- Breaks testability
+- Prevents DI configuration
 
+## CRITICAL: Secret Management
+
+Firebase credentials MUST use environment variables. Hardcoded secrets are FORBIDDEN.
+
+**REQUIRED:**
+- Store credentials in environment files
+- NEVER commit actual API keys to version control
+- Use secrets management for production
+
+**VIOLATION consequences:**
+- Security breach
+- Credential exposure
+- Compliance violation
+
+## Authentication Service Enforcement
+
+**REQUIRED pattern:**
 ```typescript
-// ✅ Good - Use toSignal
-import { toSignal } from '@angular/core/rxjs-interop';
-
-export class Component {
-  private auth = inject(Auth);
-  user = toSignal(user(this.auth), { initialValue: null });
-  
-  private tasksService = inject(TasksService);
-  tasks = toSignal(this.tasksService.getTasks(), { initialValue: [] });
-}
+private auth = inject(Auth);
+user = toSignal(user(this.auth), { initialValue: null });
 ```
 
-### 3. Handle Errors Properly
+**REQUIRED for ALL auth operations:**
+- async/await for authentication calls
+- Error handling with specific error codes
+- NEVER use synchronous auth operations
 
+**FORBIDDEN:**
+- Direct user observable subscription
+- Synchronous auth checks
+- Missing error handling
+- Null assertions on currentUser (`this.auth.currentUser!.uid`)
+
+**VIOLATION consequences:**
+- Race conditions in auth state
+- Memory leaks from unhandled subscriptions
+- Runtime null pointer errors
+
+## Auth Guard Constraints
+
+**REQUIRED:**
+- Functional guards with inject()
+- Observable-based auth state check
+- Navigation redirect on unauthorized access
+
+**FORBIDDEN:**
+- Class-based guards
+- Synchronous auth checks
+- Missing navigation on failure
+
+## Firestore Service Enforcement
+
+**REQUIRED pattern:**
 ```typescript
-// ✅ Good - Specific error handling
-async signIn(email: string, password: string) {
-  try {
-    return await signInWithEmailAndPassword(this.auth, email, password);
-  } catch (error: any) {
-    switch (error.code) {
-      case 'auth/user-not-found':
-        throw new Error('User not found');
-      case 'auth/wrong-password':
-        throw new Error('Invalid password');
-      default:
-        throw new Error('Authentication failed');
-    }
-  }
-}
+private firestore = inject(Firestore);
+private collection = collection(this.firestore, 'collectionName');
 ```
 
-### 4. Security Rules
+**REQUIRED for ALL Firestore operations:**
+- async/await for write operations (addDoc, updateDoc, deleteDoc)
+- Observable return type for read operations
+- Input validation BEFORE database calls
+- Query constraints for filtered data
 
+**FORBIDDEN:**
+- Synchronous Firestore operations
+- Missing input validation
+- Unfiltered queries without where clauses
+- Direct access without inject()
+
+**VIOLATION consequences:**
+- Blocking I/O operations
+- Performance degradation
+- Security vulnerabilities
+- Data integrity issues
+
+## CRITICAL: NgRx Signals Integration
+
+**REQUIRED pattern for Firestore integration:**
+```typescript
+withMethods((store, service = inject(FirestoreService)) => ({
+  loadData: rxMethod<string>(
+    pipe(
+      tap(() => patchState(store, { loading: true, error: null })),
+      switchMap((id) => service.getData(id)),
+      tapResponse({
+        next: (data) => patchState(store, { data, loading: false }),
+        error: (error: Error) => patchState(store, { error: error.message, loading: false })
+      })
+    )
+  )
+}))
+```
+
+**REQUIRED:**
+- rxMethod for async operations
+- tapResponse for error handling
+- patchState for state updates
+- Service injection via inject()
+
+**FORBIDDEN:**
+- Direct observable subscriptions
+- Missing error handling in tapResponse
+- Synchronous state updates
+- Store-to-store direct manipulation
+
+**VIOLATION consequences:**
+- Memory leaks
+- Unhandled errors
+- State corruption
+- Subscription management issues
+
+## Cloud Storage Enforcement
+
+**REQUIRED pattern:**
+```typescript
+private storage = inject(Storage);
+```
+
+**REQUIRED for ALL storage operations:**
+- async/await for file operations
+- Error handling with try/catch
+- URL validation before access
+- File size validation before upload
+
+**FORBIDDEN:**
+- Synchronous file operations
+- Missing error handling
+- Unvalidated file uploads
+- Direct SDK imports
+
+**VIOLATION consequences:**
+- Blocking I/O operations
+- Storage quota exhaustion
+- Security vulnerabilities
+
+## Cloud Functions Enforcement
+
+**REQUIRED pattern:**
+```typescript
+private functions = inject(Functions);
+const callable = httpsCallable(this.functions, 'functionName');
+```
+
+**REQUIRED:**
+- async/await for function calls
+- Timeout configuration for long operations
+- Error handling with try/catch
+- Input validation before invocation
+
+**FORBIDDEN:**
+- Synchronous function calls
+- Missing timeout configuration
+- Unvalidated inputs
+- Missing error handling
+
+**VIOLATION consequences:**
+- Timeout errors
+- Resource exhaustion
+- Security vulnerabilities
+
+## CRITICAL: Observable-to-Signal Conversion
+
+ALL Firebase observables MUST be converted to signals using toSignal().
+
+**REQUIRED:**
+```typescript
+user = toSignal(user(this.auth), { initialValue: null });
+tasks = toSignal(this.service.getTasks(), { initialValue: [] });
+```
+
+**REQUIRED constraints:**
+- initialValue REQUIRED for all toSignal() calls
+- NEVER subscribe manually to Firebase observables
+- Use computed() for derived state from signals
+
+**FORBIDDEN:**
+- Manual subscriptions to Firebase observables
+- Missing initialValue in toSignal()
+- Direct observable usage in components
+
+**VIOLATION consequences:**
+- Memory leaks from unmanaged subscriptions
+- Missing cleanup on component destruction
+- Synchronization issues
+
+## CRITICAL: Security Rules Enforcement
+
+ALL Firestore collections MUST have security rules defined. Open access is FORBIDDEN.
+
+**REQUIRED in firestore.rules:**
 ```javascript
-// firestore.rules
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can only access their own data
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // Tasks belong to users
-    match /tasks/{taskId} {
+    match /collection/{docId} {
       allow read, write: if request.auth != null && 
-                           resource.data.userId == request.auth.uid;
+                           request.auth.uid == resource.data.userId;
     }
   }
 }
+```
 
-// storage.rules
+**REQUIRED:**
+- Authentication check (request.auth != null)
+- Ownership validation (resource.data.userId == request.auth.uid)
+- Field-level validation rules
+- Rate limiting for writes
+
+**FORBIDDEN:**
+```javascript
+allow read, write: if true; // CRITICAL VIOLATION
+```
+
+**VIOLATION consequences:**
+- Data breach
+- Unauthorized access
+- Compliance violation
+- Security audit failure
+
+## CRITICAL: Storage Security Rules
+
+ALL Storage paths MUST have security rules. Public access is FORBIDDEN.
+
+**REQUIRED in storage.rules:**
+```javascript
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
@@ -444,94 +264,104 @@ service firebase.storage {
 }
 ```
 
-### 5. Enable Offline Persistence
-
-```typescript
-import { enableIndexedDbPersistence } from '@angular/fire/firestore';
-
-provideFirebaseApp(() => {
-  const app = initializeApp(environment.firebase);
-  const firestore = getFirestore(app);
-  enableIndexedDbPersistence(firestore).catch((err) => {
-    if (err.code === 'failed-precondition') {
-      console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-    } else if (err.code === 'unimplemented') {
-      console.warn('The current browser does not support offline persistence');
-    }
-  });
-  return app;
-});
+**FORBIDDEN:**
+```javascript
+allow read, write: if true; // CRITICAL VIOLATION
 ```
 
-## Testing
+## Input Validation Enforcement
 
-```typescript
-import { TestBed } from '@angular/core/testing';
-import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+**REQUIRED for ALL Firebase operations:**
+- Validate userId before queries
+- Validate email format before auth operations
+- Validate file size/type before uploads
+- Sanitize input before Firestore writes
 
-describe('TasksFirestoreService', () => {
-  let service: TasksFirestoreService;
-  
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        provideFirebaseApp(() => initializeApp(environment.firebase)),
-        provideFirestore(() => getFirestore()),
-        TasksFirestoreService
-      ]
-    });
-    service = TestBed.inject(TasksFirestoreService);
-  });
-  
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-});
-```
+**FORBIDDEN:**
+- Direct user input to Firebase without validation
+- Trusting client-side validation only
+- Missing type guards for external data
 
-## Common Pitfalls
+**VIOLATION consequences:**
+- Invalid data in database
+- Security vulnerabilities
+- Data corruption
 
-### 1. Missing Firebase Initialization
+## Error Handling Requirements
 
-```typescript
-// ❌ Bad - No Firebase initialization
-// Will cause errors
+**REQUIRED for ALL Firebase operations:**
+- try/catch for async operations
+- Specific error code handling (auth/*, storage/*, functions/*)
+- Error state in stores via patchState
+- User-friendly error messages
 
-// ✅ Good - Proper initialization in app.config.ts
-providers: [
-  provideFirebaseApp(() => initializeApp(environment.firebase))
-]
-```
+**FORBIDDEN:**
+- Silent error swallowing
+- Generic error messages
+- Missing error handling in async operations
+- console.log() as sole error handling
 
-### 2. Not Handling Auth State
+**VIOLATION consequences:**
+- Undiagnosed failures
+- Poor user experience
+- Data loss
 
-```typescript
-// ❌ Bad - Assuming user is always logged in
-const userId = this.auth.currentUser!.uid;
+## Async Operation Constraints
 
-// ✅ Good - Check auth state
-const currentUser = this.auth.currentUser;
-if (currentUser) {
-  const userId = currentUser.uid;
-} else {
-  // Handle unauthenticated state
-}
-```
+**REQUIRED:**
+- async/await for ALL I/O operations
+- NEVER block main thread with synchronous Firebase calls
+- Use rxMethod for store integrations
+- Proper promise chaining
 
-### 3. Ignoring Security Rules
+**FORBIDDEN:**
+- Synchronous Firebase operations
+- Blocking I/O operations
+- Missing await on promises
+- Unhandled promise rejections
 
-```typescript
-// ❌ Bad - Open access to all data
-allow read, write: if true;
+**VIOLATION consequences:**
+- Application freeze
+- Performance degradation
+- Race conditions
 
-// ✅ Good - Proper access control
-allow read, write: if request.auth != null && 
-                      request.auth.uid == resource.data.userId;
-```
+## Forbidden Actions
 
-## Resources
+**NEVER:**
+- Import Firebase SDK directly (`import { getFirestore } from 'firebase/firestore'`)
+- Hardcode Firebase credentials in code
+- Use `allow read, write: if true` in security rules
+- Subscribe to Firebase observables without cleanup
+- Use `!` null assertion on `currentUser`
+- Omit `initialValue` in `toSignal()`
+- Skip input validation before database operations
+- Use synchronous Firebase operations
+- Deploy without security rules
+- Store secrets in version control
 
-- [AngularFire Documentation](https://github.com/angular/angularfire)
-- [Firebase Documentation](https://firebase.google.com/docs)
-- [Firestore Security Rules](https://firebase.google.com/docs/firestore/security/get-started)
+**VIOLATION consequences vary by action:**
+- Security breaches
+- Data loss
+- Memory leaks
+- Runtime errors
+- Compliance violations
+
+## Enforcement Summary
+
+**REQUIRED in ALL Firebase code:**
+- `inject()` for dependency injection
+- `toSignal()` with `initialValue` for observables
+- `async/await` for I/O operations
+- Security rules in `firestore.rules` and `storage.rules`
+- Input validation before operations
+- Error handling with try/catch
+- rxMethod for NgRx Signals integration
+
+**FORBIDDEN in ALL Firebase code:**
+- Direct SDK imports
+- Hardcoded secrets
+- Open security rules
+- Manual observable subscriptions
+- Synchronous operations
+- Missing error handling
+- Null assertions on auth state

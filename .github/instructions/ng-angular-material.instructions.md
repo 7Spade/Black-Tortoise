@@ -1,604 +1,495 @@
 ---
-description: 'Angular Material component library best practices for building Material Design UIs in Angular 20+ applications'
+description: 'Angular Material enforcement: modular imports, animation requirements, form field wrappers, accessibility constraints, and component-specific rules'
 applyTo: '**/*.ts, **/*.html'
 ---
 
-# Angular Material Component Guidelines
+# Angular Material Rules
 
-## Overview
+## CRITICAL: Animation Configuration
 
-Angular Material is the official Material Design component library for Angular. This guide covers best practices for using Material components in Angular 20+ standalone applications.
+ALL standalone applications MUST provide animations. Missing animations provider is FORBIDDEN.
 
-## General Principles
-
-### 1. Modular Imports
-
-**Always import specific component modules:**
-```typescript
-// ✅ Good - Import specific modules
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-
-@Component({
-  selector: 'app-feature',
-  standalone: true,
-  imports: [MatButtonModule, MatIconModule, MatCardModule],
-  // ...
-})
-export class FeatureComponent {}
-
-// ❌ Bad - Don't wildcard import
-import * as Material from '@angular/material';
-```
-
-### 2. Animation Configuration
-
-**Provide animations in standalone apps:**
+**REQUIRED configuration:**
 ```typescript
 // app.config.ts
 import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideAnimations(),
-    // or provideNoopAnimations() for testing
+    provideAnimations(), // REQUIRED
+    // or provideNoopAnimations() for testing only
   ]
 };
 ```
 
-### 3. Theme Integration
+**FORBIDDEN:**
+- Applications without `provideAnimations()` or `provideNoopAnimations()`
+- Material components without animation support
 
-**Ensure Material theme is loaded:**
+**VIOLATION consequences:**
+- Components will not animate
+- Runtime errors in Material components
+- Poor user experience
+
+## CRITICAL: Modular Import Enforcement
+
+ALL Material components MUST use specific module imports. Wildcard imports are FORBIDDEN.
+
+**REQUIRED pattern:**
+```typescript
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+
+@Component({
+  standalone: true,
+  imports: [MatButtonModule, MatIconModule, MatCardModule],
+})
+```
+
+**FORBIDDEN:**
+```typescript
+import * as Material from '@angular/material'; // FORBIDDEN
+```
+
+**VIOLATION consequences:**
+- Increased bundle size
+- Longer compilation times
+- Difficult tree-shaking
+
+## CRITICAL: Theme Integration
+
+Material theme MUST be loaded in global styles. Missing theme configuration is FORBIDDEN.
+
+**REQUIRED in `styles.scss`:**
 ```scss
-// styles.scss
 @use '@angular/material' as mat;
 @include mat.core();
 @include mat.all-component-themes($my-theme);
 ```
 
-## Component Best Practices
+**FORBIDDEN:**
+- Applications without theme configuration
+- Component-level theme includes
 
-### Form Controls
+## Form Control Enforcement
 
-#### Input Fields
+### CRITICAL: mat-form-field Wrapper Requirement
 
+ALL `matInput` directives MUST be wrapped in `mat-form-field`. Standalone inputs are FORBIDDEN.
+
+**REQUIRED pattern:**
 ```typescript
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-
-@Component({
-  standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule],
-  template: `
-    <mat-form-field appearance="outline">
-      <mat-label>Email</mat-label>
-      <input matInput [formControl]="email" placeholder="user@example.com">
-      <mat-icon matPrefix>email</mat-icon>
-      <mat-hint>We'll never share your email</mat-hint>
-      @if (email.hasError('required')) {
-        <mat-error>Email is required</mat-error>
-      }
-      @if (email.hasError('email')) {
-        <mat-error>Invalid email format</mat-error>
-      }
-    </mat-form-field>
-  `
-})
-export class EmailInputComponent {
-  email = new FormControl('', [Validators.required, Validators.email]);
-}
-```
-
-**Form Field Appearances:**
-- `fill` - Default filled appearance
-- `outline` - Outlined appearance (recommended for most cases)
-
-#### Select Dropdowns
-
-```typescript
-import { MatSelectModule } from '@angular/material/select';
-
-@Component({
-  template: `
-    <mat-form-field appearance="outline">
-      <mat-label>Country</mat-label>
-      <mat-select [formControl]="country">
-        @for (country of countries; track country.code) {
-          <mat-option [value]="country.code">
-            {{ country.name }}
-          </mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-  `
-})
-export class CountrySelectComponent {
-  country = new FormControl('');
-  countries = [
-    { code: 'US', name: 'United States' },
-    { code: 'UK', name: 'United Kingdom' },
-    // ...
-  ];
-}
-```
-
-#### Date Pickers
-
-```typescript
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { provideNativeDateAdapter } from '@angular/material/core';
-
-// In app.config.ts
-providers: [
-  provideNativeDateAdapter()
-]
-
-// In component
 <mat-form-field appearance="outline">
-  <mat-label>Choose a date</mat-label>
-  <input matInput [matDatepicker]="picker" [formControl]="date">
-  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-  <mat-datepicker #picker></mat-datepicker>
+  <mat-label>Email</mat-label>
+  <input matInput [formControl]="email">
+  @if (email.hasError('required')) {
+    <mat-error>Email is required</mat-error>
+  }
 </mat-form-field>
 ```
 
-### Buttons
-
-**Use appropriate button variants:**
+**FORBIDDEN:**
 ```html
-<!-- Basic button -->
-<button mat-button>Basic</button>
-
-<!-- Raised button (primary actions) -->
-<button mat-raised-button color="primary">Save</button>
-
-<!-- Flat button -->
-<button mat-flat-button color="accent">Accent</button>
-
-<!-- Stroked button (secondary actions) -->
-<button mat-stroked-button>Cancel</button>
-
-<!-- Icon button -->
-<button mat-icon-button aria-label="Delete">
-  <mat-icon>delete</mat-icon>
-</button>
-
-<!-- FAB (floating action button) -->
-<button mat-fab color="primary">
-  <mat-icon>add</mat-icon>
-</button>
-
-<!-- Mini FAB -->
-<button mat-mini-fab color="accent">
-  <mat-icon>edit</mat-icon>
-</button>
+<input matInput> <!-- FORBIDDEN: missing mat-form-field wrapper -->
 ```
 
-### Navigation Components
+**VIOLATION consequences:**
+- Styling failures
+- Missing form field features (labels, hints, errors)
+- Accessibility violations
 
-#### Toolbar
+### Input Field Requirements
 
+**REQUIRED imports:**
+- `MatFormFieldModule` - MUST be imported
+- `MatInputModule` - MUST be imported for matInput directive
+
+**REQUIRED validation display:**
+- `@if (control.hasError())` - MUST show specific error messages
+- `mat-error` - MUST be used for error display
+
+### Select Dropdown Constraints
+
+**REQUIRED:**
+- `mat-select` MUST be wrapped in `mat-form-field`
+- `@for` loop MUST use `track` expression
+
+**FORBIDDEN:**
+- Select elements without `mat-form-field` wrapper
+- Missing `track` in `@for` loops
+
+### Date Picker Configuration
+
+**REQUIRED in `app.config.ts`:**
 ```typescript
-import { MatToolbarModule } from '@angular/material/toolbar';
-
-@Component({
-  template: `
-    <mat-toolbar color="primary">
-      <button mat-icon-button (click)="toggleSidenav()">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <span>{{ title }}</span>
-      <span class="spacer"></span>
-      <button mat-icon-button>
-        <mat-icon>notifications</mat-icon>
-      </button>
-      <button mat-icon-button>
-        <mat-icon>account_circle</mat-icon>
-      </button>
-    </mat-toolbar>
-  `,
-  styles: [`
-    .spacer {
-      flex: 1 1 auto;
-    }
-  `]
-})
-export class HeaderComponent {
-  title = 'My App';
-  toggleSidenav = output<void>();
-}
+providers: [
+  provideNativeDateAdapter() // REQUIRED for date picker functionality
+]
 ```
 
-#### Sidenav
+**REQUIRED:**
+- `MatDatepickerModule` import
+- `mat-form-field` wrapper for datepicker input
+- `matDatepicker` directive on input
+- `mat-datepicker-toggle` for user interaction
 
-```typescript
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
+**FORBIDDEN:**
+- Datepicker without `provideNativeDateAdapter()`
+- Missing datepicker toggle
 
-@Component({
-  template: `
-    <mat-sidenav-container class="sidenav-container">
-      <mat-sidenav #sidenav mode="side" opened class="sidenav">
-        <mat-nav-list>
-          @for (item of navItems; track item.route) {
-            <a mat-list-item [routerLink]="item.route" routerLinkActive="active">
-              <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-              <span matListItemTitle>{{ item.label }}</span>
-            </a>
-          }
-        </mat-nav-list>
-      </mat-sidenav>
-      
-      <mat-sidenav-content>
-        <router-outlet></router-outlet>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
-  `,
-  styles: [`
-    .sidenav-container {
-      height: 100%;
-    }
-    
-    .sidenav {
-      width: 250px;
-    }
-    
-    .active {
-      background-color: rgba(0, 0, 0, 0.04);
-    }
-  `]
-})
-export class SidenavLayoutComponent {
-  navItems = [
-    { route: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-    { route: '/profile', icon: 'person', label: 'Profile' },
-    { route: '/settings', icon: 'settings', label: 'Settings' }
-  ];
-}
-```
+## Button Component Rules
 
-### Data Display
+**REQUIRED button directives:**
+- `mat-button` - basic flat button
+- `mat-raised-button` - elevated button for primary actions
+- `mat-flat-button` - filled button without elevation
+- `mat-stroked-button` - outlined button for secondary actions
+- `mat-icon-button` - icon-only button
+- `mat-fab` - floating action button
+- `mat-mini-fab` - small floating action button
 
-#### Tables
+**CRITICAL: Icon Button Accessibility**
 
-```typescript
-import { MatTableModule } from '@angular/material/table';
-import { MatSortModule, Sort } from '@angular/material/sort';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+ALL `mat-icon-button` elements MUST have `aria-label` attribute. Missing labels are FORBIDDEN.
 
-@Component({
-  standalone: true,
-  imports: [MatTableModule, MatSortModule, MatPaginatorModule],
-  template: `
-    <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSort($event)">
-      <!-- Name Column -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-        <td mat-cell *matCellDef="let user">{{ user.name }}</td>
-      </ng-container>
-      
-      <!-- Email Column -->
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
-        <td mat-cell *matCellDef="let user">{{ user.email }}</td>
-      </ng-container>
-      
-      <!-- Actions Column -->
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let user">
-          <button mat-icon-button (click)="editUser(user)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button (click)="deleteUser(user)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-      
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-    
-    <mat-paginator 
-      [length]="totalItems"
-      [pageSize]="pageSize"
-      [pageSizeOptions]="[10, 25, 50, 100]"
-      (page)="onPageChange($event)">
-    </mat-paginator>
-  `
-})
-export class UserTableComponent {
-  displayedColumns = ['name', 'email', 'actions'];
-  dataSource = signal<User[]>([]);
-  totalItems = signal(0);
-  pageSize = 10;
-  
-  onSort(sort: Sort) {
-    // Handle sorting
-  }
-  
-  onPageChange(event: PageEvent) {
-    // Handle pagination
-  }
-}
-```
-
-#### Cards
-
-```typescript
-import { MatCardModule } from '@angular/material/card';
-
-@Component({
-  template: `
-    <mat-card>
-      <mat-card-header>
-        <div mat-card-avatar class="avatar">
-          <img [src]="avatarUrl" alt="Avatar">
-        </div>
-        <mat-card-title>{{ title }}</mat-card-title>
-        <mat-card-subtitle>{{ subtitle }}</mat-card-subtitle>
-      </mat-card-header>
-      
-      @if (imageUrl) {
-        <img mat-card-image [src]="imageUrl" [alt]="title">
-      }
-      
-      <mat-card-content>
-        <p>{{ content }}</p>
-      </mat-card-content>
-      
-      <mat-card-actions align="end">
-        <button mat-button>LIKE</button>
-        <button mat-button>SHARE</button>
-      </mat-card-actions>
-    </mat-card>
-  `
-})
-export class PostCardComponent {
-  title = input.required<string>();
-  subtitle = input<string>();
-  content = input.required<string>();
-  imageUrl = input<string>();
-  avatarUrl = input<string>();
-}
-```
-
-### Dialogs and Overlays
-
-#### Dialog
-
-```typescript
-import { MatDialogModule, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-
-// Dialog Component
-@Component({
-  standalone: true,
-  imports: [MatDialogModule, MatButtonModule],
-  template: `
-    <h2 mat-dialog-title>{{ data.title }}</h2>
-    <mat-dialog-content>
-      <p>{{ data.message }}</p>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button [mat-dialog-close]="false">Cancel</button>
-      <button mat-raised-button color="primary" [mat-dialog-close]="true">
-        Confirm
-      </button>
-    </mat-dialog-actions>
-  `
-})
-export class ConfirmDialogComponent {
-  data = inject<{ title: string; message: string }>(MAT_DIALOG_DATA);
-}
-
-// Parent Component
-export class ParentComponent {
-  private dialog = inject(MatDialog);
-  
-  openConfirmDialog() {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Confirm Action',
-        message: 'Are you sure you want to proceed?'
-      }
-    });
-    
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        console.log('User confirmed');
-      }
-    });
-  }
-}
-```
-
-#### Snackbar
-
-```typescript
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snackbar';
-
-export class NotificationService {
-  private snackBar = inject(MatSnackBar);
-  
-  showSuccess(message: string) {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['success-snackbar']
-    });
-  }
-  
-  showError(message: string) {
-    this.snackBar.open(message, 'Close', {
-      duration: 5000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['error-snackbar']
-    });
-  }
-}
-```
-
-## Accessibility Best Practices
-
-### 1. ARIA Labels
-
+**REQUIRED:**
 ```html
-<!-- ✅ Good - Provide aria-label for icon buttons -->
 <button mat-icon-button aria-label="Delete item">
   <mat-icon>delete</mat-icon>
 </button>
+```
 
-<!-- ✅ Good - Use mat-label for form fields -->
+**FORBIDDEN:**
+```html
+<button mat-icon-button> <!-- FORBIDDEN: missing aria-label -->
+  <mat-icon>delete</mat-icon>
+</button>
+```
+
+**VIOLATION consequences:**
+- Accessibility failures
+- Screen reader cannot identify button purpose
+- WCAG compliance violations
+
+## Navigation Component Enforcement
+
+### Toolbar Requirements
+
+**REQUIRED imports:**
+- `MatToolbarModule` - MUST be imported
+
+**REQUIRED structure:**
+- `mat-toolbar` - root element
+- `color` attribute - MUST specify theme color (primary/accent/warn)
+
+**Icon buttons in toolbar:**
+- MUST have `aria-label` for accessibility
+- MUST use `mat-icon-button` directive
+
+### Sidenav Constraints
+
+**REQUIRED imports:**
+- `MatSidenavModule` - MUST be imported
+- `MatListModule` - MUST be imported for navigation lists
+
+**REQUIRED structure:**
+- `mat-sidenav-container` - root wrapper (MUST have height set)
+- `mat-sidenav` - side panel (MUST specify mode: side/over/push)
+- `mat-sidenav-content` - main content area
+
+**Navigation list requirements:**
+- `mat-nav-list` - MUST be used for navigation items
+- `@for` loop - MUST include `track` expression
+- `routerLinkActive` - MUST be applied for active state styling
+
+**FORBIDDEN:**
+- Sidenav without container
+- Missing height on sidenav-container
+- Navigation items without track expression
+
+## Table Component Enforcement
+
+**REQUIRED imports:**
+- `MatTableModule` - MUST be imported
+- `MatSortModule` - MUST be imported for sorting functionality
+- `MatPaginatorModule` - MUST be imported for pagination
+
+**CRITICAL: Row Definition Requirements**
+
+ALL mat-table elements MUST define both header and data rows. Missing row definitions are FORBIDDEN.
+
+**REQUIRED structure:**
+```html
+<table mat-table [dataSource]="dataSource">
+  <ng-container matColumnDef="column">
+    <th mat-header-cell *matHeaderCellDef>Header</th>
+    <td mat-cell *matCellDef="let item">{{ item.column }}</td>
+  </ng-container>
+  
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+```
+
+**REQUIRED:**
+- `matColumnDef` - MUST define unique column identifier
+- `mat-header-cell` - MUST be present for each column
+- `mat-cell` - MUST be present for each column
+- `mat-header-row` - MUST reference `displayedColumns`
+- `mat-row` - MUST reference `displayedColumns`
+
+**Sorting constraints:**
+- `matSort` directive - MUST be on `<table>` element
+- `mat-sort-header` - MUST be on sortable `<th>` elements
+- `(matSortChange)` - MUST handle sort events
+
+**Pagination requirements:**
+- `mat-paginator` - MUST be present for paginated tables
+- `[length]` - MUST bind total item count
+- `[pageSize]` - MUST specify page size
+- `[pageSizeOptions]` - MUST provide size options
+- `(page)` - MUST handle page change events
+
+**FORBIDDEN:**
+- Tables without row definitions
+- Missing `displayedColumns` binding
+- Pagination without total length binding
+
+## Card Component Rules
+
+**REQUIRED imports:**
+- `MatCardModule` - MUST be imported
+
+**REQUIRED card sections:**
+- `mat-card` - root wrapper
+- `mat-card-header` - optional header section
+- `mat-card-content` - content section
+- `mat-card-actions` - optional actions section
+
+**FORBIDDEN:**
+- Card content without proper sectioning
+- Missing semantic card elements
+
+## Dialog Enforcement
+
+**REQUIRED imports:**
+- `MatDialogModule` - MUST be imported
+- `MatDialog` service - MUST be injected for opening dialogs
+- `MAT_DIALOG_DATA` - MUST be injected in dialog component for data access
+
+**CRITICAL: Dialog Structure Requirements**
+
+ALL dialog components MUST use proper dialog sections. Missing sections are FORBIDDEN.
+
+**REQUIRED dialog sections:**
+```html
+<h2 mat-dialog-title>{{ title }}</h2>
+<mat-dialog-content>
+  <!-- content -->
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <!-- actions -->
+</mat-dialog-actions>
+```
+
+**REQUIRED:**
+- `mat-dialog-title` - MUST be present for dialog title
+- `mat-dialog-content` - MUST wrap dialog content
+- `mat-dialog-actions` - MUST contain action buttons
+- `[mat-dialog-close]` - MUST be used for close buttons
+
+**Dialog configuration requirements:**
+- `width` - MUST specify dialog width
+- `data` - MUST pass data via config object
+- `afterClosed()` - MUST subscribe for result handling
+
+**FORBIDDEN:**
+- Dialogs without proper section structure
+- Missing `mat-dialog-close` on action buttons
+- Direct DOM manipulation for dialog closing
+
+## Snackbar Constraints
+
+**REQUIRED imports:**
+- `MatSnackBarModule` - MUST be imported
+- `MatSnackBar` service - MUST be injected
+
+**REQUIRED configuration:**
+- `duration` - MUST specify display duration (milliseconds)
+- `horizontalPosition` - MUST specify horizontal position
+- `verticalPosition` - MUST specify vertical position
+
+**FORBIDDEN:**
+- Snackbars without duration (infinite snackbars)
+- Missing position configuration
+
+## CRITICAL: Accessibility Requirements
+
+### ARIA Label Enforcement
+
+ALL icon-only buttons MUST have `aria-label` attribute. Missing labels are ACCESSIBILITY VIOLATIONS.
+
+**REQUIRED:**
+```html
+<button mat-icon-button aria-label="Delete item">
+  <mat-icon>delete</mat-icon>
+</button>
+```
+
+**FORBIDDEN:**
+```html
+<button mat-icon-button> <!-- VIOLATION: missing aria-label -->
+  <mat-icon>delete</mat-icon>
+</button>
+```
+
+**VIOLATION consequences:**
+- Screen readers cannot identify button purpose
+- WCAG 2.1 Level A compliance failure
+- Accessibility lawsuit risk
+
+### Form Field Label Requirements
+
+ALL form fields MUST have `mat-label` element. Missing labels are FORBIDDEN.
+
+**REQUIRED:**
+```html
 <mat-form-field>
   <mat-label>Email Address</mat-label>
   <input matInput type="email">
 </mat-form-field>
 ```
 
-### 2. Keyboard Navigation
-
-```typescript
-// Ensure all interactive elements are keyboard accessible
-<mat-menu>
-  <button mat-menu-item (keydown.enter)="action()">
-    Action
-  </button>
-</mat-menu>
+**FORBIDDEN:**
+```html
+<mat-form-field> <!-- VIOLATION: missing mat-label -->
+  <input matInput type="email">
+</mat-form-field>
 ```
 
-### 3. Focus Management
+### Keyboard Navigation Requirements
 
+ALL interactive elements MUST be keyboard accessible. Mouse-only interactions are FORBIDDEN.
+
+**REQUIRED:**
+- Tab navigation support
+- Enter/Space key activation
+- Arrow key navigation for menus/lists
+- Escape key for closing dialogs/menus
+
+### Focus Management Constraints
+
+Components with custom focus behavior MUST use `FocusMonitor` from `@angular/cdk/a11y`.
+
+**REQUIRED:**
 ```typescript
 import { FocusMonitor } from '@angular/cdk/a11y';
 
-export class MyComponent {
-  private focusMonitor = inject(FocusMonitor);
-  
-  ngAfterViewInit() {
-    this.focusMonitor.monitor(this.elementRef, true);
-  }
-  
-  ngOnDestroy() {
-    this.focusMonitor.stopMonitoring(this.elementRef);
-  }
+ngAfterViewInit() {
+  this.focusMonitor.monitor(this.elementRef, true);
+}
+
+ngOnDestroy() {
+  this.focusMonitor.stopMonitoring(this.elementRef);
 }
 ```
 
-## Performance Optimization
+**FORBIDDEN:**
+- Manual focus management without FocusMonitor
+- Missing cleanup in ngOnDestroy
 
-### 1. OnPush Change Detection
+## Performance Requirements
 
+### Change Detection Strategy
+
+ALL Material components SHOULD use `OnPush` change detection strategy when possible.
+
+**REQUIRED with signals:**
 ```typescript
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  // ...
 })
 export class OptimizedComponent {
-  // Use signals for automatic change detection
   data = signal<Data[]>([]);
 }
 ```
 
-### 2. Virtual Scrolling for Large Lists
+### Virtual Scrolling Enforcement
 
-```typescript
-import { ScrollingModule } from '@angular/cdk/scrolling';
+Lists with &gt;100 items MUST use virtual scrolling. Large lists without virtualization are FORBIDDEN.
 
-@Component({
-  template: `
-    <cdk-virtual-scroll-viewport itemSize="50" class="viewport">
-      @for (item of items(); track item.id) {
-        <mat-list-item>{{ item.name }}</mat-list-item>
-      }
-    </cdk-virtual-scroll-viewport>
-  `
-})
-```
+**REQUIRED imports:**
+- `ScrollingModule` from `@angular/cdk/scrolling`
 
-### 3. Lazy Load Modules
-
-```typescript
-const routes: Routes = [
-  {
-    path: 'admin',
-    loadComponent: () => import('./admin/admin.component')
-      .then(m => m.AdminComponent)
+**REQUIRED structure:**
+```html
+<cdk-virtual-scroll-viewport itemSize="50">
+  @for (item of items(); track item.id) {
+    <mat-list-item>{{ item.name }}</mat-list-item>
   }
-];
+</cdk-virtual-scroll-viewport>
 ```
 
-## Testing
+**VIOLATION consequences:**
+- Poor performance with large datasets
+- Memory exhaustion
+- Browser freezing
 
-### Component Testing
+### Component Lazy Loading
 
+Heavy Material components MUST be lazy loaded. Eager loading all components is FORBIDDEN.
+
+**REQUIRED:**
 ```typescript
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideAnimations } from '@angular/platform-browser/animations';
+loadComponent: () => import('./component').then(m => m.Component)
+```
 
-describe('MyComponent', () => {
-  let component: MyComponent;
-  let fixture: ComponentFixture<MyComponent>;
-  
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [MyComponent],
-      providers: [provideAnimations()]
-    }).compileComponents();
-    
-    fixture = TestBed.createComponent(MyComponent);
-    component = fixture.componentInstance;
-  });
-  
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+## Testing Requirements
+
+### CRITICAL: Animation Provider in Tests
+
+ALL component tests MUST provide animations. Tests without animations provider are FORBIDDEN.
+
+**REQUIRED test configuration:**
+```typescript
+beforeEach(async () => {
+  await TestBed.configureTestingModule({
+    imports: [MyComponent],
+    providers: [provideAnimations()] // REQUIRED
+  }).compileComponents();
 });
 ```
 
-## Common Pitfalls to Avoid
-
-### 1. Missing Animations
+**FORBIDDEN:**
 ```typescript
-// ❌ Bad - No animations provider
-// Material components won't animate
-
-// ✅ Good - Provide animations
-providers: [provideAnimations()]
+TestBed.configureTestingModule({
+  imports: [MyComponent]
+  // VIOLATION: missing provideAnimations()
+});
 ```
 
-### 2. Missing Form Field Wrapper
-```html
-<!-- ❌ Bad - Input without mat-form-field -->
-<input matInput>
+**VIOLATION consequences:**
+- Test failures
+- Animation timing issues
+- Unreliable test results
 
-<!-- ✅ Good - Wrapped in mat-form-field -->
-<mat-form-field>
-  <input matInput>
-</mat-form-field>
-```
+## Enforcement Summary
 
-### 3. Not Using trackBy
-```html
-<!-- ❌ Bad - No tracking -->
-@for (item of items(); track item.id) {
-  <mat-list-item>{{ item.name }}</mat-list-item>
-}
+**REQUIRED in ALL Material implementations:**
+- `provideAnimations()` in app.config.ts
+- Specific module imports (no wildcards)
+- `mat-form-field` wrapper for all inputs
+- `aria-label` on all icon buttons
+- `mat-label` in all form fields
+- `track` expression in all `@for` loops
+- `provideAnimations()` in all tests
 
-<!-- ✅ Good - With trackBy -->
-@for (item of items(); track item.id) {
-  <mat-list-item>{{ item.name }}</mat-list-item>
-}
-```
-
-## Resources
-
-- [Angular Material Documentation](https://material.angular.io/)
-- [Component API Reference](https://material.angular.io/components/categories)
-- [Accessibility Guide](https://material.angular.io/guide/accessibility)
+**FORBIDDEN in ALL Material implementations:**
+- Wildcard imports (`import * as Material`)
+- Standalone `matInput` without `mat-form-field`
+- Icon buttons without `aria-label`
+- Form fields without `mat-label`
+- Tables without row definitions
+- Lists &gt;100 items without virtual scrolling
+- Tests without `provideAnimations()`
