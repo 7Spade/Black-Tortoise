@@ -1,0 +1,98 @@
+  {
+    "subject": "DTO & Converter Example File",
+    "fact": "dto.ts 與 converter.ts 將外部資料格式轉換為 Domain Entity / VO，隔離外部資料格式",
+    "citations": "Clean Architecture: DTOs are infrastructure concern",
+    "reason": "保護 Domain 層純粹性與一致性",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Page Component Example File",
+    "fact": "page.component.ts 與 page.routes.ts 定義頁面和路由，layout.component.ts 可選，UI 層僅透過 Facade / Store 存取 Application",
+    "citations": "Angular + Clean Architecture",
+    "reason": "維持 UI 層單向依賴與統一結構",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Value Object Example File",
+    "fact": "value-object.ts 不可變、私有內部值、提供 equals 方法，跨層共享",
+    "citations": "DDD: Value Object encapsulates equality and state",
+    "reason": "確保跨層一致性與安全",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Shared Error Example File",
+    "fact": "error.ts 用於 Domain 驗證或跨層錯誤傳遞，不可依賴 Application / Infrastructure / Presentation",
+    "citations": "DDD + Clean Architecture",
+    "reason": "保持層級隔離，防止循環依賴",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Domain Layer Folders & Files",
+    "fact": "Domain 層資料夾: entities, aggregates, value-objects, enums, errors, interfaces, repositories，每個資料夾包含對應的最小檔案，如 entities.ts、aggregate.ts、value-objects.ts、repository.interface.ts、enums.ts、errors.ts",
+    "citations": "DDD: Domain encapsulates business logic and aggregates",
+    "reason": "保持 Domain 層完整性與可追蹤性",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Domain Layer File List",
+    "fact": "entities/entities.ts, aggregates/aggregate.ts, value-objects/value-objects.ts, enums/enums.ts, errors/errors.ts, interfaces/identifiable.interface.ts, repositories/repository.interface.ts",
+    "citations": "DDD standard folder structure",
+    "reason": "保證 Domain 層依賴方向與功能完整",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer Folders & Files",
+    "fact": "Application 層資料夾: use-cases, facades, stores, guards, mappers, tokens, services，每個資料夾包含最小檔案: use-case.ts, facade.ts, store.ts, guard.ts, mapper.ts, token.ts, service.ts",
+    "citations": "Clean Architecture: Application orchestrates Domain operations",
+    "reason": "保持 Application 層單一責任，Presentation 透過 Facade / Store 存取 Domain",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Application Layer File List",
+    "fact": "use-cases/index.ts, facades/facade.ts, stores/store.ts, guards/guard.ts, mappers/mapper.ts, tokens/token.ts, services/service.ts",
+    "citations": "Clean Architecture",
+    "reason": "維持層級隔離與單向依賴",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer Folders & Files",
+    "fact": "Infrastructure 層資料夾: repositories, dto, converters, adapters, collections，每個資料夾包含最小檔案 repository.impl.ts, dto.ts, converter.ts, adapter.ts, collections.ts",
+    "citations": "DDD: Infrastructure implements domain contracts",
+    "reason": "封裝技術細節，保持 Domain 純粹",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Infrastructure Layer File List",
+    "fact": "repositories/repository.impl.ts, dto/dto.ts, converters/converter.ts, adapters/adapter.ts, collections/collections.ts",
+    "citations": "Clean Architecture",
+    "reason": "保持 Infrastructure 與 Domain interface 對接，防止污染 Domain",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Layer Folders & Files",
+    "fact": "Presentation 層資料夾: pages, layouts, features, shared/components, shared/services，每個資料夾包含最小檔案 page.component.ts, page.routes.ts, layout.component.ts, shared.component.ts, shared.service.ts",
+    "citations": "Clean Architecture + Angular Signals",
+    "reason": "維持 UI 層單向依賴 Application 層",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Presentation Layer File List",
+    "fact": "pages/page.component.ts, pages/page.routes.ts, layouts/layout.component.ts, shared/components/shared.component.ts, shared/services/shared.service.ts",
+    "citations": "Angular + Clean Architecture",
+    "reason": "統一 Presentation 層結構，方便維護",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Layer Folders & Files",
+    "fact": "Shared 層資料夾: value-objects, enums, errors, interfaces，每個資料夾包含最小檔案 value-object.ts, enums.ts, errors.ts, interfaces.ts",
+    "citations": "DDD: Shared Layer provides reusable constructs",
+    "reason": "保持跨層共享資源，避免循環依賴",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Shared Layer File List",
+    "fact": "value-objects/value-object.ts, enums/enums.ts, errors/errors.ts, interfaces/interfaces.ts",
+    "citations": "DDD + Clean Architecture",
+    "reason": "保證 Shared 層可被全層依賴但不依賴任何層",
+    "category": "Shared Layer"
+  }

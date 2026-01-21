@@ -1,0 +1,196 @@
+  {
+    "subject": "Domain Repository",
+    "fact": "Domain Repository interface 不得使用 Observable / RxJS / framework abstraction",
+    "citations": "Domain Layer should only describe domain contracts; Repository must not expose implementation detail.",
+    "reason": "Observable 等概念屬於 Infrastructure，Domain 只描述行為與 Aggregate 存取，不應依賴實作。",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Aggregate Boundary",
+    "fact": "每個 Aggregate Root 必須對應一個 Repository，Repository 不得跨 Aggregate",
+    "citations": "DDD Principle: one Aggregate Root = one Repository",
+    "reason": "保持一致性邊界，避免跨 Aggregate 的意外副作用。",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Repository Method Naming",
+    "fact": "Domain Repository 不能出現 getAll、getUsers、watch* 類 UI 導向 API",
+    "citations": "Repository interface 只描述業務行為，不為 UI 或 Store 設計",
+    "reason": "防止 Domain 層被 UI / Store 需求污染。",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Repository Return Types",
+    "fact": "Domain Repository 只能回傳 Promise 或同步值，禁止 Observable",
+    "citations": "DDD: Domain should remain pure, asynchronous handling is for Application/Infrastructure",
+    "reason": "保持 Domain 層獨立於非同步實作細節。",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Value Object Usage",
+    "fact": "Repository 與 Entity 的 ID 必須使用 Value Object，禁止 string / number 直接傳遞",
+    "citations": "DDD: Value Objects encapsulate identity, enhance type safety",
+    "reason": "保護 Domain 型別安全，統一 Aggregate 身份表示。",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Domain Services",
+    "fact": "Domain Services 只能依賴 Domain Repository interface，禁止使用 Infrastructure / UI",
+    "citations": "DDD: Domain Service is pure domain logic",
+    "reason": "避免 Domain Service 被實作細節污染。",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer Dependency",
+    "fact": "Application 層只能依賴 Domain 層，不可直接使用 Infrastructure 實作",
+    "citations": "Layered Architecture: Application orchestrates Domain, does not know Infrastructure",
+    "reason": "保持層級邊界清晰，防止 Application 層滲透 Infrastructure。",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Facade / Store",
+    "fact": "Facade / Store 不可暴露 Repository API 或 Observable，僅提供 Signals 或純狀態",
+    "citations": "Application Layer: provide state for Presentation only",
+    "reason": "Presentation 不應直接操作 Repository，防止副作用洩漏。",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Guard",
+    "fact": "Guard 僅能做純條件判斷，禁止 subscribe、navigation 或副作用",
+    "citations": "Application Layer: Guards are pure, signals-only",
+    "reason": "防止 Guard 變成流程控制或資料修改點，保持純粹。",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer",
+    "fact": "Infrastructure 實作 Domain Repository，可使用 Observable / AngularFire / Firestore",
+    "citations": "DDD: Infrastructure adapts persistence to Domain contract",
+    "reason": "Infrastructure 層可以依賴框架，但不能污染 Domain。",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Layer",
+    "fact": "Presentation 層不得 import Domain Repository 或 Infrastructure，僅使用 Facade / Store",
+    "citations": "DDD + Layered Architecture: Presentation only sees Application layer",
+    "reason": "保持層級邊界，防止 UI 滲透業務邏輯。",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Layer",
+    "fact": "Shared 僅允許 base Value Objects / enums / error / interfaces，禁止依賴 Application / Infrastructure / Presentation",
+    "citations": "Shared layer is framework-agnostic and cross-layer stable",
+    "reason": "保持可重用性與層級獨立性。",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Domain Repository Contract",
+    "fact": "Domain Repository interface 只能使用 Promise 或同步值，不得依賴 Observable / RxJS / framework",
+    "citations": "DDD: Repository is a domain contract, infrastructure-specific behavior must not leak",
+    "reason": "保持 Domain 純粹，避免時間軸 / UI 概念污染",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Aggregate Boundary",
+    "fact": "每個 Aggregate Root 必須有單獨 Repository，Repository 不可跨 Aggregate",
+    "citations": "DDD Principle: one Aggregate Root = one Repository",
+    "reason": "保持一致性邊界，防止跨 Aggregate 副作用",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Repository Naming",
+    "fact": "Domain Repository 不可使用 getAll / getUsers / watch* 之類的 UI 導向 API",
+    "citations": "Repository is about domain behavior, not UI convenience",
+    "reason": "避免 Domain 被 Presentation 或 Store 污染",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Value Object Enforcement",
+    "fact": "Aggregate IDs 和 Owner 必須使用 Value Object，不得使用 string / number",
+    "citations": "DDD: Value Objects encapsulate identity",
+    "reason": "保持型別安全與 Domain 語義一致",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Domain Service Dependency",
+    "fact": "Domain Service 只能依賴 Domain Repository interface，禁止使用 Infrastructure / UI",
+    "citations": "DDD: Domain Service is pure domain logic",
+    "reason": "保持 Domain 純粹，不被實作細節污染",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer Orchestration",
+    "fact": "Application 層只能依賴 Domain 層，使用 Facade / Store / Guards 協調 Use Case",
+    "citations": "Layered Architecture: Application orchestrates Domain",
+    "reason": "保持層級清晰，防止 Infrastructure 或 UI 滲入",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Use Case Output",
+    "fact": "Use Case 不得回傳 Observable，僅使用 Promise 或純資料結構",
+    "citations": "DDD + Clean Architecture: Domain async handling stays in infrastructure",
+    "reason": "Application 層負責轉換成 Signals / Store / Presentation 可用狀態",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Facade / Store Rules",
+    "fact": "Facade / Store 不可暴露 Repository API 或 Observable，僅提供 Signals 或純狀態",
+    "citations": "Application Layer provides state for Presentation only",
+    "reason": "Presentation 不直接依賴 Repository，防止副作用洩漏",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Guard Purity",
+    "fact": "Guard 僅能做同步或 signals-only 判斷，不可副作用、導航或 subscribe",
+    "citations": "Application Layer: Guards are pure and signals-only",
+    "reason": "防止 Guard 變成流程控制或資料修改點",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer Implementation",
+    "fact": "Infrastructure 可以使用 Observable / AngularFire / Firestore 等，但不可污染 Domain",
+    "citations": "DDD: Infrastructure adapts persistence to Domain contract",
+    "reason": "將實作細節封裝在 Infrastructure 層，Domain 保持純粹",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Layer Rules",
+    "fact": "Presentation 不可 import Domain Repository 或 Infrastructure，只能使用 Application Facade / Store",
+    "citations": "DDD + Clean Architecture: Presentation only sees Application",
+    "reason": "保持層級邊界，UI 不直接操作 Domain / Infrastructure",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Layer Rules",
+    "fact": "Shared 僅能包含 Value Objects / enums / error / interfaces，不可依賴 Application / Infrastructure / Presentation",
+    "citations": "Shared layer must remain framework-agnostic and cross-layer stable",
+    "reason": "保持可重用性與層級獨立性",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Global Layer Enforcement",
+    "fact": "任何層級不得跨界 import，不得讓 Infrastructure / UI API 滲入 Domain",
+    "citations": "Layered Architecture / DDD",
+    "reason": "維護清晰邊界，Fail-Fast 原則",
+    "category": "All Layers"
+  },
+  {
+    "subject": "Fail-Fast Behavior",
+    "fact": "Copilot 發現 Domain 使用 Observable、getUsers、跨 Aggregate Repository 等行為時必須立即停止實作",
+    "citations": "Domain pureness must be enforced",
+    "reason": "防止不當依賴進入核心 Domain",
+    "category": "All Layers"
+  },
+  {
+    "subject": "Infrastructure Adapter Pattern",
+    "fact": "任何 Infrastructure 對外提供即時資料，必須透過 Adapter，Domain 不直接暴露實時流",
+    "citations": "Clean Architecture / DDD: Adapter isolates Infrastructure",
+    "reason": "保持 Domain 與 Application 獨立",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Application to Presentation Mapping",
+    "fact": "Application 必須負責將 Domain Entity 轉為 Presentation Signals 或 ViewModel",
+    "citations": "Clean Architecture: Application mediates between Domain and Presentation",
+    "reason": "防止 Presentation 直接依賴 Domain",
+    "category": "Application Layer"
+  },

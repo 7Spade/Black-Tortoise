@@ -1,0 +1,196 @@
+  {
+    "subject": "Domain Layer",
+    "fact": "Domain 層包含 Aggregate Root、Entity、Value Object、Domain Service、Repository Interface",
+    "citations": "DDD: Domain Layer is the heart of business logic",
+    "reason": "Domain 層表達業務概念，所有業務規則集中於此",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Domain Layer Dependency",
+    "fact": "Domain 層不可依賴 Application、Infrastructure 或 Presentation 層",
+    "citations": "Layered Architecture: Domain is independent",
+    "reason": "保持 Domain 純粹，避免業務邏輯被外部技術污染",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer",
+    "fact": "Application 層包含 Use Case、Facade、Store、Guard、Application Service、Mapper、Token",
+    "citations": "Clean Architecture: Application orchestrates domain, provides use case API",
+    "reason": "Application 層協調 Domain 行為並提供給 Presentation 層使用",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Application Layer Dependency",
+    "fact": "Application 層可依賴 Domain 層、Shared 層，不可依賴 Infrastructure 或 Presentation 層",
+    "citations": "Clean Architecture: Application depends only on domain abstractions",
+    "reason": "維持層級邊界，Infrastructure 細節只能透過 Repository 實作被注入",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer",
+    "fact": "Infrastructure 層包含 Repository 實作、第三方服務適配器、資料存取、DTO、Converters、Collections",
+    "citations": "DDD: Infrastructure adapts external systems to domain contracts",
+    "reason": "Infrastructure 封裝技術細節，Domain 只看到 interface，不看到實作",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Infrastructure Layer Dependency",
+    "fact": "Infrastructure 層可以依賴 Domain 與 Shared 層，但不可依賴 Application 或 Presentation 層",
+    "citations": "Layered Architecture: Infrastructure is below Application, above external systems",
+    "reason": "保持 Domain 與 Application 層獨立，Infrastructure 只是 Adapter",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Layer",
+    "fact": "Presentation 層包含 Component、Page、Layout、Feature、Shared UI Service、Route、Signal / State",
+    "citations": "Clean Architecture: Presentation consumes Application facades and stores",
+    "reason": "Presentation 只負責顯示與使用者互動，不實作業務邏輯",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Presentation Layer Dependency",
+    "fact": "Presentation 層可依賴 Application 與 Shared 層，不可直接依賴 Domain 或 Infrastructure",
+    "citations": "Clean Architecture: Presentation only sees Application APIs",
+    "reason": "防止 UI 層直接操作 Repository 或 Domain，維護邊界",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Layer",
+    "fact": "Shared 層包含 Value Object、Enum、Error、Interface、常用函式庫或型別",
+    "citations": "Shared layer provides cross-layer reusable constructs",
+    "reason": "維持層級獨立性，提供各層通用型別與錯誤管理",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Shared Layer Dependency",
+    "fact": "Shared 層不可依賴 Domain、Application、Infrastructure 或 Presentation 層",
+    "citations": "Shared layer must remain framework-agnostic and cross-layer stable",
+    "reason": "避免形成循環依賴，保持層級清晰",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Global Layer Dependency Rule",
+    "fact": "依賴方向必須單向: Presentation → Application → Domain ← Infrastructure, Shared 可被所有層依賴",
+    "citations": "Clean Architecture / DDD layered structure",
+    "reason": "確保架構穩定，防止跨層循環或污染",
+    "category": "All Layers"
+  },
+  {
+    "subject": "Fail-Fast Enforcement",
+    "fact": "任何層級違反依賴規則或使用不該層的 API，Copilot 必須立即停止實作並提示修正",
+    "citations": "DDD + Clean Architecture principles",
+    "reason": "維護專案層級邊界與架構純粹性",
+    "category": "All Layers"
+  },
+  {
+    "subject": "Aggregate Invariants",
+    "fact": "每個 Aggregate Root 必須封裝其不變條件 (invariants)，不能讓外部直接破壞狀態",
+    "citations": "DDD: Aggregates enforce business invariants internally",
+    "reason": "防止業務邏輯被外部誤用或直接修改 Entity 狀態",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Entity Identity",
+    "fact": "每個 Entity 必須有唯一 ID 且 ID 不可變動",
+    "citations": "DDD: Entity identity distinguishes objects, should be immutable",
+    "reason": "確保相同 Entity 在整個系統中唯一且可追蹤",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Domain Events",
+    "fact": "Domain 可以定義事件，但事件只描述事實，不執行副作用",
+    "citations": "DDD: Domain events describe state changes, side effects handled by Application",
+    "reason": "保持 Domain 純粹，副作用由 Application 或 Infrastructure 處理",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Domain Error Handling",
+    "fact": "Domain 層錯誤應使用 DomainError 或 ValidationError 類型封裝",
+    "citations": "DDD: Domain should control its own exception types",
+    "reason": "統一錯誤類型，避免 Infrastructure 或 UI 雜訊滲入",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Domain Layer No Public Setter",
+    "fact": "Domain Entity 屬性不得提供 public setter，必須透過方法或 Aggregate 行為修改",
+    "citations": "DDD: enforce invariants via behavior, not direct mutation",
+    "reason": "防止外部破壞 Aggregate 狀態",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Repository Interface Naming",
+    "fact": "Repository interface 命名必須以 Aggregate 名稱 + Repository 結尾，例如 UserRepository",
+    "citations": "DDD naming convention",
+    "reason": "保持可讀性和一致性，快速辨識每個 Aggregate 的儲存接口",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Repository Method Signature",
+    "fact": "Repository 不得傳遞原始資料結構給 Domain，所有輸入輸出必須使用 Value Object 或 Entity",
+    "citations": "DDD: Repository is domain contract",
+    "reason": "確保 Domain 不被 DTO / Database 結構污染",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer Use Case Isolation",
+    "fact": "每個 Use Case 必須是一個獨立 class 或 function，封裝單一業務操作",
+    "citations": "Clean Architecture: Use Case represents one application service",
+    "reason": "清晰責任邊界，避免混合多個業務邏輯",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Application Layer Side Effects",
+    "fact": "Use Case 或 Application Service 可以執行副作用，但必須透過 Repository / Service Adapter",
+    "citations": "Clean Architecture: Application layer mediates between Domain and external system",
+    "reason": "Domain 層保持純粹，Infrastructure 處理副作用",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Facade Read-only Exposure",
+    "fact": "Facade 只能暴露狀態或 Signals，禁止提供直接修改 Repository 的方法",
+    "citations": "DDD + Angular Signals: Presentation should not mutate domain directly",
+    "reason": "避免 UI 層破壞 Domain 行為",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer Adapter Isolation",
+    "fact": "所有對外部系統（DB、API、第三方服務）的操作必須封裝在 Adapter / Repository 實作中",
+    "citations": "Clean Architecture: infrastructure adapts external services to domain contract",
+    "reason": "Domain / Application 不直接依賴外部系統",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Infrastructure Layer DTO",
+    "fact": "Infrastructure 可使用 DTO 作為資料傳輸，但不得流入 Domain 層",
+    "citations": "Clean Architecture: DTOs are infrastructure detail",
+    "reason": "隔離資料結構與 Domain，維護純粹性",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Layer UI State",
+    "fact": "Presentation 層狀態只能透過 Signals / Store 管理，禁止直接操作 Repository 或 Domain",
+    "citations": "Angular Signals + Clean Architecture",
+    "reason": "維護 Presentation 層與 Domain / Infrastructure 的隔離",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Presentation Layer Component Reuse",
+    "fact": "可建立 Shared Component，但必須純 UI，不得包含業務邏輯",
+    "citations": "DDD / Angular Component Guidelines",
+    "reason": "避免業務邏輯洩漏到 UI，保持責任分離",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Layer Value Objects",
+    "fact": "Shared 層 Value Object 必須不可變（immutable）、私有內部值、提供 equals 方法",
+    "citations": "DDD: Value Objects encapsulate state and equality",
+    "reason": "跨層共享時保持一致性和安全",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Shared Layer Error",
+    "fact": "Shared Layer Error 類型應只用於 Domain 驗證或跨層錯誤傳遞，禁止依賴 Application 或 Infrastructure",
+    "citations": "DDD: Shared Error is layer-independent",
+    "reason": "維持層級隔離，避免循環依賴",
+    "category": "Shared Layer"
+  },

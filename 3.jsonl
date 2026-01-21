@@ -1,0 +1,196 @@
+  {
+    "subject": "Cross-layer Dependency Rule",
+    "fact": "所有層依賴方向必須單向：Presentation → Application → Domain ← Infrastructure，Shared 可被所有層依賴",
+    "citations": "Clean Architecture / DDD",
+    "reason": "防止循環依賴，保持架構穩定",
+    "category": "All Layers"
+  },
+  {
+    "subject": "Layered Contract Enforcement",
+    "fact": "每層必須明確 contract，任何跨層直接操作或破壞 contract 都算違規",
+    "citations": "DDD + Clean Architecture principles",
+    "reason": "確保層級邊界、聚合一致性和系統可維護性",
+    "category": "All Layers"
+  },
+  {
+    "subject": "Signals-only Presentation",
+    "fact": "Presentation 層所有可變狀態只能透過 Signals 或 State Store 管理，不得在 Component 中直接改 Domain Entity",
+    "citations": "Angular Signals + Clean Architecture",
+    "reason": "維持單向資料流，避免副作用洩漏",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Infrastructure Error Mapping",
+    "fact": "Infrastructure 捕獲錯誤後必須映射為 Domain Error 或 Application Error，再回傳 Application",
+    "citations": "Clean Architecture: Infrastructure must translate technical errors",
+    "reason": "保持層級隔離，避免漏入技術實作細節",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Domain Layer Structure",
+    "fact": "Domain 層必須包含 Entities、Aggregates、Value Objects、Domain Services、Enums、Errors、Interfaces、Repositories Interface",
+    "citations": "DDD: Domain encapsulates business logic and aggregates",
+    "reason": "確保業務邏輯完整，Aggregate / Entity / VO / Service 不會缺失",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer Structure",
+    "fact": "Application 層必須包含 Use Cases、Facades、Stores、Guards、Mappers、Tokens、Services",
+    "citations": "Clean Architecture: Application orchestrates domain and exposes API to Presentation",
+    "reason": "維持層級邊界，Presentation 只能透過 Facade 或 Store 存取業務",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer Structure",
+    "fact": "Infrastructure 層必須包含 Repository 實作、Adapters、DTO、Converters、Collections",
+    "citations": "DDD: Infrastructure implements domain contracts and adapts external systems",
+    "reason": "封裝技術細節，Domain 只看到 interface，不被污染",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Layer Structure",
+    "fact": "Presentation 層必須包含 Pages、Layouts、Features、Shared Components、Shared Services、Routes",
+    "citations": "Clean Architecture: Presentation consumes Application APIs only",
+    "reason": "UI 層不直接操作 Domain 或 Infrastructure，保持單向依賴",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Layer Structure",
+    "fact": "Shared 層必須包含 Value Objects、Enums、Error 類別、Interfaces、常用函式庫或型別",
+    "citations": "Shared Layer provides cross-layer reusable constructs",
+    "reason": "保持可重用性與層級獨立性，避免循環依賴",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Domain Entities Required",
+    "fact": "每個 Aggregate 必須至少有一個 Entity，Entity 必須有唯一 ID 和不可變 Value Objects 作為屬性",
+    "citations": "DDD: Entities are identified by their identity and encapsulate state",
+    "reason": "保證 Aggregate 狀態一致性與追蹤性",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Domain Aggregate Required",
+    "fact": "每個 Aggregate Root 必須封裝其所有相關 Entities 和 Value Objects，並提供行為方法操作",
+    "citations": "DDD: Aggregate Root enforces invariants and encapsulates internal entities",
+    "reason": "防止外部直接修改 Aggregate 內部狀態",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Repository Interface Required",
+    "fact": "每個 Aggregate Root 必須有對應 Repository interface，定義 CRUD 或查詢方法，回傳 Entity 或 Promise，不可回傳 Observable 或 DTO",
+    "citations": "DDD: Repository is domain contract",
+    "reason": "保持 Domain 純粹，避免被實作細節污染",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Use Case Required",
+    "fact": "每個業務操作必須由獨立 Use Case class 或 function 實作，封裝單一功能",
+    "citations": "Clean Architecture: Use Case represents one application service",
+    "reason": "保持 Application 層責任單一且可測試",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Facade Required",
+    "fact": "每個 Presentation 功能或頁面必須透過 Facade 提供 Signals 或 State，禁止直接操作 Repository",
+    "citations": "DDD + Angular Signals: Presentation must not mutate domain directly",
+    "reason": "保持單向資料流，Presentation 不污染 Domain",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Store Required",
+    "fact": "Store 必須管理 Signals 狀態，並僅透過 Facade 或 Use Case 更新，不可直接被 Component 修改",
+    "citations": "Angular Signals + Clean Architecture",
+    "reason": "維持 Presentation 層狀態一致性和單向資料流",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Repository Implementation",
+    "fact": "每個 Repository interface 必須有對應 Infrastructure 實作，用於存取 DB / API / Firebase 等",
+    "citations": "DDD: Infrastructure implements domain contracts",
+    "reason": "Domain interface 與 Infrastructure 實作分離，保持依賴倒置原則",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "DTO & Converter Required",
+    "fact": "Infrastructure 若使用外部資料結構，必須定義 DTO 與對應 Converter，不可將原始資料直接流入 Domain",
+    "citations": "Clean Architecture: DTO is infrastructure concern",
+    "reason": "隔離資料格式，保護 Domain 層純粹性",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Page Structure",
+    "fact": "每個頁面必須有對應 Page Component、Route 定義及 Layout 配置，確保 UI 層統一",
+    "citations": "Angular + Clean Architecture",
+    "reason": "維持 UI 層結構一致，方便維護與測試",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Value Object Standards",
+    "fact": "Shared 層 Value Object 必須不可變、私有內部值、提供 equals 方法與型別安全操作",
+    "citations": "DDD: Value Object encapsulates equality and state",
+    "reason": "跨層共享時保持一致性與安全",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Shared Error Standards",
+    "fact": "Shared 層錯誤類型必須用於 Domain 驗證或跨層錯誤傳遞，不可依賴 Application 或 Infrastructure",
+    "citations": "DDD + Clean Architecture",
+    "reason": "保持層級隔離，防止循環依賴",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Domain Layer Minimal Files",
+    "fact": "Domain 層每個 Aggregate Root 必須至少有 entities.ts、value-objects.ts、repository.interface.ts、aggregate.ts（若適用）、enums.ts、errors.ts",
+    "citations": "DDD: Aggregate Root encapsulates state and behavior, Value Objects are immutable",
+    "reason": "保證 Domain 層完整、可追蹤、遵守 DDD 原則",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer Minimal Files",
+    "fact": "Application 層每個功能至少有 use-cases/index.ts、use-case.ts、facade.ts、store.ts、guard.ts（若需）、mapper.ts、tokens.ts",
+    "citations": "Clean Architecture: Application orchestrates domain operations and exposes APIs to Presentation",
+    "reason": "保持 Application 層邏輯單一且可測試，Presentation 不直接操作 Domain",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer Minimal Files",
+    "fact": "Infrastructure 層每個 Repository interface 必須有對應 repository.impl.ts、dto.ts、converter.ts、adapter.ts（若需）、collections.ts（若需）",
+    "citations": "DDD: Infrastructure implements domain contracts and adapts external systems",
+    "reason": "封裝技術細節，Domain 只看到 interface，不受污染",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Layer Minimal Files",
+    "fact": "Presentation 層每個頁面至少有 page.component.ts、page.routes.ts、layout.component.ts（若適用）、shared/components/*.ts、shared/services/*.ts",
+    "citations": "Clean Architecture + Angular: Presentation consumes Application APIs via Facades and Stores",
+    "reason": "維持 UI 層統一、單向資料流，避免破壞 Domain 或 Application 層",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Layer Minimal Files",
+    "fact": "Shared 層至少包含 value-objects/index.ts、enums/index.ts、errors/index.ts、interfaces/index.ts",
+    "citations": "DDD: Shared Layer provides cross-layer reusable constructs",
+    "reason": "保持可重用性與層級獨立性，避免循環依賴",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Domain Layer Folder Structure",
+    "fact": "Domain 層資料夾至少包含: entities、aggregates、value-objects、enums、errors、interfaces、repositories",
+    "citations": "DDD: Domain organizes concepts per aggregate",
+    "reason": "保持層級清晰，便於維護和理解",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer Folder Structure",
+    "fact": "Application 層資料夾至少包含: use-cases、facades、stores、guards、mappers、tokens、services",
+    "citations": "Clean Architecture: Application orchestrates use cases",
+    "reason": "維持 Application 層組織清楚，便於測試與擴展",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer Folder Structure",
+    "fact": "Infrastructure 層資料夾至少包含: repositories、dto、converters、adapters、collections",
+    "citations": "DDD: Infrastructure adapts external systems to domain contract",
+    "reason": "封裝外部技術細節，保持 Domain 層純粹",
+    "category": "Infrastructure Layer"
+  },
