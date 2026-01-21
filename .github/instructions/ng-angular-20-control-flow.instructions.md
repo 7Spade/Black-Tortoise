@@ -1,416 +1,255 @@
 ---
-description: 'Angular 20 built-in control flow (@if, @for, @switch, @defer) best practices for modern template syntax with better performance and type safety'
+description: 'Angular 20 control flow enforcement: @if, @for, @switch, @defer syntax requirements, signal integration constraints, and deprecated directive prohibition'
 applyTo: '**/*.html, **/*.ts'
 ---
 
-# Angular 20 Control Flow Guidelines
+# Angular 20 Control Flow Rules
 
-## Overview
+## CRITICAL: Syntax Requirements
 
-Angular 20 introduces built-in control flow syntax that replaces structural directives (*ngIf, *ngFor, *ngSwitch) with better performance, type safety, and developer experience.
+ALL template control flow MUST use built-in syntax. Structural directives are FORBIDDEN.
 
-## Core Syntax
+**REQUIRED control flow operators:**
+- `@if` with optional `@else` / `@else if`
+- `@for` with MANDATORY `track` expression
+- `@switch` with `@case` and `@default`
+- `@defer` with optional `@placeholder`, `@loading`, `@error`
 
-### @if - Conditional Rendering
+**FORBIDDEN deprecated directives:**
+- `*ngIf` → Compilation failure
+- `*ngFor` → Compilation failure
+- `*ngSwitch` / `*ngSwitchCase` / `*ngSwitchDefault` → Compilation failure
 
+**VIOLATION consequences:**
+- Migration errors in Angular 20+
+- Performance degradation
+- Loss of type safety benefits
+
+## CRITICAL: @for Track Expression
+
+`@for` loops MUST include `track` expression. Missing track causes compilation error.
+
+**REQUIRED:**
 ```typescript
-// ✅ Good - Use @if with signals
-@if (user()) {
-  <div>Welcome, {{ user()!.name }}!</div>
-} @else {
-  <app-login />
-}
-
-// ✅ Good - Type narrowing with 'as'
-@if (data(); as currentData) {
-  <div>{{ currentData.title }}</div>
-}
-
-// ✅ Good - Multiple conditions
-@if (status() === 'loading') {
-  <app-spinner />
-} @else if (status() === 'error') {
-  <app-error [message]="errorMessage()" />
-} @else if (status() === 'success') {
-  <app-content [data]="data()" />
-} @else {
-  <app-empty-state />
-}
-```
-
-### @for - List Iteration
-
-```typescript
-// ✅ Good - Always use track
 @for (item of items(); track item.id) {
-  <app-item-card [item]="item" />
+  <app-item [item]="item" />
 }
+```
 
-// ✅ Good - Use context variables
-@for (item of items(); track item.id; let idx = $index, first = $first, last = $last) {
-  <div [class.first]="first" [class.last]="last">
-    {{ idx + 1 }}. {{ item.name }}
-  </div>
-}
-
-// ✅ Good - Handle empty state
-@for (product of products(); track product.id) {
-  <app-product-card [product]="product" />
-} @empty {
-  <div class="empty-state">
-    <p>No products available</p>
-    <button (click)="loadProducts()">Refresh</button>
-  </div>
-}
-
-// ❌ Bad - Missing track (will error)
+**FORBIDDEN:**
+```typescript
 @for (item of items()) {
-  <div>{{ item.name }}</div>
+  <app-item [item]="item" />
 }
 ```
 
-### @switch - Multi-branch Conditionals
+**VIOLATION consequences:**
+- Compilation error
+- Build failure
+- Template parsing failure
 
+## CRITICAL: Signal Integration
+
+Control flow MUST operate on signals. Non-reactive properties are FORBIDDEN in templates.
+
+**REQUIRED pattern:**
 ```typescript
-// ✅ Good - Use @switch for multiple conditions
-@switch (userRole()) {
-  @case ('admin') {
-    <app-admin-panel />
-  }
-  @case ('moderator') {
-    <app-moderator-panel />
-  }
-  @case ('user') {
-    <app-user-panel />
-  }
-  @default {
-    <app-guest-panel />
-  }
-}
-```
-
-### @defer - Lazy Loading
-
-```typescript
-// ✅ Good - Defer heavy components
-@defer (on viewport) {
-  <app-heavy-chart />
-} @placeholder {
-  <div class="chart-skeleton"></div>
-} @loading (minimum 500ms) {
-  <mat-spinner></mat-spinner>
-} @error {
-  <div>Failed to load chart</div>
-}
-
-// ✅ Good - Defer with prefetch
-@defer (on viewport; prefetch on idle) {
-  <app-article-content />
-}
-
-// ✅ Good - Multiple triggers
-@defer (on hover; on viewport) {
-  <app-tooltip-content />
-}
-```
-
-## Best Practices
-
-### 1. Always Use Signals with Control Flow
-
-```typescript
-// ✅ Good - Reactive with signals
 export class Component {
   items = signal<Item[]>([]);
   isLoading = signal(false);
-  
-  template = `
-    @if (isLoading()) {
-      <spinner />
-    } @else {
-      @for (item of items(); track item.id) {
-        <item-card [item]="item" />
-      }
-    }
-  `;
+  status = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
 }
 
-// ❌ Bad - Non-reactive properties
+// Template
+@if (isLoading()) {
+  <spinner />
+}
+
+@for (item of items(); track item.id) {
+  <item-card [item]="item" />
+}
+```
+
+**FORBIDDEN pattern:**
+```typescript
 export class Component {
   items: Item[] = [];
   isLoading = false;
 }
 ```
 
-### 2. Track By Unique Identifiers
+**VIOLATION consequences:**
+- No reactivity
+- Manual change detection required
+- Performance degradation
 
+## Track Expression Constraints
+
+**REQUIRED:** Track by unique identifier or `$index`
+
+**ALLOWED patterns:**
 ```typescript
-// ✅ Good - Track by ID
-@for (user of users(); track user.id) {
-  <user-card [user]="user" />
-}
+// Track by unique ID property
+@for (user of users(); track user.id) { }
+@for (product of products(); track product.uuid) { }
 
-// ✅ Good - Track by index for static lists
-@for (tab of tabs; track $index) {
-  <button>{{ tab }}</button>
-}
+// Track by $index for static lists ONLY
+@for (tab of tabs; track $index) { }
+```
 
-// ❌ Bad - Track by object reference
-@for (item of items(); track item) {
-  <div>{{ item.name }}</div>
+**FORBIDDEN patterns:**
+```typescript
+// Track by object reference
+@for (item of items(); track item) { }
+
+// Track by function call
+@for (item of items(); track getItemId(item)) { }
+```
+
+**VIOLATION consequences:**
+- Inefficient re-rendering
+- Full list re-creation on change
+- Memory leaks
+
+## Type Narrowing Enforcement
+
+When accessing nullable signal values multiple times → MUST use type narrowing with `as` keyword.
+
+**REQUIRED:**
+```typescript
+@if (user(); as currentUser) {
+  <div>{{ currentUser.email }}</div>
+  <div>{{ currentUser.displayName }}</div>
+  <div>{{ currentUser.avatar }}</div>
 }
 ```
 
-### 3. Use Type Narrowing
-
+**FORBIDDEN:**
 ```typescript
-// ✅ Good - Type narrowing with 'as'
-@if (user(); as currentUser) {
-  <!-- currentUser is guaranteed non-null -->
-  <div>{{ currentUser.email }}</div>
-  <div>{{ currentUser.displayName }}</div>
-}
-
-// ❌ Bad - Repeated null checks
 @if (user()) {
   <div>{{ user()!.email }}</div>
   <div>{{ user()!.displayName }}</div>
+  <div>{{ user()!.avatar }}</div>
 }
 ```
 
-### 4. Leverage @empty for Better UX
+## Empty State Enforcement
 
+`@for` loops rendering user-facing lists MUST include `@empty` block.
+
+**REQUIRED:**
 ```typescript
-// ✅ Good - Provide empty state
-@for (item of items(); track item.id) {
-  <item-card [item]="item" />
+@for (product of products(); track product.id) {
+  <app-product-card [product]="product" />
 } @empty {
-  <empty-state 
-    message="No items found" 
-    [showAction]="true"
-    (action)="createItem()" />
-}
-
-// ❌ Bad - No empty state handling
-@for (item of items(); track item.id) {
-  <item-card [item]="item" />
+  <app-empty-state message="No products available" />
 }
 ```
 
-### 5. Strategic Deferred Loading
-
+**FORBIDDEN:**
 ```typescript
-// ✅ Good - Defer below-the-fold content
+@for (product of products(); track product.id) {
+  <app-product-card [product]="product" />
+}
+```
+
+## @defer Trigger Requirements
+
+When component weight >50KB or initial render >100ms → MUST use `@defer` with appropriate trigger.
+
+**REQUIRED triggers:**
+```typescript
+// Below-the-fold content
 @defer (on viewport) {
   <app-comments-section />
 }
 
-// ✅ Good - Defer analytics
+// Non-critical initialization
 @defer (on idle) {
   <app-analytics-tracker />
 }
 
-// ✅ Good - Defer on interaction
+// User interaction
 @defer (on interaction) {
   <app-modal-content />
 }
 
-// ✅ Good - Time-delayed content
+// Timed content
 @defer (on timer(5s)) {
   <app-promotional-banner />
 }
-```
 
-## Advanced Patterns
-
-### Nested Control Flow
-
-```typescript
-@if (data(); as currentData) {
-  @for (category of currentData.categories; track category.id) {
-    <div class="category">
-      <h3>{{ category.name }}</h3>
-      @for (item of category.items; track item.id) {
-        <div class="item">{{ item.title }}</div>
-      } @empty {
-        <p>No items in this category</p>
-      }
-    </div>
-  } @empty {
-    <p>No categories available</p>
-  }
+// Prefetch optimization
+@defer (on viewport; prefetch on idle) {
+  <app-article-content />
 }
 ```
 
-### Conditional Deferred Loading
-
+**REQUIRED loading states:**
 ```typescript
-@if (shouldLoadHeavyComponent()) {
-  @defer (on viewport) {
-    <app-heavy-component [config]="config()" />
-  } @loading (minimum 1s) {
-    <skeleton-loader />
-  }
+@defer (on viewport) {
+  <app-heavy-component />
+} @placeholder {
+  <div class="skeleton"></div>
+} @loading (minimum 500ms) {
+  <mat-spinner></mat-spinner>
+} @error {
+  <div>Failed to load</div>
 }
 ```
 
-### Complex State Management
+## @switch Requirements
 
+Multiple conditional branches (>2) → MUST use `@switch`, NOT nested `@if`.
+
+**REQUIRED:**
 ```typescript
-@switch (appState()) {
-  @case ('initializing') {
-    <app-splash-screen />
-  }
+@switch (status()) {
   @case ('loading') {
-    <app-loading-indicator />
-  }
-  @case ('ready') {
-    @if (hasData()) {
-      @for (item of data(); track item.id) {
-        <app-data-item [item]="item" />
-      } @empty {
-        <app-no-data />
-      }
-    } @else {
-      <app-empty-state />
-    }
+    <app-spinner />
   }
   @case ('error') {
-    <app-error-display [error]="error()" />
+    <app-error />
+  }
+  @case ('success') {
+    <app-content />
   }
   @default {
-    <app-unknown-state />
+    <app-empty />
   }
 }
 ```
 
-## Migration from Old Syntax
-
-### *ngIf → @if
-
+**FORBIDDEN:**
 ```typescript
-// Before
-<div *ngIf="isVisible">Content</div>
-<div *ngIf="user; else loading">{{ user.name }}</div>
+@if (status() === 'loading') {
+  <app-spinner />
+} @else if (status() === 'error') {
+  <app-error />
+} @else if (status() === 'success') {
+  <app-content />
+} @else {
+  <app-empty />
+}
+```
 
-// After
-@if (isVisible()) {
+## Nesting Depth Constraints
+
+Control flow nesting depth >3 levels → MUST refactor using `computed()` signals.
+
+**REQUIRED refactoring:**
+```typescript
+// Component
+showContent = computed(() => a() && b() && c() && d());
+
+// Template
+@if (showContent()) {
   <div>Content</div>
 }
-
-@if (user(); as currentUser) {
-  <div>{{ currentUser.name }}</div>
-} @else {
-  <ng-template [ngTemplateOutlet]="loading" />
-}
 ```
 
-### *ngFor → @for
-
+**FORBIDDEN deep nesting:**
 ```typescript
-// Before
-<li *ngFor="let item of items; trackBy: trackById; let i = index">
-  {{ i + 1 }}. {{ item.name }}
-</li>
-
-// After
-@for (item of items(); track item.id; let idx = $index) {
-  <li>{{ idx + 1 }}. {{ item.name }}</li>
-}
-```
-
-### *ngSwitch → @switch
-
-```typescript
-// Before
-<div [ngSwitch]="status">
-  <div *ngSwitchCase="'success'">Success!</div>
-  <div *ngSwitchCase="'error'">Error!</div>
-  <div *ngSwitchDefault>Loading...</div>
-</div>
-
-// After
-@switch (status()) {
-  @case ('success') {
-    <div>Success!</div>
-  }
-  @case ('error') {
-    <div>Error!</div>
-  }
-  @default {
-    <div>Loading...</div>
-  }
-}
-```
-
-## Performance Considerations
-
-### 1. Minimize Re-renders
-
-```typescript
-// ✅ Good - Stable track function
-@for (item of items(); track item.id) {
-  <item-card [item]="item" />
-}
-
-// ❌ Bad - Unstable tracking
-@for (item of items(); track getItemId(item)) {
-  <item-card [item]="item" />
-}
-```
-
-### 2. Defer Heavy Components
-
-```typescript
-// ✅ Good - Lazy load heavy components
-@defer (on viewport) {
-  <app-complex-visualization [data]="chartData()" />
-} @placeholder (minimum 200ms) {
-  <div class="viz-placeholder"></div>
-}
-```
-
-### 3. Use Minimum Loading Times
-
-```typescript
-// ✅ Good - Prevent loading flicker
-@defer (on viewport) {
-  <app-content />
-} @loading (minimum 500ms) {
-  <spinner />
-}
-```
-
-## Common Pitfalls
-
-### 1. Missing Track Expression
-
-```typescript
-// ❌ Error - track is required
-@for (item of items()) {
-  <div>{{ item.name }}</div>
-}
-
-// ✅ Fixed
-@for (item of items(); track item.id) {
-  <div>{{ item.name }}</div>
-}
-```
-
-### 2. Incorrect Empty State Handling
-
-```typescript
-// ❌ Bad - Using undefined instead of empty array
-items = signal<Item[] | undefined>(undefined);
-
-// ✅ Good - Use empty array
-items = signal<Item[]>([]);
-```
-
-### 3. Over-nesting Control Flow
-
-```typescript
-// ❌ Bad - Too deeply nested
 @if (a()) {
   @if (b()) {
     @if (c()) {
@@ -420,41 +259,84 @@ items = signal<Item[]>([]);
     }
   }
 }
+```
 
-// ✅ Good - Use computed signals
-showContent = computed(() => a() && b() && c() && d());
+## Context Variable Access
 
-@if (showContent()) {
-  <div>Content</div>
+`@for` context variables MUST use `$` prefix.
+
+**REQUIRED:**
+```typescript
+@for (item of items(); track item.id; let idx = $index, first = $first, last = $last) {
+  <div [class.first]="first" [class.last]="last">
+    {{ idx + 1 }}. {{ item.name }}
+  </div>
 }
 ```
 
-## Testing
+**AVAILABLE context variables:**
+- `$index` - Current iteration index
+- `$first` - Boolean for first item
+- `$last` - Boolean for last item
+- `$even` - Boolean for even index
+- `$odd` - Boolean for odd index
+- `$count` - Total item count
 
+## Signal Type Constraints
+
+Collection signals MUST initialize as empty array, NOT undefined.
+
+**REQUIRED:**
 ```typescript
-describe('Component with Control Flow', () => {
-  it('should show content when condition is true', () => {
-    component.isVisible.set(true);
-    fixture.detectChanges();
-    
-    expect(fixture.nativeElement.querySelector('.content')).toBeTruthy();
-  });
-  
-  it('should render all items', () => {
-    component.items.set([
-      { id: 1, name: 'Item 1' },
-      { id: 2, name: 'Item 2' }
-    ]);
-    fixture.detectChanges();
-    
-    const items = fixture.nativeElement.querySelectorAll('.item');
-    expect(items.length).toBe(2);
-  });
-});
+items = signal<Item[]>([]);
+users = signal<User[]>([]);
 ```
 
-## Resources
+**FORBIDDEN:**
+```typescript
+items = signal<Item[] | undefined>(undefined);
+items = signal<Item[] | null>(null);
+```
 
-- [Angular Control Flow Guide](https://angular.dev/guide/templates/control-flow)
-- [Angular Defer Guide](https://angular.dev/guide/defer)
-- [Migration Guide](https://angular.dev/reference/migrations/control-flow)
+## @defer Performance Requirements
+
+`@loading` blocks MUST specify minimum duration ≥500ms to prevent flicker.
+
+**REQUIRED:**
+```typescript
+@defer (on viewport) {
+  <app-content />
+} @loading (minimum 500ms) {
+  <spinner />
+}
+```
+
+**FORBIDDEN:**
+```typescript
+@defer (on viewport) {
+  <app-content />
+} @loading {
+  <spinner />
+}
+```
+
+## Enforcement Summary
+
+**REQUIRED in ALL templates:**
+- `@if`, `@for`, `@switch`, `@defer` syntax ONLY
+- Signal invocation `()` for reactive values
+- `track` expression in ALL `@for` loops
+- Track by unique ID (not object reference)
+- `@empty` block for user-facing lists
+- Type narrowing with `as` for repeated access
+- `@defer` for heavy components (>50KB)
+
+**FORBIDDEN in ALL templates:**
+- `*ngIf`, `*ngFor`, `*ngSwitch` directives
+- Non-reactive properties in control flow
+- Missing `track` expression
+- Track by object reference
+- Track by function call
+- Deep nesting (>3 levels) without refactoring
+- Undefined/null for collection signal initialization
+- `@loading` without minimum duration

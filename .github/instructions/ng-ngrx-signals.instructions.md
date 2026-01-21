@@ -1,549 +1,230 @@
 ---
-description: 'NgRx Signals state management best practices for pure reactive Angular applications. Use signalStore, computed, patchState, and rxMethod only. No traditional NgRx patterns.'
+description: 'NgRx Signals state management enforcement: signalStore, patchState, computed, rxMethod requirements. Traditional NgRx FORBIDDEN.'
 applyTo: '**'
 ---
 
-# NgRx Signals State Management
+# NgRx Signals Rules
 
-## Overview
+## CRITICAL: State Management Library Constraint
 
-NgRx Signals provides pure reactive state management for Angular applications using Angular Signals. This is the **ONLY** state management approach allowed in this project.
+ONLY `@ngrx/signals` is permitted for state management.
 
-## Core Principles
+**FORBIDDEN:**
+- Traditional NgRx (actions, reducers, effects, `@ngrx/store`, `@ngrx/effects`)
+- Custom state management solutions
+- Direct RxJS state management
 
-This project uses **ONLY** `@ngrx/signals` for state management. Traditional NgRx (actions, reducers, effects) is **FORBIDDEN**.
+**VIOLATION consequences:**
+- Build failure
+- Code review rejection
+- Architectural integrity compromise
 
-### Pure Reactive Principles
+## CRITICAL: State Declaration
 
-```
-SignalsPrinciple = PureReactivity (
-  NoSideEffectInComputed | 
-  ImmutableState | 
-  UnidirectionalDataFlow | 
-  DerivedStateFromSignals
-)
-```
+ALL state MUST be declared via `signalStore()` with `withState()`.
 
-**Core Rules**
-- ✅ All state managed with `signalStore`
-- ✅ All mutations via `patchState`
-- ✅ All derived state via `computed()`
-- ✅ All async operations via `rxMethod`
-- ❌ NO traditional NgRx (actions, reducers, effects)
-- ❌ NO RxJS operators for state management
-- ❌ NO direct state mutation
-- ❌ NO side effects in computed signals
-
-## Store Structure
-
-### Basic Store Template
-
+**REQUIRED structure:**
 ```typescript
-import { signalStore, withState, withComputed, withMethods, withHooks } from '@ngrx/signals';
-import { computed, inject } from '@angular/core';
-import { patchState } from '@ngrx/signals';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, tap } from 'rxjs';
-import { tapResponse } from '@ngrx/operators';
-
-// 1. Define State Interface
-export interface FeatureState {
-  // Data
-  entities: Entity[];
-  selectedId: string | null;
-  
-  // UI State
-  loading: boolean;
-  error: string | null;
-  
-  // Filters/Sorting
-  filters: Filters;
-  sorting: Sorting;
-}
-
-// 2. Initial State
-const initialState: FeatureState = {
-  entities: [],
-  selectedId: null,
-  loading: false,
-  error: null,
-  filters: {},
-  sorting: { field: 'createdAt', order: 'desc' }
-};
-
-// 3. Create Store
 export const FeatureStore = signalStore(
-  // Provide in root for singleton, or omit for scoped
-  { providedIn: 'root' },
-  
-  // State
-  withState(initialState),
-  
-  // Computed (Derived State)
-  withComputed(({ entities, selectedId, filters, sorting }) => ({
-    // Simple computed
-    entityCount: computed(() => entities().length),
-    
-    // Computed with dependency
-    selectedEntity: computed(() => 
-      entities().find(e => e.id === selectedId()) ?? null
-    ),
-    
-    // Complex computed (filtering + sorting)
-    filteredEntities: computed(() => {
-      let result = entities();
-      
-      // Apply filters
-      const f = filters();
-      if (f.search) {
-        result = result.filter(e => 
-          e.name.toLowerCase().includes(f.search!.toLowerCase())
-        );
-      }
-      
-      // Apply sorting
-      const s = sorting();
-      result = [...result].sort((a, b) => {
-        const aVal = a[s.field];
-        const bVal = b[s.field];
-        return s.order === 'asc' 
-          ? aVal > bVal ? 1 : -1
-          : aVal < bVal ? 1 : -1;
-      });
-      
-      return result;
-    }),
-    
-    // Boolean computed
-    hasSelection: computed(() => selectedId() !== null),
-    isEmpty: computed(() => entities().length === 0)
-  })),
-  
-  // Methods (Mutations + Effects)
-  withMethods((store, service = inject(FeatureService)) => ({
-    // Simple mutation
-    selectEntity(id: string | null) {
-      patchState(store, { selectedId: id });
-    },
-    
-    // Mutation with transformation
-    setFilters(filters: Partial<Filters>) {
-      patchState(store, (state) => ({
-        filters: { ...state.filters, ...filters }
-      }));
-    },
-    
-    // Async effect with rxMethod
-    loadEntities: rxMethod<string>(
-      pipe(
-        // Set loading state
-        tap(() => patchState(store, { loading: true, error: null })),
-        
-        // Call service
-        switchMap((workspaceId) => service.getEntities(workspaceId)),
-        
-        // Handle response
-        tapResponse({
-          next: (entities) => patchState(store, { 
-            entities, 
-            loading: false 
-          }),
-          error: (error: Error) => patchState(store, { 
-            error: error.message, 
-            loading: false 
-          })
-        })
-      )
-    ),
-    
-    // Optimistic update
-    addEntity: rxMethod<Entity>(
-      pipe(
-        tap((entity) => {
-          // Optimistically add to state
-          patchState(store, (state) => ({
-            entities: [...state.entities, entity]
-          }));
-        }),
-        switchMap((entity) => service.createEntity(entity)),
-        tapResponse({
-          next: (savedEntity) => {
-            // Replace optimistic entity with saved one
-            patchState(store, (state) => ({
-              entities: state.entities.map(e => 
-                e.id === savedEntity.id ? savedEntity : e
-              )
-            }));
-          },
-          error: (error: Error) => {
-            // Rollback on error
-            patchState(store, (state) => ({
-              entities: state.entities.filter(e => e.id !== entity.id),
-              error: error.message
-            }));
-          }
-        })
-      )
-    )
-  })),
-  
-  // Lifecycle Hooks
-  withHooks({
-    onInit(store) {
-      // Auto-load on init
-      const contextStore = inject(ContextStore);
-      effect(() => {
-        const workspaceId = contextStore.currentWorkspaceId();
-        if (workspaceId) {
-          store.loadEntities(workspaceId);
-        }
-      });
-    },
-    
-    onDestroy() {
-      // Cleanup if needed
-      console.log('Store destroyed');
-    }
-  })
+  { providedIn: 'root' },  // OR omit for component-scoped
+  withState(initialState)
 );
 ```
 
-## State Management Patterns
+**REQUIRED initial state:**
+- Complete interface definition
+- ALL fields initialized
+- Use `null` for absent values (NEVER `undefined`)
+- Use `false` for boolean flags (NEVER `undefined`)
 
-### 1. State Definition
+**FORBIDDEN:**
+- State outside `signalStore()`
+- Uninitialized state fields
+- `undefined` in initial state
+- Class properties for state storage
 
+**VIOLATION consequences:**
+- Type errors at compile time
+- Runtime null reference errors
+- State inconsistency
+
+## CRITICAL: State Mutation
+
+ALL state mutations MUST use `patchState()`. Direct mutation is FORBIDDEN.
+
+**REQUIRED mutation pattern:**
 ```typescript
-// ✅ Good - Complete state interface
-interface TaskState {
-  tasks: Task[];
-  selectedId: string | null;
-  loading: boolean;
-  error: string | null;
-  filters: TaskFilters;
-}
-
-// ✅ Good - Initialize all fields
-const initialState: TaskState = {
-  tasks: [],
-  selectedId: null,
-  loading: false,
-  error: null,
-  filters: {}
-};
-
-// ❌ Bad - Undefined fields
-const initialState = {
-  tasks: [],
-  selectedId: undefined, // Use null instead
-  loading: undefined      // Use false instead
-};
+withMethods((store) => ({
+  updateField(value: Type) {
+    patchState(store, { fieldName: value });
+  }
+}))
 ```
 
-### 2. Computed Signals
-
+**FORBIDDEN mutations:**
 ```typescript
-// ✅ Good - Pure computed
-withComputed(({ tasks, selectedId, filters }) => ({
-  filteredTasks: computed(() => {
-    let result = tasks();
-    if (filters().status) {
-      result = result.filter(t => t.status === filters().status);
-    }
-    return result;
-  }),
-  
-  selectedTask: computed(() => 
-    tasks().find(t => t.id === selectedId()) ?? null
-  )
-}))
+// Direct property assignment
+store.fieldName = value;
 
-// ❌ Bad - Side effects in computed
-withComputed(() => ({
-  tasks: computed(() => {
-    this.service.logAccess(); // ❌ Side effect!
-    return this.tasks();
+// Direct array mutation
+store.items().push(newItem);
+
+// Direct object mutation
+store.config().property = value;
+```
+
+**VIOLATION consequences:**
+- Change detection failure
+- Signal reactivity broken
+- State inconsistency across consumers
+
+## CRITICAL: Derived State
+
+ALL derived state MUST use `computed()` within `withComputed()`.
+
+**REQUIRED pattern:**
+```typescript
+withComputed(({ sourceSignal1, sourceSignal2 }) => ({
+  derivedValue: computed(() => {
+    // Pure computation ONLY
+    return sourceSignal1() + sourceSignal2();
   })
 }))
 ```
 
-### 3. Methods and Mutations
+**FORBIDDEN in computed():**
+- Side effects (logging, network calls, storage operations)
+- State mutations
+- External service calls
+- DOM manipulation
+- Async operations
 
+**VIOLATION consequences:**
+- Unpredictable execution timing
+- Memory leaks
+- Infinite update loops
+
+## CRITICAL: Async Operations
+
+ALL async operations MUST use `rxMethod()` from `@ngrx/signals/rxjs-interop`.
+
+**REQUIRED pattern:**
 ```typescript
-// ✅ Good - All mutations via patchState
-withMethods((store) => ({
-  setSelection(id: string | null) {
-    patchState(store, { selectedId: id });
-  },
-  
-  updateFilters(filters: Partial<Filters>) {
-    patchState(store, (state) => ({
-      filters: { ...state.filters, ...filters }
-    }));
-  },
-  
-  clearFilters() {
-    patchState(store, { filters: {}, searchTerm: '' });
-  }
-}))
-
-// ❌ Bad - Direct mutation
-withMethods((store) => ({
-  setSelection(id: string) {
-    store.selectedId = id; // ❌ Direct mutation!
-  }
-}))
-```
-
-### 4. Async Operations with rxMethod
-
-```typescript
-// ✅ Good - rxMethod for async
-withMethods((store, service = inject(TaskService)) => ({
-  loadTasks: rxMethod<string>(
+withMethods((store, service = inject(Service)) => ({
+  asyncOperation: rxMethod<InputType>(
     pipe(
       tap(() => patchState(store, { loading: true, error: null })),
-      switchMap((workspaceId) => service.getTasks(workspaceId)),
+      switchMap((input) => service.call(input)),
       tapResponse({
-        next: (tasks) => patchState(store, { tasks, loading: false }),
-        error: (error: Error) => patchState(store, { 
-          error: error.message, 
-          loading: false 
-        })
-      })
-    )
-  ),
-  
-  deleteTask: rxMethod<string>(
-    pipe(
-      switchMap((id) => service.deleteTask(id)),
-      tapResponse({
-        next: (deletedId) => patchState(store, (state) => ({
-          tasks: state.tasks.filter(t => t.id !== deletedId),
-          selectedId: state.selectedId === deletedId ? null : state.selectedId
-        })),
-        error: (error: Error) => patchState(store, { error: error.message })
+        next: (result) => patchState(store, { data: result, loading: false }),
+        error: (error: Error) => patchState(store, { error: error.message, loading: false })
       })
     )
   )
 }))
-
-// ❌ Bad - async/await without rxMethod
-async loadTasks() {
-  const tasks = await this.service.getTasks(); // ❌
-  this.tasks = tasks; // ❌
-}
 ```
+
+**FORBIDDEN:**
+- `async/await` in store methods
+- Promise-based state updates
+- Direct Observable subscriptions
+- `subscribe()` calls in methods
+
+**VIOLATION consequences:**
+- Memory leaks from unmanaged subscriptions
+- State updates after component destruction
+- Error handling bypass
 
 ## RxJS Operator Selection
 
+When operator choice affects concurrency → IMMEDIATELY select correct operator.
+
+**REQUIRED operator selection:**
+
+| Trigger | Required Operator | Forbidden Alternative |
+|---------|-------------------|----------------------|
+| Search input, autocomplete, filters | `switchMap` | `mergeMap`, `concatMap`, `exhaustMap` |
+| Independent parallel operations | `mergeMap` | `switchMap`, `concatMap` |
+| Sequential ordered operations | `concatMap` | `switchMap`, `mergeMap` |
+| Prevent double-submission (save/submit buttons) | `exhaustMap` | `switchMap`, `mergeMap` |
+
+**VIOLATION consequences:**
+- Race conditions
+- Data corruption
+- Performance degradation
+
+## Error Handling Constraint
+
+ALL rxMethod pipelines MUST use `tapResponse` for error handling.
+
+**REQUIRED:**
 ```typescript
-// Use switchMap - Cancel previous, use for search/filters
-loadData: rxMethod<string>(
-  pipe(switchMap((query) => service.search(query)))
-)
-
-// Use mergeMap - Run concurrently, use for independent operations
-logEvent: rxMethod<Event>(
-  pipe(mergeMap((event) => analytics.log(event)))
-)
-
-// Use concatMap - Queue sequentially, use for ordered operations
-saveItems: rxMethod<Item>(
-  pipe(concatMap((item) => service.save(item)))
-)
-
-// Use exhaustMap - Ignore new while running, use for save/submit
-submit: rxMethod<Form>(
-  pipe(exhaustMap((form) => service.submit(form)))
-)
-```
-
-## Error Handling
-
-```typescript
-// ✅ Good - Always use tapResponse
 tapResponse({
-  next: (result) => {
-    patchState(store, { result, loading: false });
-  },
-  error: (error: Error) => {
-    console.error('Operation failed:', error);
-    patchState(store, { error: error.message, loading: false });
-  }
-})
-
-// ❌ Bad - catchError in rxMethod
-pipe(
-  switchMap(() => service.getData()),
-  catchError((error) => {
-    // ❌ Don't use catchError
-    return of(null);
-  })
-)
-```
-
-## Lifecycle Hooks
-
-```typescript
-withHooks({
-  onInit(store) {
-    // Auto-load data
-    store.loadData();
-    
-    // React to other stores
-    const authStore = inject(AuthStore);
-    effect(() => {
-      const user = authStore.user();
-      if (user) {
-        store.loadUserData(user.uid);
-      } else {
-        patchState(store, initialState);
-      }
-    });
-    
-    // Watch workspace changes
-    const contextStore = inject(ContextStore);
-    effect(() => {
-      const workspaceId = contextStore.currentWorkspaceId();
-      if (workspaceId) {
-        patchState(store, initialState);
-        store.loadWorkspaceData(workspaceId);
-      }
-    });
-  },
-  
-  onDestroy(store) {
-    // Cleanup (rxMethod handles subscriptions automatically)
-    console.log('Store destroyed');
-  }
+  next: (result) => patchState(store, { result, loading: false }),
+  error: (error: Error) => patchState(store, { error: error.message, loading: false })
 })
 ```
 
-## Store Types by Layer
-
-### GlobalShell Store
-
+**FORBIDDEN:**
 ```typescript
-export const GlobalShellStore = signalStore(
-  { providedIn: 'root' },
-  withState({
-    config: null as Config | null,
-    layout: 'default' as Layout,
-    theme: 'light' as Theme
-  }),
-  withComputed(({ theme }) => ({
-    isDarkTheme: computed(() => theme() === 'dark')
-  })),
-  withMethods((store) => ({
-    toggleTheme() {
-      patchState(store, (state) => ({
-        theme: state.theme === 'light' ? 'dark' : 'light'
-      }));
-    }
-  }))
-);
-```
-
-### Feature Store
-
-```typescript
-export const TasksStore = signalStore(
-  { providedIn: 'root' },
-  withState({
-    tasks: [] as Task[],
-    selectedTaskId: null as string | null,
-    filters: {} as TaskFilters,
-    loading: false,
-    error: null as string | null
-  }),
-  withComputed(({ tasks, filters }) => ({
-    filteredTasks: computed(() => {
-      let result = tasks();
-      if (filters().status) {
-        result = result.filter(t => t.status === filters().status);
-      }
-      return result;
-    })
-  })),
-  withMethods((store, taskService = inject(TaskService)) => ({
-    loadTasks: rxMethod<string>(
-      pipe(
-        tap(() => patchState(store, { loading: true })),
-        switchMap((workspaceId) => taskService.getTasks(workspaceId)),
-        tapResponse({
-          next: (tasks) => patchState(store, { tasks, loading: false }),
-          error: (error) => patchState(store, { 
-            error: error.message, 
-            loading: false 
-          })
-        })
-      )
-    )
-  }))
-);
-```
-
-## Usage in Components
-
-```typescript
-@Component({
-  selector: 'app-task-list',
-  template: `
-    @if (tasksStore.loading()) {
-      <mat-spinner />
-    } @else if (tasksStore.error()) {
-      <app-error [message]="tasksStore.error()!" />
-    } @else {
-      @for (task of tasksStore.filteredTasks(); track task.id) {
-        <app-task-item [task]="task" />
-      }
-    }
-  `
+// catchError in rxMethod
+catchError((error) => {
+  return of(null);
 })
-export class TaskListComponent {
-  tasksStore = inject(TasksStore);
-  
-  selectTask(id: string) {
-    this.tasksStore.selectTask(id);
-  }
+```
+
+**VIOLATION consequences:**
+- Unhandled errors propagate to global handler
+- State becomes inconsistent
+- Loading flags stuck in true state
+
+## State Initialization Constraints
+
+When initializing state → ALL fields MUST have explicit values.
+
+**REQUIRED:**
+```typescript
+interface State {
+  items: Item[];
+  selectedId: string | null;
+  loading: boolean;
+  error: string | null;
 }
+
+const initialState: State = {
+  items: [],           // Empty array, NOT undefined
+  selectedId: null,    // null, NOT undefined
+  loading: false,      // false, NOT undefined
+  error: null          // null, NOT undefined
+};
 ```
 
-## Testing Stores
-
+**FORBIDDEN:**
 ```typescript
-describe('TasksStore', () => {
-  let store: InstanceType<typeof TasksStore>;
-  let mockService: jasmine.SpyObj<TaskService>;
-  
-  beforeEach(() => {
-    mockService = jasmine.createSpyObj('TaskService', ['getTasks']);
-    TestBed.configureTestingModule({
-      providers: [
-        TasksStore,
-        { provide: TaskService, useValue: mockService }
-      ]
-    });
-    store = TestBed.inject(TasksStore);
-  });
-  
-  it('should load tasks', (done) => {
-    const mockTasks = [{ id: '1', name: 'Test' }];
-    mockService.getTasks.and.returnValue(of(mockTasks));
-    
-    store.loadTasks('workspace-1');
-    
-    setTimeout(() => {
-      expect(store.tasks()).toEqual(mockTasks);
-      expect(store.loading()).toBe(false);
-      done();
-    }, 100);
-  });
-});
+const initialState = {
+  items: [],
+  selectedId: undefined,  // FORBIDDEN
+  loading: undefined      // FORBIDDEN
+};
 ```
 
-## Related Documentation
+## Enforcement Summary
 
-- [NgRx Signals Architecture](../../docs/architecture/07-ngrx-signals.md)
-- [DDD Architecture](./ddd-architecture.instructions.md)
-- [Angular Instructions](./angular.instructions.md)
+**REQUIRED in ALL stores:**
+- `signalStore()` for store creation
+- `withState()` for state definition
+- `patchState()` for ALL mutations
+- `computed()` for ALL derived state
+- `rxMethod()` for ALL async operations
+- `tapResponse()` for error handling
+- Correct RxJS operator per concurrency requirement
+
+**FORBIDDEN in ALL stores:**
+- Traditional NgRx patterns (actions, reducers, effects)
+- Direct state mutation
+- Side effects in `computed()`
+- `async/await` for state updates
+- `subscribe()` calls
+- `catchError` in rxMethod pipelines
+- `undefined` in initial state
+- Wrong operator selection causing race conditions
