@@ -29,6 +29,7 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
 import { getVertexAI, provideVertexAI } from '@angular/fire/vertexai';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 
 /**
@@ -69,8 +70,8 @@ export const appConfig: ApplicationConfig = {
     // Note: This is now a stable API in Angular 20+ (no longer experimental)
     provideZonelessChangeDetection(),
 
-    // Router configuration (routes removed; using empty route set)
-    provideRouter([]),
+    // Router configuration with lazy-loaded routes
+    provideRouter(routes),
     provideAnimations(),
 
     // Firebase App Initialization
