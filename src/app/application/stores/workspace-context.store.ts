@@ -126,7 +126,7 @@ export const WorkspaceContextStore = signalStore(
           name,
           ownerId: identityId,
           ownerType: identityType,
-          moduleIds,
+          moduleIds: moduleIds ?? ['overview', 'documents', 'tasks', 'settings'],
         });
         
         // Create runtime for new workspace

@@ -79,7 +79,7 @@ import { WorkspaceRuntimeFactory } from '../../infrastructure/runtime/workspace-
           <li>✓ Implements Module interface from domain layer</li>
           <li>✓ Communicates via workspace-scoped event bus</li>
           <li>✓ No direct module-to-module dependencies</li>
-          <li>✓ Uses @ngrx/signals for zone-less state management</li>
+          <li>✓ Uses &#64;ngrx/signals for zone-less state management</li>
         </ul>
       </div>
     </div>

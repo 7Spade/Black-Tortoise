@@ -206,8 +206,9 @@ export class WorkspaceHostComponent implements OnInit {
     const currentModules = this.workspaceContext.currentWorkspaceModules();
     const activeModule = this.workspaceContext.activeModuleId();
     
-    if (currentModules.length > 0 && !activeModule) {
-      this.activateModule(currentModules[0]);
+    const firstModule = currentModules[0];
+    if (firstModule && !activeModule) {
+      this.activateModule(firstModule);
     }
   }
   

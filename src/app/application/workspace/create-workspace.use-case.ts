@@ -16,7 +16,7 @@ export interface CreateWorkspaceCommand {
   readonly name: string;
   readonly ownerId: string;
   readonly ownerType: 'user' | 'organization';
-  readonly moduleIds?: string[];
+  readonly moduleIds: string[];
 }
 
 /**
@@ -35,7 +35,7 @@ export class CreateWorkspaceUseCase {
       command.name,
       command.ownerId,
       command.ownerType,
-      command.moduleIds || ['overview', 'documents', 'tasks', 'settings']
+      command.moduleIds
     );
     
     // Create domain event

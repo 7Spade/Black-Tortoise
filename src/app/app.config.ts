@@ -1,6 +1,6 @@
 import {
   ApplicationConfig,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import {
   getAnalytics,
@@ -33,9 +33,9 @@ import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 
 /**
- * Application Configuration with Experimental Zone-less Change Detection
+ * Application Configuration with Zone-less Change Detection
  *
- * This configuration enables Angular's experimental zone-less mode, which provides:
+ * This configuration enables Angular's zone-less mode, which provides:
  *
  * Benefits:
  * - Improved performance: No Zone.js overhead for change detection
@@ -51,8 +51,8 @@ import { environment } from '../environments/environment';
  */
 export const appConfig: ApplicationConfig = {
   providers: [
-    // Zone-less change detection (experimental in Angular 20)
-    provideExperimentalZonelessChangeDetection(),
+    // Zone-less change detection (stable in Angular 20)
+    provideZonelessChangeDetection(),
 
     // Router configuration with lazy-loaded routes
     provideRouter(routes),

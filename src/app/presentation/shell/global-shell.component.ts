@@ -12,14 +12,13 @@
 
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
 import { WorkspaceContextStore } from '../../application/stores/workspace-context.store';
 import { WorkspaceHostComponent } from '../workspace-host/workspace-host.component';
 
 @Component({
   selector: 'app-global-shell',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, WorkspaceHostComponent],
+  imports: [CommonModule, WorkspaceHostComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="global-shell">
