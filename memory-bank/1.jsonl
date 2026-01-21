@@ -1,0 +1,196 @@
+{
+    "subject": "Domain Repository",
+    "fact": "Domain Repository interface must not use Observable / RxJS / framework abstraction",
+    "citations": "Domain Layer should only describe domain contracts; Repository must not expose implementation detail.",
+    "reason": "Concepts like Observable belong to Infrastructure; Domain only describes behavior and Aggregate access, and should not depend on implementation.",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Aggregate Boundary",
+    "fact": "Each Aggregate Root must have a corresponding Repository, and Repository must not cross Aggregates",
+    "citations": "DDD Principle: one Aggregate Root = one Repository",
+    "reason": "Maintain consistency boundaries and avoid unintended side effects across Aggregates.",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Repository Method Naming",
+    "fact": "Domain Repository must not have UI-oriented APIs like getAll, getUsers, watch*",
+    "citations": "Repository interface only describes business behavior, not designed for UI or Store",
+    "reason": "Prevent Domain layer from being polluted by UI / Store requirements.",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Repository Return Types",
+    "fact": "Domain Repository can only return Promise or synchronous values, Observable is forbidden",
+    "citations": "DDD: Domain should remain pure, asynchronous handling is for Application/Infrastructure",
+    "reason": "Keep Domain layer independent of async implementation details.",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Value Object Usage",
+    "fact": "Repository and Entity IDs must use Value Object, passing string/number directly is forbidden",
+    "citations": "DDD: Value Objects encapsulate identity, enhance type safety",
+    "reason": "Protect Domain type safety and unify Aggregate identity representation.",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Domain Services",
+    "fact": "Domain Services can only depend on Domain Repository interface, must not use Infrastructure / UI",
+    "citations": "DDD: Domain Service is pure domain logic",
+    "reason": "Prevent Domain Service from being polluted by implementation details.",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer Dependency",
+    "fact": "Application layer can only depend on Domain layer, must not use Infrastructure implementations directly",
+    "citations": "Layered Architecture: Application orchestrates Domain, does not know Infrastructure",
+    "reason": "Keep layer boundaries clear and prevent Application layer from leaking into Infrastructure.",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Facade / Store",
+    "fact": "Facade / Store must not expose Repository API or Observable, only provide Signals or pure state",
+    "citations": "Application Layer: provide state for Presentation only",
+    "reason": "Presentation should not operate Repository directly, preventing side effects from leaking.",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Guard",
+    "fact": "Guard can only perform pure condition checks, subscribe, navigation, or side effects are forbidden",
+    "citations": "Application Layer: Guards are pure, signals-only",
+    "reason": "Prevent Guard from becoming a control flow or data mutation point, keep it pure.",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer",
+    "fact": "Infrastructure implements Domain Repository, can use Observable / AngularFire / Firestore",
+    "citations": "DDD: Infrastructure adapts persistence to Domain contract",
+    "reason": "Infrastructure layer can depend on frameworks, but must not pollute Domain.",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Layer",
+    "fact": "Presentation layer must not import Domain Repository or Infrastructure, only use Facade / Store",
+    "citations": "DDD + Layered Architecture: Presentation only sees Application layer",
+    "reason": "Keep layer boundaries, prevent UI from leaking into business logic.",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Layer",
+    "fact": "Shared only allows base Value Objects / enums / error / interfaces, must not depend on Application / Infrastructure / Presentation",
+    "citations": "Shared layer is framework-agnostic and cross-layer stable",
+    "reason": "Maintain reusability and layer independence.",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Domain Repository Contract",
+    "fact": "Domain Repository interface can only use Promise or synchronous values, must not depend on Observable / RxJS / framework",
+    "citations": "DDD: Repository is a domain contract, infrastructure-specific behavior must not leak",
+    "reason": "Keep Domain pure, avoid timeline / UI concept pollution",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Aggregate Boundary",
+    "fact": "Each Aggregate Root must have a separate Repository, Repository must not cross Aggregates",
+    "citations": "DDD Principle: one Aggregate Root = one Repository",
+    "reason": "Maintain consistency boundaries, prevent cross-Aggregate side effects",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Repository Naming",
+    "fact": "Domain Repository must not use UI-oriented APIs like getAll / getUsers / watch*",
+    "citations": "Repository is about domain behavior, not UI convenience",
+    "reason": "Prevent Domain from being polluted by Presentation or Store",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Value Object Enforcement",
+    "fact": "Aggregate IDs and Owner must use Value Object, string/number is forbidden",
+    "citations": "DDD: Value Objects encapsulate identity",
+    "reason": "Maintain type safety and Domain semantic consistency",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Domain Service Dependency",
+    "fact": "Domain Service can only depend on Domain Repository interface, must not use Infrastructure / UI",
+    "citations": "DDD: Domain Service is pure domain logic",
+    "reason": "Keep Domain pure, not polluted by implementation details",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer Orchestration",
+    "fact": "Application layer can only depend on Domain layer, using Facade / Store / Guards to orchestrate Use Case",
+    "citations": "Layered Architecture: Application orchestrates Domain",
+    "reason": "Keep layers clear, prevent Infrastructure or UI from leaking in",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Use Case Output",
+    "fact": "Use Case must not return Observable, only use Promise or pure data structures",
+    "citations": "DDD + Clean Architecture: Domain async handling stays in infrastructure",
+    "reason": "Application layer is responsible for converting to Signals / Store / Presentation-usable state",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Facade / Store Rules",
+    "fact": "Facade / Store must not expose Repository API or Observable, only provide Signals or pure state",
+    "citations": "Application Layer provides state for Presentation only",
+    "reason": "Presentation must not depend on Repository directly, preventing side effects from leaking",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Guard Purity",
+    "fact": "Guard can only perform synchronous or signals-only checks, no side effects, navigation, or subscribe",
+    "citations": "Application Layer: Guards are pure and signals-only",
+    "reason": "Prevent Guard from becoming a control flow or data mutation point",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer Implementation",
+    "fact": "Infrastructure can use Observable / AngularFire / Firestore, but must not pollute Domain",
+    "citations": "DDD: Infrastructure adapts persistence to Domain contract",
+    "reason": "Implementation details are encapsulated in Infrastructure layer, Domain remains pure",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Layer Rules",
+    "fact": "Presentation must not import Domain Repository or Infrastructure, only use Application Facade / Store",
+    "citations": "DDD + Clean Architecture: Presentation only sees Application",
+    "reason": "Keep layer boundaries, UI must not operate Domain / Infrastructure directly",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Layer Rules",
+    "fact": "Shared can only contain Value Objects / enums / error / interfaces, must not depend on Application / Infrastructure / Presentation",
+    "citations": "Shared layer must remain framework-agnostic and cross-layer stable",
+    "reason": "Maintain reusability and layer independence",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Global Layer Enforcement",
+    "fact": "No layer may import across boundaries, Infrastructure / UI APIs must not leak into Domain",
+    "citations": "Layered Architecture / DDD",
+    "reason": "Maintain clear boundaries, Fail-Fast principle",
+    "category": "All Layers"
+  },
+  {
+    "subject": "Fail-Fast Behavior",
+    "fact": "Copilot must immediately stop implementation if Domain uses Observable, getUsers, cross-Aggregate Repository, etc.",
+    "citations": "Domain pureness must be enforced",
+    "reason": "Prevent improper dependencies from entering core Domain",
+    "category": "All Layers"
+  },
+  {
+    "subject": "Infrastructure Adapter Pattern",
+    "fact": "Any Infrastructure providing real-time data must do so via Adapter, Domain must not expose real-time streams directly",
+    "citations": "Clean Architecture / DDD: Adapter isolates Infrastructure",
+    "reason": "Keep Domain and Application independent",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Application to Presentation Mapping",
+    "fact": "Application must convert Domain Entity to Presentation Signals or ViewModel",
+    "citations": "Clean Architecture: Application mediates between Domain and Presentation",
+    "reason": "Prevent Presentation from depending directly on Domain",
+    "category": "Application Layer"
+  }

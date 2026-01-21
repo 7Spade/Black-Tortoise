@@ -1,0 +1,196 @@
+{
+    "subject": "Cross-layer Dependency Rule",
+    "fact": "All layer dependency directions must be one-way: Presentation → Application → Domain ← Infrastructure, Shared can be depended on by all layers",
+    "citations": "Clean Architecture / DDD",
+    "reason": "Prevent circular dependencies, maintain architectural stability",
+    "category": "All Layers"
+  },
+  {
+    "subject": "Layered Contract Enforcement",
+    "fact": "Each layer must have a clear contract, any direct cross-layer operation or contract violation is a violation",
+    "citations": "DDD + Clean Architecture principles",
+    "reason": "Ensure layer boundaries, aggregate consistency, and system maintainability",
+    "category": "All Layers"
+  },
+  {
+    "subject": "Signals-only Presentation",
+    "fact": "All mutable state in Presentation layer must be managed only via Signals or State Store, must not directly modify Domain Entity in Component",
+    "citations": "Angular Signals + Clean Architecture",
+    "reason": "Maintain one-way data flow, avoid side effects leakage",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Infrastructure Error Mapping",
+    "fact": "Infrastructure must map caught errors to Domain Error or Application Error before returning to Application",
+    "citations": "Clean Architecture: Infrastructure must translate technical errors",
+    "reason": "Maintain layer isolation, avoid leaking technical implementation details",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Domain Layer Structure",
+    "fact": "Domain layer must include Entities, Aggregates, Value Objects, Domain Services, Enums, Errors, Interfaces, Repositories Interface",
+    "citations": "DDD: Domain encapsulates business logic and aggregates",
+    "reason": "Ensure business logic completeness, Aggregate / Entity / VO / Service are not missing",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer Structure",
+    "fact": "Application layer must include Use Cases, Facades, Stores, Guards, Mappers, Tokens, Services",
+    "citations": "Clean Architecture: Application orchestrates domain and exposes API to Presentation",
+    "reason": "Maintain layer boundaries, Presentation can only access business via Facade or Store",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer Structure",
+    "fact": "Infrastructure layer must include Repository implementations, Adapters, DTO, Converters, Collections",
+    "citations": "DDD: Infrastructure implements domain contracts and adapts external systems",
+    "reason": "Encapsulate technical details, Domain only sees interface, not polluted",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Layer Structure",
+    "fact": "Presentation layer must include Pages, Layouts, Features, Shared Components, Shared Services, Routes",
+    "citations": "Clean Architecture: Presentation consumes Application APIs only",
+    "reason": "UI layer must not operate Domain or Infrastructure directly, maintain one-way dependency",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Layer Structure",
+    "fact": "Shared layer must include Value Objects, Enums, Error classes, Interfaces, common libraries or types",
+    "citations": "Shared Layer provides cross-layer reusable constructs",
+    "reason": "Maintain reusability and layer independence, avoid circular dependencies",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Domain Entities Required",
+    "fact": "Each Aggregate must have at least one Entity, Entity must have a unique ID and immutable Value Objects as properties",
+    "citations": "DDD: Entities are identified by their identity and encapsulate state",
+    "reason": "Ensure Aggregate state consistency and traceability",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Domain Aggregate Required",
+    "fact": "Each Aggregate Root must encapsulate all related Entities and Value Objects, and provide behavior methods",
+    "citations": "DDD: Aggregate Root enforces invariants and encapsulates internal entities",
+    "reason": "Prevent external code from directly modifying Aggregate internal state",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Repository Interface Required",
+    "fact": "Each Aggregate Root must have a corresponding Repository interface, defining CRUD or query methods, returning Entity or Promise, not Observable or DTO",
+    "citations": "DDD: Repository is domain contract",
+    "reason": "Keep Domain pure, avoid being polluted by implementation details",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Use Case Required",
+    "fact": "Each business operation must be implemented by a separate Use Case class or function, encapsulating a single function",
+    "citations": "Clean Architecture: Use Case represents one application service",
+    "reason": "Keep Application layer responsibility single and testable",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Facade Required",
+    "fact": "Each Presentation feature or page must provide Signals or State via Facade, direct Repository operation is forbidden",
+    "citations": "DDD + Angular Signals: Presentation must not mutate domain directly",
+    "reason": "Maintain one-way data flow, Presentation does not pollute Domain",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Store Required",
+    "fact": "Store must manage Signals state, and can only be updated via Facade or Use Case, must not be modified directly by Component",
+    "citations": "Angular Signals + Clean Architecture",
+    "reason": "Maintain Presentation layer state consistency and one-way data flow",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Repository Implementation",
+    "fact": "Each Repository interface must have a corresponding Infrastructure implementation for accessing DB / API / Firebase, etc.",
+    "citations": "DDD: Infrastructure implements domain contracts",
+    "reason": "Separate Domain interface from Infrastructure implementation, maintain dependency inversion principle",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "DTO & Converter Required",
+    "fact": "If Infrastructure uses external data structures, DTO and corresponding Converter must be defined, raw data must not flow directly into Domain",
+    "citations": "Clean Architecture: DTO is infrastructure concern",
+    "reason": "Isolate data formats, protect Domain layer purity",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Page Structure",
+    "fact": "Each page must have a corresponding Page Component, Route definition, and Layout configuration to ensure UI layer consistency",
+    "citations": "Angular + Clean Architecture",
+    "reason": "Maintain UI layer structure consistency, easy to maintain and test",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Value Object Standards",
+    "fact": "Shared layer Value Object must be immutable, have private internal value, provide equals method and type-safe operations",
+    "citations": "DDD: Value Object encapsulates equality and state",
+    "reason": "Maintain consistency and safety when sharing across layers",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Shared Error Standards",
+    "fact": "Shared layer error types must be used for Domain validation or cross-layer error passing, must not depend on Application or Infrastructure",
+    "citations": "DDD + Clean Architecture",
+    "reason": "Maintain layer isolation, prevent circular dependencies",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Domain Layer Minimal Files",
+    "fact": "Each Aggregate Root in Domain layer must have at least entities.ts, value-objects.ts, repository.interface.ts, aggregate.ts (if applicable), enums.ts, errors.ts",
+    "citations": "DDD: Aggregate Root encapsulates state and behavior, Value Objects are immutable",
+    "reason": "Ensure Domain layer is complete, traceable, and follows DDD principles",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer Minimal Files",
+    "fact": "Each feature in Application layer must have at least use-cases/index.ts, use-case.ts, facade.ts, store.ts, guard.ts (if needed), mapper.ts, tokens.ts",
+    "citations": "Clean Architecture: Application orchestrates domain operations and exposes APIs to Presentation",
+    "reason": "Keep Application layer logic single and testable, Presentation does not operate Domain directly",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer Minimal Files",
+    "fact": "Each Repository interface in Infrastructure layer must have corresponding repository.impl.ts, dto.ts, converter.ts, adapter.ts (if needed), collections.ts (if needed)",
+    "citations": "DDD: Infrastructure implements domain contracts and adapts external systems",
+    "reason": "Encapsulate technical details, Domain only sees interface, not polluted",
+    "category": "Infrastructure Layer"
+  },
+  {
+    "subject": "Presentation Layer Minimal Files",
+    "fact": "Each page in Presentation layer must have at least page.component.ts, page.routes.ts, layout.component.ts (if applicable), shared/components/*.ts, shared/services/*.ts",
+    "citations": "Clean Architecture + Angular: Presentation consumes Application APIs via Facades and Stores",
+    "reason": "Maintain UI layer consistency, one-way data flow, avoid breaking Domain or Application layer",
+    "category": "Presentation Layer"
+  },
+  {
+    "subject": "Shared Layer Minimal Files",
+    "fact": "Shared layer must include at least value-objects/index.ts, enums/index.ts, errors/index.ts, interfaces/index.ts",
+    "citations": "DDD: Shared Layer provides cross-layer reusable constructs",
+    "reason": "Maintain reusability and layer independence, avoid circular dependencies",
+    "category": "Shared Layer"
+  },
+  {
+    "subject": "Domain Layer Folder Structure",
+    "fact": "Domain layer folders must include: entities, aggregates, value-objects, enums, errors, interfaces, repositories",
+    "citations": "DDD: Domain organizes concepts per aggregate",
+    "reason": "Maintain clear layers, easy to maintain and understand",
+    "category": "Domain Layer"
+  },
+  {
+    "subject": "Application Layer Folder Structure",
+    "fact": "Application layer folders must include: use-cases, facades, stores, guards, mappers, tokens, services",
+    "citations": "Clean Architecture: Application orchestrates use cases",
+    "reason": "Keep Application layer organization clear, easy to test and extend",
+    "category": "Application Layer"
+  },
+  {
+    "subject": "Infrastructure Layer Folder Structure",
+    "fact": "Infrastructure layer folders must include: repositories, dto, converters, adapters, collections",
+    "citations": "DDD: Infrastructure adapts external systems to domain contract",
+    "reason": "Encapsulate external technical details, keep Domain layer pure",
+    "category": "Infrastructure Layer"
+  }
