@@ -1,78 +1,40 @@
 ---
-description: 'Domain-Driven Design patterns with clean architecture layers for Angular applications'
+description: 'DDD pattern enforcement for Angular: layer dependencies, entity/value object/repository constraints, domain purity requirements'
 applyTo: 'src/app/domain/**/*.ts, src/app/infrastructure/**/*.ts, src/app/application/**/*.ts'
 ---
 
-# Domain-Driven Design Guidelines
+# DDD Architecture Rules
 
-## Layer Dependencies
+## CRITICAL: Layer Dependency Direction
 
-```
-Presentation → Application → Domain
-Infrastructure → Domain (implements interfaces)
-```
+Dependencies MUST flow inward ONLY: `Presentation → Application → Domain`, `Infrastructure → Domain (interfaces ONLY)`
 
-## Domain Layer Rules
+**FORBIDDEN:** Domain/Application → Presentation, Domain → Application/Infrastructure, Infrastructure → Application/Presentation
 
-- ✅ Pure TypeScript (no Angular dependencies)
-- ✅ Define entities with identity and behavior
-- ✅ Use value objects for validation
-- ✅ Raise domain events for state changes
-- ✅ Define repository interfaces
-- ❌ No framework dependencies
-- ❌ No I/O operations
-- ❌ No anemic models
+**VIOLATION:** Circular dependencies, untestable code, framework coupling
 
-## Entity Pattern
+## Core Rules
 
-```typescript
-export class Workspace {
-  private _id: WorkspaceId;
-  private _name: WorkspaceName;
-  
-  static create(props: { name: string }): Workspace {
-    const workspace = new Workspace(/*...*/);
-    workspace.addDomainEvent(new WorkspaceCreatedEvent(/*...*/));
-    return workspace;
-  }
-  
-  rename(newName: string): void {
-    this._name = WorkspaceName.create(newName);
-    this.addDomainEvent(new WorkspaceRenamedEvent(/*...*/));
-  }
-}
-```
+| Pattern | REQUIRED | FORBIDDEN |
+|---------|----------|-----------|
+| **Domain Purity** | Pure TypeScript, entities, value objects, events, repository interfaces, domain services | Angular/Firebase imports, I/O, HTTP, decorators, anemic models |
+| **Entity** | Private fields, factory methods, domain events on mutations, behavior encapsulation | Public mutable fields, direct access, missing events, anemic data bags |
+| **Value Object** | Immutable (readonly), private constructor, static factory with validation, equals() | Mutable fields, public constructor, missing validation, primitive obsession |
+| **Repository** | Interface in domain, implementation in infrastructure, return domain entities, Observable types | Implementation in domain, domain importing infrastructure, raw DB objects, sync methods |
+| **Domain Event** | Emit on ALL mutations, immutable data, timestamp, naming: `{Entity}{Action}Event` | State changes without events, mutable payloads, missing timestamp |
 
-## Value Object Pattern
+## Enforcement Summary
 
-```typescript
-export class WorkspaceName {
-  private constructor(private readonly _value: string) {}
-  
-  static create(value: string): WorkspaceName {
-    if (!value || value.length > 100) {
-      throw new Error('Invalid workspace name');
-    }
-    return new WorkspaceName(value);
-  }
-  
-  get value(): string { return this._value; }
-  equals(other: WorkspaceName): boolean { return this._value === other._value; }
-}
-```
+**Domain layer MUST:**
+1. Be pure TypeScript (zero framework dependencies)
+2. Use factory methods for entity creation
+3. Emit domain events on ALL state mutations
+4. Validate via value objects
+5. Define repository interfaces ONLY
 
-## Repository Pattern
-
-```typescript
-// Domain layer - interface
-export interface IWorkspaceRepository {
-  findById(id: WorkspaceId): Observable<Workspace | null>;
-  save(workspace: Workspace): Observable<Workspace>;
-}
-
-// Infrastructure layer - implementation
-@Injectable({ providedIn: 'root' })
-export class WorkspaceFirestoreRepository implements IWorkspaceRepository {
-  // Implementation
-}
-```
+**Domain layer FORBIDDEN:**
+1. Framework imports (Angular, Firebase, RxJS decorators)
+2. I/O operations or HTTP calls
+3. Public mutable state
+4. Anemic models without behavior
+5. Repository implementations

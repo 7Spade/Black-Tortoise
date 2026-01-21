@@ -1,71 +1,39 @@
 ---
-description: 'Configuration for AI behavior when implementing Google Maps integration with markers, clustering, and geocoding'
+description: 'Google Maps integration: lazy loading, marker clustering, geocoding caching, API key security'
 applyTo: '**'
 ---
 
 # Angular Google Maps Rules
-Configuration for AI behavior when implementing Google Maps features
 
-## CRITICAL: Lazy load Google Maps script
-- YOU MUST lazy load Google Maps API script to optimize initial page load
-- Use `@angular/google-maps` module (official Angular integration)
-- Configure API key in environment:
-  ```typescript
-  // Do NOT hardcode API key in code
-  environment.googleMapsApiKey = 'YOUR_API_KEY';
-  ```
-- Load script only when map component is needed
-- > NOTE: Google Maps API has usage quotas and costs
+## CRITICAL: Core Requirements
 
-## When implementing map with many markers
-- MUST use marker clustering for performance when displaying >50 markers
-- Configure cluster options:
-  - `minimumClusterSize`: minimum markers before clustering
-  - `maxZoom`: maximum zoom level for clusters
-  - Custom cluster icons for better UX
-- Load markers in viewport only (lazy loading pattern)
-- Paginate or virtualize marker data from backend
+**Lazy Loading (REQUIRED):**
+- Use `@angular/google-maps` module only
+- Load script ONLY when map component needed
+- NEVER synchronous loading in index.html or hardcoded keys
 
-## When implementing geocoding
-- MUST cache geocoding results to avoid repeated API calls:
-  - Store address → coordinates mappings
-  - Use browser storage for persistence
-- Debounce geocoding requests (wait 300-500ms after typing)
-- MUST NOT geocode on every keystroke
-- Handle geocoding errors gracefully
-- EXAMPLE:
-  - After: User types in address search
-  - Do: Debounce input, check cache, then geocode if needed
-  - Before: Displaying results
+**API Key Security (REQUIRED):**
+- Store in environment variables: `process.env['GOOGLE_MAPS_API_KEY']`
+- Google Cloud Console restrictions: HTTP referrers, API scope, quotas
+- NEVER in version control or unrestricted
+- Regular key rotation mandatory
 
-## CRITICAL: API key security
-- MUST restrict API keys in Google Cloud Console:
-  - HTTP referrers restriction (specific domains only)
-  - API restrictions (Maps JavaScript API only)
-  - Monitor usage and set quotas
-- MUST NOT commit API keys to version control
-- Use environment variables for configuration
+**Marker Clustering (>50 markers):**
+- MUST configure: minimumClusterSize, maxZoom, custom styles
+- Load viewport markers only, paginate/virtualize data
+- FORBIDDEN: rendering >50 without clustering
 
-## When implementing responsive map sizing
-- Set explicit height for map container:
-  ```css
-  google-map {
-    height: 400px;
-    width: 100%;
-  }
-  ```
-- Use responsive breakpoints for mobile:
-  - Smaller height on mobile
-  - Different zoom levels per device
-- Handle resize events properly
+**Geocoding Caching (REQUIRED):**
+- Cache all results (address → coordinates) in browser storage
+- Check cache BEFORE API calls
+- Debounce requests 300-500ms minimum
+- FORBIDDEN: uncached requests or keystroke geocoding
 
-## General
-- Lazy load Google Maps script
-- Use `@angular/google-maps` module
-- Implement marker clustering for performance
-- Cache geocoding results
-- Debounce geocoding requests
-- Restrict and secure API keys
-- Implement responsive map sizing
-- Handle loading and error states
-- Follow accessibility guidelines (keyboard navigation, screen reader support)
+**Responsive Design:**
+- Explicit height required (auto height breaks rendering)
+- Breakpoint-based sizing for mobile
+- Device-specific zoom levels
+
+**Error Handling:**
+- Handle script load failures, geocoding errors, network timeouts
+- FORBIDDEN: silent failures, unhandled rejections
