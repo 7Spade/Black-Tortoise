@@ -1,84 +1,37 @@
 ---
-description: 'Configuration for AI behavior when implementing Angular Router with lazy loading, guards, and navigation'
+description: 'Angular Router enforcement: lazy loading, route guards, parameter handling, and navigation constraints'
 applyTo: '**'
 ---
 
 # Angular Router Rules
-Configuration for AI behavior when implementing Angular routing
 
-## CRITICAL: Lazy loading is MANDATORY for feature modules
-- YOU MUST use lazy loading for all feature modules to reduce initial bundle size
-- Configure routes with `loadChildren`:
-  ```typescript
-  {
-    path: 'feature',
-    loadChildren: () => import('./feature/feature.routes').then(m => m.FEATURE_ROUTES)
-  }
-  ```
-- MUST NOT eagerly load feature modules unless explicitly required
-- > NOTE: Eager loading increases initial bundle size and slows app startup
+## CRITICAL: Core Requirements
 
-## When implementing route guards
-- Use functional guards with `inject()`:
-  ```typescript
-  export const authGuard = () => {
-    const authService = inject(AuthService);
-    const router = inject(Router);
-    
-    if (authService.isAuthenticated()) {
-      return true;
-    }
-    
-    return router.createUrlTree(['/login']);
-  };
-  ```
-- Apply guards to routes:
-  - `canActivate`: control route access
-  - `canActivateChild`: control child route access
-  - `canDeactivate`: prevent navigation away (unsaved changes)
-  - `canMatch`: conditionally load routes
-- MUST NOT use class-based guards (deprecated pattern)
+| Rule | Required | Forbidden |
+|------|----------|-----------|
+| **Lazy Loading** | `loadChildren: () => import(...)` | Eager module imports, direct component imports |
+| **Guards** | Functional with `inject()`, return `boolean\|UrlTree` | Class-based guards, missing navigation redirects |
+| **Parameters** | `toSignal(route.params, {initialValue})` | Manual subscriptions, missing cleanup |
+| **Error Routes** | `{path: '**', component: NotFoundComponent}` at end | Missing wildcard, unhandled errors |
+| **Redirects** | `pathMatch: 'full'` for empty paths | Ambiguous patterns, missing pathMatch |
+| **Ordering** | Specific → general → wildcard | Wildcard before specific routes |
 
-## When accessing route parameters
-- Use `toSignal()` to convert route params to signals:
-  ```typescript
-  userId = toSignal(
-    this.route.params.pipe(map(params => params['id'])),
-    { initialValue: null }
-  );
-  ```
-- Access query params similarly:
-  ```typescript
-  filter = toSignal(
-    this.route.queryParams.pipe(map(params => params['filter'])),
-    { initialValue: '' }
-  );
-  ```
-- MUST clean up subscriptions if not using `toSignal()` or `AsyncPipe`
+## Guard Types
 
-## CRITICAL: Handle route errors and redirects
-- Configure fallback route for 404:
-  ```typescript
-  { path: '**', component: NotFoundComponent }
-  ```
-- Handle route errors with error handlers
-- Provide user-friendly error pages
-- Log navigation errors for debugging
+- `canActivate` - Route access control
+- `canActivateChild` - Child route protection  
+- `canDeactivate` - Prevent navigation with unsaved changes
+- `canMatch` - Conditional route loading
 
-## When configuring routes
-- Always provide default redirect:
-  ```typescript
-  { path: '', redirectTo: '/home', pathMatch: 'full' }
-  ```
-- Use `pathMatch: 'full'` for empty path redirects
-- Order routes from specific to general (wildcard last)
-- Group related routes with parent-child relationships
+## Navigation Methods
 
-## General
-- Use lazy loading for all feature modules
-- Implement guards for authentication and authorization
-- Use functional guards with `inject()`
-- Convert route params to signals with `toSignal()`
-- Handle 404 with wildcard route
-- Test navigation flows and guard logic
-- Document complex routing configurations
+- Programmatic: `router.navigate(['/path'])`
+- Template: `[routerLink]="['/path']"`
+- Guard redirect: `router.createUrlTree(['/login'])`
+
+## Testing Checklist
+
+- [ ] Navigation flows tested
+- [ ] Guard behavior (allow/deny) covered
+- [ ] Parameter handling validated
+- [ ] Error scenarios tested

@@ -1,104 +1,47 @@
 ---
-description: 'Configuration for AI behavior when implementing Angular Reactive Forms with validation and state integration'
+description: 'Angular Forms: Reactive Forms, validation, NgRx Signals integration'
 applyTo: '**'
 ---
 
 # Angular Forms Rules
-Configuration for AI behavior when implementing Angular Reactive Forms
 
-## CRITICAL: Use Reactive Forms for complex scenarios
-- YOU MUST use Reactive Forms (`FormControl`, `FormGroup`, `FormArray`) for complex forms
-- MUST NOT use template-driven forms for multi-field forms with validation
-- Configure forms with proper typing:
-  ```typescript
-  userForm = new FormGroup({
-    name: new FormControl<string>('', [Validators.required]),
-    email: new FormControl<string>('', [Validators.required, Validators.email]),
-    age: new FormControl<number | null>(null, [Validators.min(18)])
-  });
-  ```
-- > NOTE: Reactive Forms provide better type safety, testability, and state management
+## CRITICAL: Reactive Forms Requirement
 
-## When implementing form validation
-- MUST add validators to all input controls:
-  - Built-in: `Validators.required`, `Validators.email`, `Validators.min`, `Validators.max`, `Validators.pattern`
-  - Custom validators for business rules
-- Show validation errors only after field is touched:
-  ```html
-  @if (form.controls.email.invalid && form.controls.email.touched) {
-    <mat-error>Invalid email</mat-error>
-  }
-  ```
-- Disable submit button when form is invalid:
-  ```html
-  <button [disabled]="form.invalid" (click)="submit()">Submit</button>
-  ```
+Multi-field forms with validation MUST use Reactive Forms with typed `FormControl<T>`. Template-driven forms FORBIDDEN.
 
-## When creating custom validators
-- Create reusable validator functions:
-  ```typescript
-  function minAgeValidator(minAge: number): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const age = calculateAge(control.value);
-      return age >= minAge ? null : { 
-        minAge: { required: minAge, actual: age } 
-      };
-    };
-  }
-  ```
-- Return `null` for valid state
-- Return `ValidationErrors` object for invalid state
-- Use descriptive error keys
+## Validation Rules
 
-## CRITICAL: Integration with NgRx Signals
-- When managing form state in stores:
-  - Store form instance in state
-  - Track `submitting`, `error` flags
-  - Use `rxMethod` for submission
-- Reset form after successful submission
-- Handle errors and update error state
-- EXAMPLE:
-  ```typescript
-  export const FormStore = signalStore(
-    withState({ 
-      form: new FormGroup({/* config */}), 
-      submitting: false,
-      error: null as string | null
-    }),
-    withMethods((store, service = inject(Service)) => ({
-      submit: rxMethod<void>(
-        pipe(
-          tap(() => patchState(store, { submitting: true, error: null })),
-          switchMap(() => service.save(store.form().value)),
-          tapResponse({
-            next: () => {
-              store.form().reset();
-              patchState(store, { submitting: false });
-            },
-            error: (error: Error) => patchState(store, { 
-              error: error.message, 
-              submitting: false 
-            })
-          })
-        )
-      )
-    }))
-  );
-  ```
+**REQUIRED:**
+- Validators on ALL inputs (built-in: `required`, `email`, `min`, `max`, `pattern`)
+- Show errors ONLY after field touched using `@if (control.invalid && control.touched)`
+- Specific error messages per validation rule
+- Disable submit when form invalid
 
-## When handling form submission
-- Validate form before submission
-- Set loading/submitting state
-- Handle success: reset form, show message
-- Handle errors: display error, keep form data
-- MUST NOT submit invalid forms
+**Custom validators:**
+- Return `null` for valid, `ValidationErrors` object for invalid
+- No side effects or state modification
 
-## General
-- Use Reactive Forms for complex forms with validation
-- Implement validators for all user inputs
-- Show validation errors after field is touched
-- Disable submit button when form is invalid
-- Integrate with NgRx Signals for state management
-- Reset forms after successful submission
-- Provide clear error messages to users
-- Test form validation logic thoroughly
+## CRITICAL: NgRx Signals Integration
+
+**REQUIRED store pattern:**
+- Form instance in `signalStore` state
+- `submitting` and `error` flags
+- `rxMethod` for async submission with `tapResponse`
+- Form reset on success via `patchState`
+- Error state update on failure
+
+**FORBIDDEN:**
+- Form state outside NgRx Signals
+- Synchronous submission
+- Missing error handling
+- Form persistence after success
+
+## Submit Button State
+
+Button MUST be `[disabled]="form.invalid || submitting()"` with visual feedback during submission.
+
+**REQUIRED in ALL forms:**
+- Reactive Forms with typed controls
+- Validators + error display after touched
+- NgRx Signals integration with rxMethod
+- Submit button disabled when invalid/submitting

@@ -1,95 +1,45 @@
 ---
-description: 'Configuration for AI behavior when implementing Firebase Data Connect with GraphQL schemas and type-safe SDKs'
+description: 'Firebase Data Connect enforcement: schema definition, SDK generation, authorization rules, and NgRx Signals integration constraints'
 applyTo: '**'
 ---
 
 # Firebase Data Connect Rules
-Configuration for AI behavior when implementing Firebase Data Connect
 
-## CRITICAL: Generate SDKs after schema changes
-- YOU MUST regenerate TypeScript SDKs after ANY GraphQL schema changes:
-  - Run: `firebase dataconnect:sdk:generate`
-  - Generated files location: `src/dataconnect-generated/`
-  - MUST NOT manually edit generated SDK files
-- Verify SDK imports after generation
-- Update store integrations if SDK signatures change
-- > NOTE: Outdated SDKs cause type mismatches and runtime errors
+## CRITICAL: Schema Modification Workflow
 
-## When defining GraphQL schemas
-- Create `.gql` files in `dataconnect/` directory
-- Define tables with proper type annotations:
-  ```graphql
-  type Entity @table {
-    id: UUID! @default(expr: "uuidV4()")
-    name: String! @unique
-    createdAt: Timestamp! @default(expr: "request.time")
-  }
-  ```
-- Use directives:
-  - `@table`: marks type as database table
-  - `@unique`: ensures field uniqueness
-  - `@default`: sets default value with expression
-  - `@auth`: defines authorization rules
-- Define relationships between entities
+After ANY GraphQL schema change → IMMEDIATELY:
+1. `firebase dataconnect:sdk:generate` → verify `src/dataconnect-generated/`
+2. Update NgRx Signals stores if SDK signatures changed
+3. NEVER manually edit generated files or commit outdated SDKs
 
-## CRITICAL: Implement authentication and authorization
-- MUST use `@auth` directive for security:
-  ```graphql
-  type PrivateData @table @auth(
-    rules: [
-      { allow: OWNER, ownerField: "userId" },
-      { allow: ADMIN }
-    ]
-  ) {
-    userId: UUID!
-    content: String!
-  }
-  ```
-- Define who can read, write, or delete data
-- Implement owner-based access control
-- Test authorization rules thoroughly
+**Violation:** Type mismatches, compilation errors, data access failures
 
-## When integrating with NgRx Signals
-- Use generated SDK in stores via dependency injection
-- Wrap Data Connect calls in `rxMethod`:
-  ```typescript
-  withMethods((store, dataConnect = inject(DataConnectService)) => ({
-    loadData: rxMethod<string>(
-      pipe(
-        switchMap((id) => dataConnect.getData(id)),
-        tapResponse({
-          next: (data) => patchState(store, { data }),
-          error: (error) => patchState(store, { error: error.message })
-        })
-      )
-    )
-  }))
-  ```
-- Handle loading and error states
-- Cache query results when appropriate
+## Schema Requirements
 
-## When designing queries and mutations
-- Request only needed fields (avoid over-fetching):
-  ```graphql
-  query GetUser($id: UUID!) {
-    user(id: $id) {
-      name
-      email
-      # Don't fetch unnecessary fields
-    }
-  }
-  ```
-- Use query variables for parameterized queries
-- Implement proper input validation
-- Handle errors gracefully
+| Directive | Usage | Violation |
+|-----------|-------|-----------|
+| `@table` | ALL database types | Schema rejected |
+| `@auth` | ALL types (no public access) | Security breach |
+| `@default` | `id: UUID! @default(expr: "uuidV4()")`, `createdAt: Timestamp! @default(expr: "request.time")` | Missing audit trail |
+| `@unique` | Natural keys | Data integrity failure |
 
-## General
-- Define schemas in `.gql` files
-- Regenerate SDKs after schema changes
-- Use `@auth` directives for security
-- Request only needed fields in queries
-- Integrate with NgRx Signals stores
-- Implement proper error handling
-- Follow repository pattern for data access
-- Test queries and mutations thoroughly
-- Validate inputs before sending to backend
+**Authorization pattern:**
+- `@auth(rules: [{ allow: OWNER, ownerField: "userId" }, { allow: ADMIN }])`
+- MUST specify `ownerField` for user data + test coverage
+- FORBIDDEN: Public access, missing owner field, untested rules
+
+## NgRx Signals Integration
+
+ALL SDK calls MUST use:
+- `inject(DataConnectService)` for DI
+- `rxMethod` wrapper for async operations
+- `tapResponse` for error handling
+- `patchState` for state updates
+
+FORBIDDEN: Direct SDK calls, synchronous usage, missing error handling
+
+## Query Design
+
+- Select ONLY needed fields (no over-fetching)
+- Use parameterized variables (no hardcoded values)
+- Validate inputs before execution
