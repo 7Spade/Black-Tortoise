@@ -1,84 +1,153 @@
 ---
-description: 'Configuration for AI behavior when implementing Angular Router with lazy loading, guards, and navigation'
+description: 'Angular Router enforcement: lazy loading, route guards, parameter handling, and navigation constraints'
 applyTo: '**'
 ---
 
 # Angular Router Rules
-Configuration for AI behavior when implementing Angular routing
 
-## CRITICAL: Lazy loading is MANDATORY for feature modules
-- YOU MUST use lazy loading for all feature modules to reduce initial bundle size
-- Configure routes with `loadChildren`:
-  ```typescript
-  {
-    path: 'feature',
-    loadChildren: () => import('./feature/feature.routes').then(m => m.FEATURE_ROUTES)
+## CRITICAL: Lazy Loading
+
+ALL feature modules MUST use lazy loading. Eager loading is FORBIDDEN.
+
+**REQUIRED pattern:**
+```typescript
+{
+  path: 'feature',
+  loadChildren: () => import('./feature/feature.routes')
+    .then(m => m.FEATURE_ROUTES)
+}
+```
+
+**FORBIDDEN:**
+- Eager module imports in routing
+- Direct component imports in root routes
+- Feature modules without lazy loading
+
+**VIOLATION consequences:**
+- Increased initial bundle size
+- Slower application startup
+- Poor performance metrics
+
+## Route Guard Implementation
+
+**REQUIRED functional guard pattern:**
+```typescript
+export const authGuard = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  
+  if (authService.isAuthenticated()) {
+    return true;
   }
-  ```
-- MUST NOT eagerly load feature modules unless explicitly required
-- > NOTE: Eager loading increases initial bundle size and slows app startup
+  return router.createUrlTree(['/login']);
+};
+```
 
-## When implementing route guards
-- Use functional guards with `inject()`:
-  ```typescript
-  export const authGuard = () => {
-    const authService = inject(AuthService);
-    const router = inject(Router);
-    
-    if (authService.isAuthenticated()) {
-      return true;
-    }
-    
-    return router.createUrlTree(['/login']);
-  };
-  ```
-- Apply guards to routes:
-  - `canActivate`: control route access
-  - `canActivateChild`: control child route access
-  - `canDeactivate`: prevent navigation away (unsaved changes)
-  - `canMatch`: conditionally load routes
-- MUST NOT use class-based guards (deprecated pattern)
+**REQUIRED:**
+- Functional guards with `inject()`
+- Return boolean or `UrlTree`
+- Navigation redirect on failure
 
-## When accessing route parameters
-- Use `toSignal()` to convert route params to signals:
-  ```typescript
-  userId = toSignal(
-    this.route.params.pipe(map(params => params['id'])),
-    { initialValue: null }
-  );
-  ```
-- Access query params similarly:
-  ```typescript
-  filter = toSignal(
-    this.route.queryParams.pipe(map(params => params['filter'])),
-    { initialValue: '' }
-  );
-  ```
-- MUST clean up subscriptions if not using `toSignal()` or `AsyncPipe`
+**FORBIDDEN:**
+- Class-based guards (deprecated)
+- Guards without navigation handling
+- Synchronous guards for async operations
 
-## CRITICAL: Handle route errors and redirects
-- Configure fallback route for 404:
-  ```typescript
-  { path: '**', component: NotFoundComponent }
-  ```
-- Handle route errors with error handlers
-- Provide user-friendly error pages
-- Log navigation errors for debugging
+**Guard types enforcement:**
+- `canActivate` → route access control
+- `canActivateChild` → child route protection
+- `canDeactivate` → prevent navigation with unsaved changes
+- `canMatch` → conditional route loading
 
-## When configuring routes
-- Always provide default redirect:
-  ```typescript
-  { path: '', redirectTo: '/home', pathMatch: 'full' }
-  ```
-- Use `pathMatch: 'full'` for empty path redirects
-- Order routes from specific to general (wildcard last)
-- Group related routes with parent-child relationships
+## Route Parameter Handling
 
-## General
-- Use lazy loading for all feature modules
-- Implement guards for authentication and authorization
-- Use functional guards with `inject()`
-- Convert route params to signals with `toSignal()`
-- Handle 404 with wildcard route
-- Test navigation flows and guard logic
-- Document complex routing configurations
+**REQUIRED Signal integration:**
+```typescript
+userId = toSignal(
+  this.route.params.pipe(map(params => params['id'])),
+  { initialValue: null }
+);
+
+filter = toSignal(
+  this.route.queryParams.pipe(map(params => params['filter'])),
+  { initialValue: '' }
+);
+```
+
+**REQUIRED:**
+- `toSignal()` for reactive parameter access
+- `initialValue` for synchronous rendering
+- Observable cleanup via signal conversion
+
+**FORBIDDEN:**
+- Manual subscriptions to route params
+- Missing cleanup for route observables
+- Direct param access without reactivity
+
+## CRITICAL: Error Routes
+
+**REQUIRED fallback configuration:**
+```typescript
+{ path: '**', component: NotFoundComponent }
+```
+
+**REQUIRED:**
+- 404 route at end of configuration
+- Error handling for navigation failures
+- User-friendly error pages
+
+**FORBIDDEN:**
+- Missing wildcard route
+- Unhandled navigation errors
+- Silent navigation failures
+
+## Route Configuration Constraints
+
+**REQUIRED:**
+- Default redirect: `{ path: '', redirectTo: '/home', pathMatch: 'full' }`
+- `pathMatch: 'full'` for empty path redirects
+- Route ordering: specific → general → wildcard
+
+**FORBIDDEN:**
+- Ambiguous route patterns
+- Missing `pathMatch` for redirects
+- Wildcard route before specific routes
+
+## Navigation Constraints
+
+**REQUIRED navigation methods:**
+- Programmatic: `router.navigate(['/path'])`
+- Template: `[routerLink]="['/path']"`
+- Guard-based: `router.createUrlTree(['/path'])`
+
+**FORBIDDEN:**
+- Direct location manipulation
+- Hard-coded URL strings
+- Navigation without route validation
+
+## Testing Requirements
+
+**REQUIRED test coverage:**
+- Navigation flows
+- Guard behavior (allow/deny)
+- Parameter handling
+- Error scenarios
+
+**FORBIDDEN:**
+- Untested route guards
+- Missing navigation tests
+- Undocumented routing logic
+
+## Enforcement Summary
+
+**REQUIRED in ALL routes:**
+- Lazy loading via `loadChildren()`
+- Functional guards with proper return types
+- Signal-based parameter handling
+- Wildcard error route
+
+**FORBIDDEN in ALL routes:**
+- Eager feature module loading
+- Class-based guards
+- Manual route param subscriptions
+- Missing error handling

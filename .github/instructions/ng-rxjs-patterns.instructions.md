@@ -1,79 +1,122 @@
 ---
-description: 'Configuration for AI behavior when implementing RxJS reactive patterns with proper subscription management'
+description: 'RxJS reactive pattern enforcement: subscription lifecycle, operator selection, error handling, and Signal interop constraints'
 applyTo: '**'
 ---
 
 # RxJS Patterns Rules
-Configuration for AI behavior when implementing RxJS reactive programming patterns
 
-## CRITICAL: Subscription management is MANDATORY
-- YOU MUST ALWAYS ensure observables are properly unsubscribed to prevent memory leaks
-- When using observables in components:
-  - BEST: Use `toSignal()` for automatic cleanup
-  - GOOD: Use `takeUntil(destroy$)` pattern with proper cleanup in `ngOnDestroy()`
-  - ACCEPTABLE: Use `AsyncPipe` in templates (auto-unsubscribes)
-- MUST NOT manually subscribe without cleanup strategy
-- > NOTE: Memory leaks from unclosed subscriptions are critical errors
+## CRITICAL: Subscription Lifecycle
 
-## When choosing RxJS flattening operators
-- Use `switchMap` when:
-  - You need to cancel previous requests (search, autocomplete)
-  - Only the latest result matters
-- Use `mergeMap` when:
-  - Operations can run concurrently
-  - All results matter (independent operations)
-- Use `concatMap` when:
-  - Operations must run in sequence
-  - Order is important (queued operations)
-- Use `exhaustMap` when:
-  - You want to ignore new requests while one is running
-  - Example: save/submit buttons (prevent double-submission)
-- > NOTE: Choosing wrong operator leads to race conditions or performance issues
+YOU MUST ensure observable cleanup in ALL cases. Memory leaks from unclosed subscriptions are CRITICAL ERRORS.
 
-## CRITICAL: Error handling is MANDATORY
-- MUST handle errors in all observable streams
-- Use `catchError` operator to handle errors gracefully
-- Provide fallback values or retry logic:
-  - `retry(n)`: retry failed operations n times
-  - `catchError(() => of(fallbackValue))`: provide default value
-- Log errors for debugging
-- MUST NOT let errors propagate unhandled to break stream
+**REQUIRED cleanup mechanisms (in priority order):**
+1. `toSignal()` - automatic cleanup, REQUIRED for component observables
+2. `takeUntil(destroy$)` with `ngOnDestroy()` - REQUIRED when manual subscription is unavoidable
+3. `AsyncPipe` - REQUIRED for template-bound observables when signals not applicable
 
-## When converting between Observables and Signals
-- Observable to Signal:
-  - Use `toSignal(observable$, { initialValue: defaultValue })`
-  - Provides automatic subscription cleanup
-- Signal to Observable:
-  - Use `toObservable(signal)`
-  - Creates observable from signal changes
-- EXAMPLE:
-  - After: Creating a data service that returns Observable
-  - Do: Convert to Signal with `toSignal()` in component
-  - Before: Using in template or computed
+**FORBIDDEN:**
+- Manual `.subscribe()` without cleanup strategy
+- Subscriptions in constructors without lifecycle hooks
+- Nested subscriptions without proper cleanup chain
 
-## When implementing subscription cleanup pattern
-- Create `destroy$` subject in component:
-  ```typescript
-  private destroy$ = new Subject<void>();
-  ```
-- Use `takeUntil(this.destroy$)` before subscribing
-- In `ngOnDestroy()`:
-  ```typescript
+## Operator Selection Constraints
+
+**IMMEDIATELY select operator based on concurrency requirement:**
+
+| Trigger | Required Operator | Forbidden Alternative |
+|---------|-------------------|----------------------|
+| Search input, autocomplete, filters | `switchMap` | `mergeMap`, `concatMap`, `exhaustMap` |
+| Independent parallel operations | `mergeMap` | `switchMap`, `concatMap` |
+| Sequential ordered operations | `concatMap` | `switchMap`, `mergeMap` |
+| Prevent double-submission (save/submit buttons) | `exhaustMap` | `switchMap`, `mergeMap` |
+
+**VIOLATION consequences:**
+- Wrong operator → race conditions, data corruption, or performance degradation
+
+## CRITICAL: Error Handling
+
+ALL observable streams MUST handle errors. Unhandled errors break reactive chains.
+
+**REQUIRED error handling:**
+```typescript
+pipe(
+  catchError((error) => {
+    // Log for debugging
+    console.error('Operation failed:', error);
+    // Provide fallback or retry
+    return of(fallbackValue);
+    // OR retry(3)
+  })
+)
+```
+
+**FORBIDDEN:**
+- Observable streams without `catchError`
+- Error propagation that breaks parent streams
+- Silent error swallowing without logging
+
+## Observable-Signal Interop Rules
+
+**Observable → Signal:**
+- MUST use `toSignal(observable$, { initialValue: defaultValue })`
+- Automatic subscription cleanup provided
+- REQUIRED for component integration
+
+**Signal → Observable:**
+- MUST use `toObservable(signal)`
+- Creates observable from signal value changes
+
+**FORBIDDEN:**
+- Manual subscription bridging between observables and signals
+- Missing `initialValue` in `toSignal()` for synchronous rendering
+
+## Subscription Cleanup Pattern (Manual)
+
+ONLY IF `toSignal()` is not applicable:
+
+```typescript
+private destroy$ = new Subject<void>();
+
+ngOnInit() {
+  this.data$.pipe(takeUntil(this.destroy$)).subscribe(/*...*/);
+}
+
+ngOnDestroy() {
   this.destroy$.next();
   this.destroy$.complete();
-  ```
-- > NOTE: This pattern ensures all subscriptions are cleaned up
+}
+```
 
-## When sharing expensive observables
-- Use `shareReplay()` for expensive operations that should be cached
-- Use `share()` for multicasting without replay
-- Helps prevent duplicate HTTP requests or computations
+**REQUIRED:**
+- `destroy$` subject declaration
+- `takeUntil(this.destroy$)` before ALL subscriptions
+- `next()` and `complete()` in `ngOnDestroy()`
 
-## General
-- Prefer `toSignal()` over manual subscription in components
-- Use `AsyncPipe` in templates when signals are not suitable
-- Choose flattening operators based on cancellation needs
-- Always handle errors with `catchError`
-- Use `takeUntil` pattern for manual subscriptions
-- Test observable streams for memory leaks
-- Document complex observable chains with comments
+**FORBIDDEN:**
+- Subscriptions without `takeUntil`
+- Missing `ngOnDestroy` hook
+- Incomplete cleanup (missing `next()` or `complete()`)
+
+## Multicast Operators
+
+**When operation is expensive:**
+- MUST use `shareReplay()` for cached results across multiple subscribers
+- MUST use `share()` for multicasting without replay buffer
+
+**FORBIDDEN:**
+- Duplicate HTTP requests due to missing multicast operators
+- Expensive computations re-executed per subscriber
+
+## Enforcement Summary
+
+**REQUIRED in ALL code:**
+- Observable cleanup via `toSignal()`, `takeUntil()`, or `AsyncPipe`
+- Correct flattening operator per concurrency requirement
+- `catchError` in ALL observable chains
+- Multicast operators for expensive operations
+
+**FORBIDDEN in ALL code:**
+- Manual subscriptions without cleanup
+- Missing error handling
+- Wrong operator causing race conditions
+- Observable re-execution without sharing

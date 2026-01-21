@@ -1,95 +1,145 @@
 ---
-description: 'Configuration for AI behavior when implementing Firebase Data Connect with GraphQL schemas and type-safe SDKs'
+description: 'Firebase Data Connect enforcement: schema definition, SDK generation, authorization rules, and NgRx Signals integration constraints'
 applyTo: '**'
 ---
 
 # Firebase Data Connect Rules
-Configuration for AI behavior when implementing Firebase Data Connect
 
-## CRITICAL: Generate SDKs after schema changes
-- YOU MUST regenerate TypeScript SDKs after ANY GraphQL schema changes:
-  - Run: `firebase dataconnect:sdk:generate`
-  - Generated files location: `src/dataconnect-generated/`
-  - MUST NOT manually edit generated SDK files
-- Verify SDK imports after generation
-- Update store integrations if SDK signatures change
-- > NOTE: Outdated SDKs cause type mismatches and runtime errors
+## CRITICAL: SDK Generation
 
-## When defining GraphQL schemas
-- Create `.gql` files in `dataconnect/` directory
-- Define tables with proper type annotations:
-  ```graphql
-  type Entity @table {
-    id: UUID! @default(expr: "uuidV4()")
-    name: String! @unique
-    createdAt: Timestamp! @default(expr: "request.time")
-  }
-  ```
-- Use directives:
-  - `@table`: marks type as database table
-  - `@unique`: ensures field uniqueness
-  - `@default`: sets default value with expression
-  - `@auth`: defines authorization rules
-- Define relationships between entities
+After ANY GraphQL schema modification → IMMEDIATELY regenerate TypeScript SDKs.
 
-## CRITICAL: Implement authentication and authorization
-- MUST use `@auth` directive for security:
-  ```graphql
-  type PrivateData @table @auth(
-    rules: [
-      { allow: OWNER, ownerField: "userId" },
-      { allow: ADMIN }
-    ]
-  ) {
-    userId: UUID!
-    content: String!
-  }
-  ```
-- Define who can read, write, or delete data
-- Implement owner-based access control
-- Test authorization rules thoroughly
+**REQUIRED:**
+1. Execute: `firebase dataconnect:sdk:generate`
+2. Verify SDK output location: `src/dataconnect-generated/`
+3. Update NgRx Signals store integrations if SDK signatures changed
 
-## When integrating with NgRx Signals
-- Use generated SDK in stores via dependency injection
-- Wrap Data Connect calls in `rxMethod`:
-  ```typescript
-  withMethods((store, dataConnect = inject(DataConnectService)) => ({
-    loadData: rxMethod<string>(
-      pipe(
-        switchMap((id) => dataConnect.getData(id)),
-        tapResponse({
-          next: (data) => patchState(store, { data }),
-          error: (error) => patchState(store, { error: error.message })
-        })
-      )
+**FORBIDDEN:**
+- Manual editing of generated SDK files
+- Schema changes without SDK regeneration
+- Committing code with outdated SDKs
+
+**VIOLATION consequences:**
+- Type mismatches at runtime
+- Compilation errors
+- Data access failures
+
+## Schema Definition Constraints
+
+**REQUIRED structure for all tables:**
+```graphql
+type Entity @table {
+  id: UUID! @default(expr: "uuidV4()")
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+```
+
+**Directive enforcement:**
+- `@table` - REQUIRED for all database types
+- `@unique` - REQUIRED for natural keys
+- `@default` - REQUIRED for id and timestamps
+- `@auth` - REQUIRED for ALL types (no public access by default)
+
+**FORBIDDEN:**
+- Tables without `@auth` directive
+- Missing id or timestamp fields
+- Undefined relationships between entities
+
+## CRITICAL: Authorization Rules
+
+ALL types MUST have `@auth` directive. No exceptions.
+
+**REQUIRED authorization pattern:**
+```graphql
+type Entity @table @auth(
+  rules: [
+    { allow: OWNER, ownerField: "userId" },
+    { allow: ADMIN }
+  ]
+) {
+  userId: UUID!
+  # other fields
+}
+```
+
+**REQUIRED:**
+- Owner-based access control via `ownerField`
+- Explicit read/write/delete permissions
+- Test coverage for authorization rules
+
+**FORBIDDEN:**
+- Public access without explicit authorization
+- Missing `ownerField` for user data
+- Untested authorization rules
+
+## NgRx Signals Integration
+
+**REQUIRED pattern:**
+```typescript
+withMethods((store, sdk = inject(DataConnectService)) => ({
+  loadData: rxMethod<string>(
+    pipe(
+      switchMap((id) => sdk.getData(id)),
+      tapResponse({
+        next: (data) => patchState(store, { data, loading: false }),
+        error: (error) => patchState(store, { error: error.message, loading: false })
+      })
     )
-  }))
-  ```
-- Handle loading and error states
-- Cache query results when appropriate
+  )
+}))
+```
 
-## When designing queries and mutations
-- Request only needed fields (avoid over-fetching):
-  ```graphql
-  query GetUser($id: UUID!) {
-    user(id: $id) {
-      name
-      email
-      # Don't fetch unnecessary fields
-    }
+**REQUIRED:**
+- SDK injection via `inject()`
+- `rxMethod` wrapper for async operations
+- `tapResponse` for error handling
+- `patchState` for state updates
+
+**FORBIDDEN:**
+- Direct SDK calls outside `rxMethod`
+- Missing error handling
+- Synchronous SDK usage
+
+## Query Design Constraints
+
+**REQUIRED:**
+- Explicit field selection (avoid `SELECT *` equivalent)
+- Parameterized queries via variables
+- Input validation before execution
+
+**EXAMPLE:**
+```graphql
+query GetUser($id: UUID!) {
+  user(id: $id) {
+    name
+    email
+    # ONLY needed fields
   }
-  ```
-- Use query variables for parameterized queries
-- Implement proper input validation
-- Handle errors gracefully
+}
+```
 
-## General
-- Define schemas in `.gql` files
-- Regenerate SDKs after schema changes
-- Use `@auth` directives for security
-- Request only needed fields in queries
-- Integrate with NgRx Signals stores
-- Implement proper error handling
-- Follow repository pattern for data access
-- Test queries and mutations thoroughly
-- Validate inputs before sending to backend
+**FORBIDDEN:**
+- Over-fetching (requesting unnecessary fields)
+- Hard-coded query values
+- Unvalidated inputs
+- Missing error handling
+
+## Enforcement Summary
+
+**IMMEDIATELY after schema change:**
+1. Regenerate SDKs
+2. Update store integrations
+3. Verify compilation
+4. Test authorization
+
+**REQUIRED in ALL schemas:**
+- `@table` directive
+- `@auth` rules
+- UUID id field
+- Timestamp fields
+
+**REQUIRED in ALL integrations:**
+- `rxMethod` wrapper
+- Error handling via `tapResponse`
+- State management via `patchState`
+- Input validation
