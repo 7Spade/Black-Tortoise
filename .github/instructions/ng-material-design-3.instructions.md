@@ -1,45 +1,49 @@
 ---
-description: 'Material Design 3 (Material You) implementation guidelines for Angular applications with theming, color systems, and accessibility'
+description: 'Material Design 3 enforcement: design token usage, color roles, typography constraints, elevation rules, and WCAG accessibility requirements'
 applyTo: '**/*.scss, **/*.css, **/theme*.ts'
 ---
 
-# Material Design 3 Implementation Guidelines
+# Material Design 3 Rules
 
-## Overview
+## CRITICAL: Design Token Enforcement
 
-Material Design 3 (Material You) is Google's latest design system emphasizing personalization, accessibility, and modern aesthetics. This guide covers implementation in Angular applications.
+ALL styling MUST use Material Design 3 design tokens exclusively. Direct color values are FORBIDDEN.
 
-## Core Principles
+**VIOLATION consequences:**
+- Theme switching failures
+- Accessibility violations
+- Design inconsistency
+- Failed WCAG compliance
 
-### 1. Dynamic Color System
+## CRITICAL: Color System Constraints
 
-**Use M3 Color Roles:**
+**REQUIRED color roles ONLY:**
 ```scss
-// Primary colors
+// Primary colors (REQUIRED for all components)
 --mat-sys-primary
 --mat-sys-on-primary
 --mat-sys-primary-container
 --mat-sys-on-primary-container
 
-// Secondary colors
+// Secondary colors (REQUIRED for supporting actions)
 --mat-sys-secondary
 --mat-sys-on-secondary
 --mat-sys-secondary-container
 --mat-sys-on-secondary-container
 
-// Tertiary colors
+// Tertiary colors (REQUIRED for accents)
 --mat-sys-tertiary
 --mat-sys-on-tertiary
 --mat-sys-tertiary-container
 --mat-sys-on-tertiary-container
 
-// Error colors
+// Error colors (REQUIRED for error states)
 --mat-sys-error
 --mat-sys-on-error
 --mat-sys-error-container
 --mat-sys-on-error-container
 
-// Surface colors
+// Surface colors (REQUIRED for backgrounds)
 --mat-sys-surface
 --mat-sys-on-surface
 --mat-sys-surface-variant
@@ -48,80 +52,104 @@ Material Design 3 (Material You) is Google's latest design system emphasizing pe
 --mat-sys-surface-container-high
 --mat-sys-surface-container-highest
 
-// Outline colors
+// Outline colors (REQUIRED for borders)
 --mat-sys-outline
 --mat-sys-outline-variant
 ```
 
-### 2. Typography Scale
+**FORBIDDEN:**
+- Hardcoded hex colors (`#ffffff`, `#000000`)
+- RGB/RGBA values outside design tokens
+- HSL values
+- Named colors (`white`, `black`, `red`)
+- Custom color properties not in M3 specification
 
-**Use M3 Typography Tokens:**
+## CRITICAL: Typography Token Requirements
+
+ALL text MUST use M3 typography scale tokens.
+
+**REQUIRED tokens:**
 ```scss
-// Display styles (largest)
+// Display (page titles)
 --mat-sys-display-large
 --mat-sys-display-medium
 --mat-sys-display-small
 
-// Headline styles
+// Headline (section headers)
 --mat-sys-headline-large
 --mat-sys-headline-medium
 --mat-sys-headline-small
 
-// Title styles
+// Title (subsection headers)
 --mat-sys-title-large
 --mat-sys-title-medium
 --mat-sys-title-small
 
-// Body styles
+// Body (content text)
 --mat-sys-body-large
 --mat-sys-body-medium
 --mat-sys-body-small
 
-// Label styles
+// Label (UI labels)
 --mat-sys-label-large
 --mat-sys-label-medium
 --mat-sys-label-small
 ```
 
-### 3. Elevation and Shadows
+**FORBIDDEN:**
+- Direct font-size, font-weight, line-height definitions
+- Custom font stacks outside theme configuration
+- Pixel-based font sizes
+- Unitless line-heights
 
-**Use M3 Elevation Tokens:**
+## CRITICAL: Elevation Token Enforcement
+
+ALL shadows and elevation MUST use M3 elevation tokens.
+
+**REQUIRED elevation levels:**
 ```scss
-// Elevation levels
---mat-sys-level0  // No shadow
---mat-sys-level1  // Subtle elevation
---mat-sys-level2  // Moderate elevation
---mat-sys-level3  // High elevation
---mat-sys-level4  // Highest elevation
+--mat-sys-level0  // Flat surfaces
+--mat-sys-level1  // Slight elevation
+--mat-sys-level2  // Cards, raised surfaces
+--mat-sys-level3  // Dialogs, modals
+--mat-sys-level4  // Floating action buttons
 --mat-sys-level5  // Maximum elevation
 ```
 
-### 4. Shape System
+**FORBIDDEN:**
+- Custom box-shadow values
+- Drop-shadow filters outside M3 system
+- Hardcoded shadow definitions
 
-**Use M3 Corner Radius Tokens:**
+## CRITICAL: Shape System Constraints
+
+ALL border-radius MUST use M3 corner tokens.
+
+**REQUIRED corner radius tokens:**
 ```scss
-// Corner radius values
---mat-sys-corner-none       // 0dp
---mat-sys-corner-extra-small // 4dp
---mat-sys-corner-small      // 8dp
---mat-sys-corner-medium     // 12dp
---mat-sys-corner-large      // 16dp
---mat-sys-corner-extra-large // 28dp
---mat-sys-corner-full       // 50% (fully rounded)
+--mat-sys-corner-none       // No rounding
+--mat-sys-corner-extra-small
+--mat-sys-corner-small
+--mat-sys-corner-medium
+--mat-sys-corner-large
+--mat-sys-corner-extra-large
+--mat-sys-corner-full       // Fully rounded (pills)
 ```
 
-## Theme Configuration
+**FORBIDDEN:**
+- Direct border-radius pixel values
+- Percentage values outside `--mat-sys-corner-full`
+- Custom rounding not in specification
 
-### Creating a Custom Theme
+## CRITICAL: Theme Configuration Requirements
 
+**REQUIRED theme structure:**
 ```scss
 @use '@angular/material' as mat;
 
-// Include core styles
 @include mat.core();
 
-// Define your theme
-$my-theme: mat.define-theme((
+$theme: mat.define-theme((
   color: (
     theme-type: light,
     primary: mat.$azure-palette,
@@ -139,11 +167,12 @@ $my-theme: mat.define-theme((
   )
 ));
 
-// Apply theme to all components
-@include mat.all-component-themes($my-theme);
+@include mat.all-component-themes($theme);
+```
 
-// Dark theme variant
-$my-dark-theme: mat.define-theme((
+**REQUIRED for dark theme:**
+```scss
+$dark-theme: mat.define-theme((
   color: (
     theme-type: dark,
     primary: mat.$azure-palette,
@@ -151,75 +180,24 @@ $my-dark-theme: mat.define-theme((
   )
 ));
 
-// Apply dark theme when .dark-theme class is present
 .dark-theme {
-  @include mat.all-component-colors($my-dark-theme);
+  @include mat.all-component-colors($dark-theme);
 }
 ```
 
-### Dynamic Theme Switching
+**FORBIDDEN:**
+- Material Design 2 `mat.define-light-theme()` or `mat.define-dark-theme()`
+- Color palettes outside `mat.define-theme()`
+- Custom color interpolation
+- Theme mixing without proper scoping
 
-```typescript
-// theme.service.ts
-import { Injectable, signal } from '@angular/core';
+## CRITICAL: State Layer Opacity Constraints
 
-@Injectable({ providedIn: 'root' })
-export class ThemeService {
-  private isDarkMode = signal(false);
-  
-  toggleTheme() {
-    this.isDarkMode.update(dark => !dark);
-    this.applyTheme(this.isDarkMode());
-  }
-  
-  private applyTheme(isDark: boolean) {
-    const body = document.body;
-    if (isDark) {
-      body.classList.add('dark-theme');
-    } else {
-      body.classList.remove('dark-theme');
-    }
-  }
-  
-  initTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
-    
-    this.isDarkMode.set(isDark);
-    this.applyTheme(isDark);
-  }
-}
-```
+Interactive elements MUST implement M3 state layers with exact opacity values.
 
-## Component Styling Best Practices
-
-### 1. Use Color Tokens
-
+**REQUIRED state layer opacities:**
 ```scss
-// ✅ Good - Use design tokens
-.custom-card {
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  
-  &:hover {
-    background-color: var(--mat-sys-surface-container);
-  }
-}
-
-// ❌ Bad - Hardcoded colors
-.custom-card {
-  background-color: #ffffff;
-  color: #000000;
-}
-```
-
-### 2. Implement State Layers
-
-```scss
-// State layers for interactive components
 .interactive-element {
-  background-color: var(--mat-sys-surface);
   position: relative;
   
   &::before {
@@ -232,92 +210,33 @@ export class ThemeService {
   }
   
   &:hover::before {
-    opacity: 0.08; // M3 hover state layer
+    opacity: 0.08;  // REQUIRED hover state
   }
   
   &:focus::before {
-    opacity: 0.12; // M3 focus state layer
+    opacity: 0.12;  // REQUIRED focus state
   }
   
   &:active::before {
-    opacity: 0.16; // M3 pressed state layer
+    opacity: 0.16;  // REQUIRED pressed state
   }
 }
 ```
 
-### 3. Typography Implementation
+**FORBIDDEN:**
+- Custom opacity values outside specification
+- Background color changes instead of state layers
+- Missing state layer pseudo-elements
 
+## CRITICAL: Accessibility Constraints
+
+**REQUIRED WCAG contrast ratios:**
+- Normal text (< 18.5px): MUST maintain 4.5:1 minimum contrast
+- Large text (≥ 18.5px or ≥ 24px): MUST maintain 3:1 minimum contrast
+- UI components: MUST maintain 3:1 minimum contrast
+
+**REQUIRED focus indicators:**
 ```scss
-// Apply typography tokens
-.page-title {
-  font: var(--mat-sys-headline-large);
-  color: var(--mat-sys-on-surface);
-}
-
-.section-title {
-  font: var(--mat-sys-title-medium);
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.body-text {
-  font: var(--mat-sys-body-medium);
-  color: var(--mat-sys-on-surface);
-}
-
-.label-text {
-  font: var(--mat-sys-label-small);
-  color: var(--mat-sys-on-surface-variant);
-}
-```
-
-### 4. Elevation and Shadows
-
-```scss
-.elevated-card {
-  background-color: var(--mat-sys-surface);
-  box-shadow: var(--mat-sys-level2);
-  border-radius: var(--mat-sys-corner-medium);
-  
-  &:hover {
-    box-shadow: var(--mat-sys-level3);
-  }
-}
-
-.floating-action-button {
-  box-shadow: var(--mat-sys-level3);
-  
-  &:active {
-    box-shadow: var(--mat-sys-level1);
-  }
-}
-```
-
-## Accessibility Standards
-
-### 1. Color Contrast
-
-**Ensure Minimum Contrast Ratios:**
-- Normal text: 4.5:1
-- Large text (18.5px+ or 24px+): 3:1
-- UI components: 3:1
-
-```scss
-// M3 tokens automatically provide accessible contrast
-.text-on-primary {
-  background-color: var(--mat-sys-primary);
-  color: var(--mat-sys-on-primary); // Guaranteed contrast
-}
-
-.text-on-surface {
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface); // Guaranteed contrast
-}
-```
-
-### 2. Focus Indicators
-
-```scss
-// Visible focus indicators
 .focusable-element {
   outline: none;
   
@@ -328,70 +247,98 @@ export class ThemeService {
 }
 ```
 
-### 3. Touch Targets
-
+**REQUIRED touch targets:**
 ```scss
-// Minimum 48x48dp touch targets
 .touch-target {
-  min-width: 48px;
-  min-height: 48px;
-  padding: 12px;
+  min-width: 48px;   // REQUIRED minimum
+  min-height: 48px;  // REQUIRED minimum
 }
 ```
 
-## Responsive Design
+**FORBIDDEN:**
+- `outline: none` without `:focus-visible` replacement
+- Touch targets smaller than 48x48dp
+- Interactive elements without visible focus state
+- Color-only information (MUST include icons/text)
 
-### Breakpoint Strategy
+**VIOLATION consequences:**
+- WCAG AA compliance failures
+- Keyboard navigation failures
+- Screen reader incompatibility
+- Touch input failures on mobile
 
+## CRITICAL: Responsive Breakpoint Requirements
+
+**REQUIRED Material Design breakpoints ONLY:**
 ```scss
-// Material Design breakpoints
 $breakpoints: (
   handset: '(max-width: 599px)',
   tablet: '(min-width: 600px) and (max-width: 959px)',
   desktop: '(min-width: 960px)',
   large-desktop: '(min-width: 1280px)'
 );
+```
 
-// Responsive layouts
-.responsive-grid {
-  display: grid;
-  gap: 16px;
+**FORBIDDEN:**
+- Custom breakpoint values
+- Bootstrap or other framework breakpoints
+- Arbitrary pixel values
+
+## Component Pattern Enforcement
+
+**REQUIRED button implementation:**
+```scss
+.m3-button {
+  padding: 10px 24px;
+  border-radius: var(--mat-sys-corner-full);
+  font: var(--mat-sys-label-large);
+  border: none;
   
-  @media #{map-get($breakpoints, handset)} {
-    grid-template-columns: 1fr;
+  &.filled {
+    background-color: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
   }
   
-  @media #{map-get($breakpoints, tablet)} {
-    grid-template-columns: repeat(2, 1fr);
+  &.outlined {
+    background-color: transparent;
+    border: 1px solid var(--mat-sys-outline);
+    color: var(--mat-sys-primary);
   }
   
-  @media #{map-get($breakpoints, desktop)} {
-    grid-template-columns: repeat(3, 1fr);
+  &.text {
+    background-color: transparent;
+    color: var(--mat-sys-primary);
   }
 }
 ```
 
-## Performance Optimization
-
-### 1. CSS Custom Properties
-
+**REQUIRED card implementation:**
 ```scss
-// Leverage CSS variables for dynamic theming
-:root {
-  --app-spacing-sm: 8px;
-  --app-spacing-md: 16px;
-  --app-spacing-lg: 24px;
-}
-
-.container {
-  padding: var(--app-spacing-md);
+.m3-card {
+  background-color: var(--mat-sys-surface);
+  border-radius: var(--mat-sys-corner-large);
+  padding: 16px;
+  
+  &.elevated {
+    box-shadow: var(--mat-sys-level2);
+  }
+  
+  &.outlined {
+    border: 1px solid var(--mat-sys-outline-variant);
+  }
 }
 ```
 
-### 2. Minimize Repaints
+**FORBIDDEN:**
+- Hardcoded padding values without design token reference
+- Custom button/card variants outside M3 specification
+- Mixing elevated and outlined styles
 
+## Performance Constraints
+
+**REQUIRED for animations:**
 ```scss
-// Use transform instead of top/left for animations
+// MUST use transform for position changes
 .animated-element {
   transform: translateY(0);
   transition: transform 200ms;
@@ -402,119 +349,40 @@ $breakpoints: (
 }
 ```
 
-## Common Patterns
+**FORBIDDEN:**
+- Animating `top`, `left`, `right`, `bottom` properties
+- Transitions exceeding 400ms without justification
+- Non-hardware-accelerated properties in animations
 
-### Button Styles
+## Migration Requirements
 
-```scss
-.m3-button {
-  padding: 10px 24px;
-  border-radius: var(--mat-sys-corner-full);
-  font: var(--mat-sys-label-large);
-  border: none;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  
-  &.filled {
-    background-color: var(--mat-sys-primary);
-    color: var(--mat-sys-on-primary);
-    
-    &:hover {
-      background-color: var(--mat-sys-primary-container);
-      color: var(--mat-sys-on-primary-container);
-    }
-  }
-  
-  &.outlined {
-    background-color: transparent;
-    border: 1px solid var(--mat-sys-outline);
-    color: var(--mat-sys-primary);
-    
-    &:hover {
-      background-color: var(--mat-sys-surface-variant);
-    }
-  }
-  
-  &.text {
-    background-color: transparent;
-    color: var(--mat-sys-primary);
-    
-    &:hover {
-      background-color: var(--mat-sys-surface-variant);
-    }
-  }
-}
-```
+When migrating from Material Design 2:
 
-### Card Styles
+**IMMEDIATELY replace:**
+- `mat.define-light-theme()` → `mat.define-theme((color: (theme-type: light)))`
+- `mat.define-dark-theme()` → `mat.define-theme((color: (theme-type: dark)))`
+- Color palette references → M3 design tokens
+- Typography levels → M3 typography tokens
+- Elevation mixins → M3 elevation tokens
 
-```scss
-.m3-card {
-  background-color: var(--mat-sys-surface);
-  border-radius: var(--mat-sys-corner-large);
-  padding: 16px;
-  box-shadow: var(--mat-sys-level1);
-  
-  &.elevated {
-    box-shadow: var(--mat-sys-level2);
-    
-    &:hover {
-      box-shadow: var(--mat-sys-level3);
-    }
-  }
-  
-  &.filled {
-    background-color: var(--mat-sys-surface-container-high);
-  }
-  
-  &.outlined {
-    border: 1px solid var(--mat-sys-outline-variant);
-    box-shadow: none;
-  }
-}
-```
+**FORBIDDEN in migrated code:**
+- Any M2 API usage
+- Mixed M2/M3 implementations
+- Legacy color palette system
 
-## Testing and Validation
+## Enforcement Summary
 
-### 1. Color Contrast Testing
+**REQUIRED in ALL styling:**
+- M3 design tokens for colors, typography, elevation, shape
+- WCAG AA contrast ratios
+- Proper state layers with exact opacities
+- Material Design breakpoints
+- Focus indicators on interactive elements
+- Minimum 48x48dp touch targets
 
-- Use browser DevTools to check contrast ratios
-- Test with WCAG AA compliance tools
-- Verify both light and dark themes
-
-### 2. Responsive Testing
-
-- Test on different viewport sizes
-- Verify touch target sizes on mobile
-- Check spacing and layout on tablets
-
-### 3. Theme Switching
-
-- Test theme transitions
-- Verify all components update correctly
-- Check for flickering or visual glitches
-
-## Migration from Material Design 2
-
-### Key Changes
-
-1. **Color System**: Switch from color palettes to theme-type with color roles
-2. **Typography**: Migrate from mat-typography-level to M3 typography tokens
-3. **Elevation**: Replace elevation mixins with CSS custom properties
-4. **Components**: Update component styles to use design tokens
-
-### Migration Checklist
-
-- [ ] Update theme configuration to use `define-theme()`
-- [ ] Replace hardcoded colors with M3 color tokens
-- [ ] Update typography to use M3 type scale
-- [ ] Replace elevation mixins with CSS variables
-- [ ] Test accessibility with new contrast requirements
-- [ ] Verify component styles in both light and dark themes
-
-## Resources
-
-- [Material Design 3 Guidelines](https://m3.material.io/)
-- [Angular Material Theming](https://material.angular.io/guide/theming)
-- [WCAG Accessibility Standards](https://www.w3.org/WAI/WCAG21/quickref/)
+**FORBIDDEN in ALL styling:**
+- Hardcoded colors, shadows, typography
+- Custom values outside M3 specification
+- M2 APIs or patterns
+- Accessibility violations
+- Performance anti-patterns

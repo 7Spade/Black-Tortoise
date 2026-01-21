@@ -1,239 +1,202 @@
 ---
-description: 'Project structure, naming conventions, and layered dependency rules for ng-dragon'
+description: 'Strict enforcement rules for project structure, naming conventions, and layer dependencies'
 applyTo: '**'
 ---
 
-# Project Structure & Architecture Guidelines
+# Project Structure Rules
 
-## Core Architecture Principles
+## CRITICAL: Layer Directory Structure
 
-This project follows **Clean Architecture** with strict layer boundaries and dependency rules.
-
-```
-┌─────────────────────────────────────────┐
-│         Presentation Layer              │  (UI Components)
-│         src/app/presentation/           │
-└─────────────────┬───────────────────────┘
-                  │ depends on
-┌─────────────────▼───────────────────────┐
-│         Application Layer               │  (Stores, Effects, Commands)
-│         src/app/application/            │
-└─────────────────┬───────────────────────┘
-                  │ depends on
-┌─────────────────▼───────────────────────┐
-│           Domain Layer                  │  (Entities, Value Objects)
-│         src/app/domain/                 │
-└─────────────────▲───────────────────────┘
-                  │ implemented by
-┌─────────────────┴───────────────────────┐
-│       Infrastructure Layer              │  (Firebase, Repositories)
-│       src/app/infrastructure/           │
-└─────────────────────────────────────────┘
-```
-
-## Project Structure
-
-> **Note**: This section shows the high-level organization. For complete detailed file trees, refer to the layer-specific documentation files in `docs/DDD/`.
-
-### High-Level Layer Organization
+ALL files MUST be placed in their designated layer. Cross-layer file placement is FORBIDDEN.
 
 ```
 src/app/
-├── presentation/           # UI Layer (Angular Components)
-│   ├── layouts/            # 布局組件
-│   ├── features/           # Feature Modules (功能模組)
-│   ├── shared/             # Shared Components (共享組件)
-│   ├── core/               # Core Module (核心模組)
-│   └── theme/              # Material Design 3 主題配置
-│
-├── application/            # Application Layer (Orchestration)
-│   ├── store/              # NgRx Signals Stores
-│   ├── effects/            # rxMethod Effects (副作用處理)
-│   ├── commands/           # Command Handlers (命令處理器)
-│   ├── queries/            # Query Handlers (查詢處理器)
-│   ├── services/           # Application Services (應用服務)
-│   ├── mappers/            # Data Mappers (資料映射器)
-│   ├── validators/         # Validators (驗證器)
-│   ├── guards/             # Route Guards (路由守衛)
-│   ├── interceptors/       # HTTP Interceptors (HTTP 攔截器)
-│   ├── pipes/              # Custom Pipes (自訂管道)
-│   ├── directives/         # Custom Directives (自訂指令)
-│   ├── models/             # Application Models (應用模型)
-│   ├── utils/              # Utility Functions (工具函數)
-│   └── constants/          # Constants (常數)
-│
-├── domain/                 # Domain Layer (Business Logic)
-│   ├── shared/             # 共享領域概念
-│   ├── account/            # Account 身份層領域
-│   ├── workspace-membership/  # 工作區成員關係領域
-│   ├── workspace/          # Workspace 工作區層領域
-│   ├── modules/            # Module 功能模組層領域
-│   ├── events/             # 事件系統領域
-│   ├── commands/           # 命令領域
-│   ├── queries/            # 查詢領域
-│   ├── repositories/       # 儲存庫介面
-│   └── services/           # 領域服務介面
-│
-├── infrastructure/         # Infrastructure Layer (External Systems)
-│   ├── firebase/           # Firebase 整合層
-│   ├── persistence/        # 資料持久化層 (Repository 實作)
-│   ├── storage/            # 檔案儲存層
-│   ├── auth/               # 認證層
-│   ├── domain-services/    # Domain Services 實作
-│   ├── event-sourcing/     # 事件溯源層
-│   ├── caching/            # 快取層
-│   ├── logging/            # 日誌層
-│   ├── monitoring/         # 監控層
-│   ├── external-services/  # 外部服務整合
-│   ├── adapters/           # Adapters (適配器模式)
-│   ├── dto/                # DTOs (資料傳輸物件)
-│   ├── providers/          # Dependency Injection Providers
-│   └── errors/             # Infrastructure 錯誤
-│
-└── shared/                 # Shared Layer (Utilities)
-    ├── components/         # Shared Components (共享組件)
-    ├── directives/         # Shared Directives
-    ├── pipes/              # Shared Pipes
-    ├── validators/         # Shared Validators (表單驗證器)
-    ├── services/           # Shared Services (共享服務)
-    ├── models/             # Shared Models (共享模型)
-    ├── utils/              # Shared Utilities (工具函數)
-    ├── constants/          # Shared Constants (共享常數)
-    ├── enums/              # Shared Enums (共享列舉)
-    ├── types/              # Shared Types (共享型別)
-    └── interfaces/         # Shared Interfaces (共享介面)
+├── presentation/
+│   ├── layouts/
+│   ├── features/
+│   ├── shared/
+│   ├── core/
+│   └── theme/
+├── application/
+│   ├── store/
+│   ├── effects/
+│   ├── commands/
+│   ├── queries/
+│   ├── services/
+│   ├── mappers/
+│   ├── validators/
+│   ├── guards/
+│   ├── interceptors/
+│   ├── pipes/
+│   ├── directives/
+│   ├── models/
+│   ├── utils/
+│   └── constants/
+├── domain/
+│   ├── shared/
+│   ├── account/
+│   ├── workspace-membership/
+│   ├── workspace/
+│   ├── modules/
+│   ├── events/
+│   ├── commands/
+│   ├── queries/
+│   ├── repositories/
+│   └── services/
+├── infrastructure/
+│   ├── firebase/
+│   ├── persistence/
+│   ├── storage/
+│   ├── auth/
+│   ├── domain-services/
+│   ├── event-sourcing/
+│   ├── caching/
+│   ├── logging/
+│   ├── monitoring/
+│   ├── external-services/
+│   ├── adapters/
+│   ├── dto/
+│   ├── providers/
+│   └── errors/
+└── shared/
+    ├── components/
+    ├── directives/
+    ├── pipes/
+    ├── validators/
+    ├── services/
+    ├── models/
+    ├── utils/
+    ├── constants/
+    ├── enums/
+    ├── types/
+    └── interfaces/
 ```
 
-### Complete Layer Structures
+**VIOLATION consequences:**
+- Incorrect layer placement → Build rejection
+- Missing required subdirectory → Immediate refactoring required
 
-For complete and detailed file trees of each layer (including all subdirectories and files), refer to:
+## Naming Convention Enforcement
 
-- **[Domain Layer](../../docs/DDD/domain.md)** - Complete entities, value objects, aggregates, events, and repository interfaces
-- **[Application Layer](../../docs/DDD/application.md)** - Complete stores, handlers, services, and orchestration logic
-- **[Infrastructure Layer](../../docs/DDD/infrastructure.md)** - Complete Firebase integration, repositories, and external services
-- **[Presentation Layer](../../docs/DDD/interfaces-Material%20版本(使用).md)** - Complete UI components, layouts, and features
-- **[Shared Layer](../../docs/DDD/shared.md)** - Complete shared components, directives, pipes, and utilities
+ALL files MUST follow strict naming patterns per layer. Deviations are FORBIDDEN.
 
-## Naming Conventions
+### Domain Layer Patterns (MANDATORY)
 
-### Domain Layer
+| Type | Pattern | Example | Violation Consequence |
+|------|---------|---------|----------------------|
+| Entity | `{name}.entity.ts` | `workspace.entity.ts` | File rejected |
+| Value Object | `{name}.value-object.ts` | `workspace-id.value-object.ts` | File rejected |
+| Aggregate | `{name}.aggregate.ts` | `workspace.aggregate.ts` | File rejected |
+| Event | `{name}.event.ts` | `workspace-created.event.ts` | File rejected |
+| Command | `{action}-{entity}.command.ts` | `create-workspace.command.ts` | File rejected |
+| Query | `{action}-{entity}.query.ts` | `get-workspace.query.ts` | File rejected |
+| Enum | `{name}.enum.ts` | `workspace-type.enum.ts` | File rejected |
+| Interface | `{name}.interface.ts` | `workspace.repository.interface.ts` | File rejected |
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Entity | `{name}.entity.ts` | `workspace.entity.ts` |
-| Value Object | `{name}.value-object.ts` | `workspace-id.value-object.ts` |
-| Aggregate | `{name}.aggregate.ts` | `workspace.aggregate.ts` |
-| Event | `{name}.event.ts` | `workspace-created.event.ts` |
-| Command | `{action}-{entity}.command.ts` | `create-workspace.command.ts` |
-| Query | `{action}-{entity}.query.ts` | `get-workspace.query.ts` |
-| Enum | `{name}.enum.ts` | `workspace-type.enum.ts` |
-| Interface | `{name}.interface.ts` | `workspace.repository.interface.ts` |
+### Application Layer Patterns (MANDATORY)
 
-### Application Layer
+| Type | Pattern | Example | Violation Consequence |
+|------|---------|---------|----------------------|
+| Store | `{feature}.store.ts` | `workspace.store.ts` | File rejected |
+| Models | `{feature}.models.ts` | `workspace.models.ts` | File rejected |
+| Command Handler | `{action}-{entity}.handler.ts` | `create-workspace.handler.ts` | File rejected |
+| Query Handler | `{action}-{entity}.handler.ts` | `get-workspace.handler.ts` | File rejected |
+| Mapper | `{source}-to-{target}.mapper.ts` | `workspace-to-dto.mapper.ts` | File rejected |
+| Service | `{feature}.service.ts` | `workspace-guard.service.ts` | File rejected |
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Store | `{feature}.store.ts` | `workspace.store.ts` |
-| Models | `{feature}.models.ts` | `workspace.models.ts` |
-| Command Handler | `{action}-{entity}.handler.ts` | `create-workspace.handler.ts` |
-| Query Handler | `{action}-{entity}.handler.ts` | `get-workspace.handler.ts` |
-| Mapper | `{source}-to-{target}.mapper.ts` | `workspace-to-dto.mapper.ts` |
-| Service | `{feature}.service.ts` | `workspace-guard.service.ts` |
+### Infrastructure Layer Patterns (MANDATORY)
 
-### Infrastructure Layer
+| Type | Pattern | Example | Violation Consequence |
+|------|---------|---------|----------------------|
+| Repository | `{entity}-firestore.repository.ts` | `workspace-firestore.repository.ts` | File rejected |
+| Converter | `{entity}.firestore-converter.ts` | `workspace.firestore-converter.ts` | File rejected |
+| DTO | `{entity}-firebase.dto.ts` | `workspace-firebase.dto.ts` | File rejected |
+| Query Builder | `{entity}-query.builder.ts` | `workspace-query.builder.ts` | File rejected |
+| Service Impl | `{feature}-impl.service.ts` | `workspace-guard-impl.service.ts` | File rejected |
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Repository | `{entity}-firestore.repository.ts` | `workspace-firestore.repository.ts` |
-| Converter | `{entity}.firestore-converter.ts` | `workspace.firestore-converter.ts` |
-| DTO | `{entity}-firebase.dto.ts` | `workspace-firebase.dto.ts` |
-| Query Builder | `{entity}-query.builder.ts` | `workspace-query.builder.ts` |
-| Service Impl | `{feature}-impl.service.ts` | `workspace-guard-impl.service.ts` |
+### Presentation Layer Patterns (MANDATORY)
 
-### Presentation Layer
+| Type | Pattern | Example | Violation Consequence |
+|------|---------|---------|----------------------|
+| Component | `{name}.component.ts` | `workspace-list.component.ts` | File rejected |
+| Page | `{name}-page.component.ts` | `workspace-detail-page.component.ts` | File rejected |
+| Layout | `{name}-layout.component.ts` | `workspace-layout.component.ts` | File rejected |
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Component | `{name}.component.ts` | `workspace-list.component.ts` |
-| Page | `{name}-page.component.ts` | `workspace-detail-page.component.ts` |
-| Layout | `{name}-layout.component.ts` | `workspace-layout.component.ts` |
+### Shared Layer Patterns (MANDATORY)
 
-### Shared Layer
+| Type | Pattern | Example | Violation Consequence |
+|------|---------|---------|----------------------|
+| Component | `{name}.component.ts` | `avatar.component.ts` | File rejected |
+| Directive | `{name}.directive.ts` | `has-permission.directive.ts` | File rejected |
+| Pipe | `{name}.pipe.ts` | `date-ago.pipe.ts` | File rejected |
+| Service | `{feature}.service.ts` | `dialog.service.ts` | File rejected |
+| Util | `{category}.utils.ts` | `array.utils.ts` | File rejected |
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Component | `{name}.component.ts` | `avatar.component.ts` |
-| Directive | `{name}.directive.ts` | `has-permission.directive.ts` |
-| Pipe | `{name}.pipe.ts` | `date-ago.pipe.ts` |
-| Service | `{feature}.service.ts` | `dialog.service.ts` |
-| Util | `{category}.utils.ts` | `array.utils.ts` |
+## CRITICAL: Dependency Direction Rules
 
-## Dependency Rules
+Dependencies MUST flow inward. Reverse dependencies are FORBIDDEN.
 
-### Golden Rules
-
-1. **Dependencies point inward** - Outer layers depend on inner layers, never the reverse
-2. **Domain is independent** - No dependencies on Angular, Firebase, or any framework
-3. **Infrastructure implements domain** - Infrastructure provides concrete implementations of domain interfaces
-4. **Application orchestrates** - Application layer coordinates domain and infrastructure
-
-### Allowed Dependencies
+### Allowed Dependency Paths
 
 ```
-Presentation → Application ✓
-Presentation → Shared ✓
+Presentation → Application (ALLOWED)
+Presentation → Shared (ALLOWED)
 
-Application → Domain ✓
-Application → Shared ✓
+Application → Domain (ALLOWED)
+Application → Shared (ALLOWED)
 
-Domain → (nothing) ✓
+Domain → (NOTHING) (ALLOWED)
 
-Infrastructure → Domain ✓
-Infrastructure → Shared ✓
+Infrastructure → Domain (ALLOWED)
+Infrastructure → Shared (ALLOWED)
 
-Shared → (nothing) ✓
+Shared → (NOTHING) (ALLOWED)
 ```
 
-### Forbidden Dependencies
+**VIOLATION consequences:** Circular dependency detected → Build failure
+
+### FORBIDDEN Dependency Paths
 
 ```
-Domain → Application ✗
-Domain → Infrastructure ✗
-Domain → Presentation ✗
+Domain → Application (FORBIDDEN)
+Domain → Infrastructure (FORBIDDEN)
+Domain → Presentation (FORBIDDEN)
 
-Infrastructure → Application ✗
-Infrastructure → Presentation ✗
+Infrastructure → Application (FORBIDDEN)
+Infrastructure → Presentation (FORBIDDEN)
 
-Application → Infrastructure (direct) ✗
-  (Use dependency injection with domain interfaces instead)
+Application → Infrastructure (FORBIDDEN - use dependency injection via domain interfaces)
 ```
 
-## Layer Responsibilities
+**VIOLATION consequences:**
+- Forbidden import detected → IMMEDIATE build rejection
+- Circular reference → Architecture corruption
+- Direct infrastructure access → Security vulnerability
 
-### Domain Layer
+## Layer Content Constraints
 
-**Responsibility**: Define business rules, entities, and contracts
+### Domain Layer (ZERO framework dependencies)
 
-**Contains**:
+**REQUIRED contents:**
 - Entities (business objects with identity)
 - Value Objects (immutable objects)
 - Aggregates (consistency boundaries)
 - Domain Events (business-significant occurrences)
 - Repository Interfaces (persistence contracts)
-- Domain Services (business logic that doesn't belong to entities)
+- Domain Services (business logic)
 
-**Must NOT contain**:
+**FORBIDDEN contents:**
 - Angular dependencies
 - Firebase dependencies
 - HTTP clients
-- Any I/O operations
+- I/O operations
 - Framework-specific code
 
-### Application Layer
+**VIOLATION consequences:** Framework dependency in domain → Architecture violation → IMMEDIATE refactoring
 
-**Responsibility**: Orchestrate domain logic and coordinate with infrastructure
+### Application Layer (Orchestration ONLY)
 
-**Contains**:
+**REQUIRED contents:**
 - NgRx Signals Stores (state management)
 - Command Handlers (write operations)
 - Query Handlers (read operations)
@@ -241,16 +204,19 @@ Application → Infrastructure (direct) ✗
 - Data Mappers (domain ↔ DTO transformations)
 - Effects (async operations via rxMethod)
 
-**Must NOT contain**:
-- Direct Firebase calls (use repositories)
-- Business rules (belongs in domain)
-- UI logic (belongs in presentation)
+**FORBIDDEN contents:**
+- Direct Firebase calls
+- Business rules
+- UI logic
 
-### Infrastructure Layer
+**VIOLATION consequences:**
+- Business rule in application layer → Domain model violation
+- Direct Firebase access → Security breach
+- UI logic → Layer separation failure
 
-**Responsibility**: Implement domain contracts and integrate with external systems
+### Infrastructure Layer (External system integration)
 
-**Contains**:
+**REQUIRED contents:**
 - Repository Implementations (Firestore, etc.)
 - Firebase Converters (domain ↔ Firestore)
 - External Service Adapters
@@ -258,32 +224,37 @@ Application → Infrastructure (direct) ✗
 - Storage Services
 - Authentication Services
 
-**Must NOT contain**:
-- Business rules (belongs in domain)
-- UI components (belongs in presentation)
-- Direct state management (use application layer)
+**FORBIDDEN contents:**
+- Business rules
+- UI components
+- Direct state management
 
-### Presentation Layer
+**VIOLATION consequences:**
+- Business logic → Domain model corruption
+- UI component → Layer boundary violation
 
-**Responsibility**: Display UI and capture user input
+### Presentation Layer (UI ONLY)
 
-**Contains**:
+**REQUIRED contents:**
 - Angular Components
 - Templates
 - Layouts
 - Pages
 - Component-specific logic
 
-**Must NOT contain**:
-- Business rules (belongs in domain)
-- Direct Firebase calls (use stores)
-- Direct repository access (use stores)
+**FORBIDDEN contents:**
+- Business rules
+- Direct Firebase calls
+- Direct repository access
 
-### Shared Layer
+**VIOLATION consequences:**
+- Business rule → Domain bypass
+- Direct Firebase call → Security vulnerability
+- Direct repository access → Architecture violation
 
-**Responsibility**: Provide reusable utilities and components
+### Shared Layer (Utilities ONLY)
 
-**Contains**:
+**REQUIRED contents:**
 - UI Components (reusable)
 - Directives
 - Pipes
@@ -291,145 +262,172 @@ Application → Infrastructure (direct) ✗
 - Utility Functions
 - Shared Services
 
-**Must NOT contain**:
-- Business rules (belongs in domain)
-- Layer-specific logic (belongs in respective layer)
+**FORBIDDEN contents:**
+- Business rules
+- Layer-specific logic
 
-## State Management with NgRx Signals
+**VIOLATION consequences:** Layer-specific logic → Shared contamination
 
-### Store Hierarchy
+## Store Hierarchy Enforcement
+
+NgRx Signals stores MUST follow hierarchical organization. Flat store structures are FORBIDDEN.
+
+**REQUIRED hierarchy:**
 
 ```
-GlobalShell (Root Level)
+GlobalShell (Root Level) - MUST exist
 ├── Auth Store
 ├── Config Store
 ├── Layout Store
 └── Router Store
 
-WorkspaceList Store (Account Level)
+WorkspaceList Store (Account Level) - MUST exist if multi-workspace
 └── Current Workspace ID
 
-Workspace Store (Context Store)
+Workspace Store (Context Store) - MUST exist per workspace
 ├── Workspace Data
 ├── Permissions
 └── Preferences
 
-Feature Stores (Module Level)
+Feature Stores (Module Level) - MUST exist per feature
 ├── Tasks Store
 ├── Documents Store
 ├── Members Store
 └── ...
 
-Entity Stores (Entity Level)
+Entity Stores (Entity Level) - MUST exist per entity type
 ├── Task Entity Store
 ├── Document Entity Store
 └── ...
 ```
 
-### Store Naming Patterns
+### Store Naming (MANDATORY)
 
-- **Global**: `{feature}.store.ts` (e.g., `auth.store.ts`)
-- **Context**: `{context}.store.ts` (e.g., `workspace.store.ts`)
-- **Feature**: `{feature}s.store.ts` (e.g., `tasks.store.ts`)
-- **Entity**: `{entity}-entity.store.ts` (e.g., `task-entity.store.ts`)
+| Store Type | Pattern | Example | Violation |
+|------------|---------|---------|-----------|
+| Global | `{feature}.store.ts` | `auth.store.ts` | File rejected |
+| Context | `{context}.store.ts` | `workspace.store.ts` | File rejected |
+| Feature | `{feature}s.store.ts` | `tasks.store.ts` | File rejected |
+| Entity | `{entity}-entity.store.ts` | `task-entity.store.ts` | File rejected |
 
-## File Organization Patterns
+**VIOLATION consequences:** Incorrect store naming → Build rejection
 
-### Component Organization
+## File Organization (MANDATORY)
+
+### Component Organization (REQUIRED structure)
 
 ```
 feature-name/
-├── feature-name.component.ts
-├── feature-name.component.html
-├── feature-name.component.scss
-├── feature-name.component.spec.ts
-└── index.ts
+├── feature-name.component.ts (REQUIRED)
+├── feature-name.component.html (REQUIRED)
+├── feature-name.component.scss (REQUIRED)
+├── feature-name.component.spec.ts (REQUIRED)
+└── index.ts (REQUIRED)
 ```
 
-### Store Organization
+**VIOLATION consequences:** Missing required file → Component incomplete → Build failure
+
+### Store Organization (REQUIRED structure)
 
 ```
 feature/
-├── feature.store.ts
-├── feature.models.ts
-├── feature.selectors.ts (optional)
-└── index.ts
+├── feature.store.ts (REQUIRED)
+├── feature.models.ts (REQUIRED)
+├── feature.selectors.ts (OPTIONAL)
+└── index.ts (REQUIRED)
 ```
 
-### Domain Organization
+**VIOLATION consequences:** Missing store or models file → State management incomplete
+
+### Domain Organization (REQUIRED structure)
 
 ```
 entity-name/
-├── entities/
-│   ├── entity.entity.ts
-│   └── index.ts
-├── value-objects/
-│   ├── value.value-object.ts
-│   └── index.ts
-├── enums/
+├── entities/ (REQUIRED)
+│   ├── entity.entity.ts (REQUIRED)
+│   └── index.ts (REQUIRED)
+├── value-objects/ (REQUIRED)
+│   ├── value.value-object.ts (REQUIRED)
+│   └── index.ts (REQUIRED)
+├── enums/ (IF APPLICABLE)
 │   ├── type.enum.ts
 │   └── index.ts
-├── aggregates/ (if applicable)
+├── aggregates/ (IF APPLICABLE)
 │   ├── aggregate.aggregate.ts
 │   └── index.ts
-└── index.ts
+└── index.ts (REQUIRED)
 ```
 
-## Import Patterns
+**VIOLATION consequences:** Missing entity or value object → Domain model incomplete
 
-### Use Path Aliases
+## CRITICAL: Import Pattern Enforcement
 
-```typescript
-// Good
-import { Workspace } from '@domain/workspace';
-import { WorkspaceStore } from '@application/store/workspace';
-import { WorkspaceFirestoreRepository } from '@infrastructure/persistence/workspace';
+Path aliases MUST be used for ALL cross-directory imports. Relative paths across layers are FORBIDDEN.
 
-// Bad
-import { Workspace } from '../../../domain/workspace/entities/workspace.entity';
-```
-
-### Layer Import Rules
+### REQUIRED Import Patterns
 
 ```typescript
 // Presentation Layer
 import { Component } from '@angular/core';
-import { WorkspaceStore } from '@application/store/workspace'; // ✓
-import { Workspace } from '@domain/workspace'; // ✓
-import { AvatarComponent } from '@shared/components/ui/avatar'; // ✓
-// Never import from @infrastructure directly ✗
+import { WorkspaceStore } from '@application/store/workspace'; // REQUIRED
+import { Workspace } from '@domain/workspace'; // REQUIRED
+import { AvatarComponent } from '@shared/components/ui/avatar'; // REQUIRED
+// FORBIDDEN: import from @infrastructure
 
 // Application Layer
 import { inject } from '@angular/core';
-import { Workspace } from '@domain/workspace'; // ✓
-import { IWorkspaceRepository } from '@domain/repositories'; // ✓
-import { ArrayUtils } from '@shared/utils/array'; // ✓
-// Never import from @infrastructure directly ✗
+import { Workspace } from '@domain/workspace'; // REQUIRED
+import { IWorkspaceRepository } from '@domain/repositories'; // REQUIRED
+import { ArrayUtils } from '@shared/utils/array'; // REQUIRED
+// FORBIDDEN: import from @infrastructure
 
 // Domain Layer
-// Only import from same domain or shared
-import { AccountId } from '@domain/account'; // ✓
-// Never import from @application, @infrastructure, or @presentation ✗
+import { AccountId } from '@domain/account'; // REQUIRED
+// FORBIDDEN: import from @application, @infrastructure, @presentation
 
 // Infrastructure Layer
 import { inject } from '@angular/core';
-import { Workspace } from '@domain/workspace'; // ✓
-import { IWorkspaceRepository } from '@domain/repositories'; // ✓
-import { DateUtils } from '@shared/utils/date'; // ✓
+import { Workspace } from '@domain/workspace'; // REQUIRED
+import { IWorkspaceRepository } from '@domain/repositories'; // REQUIRED
+import { DateUtils } from '@shared/utils/date'; // REQUIRED
 ```
 
-## Testing Structure
+### FORBIDDEN Import Patterns
+
+```typescript
+// FORBIDDEN - relative path across layers
+import { Workspace } from '../../../domain/workspace/entities/workspace.entity';
+
+// FORBIDDEN - direct infrastructure import from application
+import { WorkspaceFirestoreRepository } from '@infrastructure/persistence/workspace';
+
+// FORBIDDEN - domain importing from outer layers
+import { WorkspaceStore } from '@application/store/workspace';
+```
+
+**VIOLATION consequences:**
+- Relative path import → Refactoring required
+- Cross-layer violation → Architecture corruption
+- Domain layer importing framework code → Build rejection
+
+## Testing Structure (MANDATORY)
+
+ALL implementation files MUST have corresponding test files in the same directory.
+
+**REQUIRED test file structure:**
 
 ```
 {feature}/
 ├── {feature}.component.ts
-├── {feature}.component.spec.ts
+├── {feature}.component.spec.ts (REQUIRED)
 ├── {feature}.store.ts
-├── {feature}.store.spec.ts
+├── {feature}.store.spec.ts (REQUIRED)
 └── ...
 ```
 
-### Test Naming Convention
+**VIOLATION consequences:** Missing test file → Code incomplete → Deployment blocked
+
+### Test Naming Convention (MANDATORY)
 
 ```typescript
 describe('FeatureName', () => {
@@ -443,104 +441,49 @@ describe('FeatureName', () => {
 });
 ```
 
-## Code Quality Guidelines
+**VIOLATION consequences:** Incorrect test naming → Test suite rejected
 
-### TypeScript
+## TypeScript Enforcement
 
-- Enable `strict` mode in `tsconfig.json`
-- Use explicit types, avoid `any`
-- Use `readonly` for immutable properties
-- Use type guards and union types
+### REQUIRED Configuration
 
-### Angular
+- `strict` mode MUST be enabled in `tsconfig.json`
+- Explicit types MUST be used (`any` is FORBIDDEN)
+- `readonly` MUST be used for immutable properties
+- Type guards and union types MUST be used for type narrowing
 
-- Use standalone components
-- Use Angular Signals for reactivity
-- Implement `OnPush` change detection
-- Follow Angular style guide
+**VIOLATION consequences:**
+- `strict` mode disabled → Build rejection
+- `any` type usage → Type safety violation
+- Missing `readonly` on immutable properties → Data integrity risk
 
-### NgRx Signals
+## Angular Component Standards (MANDATORY)
 
-- Use `signalStore` for all state management
-- Use `patchState` for all mutations
-- Use `computed()` for derived state
-- Use `rxMethod` for async operations
+- Standalone components REQUIRED
+- Angular Signals REQUIRED for reactivity
+- `OnPush` change detection REQUIRED
+- Angular style guide compliance REQUIRED
 
-### Firebase
+**VIOLATION consequences:** Non-standalone component → Migration required
 
-- Use converters for data transformation
-- Use query builders for complex queries
-- Use transactions for atomic operations
-- Use batch writes for bulk updates
+## NgRx Signals Standards (MANDATORY)
 
-## Documentation Requirements
+- `signalStore` REQUIRED for ALL state management
+- `patchState` REQUIRED for ALL mutations
+- `computed()` REQUIRED for derived state
+- `rxMethod` REQUIRED for async operations
 
-### File-Level Documentation
+**VIOLATION consequences:**
+- Direct state mutation → State corruption
+- Missing `computed()` for derived state → Performance degradation
 
-Every file should have a comment block explaining:
-- Purpose of the file
-- Key responsibilities
-- Dependencies
-- Usage examples (for public APIs)
+## Firebase Integration Standards (MANDATORY)
 
-### Component Documentation
+- Converters REQUIRED for data transformation
+- Query builders REQUIRED for complex queries
+- Transactions REQUIRED for atomic operations
+- Batch writes REQUIRED for bulk updates
 
-```typescript
-/**
- * Workspace List Component
- * 
- * Displays a list of workspaces the user has access to.
- * Allows switching between workspaces and creating new ones.
- * 
- * @example
- * <app-workspace-list 
- *   [workspaces]="workspaces" 
- *   (workspaceSelected)="onSelect($event)"
- * />
- */
-@Component({
-  // ...
-})
-export class WorkspaceListComponent {
-  // ...
-}
-```
-
-### Service Documentation
-
-```typescript
-/**
- * Workspace Guard Service
- * 
- * Checks workspace access permissions for the current user.
- * Implements the IWorkspaceGuardService interface from the domain layer.
- */
-@Injectable()
-export class WorkspaceGuardService implements IWorkspaceGuardService {
-  // ...
-}
-```
-
-## References
-
-- [Clean Architecture Overview](../../README.md#architecture-overview)
-- [DDD Domain Models](../../docs/DDD/domain.md)
-- [Application Layer Structure](../../docs/DDD/application.md)
-- [Infrastructure Layer Structure](../../docs/DDD/infrastructure.md)
-- [Shared Layer Structure](../../docs/DDD/shared.md)
-- [Terminology Glossary](../../docs/DDD/GLOSSARY.md)
-
-## Checklist for New Code
-
-Before submitting code, verify:
-
-- [ ] File is in the correct layer directory
-- [ ] File naming follows the conventions
-- [ ] Dependencies only point inward
-- [ ] No framework code in domain layer
-- [ ] No business logic in presentation layer
-- [ ] No direct infrastructure access from application/presentation
-- [ ] Proper use of dependency injection
-- [ ] TypeScript strict mode compliance
-- [ ] Tests are included
-- [ ] Documentation is added
+**VIOLATION consequences:**
+- Missing converter → Data mapping failure
+- Direct query without builder → Query inconsistency

@@ -1,200 +1,199 @@
 ---
-description: "Authoritative code review instructions enforcing strict DDD and Clean Architecture dependency rules, layer isolation, and boundary constraints, customizable for any project."
+description: 'DDD layer boundary enforcement: dependency direction rules, layer isolation constraints, and cross-layer violation detection'
 applyTo: '**'
 ---
 
-## ✅ 標準且正確的依賴方向（只能單向）
+# DDD Architecture Rules
+
+## CRITICAL: Dependency Direction Law
+
+Dependencies MUST flow inward only. Outer layers depend on inner layers, never reverse.
 
 ```
-presentation
-    ↓
-application
-    ↓
-domain
+presentation → application → domain
+infrastructure → domain (implements interfaces)
+shared ← ALL layers (read-only)
 ```
 
-```
-infrastructure
-    ↗
-application
-```
+**VIOLATION consequences:**
+- Circular dependencies
+- Unmockable code
+- Framework lock-in
+- Untestable business logic
 
-```
-shared  ←（只能被引用，不能反向依賴任何層）
-```
+## Domain Layer Constraints
 
-### 用一句話記：
+**MUST contain ONLY:**
+- Entity / Aggregate
+- Value Object
+- Domain Service (stateless business logic)
+- Domain Event
+- Repository Interface (NO implementations)
+- Business rules / invariants / state machines
 
-> **越靠近 domain，越不能知道外面發生什麼事**
+**FORBIDDEN dependencies:**
+- `application` layer
+- `infrastructure` layer
+- `presentation` layer
+- Framework code (Angular / Firebase / RxJS / HTTP / DI)
+- ANY I/O operations
+- ANY external library imports
 
----
+**ALLOWED dependencies:**
+- Domain layer itself (same layer)
+- `shared` layer (pure utilities, primitives, Result/Either types)
 
-## 🧠 各層「可以依賴誰 / 不可以依賴誰」
+**VIOLATION consequences:**
+- Domain logic becomes framework-dependent
+- Business rules cannot be tested in isolation
+- Technology changes force domain rewrites
 
-### 1️⃣ domain（最內層，核心）
+## Application Layer Constraints
 
-**❌ 絕對不能依賴**
+**MUST contain ONLY:**
+- Use Case / Command / Query handlers
+- Application Service (orchestration only)
+- Workflow / Transaction boundary coordination
+- Domain Event handlers (application-level)
 
-* application
-* infrastructure
-* presentation
-* framework（Angular / Firebase / RxJS / HTTP / DI）
+**FORBIDDEN dependencies:**
+- `presentation` layer (components, router, UI state)
+- Infrastructure implementations (FirestoreService, HttpClient, concrete repositories)
 
-**✅ 可以依賴**
+**ALLOWED dependencies:**
+- `domain` layer
+- Repository interfaces (from domain)
+- `shared` layer
 
-* 自己
-* `shared`（純型別、工具、Result、Either、Error 定義）
+**MUST delegate to domain for business logic. NO business rules in application services.**
 
-**典型內容**
+**VIOLATION consequences:**
+- Anemic domain model
+- Duplicated business logic
+- Application layer becomes untestable God object
 
-* Entity / Aggregate
-* Value Object
-* Domain Service
-* Domain Event
-* Repository Interface（只定義，不實作）
-* 規則、狀態機、不變量
+## Infrastructure Layer Constraints
 
-👉 **domain = 商業真理**
+**MUST contain ONLY:**
+- Repository implementations (implements domain interfaces)
+- HTTP / API adapters
+- Auth / Cache / Logger implementations
+- External service integrations
+- Framework-specific code
 
----
+**MUST implement domain interfaces. MUST NOT be imported by domain or application layers.**
 
-### 2️⃣ application（用例層 / 流程層）
+**ALLOWED dependencies:**
+- `domain` layer (to implement interfaces)
+- `application` layer (rare, for adapters only)
+- Framework libraries (Angular, @angular/fire, HTTP, Storage)
+- `shared` layer
 
-**❌ 不能依賴**
+**VIOLATION consequences:**
+- Domain/Application layers become coupled to infrastructure
+- Cannot swap implementations
+- Testing requires real infrastructure
 
-* presentation（component、router、UI state）
-* infrastructure 實作（FirestoreService、HttpClient）
+## Presentation Layer Constraints
 
-**✅ 可以依賴**
+**MUST contain ONLY:**
+- Components
+- Pages / Views
+- View Models (presentation state only)
+- Route Guards (delegates to application)
 
-* domain
-* domain 中的 Repository Interface
-* shared
+**FORBIDDEN:**
+- Business logic implementation
+- Direct infrastructure access
+- Direct repository calls
+- Domain entity mutation
 
-**典型內容**
+**ALLOWED dependencies:**
+- `application` layer (Use Cases / Facades)
+- `shared` layer (DTOs, View Model types)
+- Framework libraries (Angular, UI libraries, Router)
 
-* UseCase / Command / Query
-* Application Service
-* Workflow / Orchestrator
-* Transaction boundary
-* Domain Event handler（非技術）
+**MUST delegate ALL business operations to application layer.**
 
-👉 **application = 怎麼用 domain 完成一件事**
+**VIOLATION consequences:**
+- Business logic scattered across UI
+- Untestable business rules
+- UI changes break domain logic
 
----
+## Shared Layer Constraints
 
-### 3️⃣ infrastructure（技術實作層）
+**MUST contain ONLY:**
+- Pure utility functions (no side effects)
+- Primitive type helpers
+- Result / Either types
+- Error base classes
+- Domain-agnostic helpers (Date, Money, ID formatting)
 
-**❌ 不能被 domain / application 依賴**
+**FORBIDDEN:**
+- Business logic / domain rules
+- Entities / Aggregates
+- Use Cases / Services
+- Framework-specific code
+- State management
 
-**✅ 可以依賴**
+**MUST NOT depend on ANY other layer.**
 
-* domain（實作 Repository interface）
-* application（少見，但可用於 adapter）
-* framework（Angular、@angular/fire、HTTP、Storage）
+**VIOLATION consequences:**
+- Shared layer becomes domain dumping ground
+- Circular dependencies emerge
+- Utility layer polluted with business logic
 
-**典型內容**
+## Repository Pattern Enforcement
 
-* FirestoreRepository implements XxxRepository
-* Http API adapter
-* Auth / Cache / Logger 實作
-* External service integration
+**Interface declaration:**
+- MUST be defined in domain layer
+- MUST use domain types (entities, value objects)
+- NO framework types in interface signatures
 
-👉 **infrastructure = 把抽象接到真實世界**
+**Implementation:**
+- MUST exist in infrastructure layer
+- MUST implement domain interface
+- MAY use framework-specific code
 
----
+**Dependency Injection:**
+- Application layer MUST inject interface type
+- Infrastructure provides concrete implementation
+- NEVER import concrete repository in application/domain
 
-### 4️⃣ presentation（介面層 / UI）
+**VIOLATION: Application importing concrete repository**
+```typescript
+// FORBIDDEN
+import { FirestoreRepository } from '@infrastructure/repositories';
 
-**❌ 不能被任何內層依賴**
-
-**✅ 可以依賴**
-
-* application（UseCase / Facade）
-* shared（DTO / ViewModel type）
-* framework（Angular、Zorro、Router）
-
-**❌ 不應該直接依賴**
-
-* infrastructure
-* domain entity（最多 readonly / View 對應）
-
-**典型內容**
-
-* Components
-* Pages
-* Controllers
-* ViewModels
-* Route Guard（呼叫 application）
-
-👉 **presentation = 把 UseCase 轉成使用者能操作的形式**
-
----
-
-### 5️⃣ shared（橫向支援）
-
-> ⚠️ **shared 是最容易被濫用的層**
-
-**規則**
-
-* ❌ 不得依賴任何其他層
-* ✅ 只能放「無語意 / 無業務 / 無狀態」內容
-
-**可以放**
-
-* Result / Either
-* Error 基類
-* Primitive Types
-* Date / Money / ID helper（無規則）
-* Pure util（無 side effect）
-
-**不能放**
-
-* Domain 規則
-* Entity
-* UseCase
-* Service
-
-👉 **shared = 技術中立的工具箱**
-
----
-
-## 🔁 用箭頭畫一次完整圖（最重要）
-
-```
-presentation
-    ↓
-application
-    ↓
-domain
+// REQUIRED
+import { IRepository } from '@domain/repositories';
 ```
 
-```
-infrastructure ──────implements─────▶ domain
-```
+## Cross-Layer Violation Detection
 
-```
-shared ◀───────── everyone (read-only)
-```
+**IMMEDIATELY reject code containing:**
 
----
+| Violation | Layer | Forbidden Import |
+|-----------|-------|------------------|
+| Domain importing framework | `domain/**/*.ts` | `@angular/*`, `firebase/*`, `rxjs/*` |
+| Domain importing outer layer | `domain/**/*.ts` | `@application/*`, `@infrastructure/*`, `@presentation/*` |
+| Application importing infrastructure | `application/**/*.ts` | `@infrastructure/*` (concrete implementations) |
+| Application importing presentation | `application/**/*.ts` | `@presentation/*` |
+| Shared importing ANY layer | `shared/**/*.ts` | `@domain/*`, `@application/*`, `@infrastructure/*`, `@presentation/*` |
 
-## 🚫 常見錯誤（你現在很可能會踩）
+## Enforcement Summary
 
-| 錯誤                                  | 為什麼不行        |
-| ----------------------------------- | ------------ |
-| application import FirestoreService | 破壞可測試性       |
-| domain 用 RxJS / Observable          | 技術污染         |
-| component 直接 new Entity 改狀態         | UI 侵入領域      |
-| shared 放 Business Logic             | shared 變成垃圾場 |
+**REQUIRED in ALL code:**
+- Inward-only dependencies (presentation → application → domain)
+- Domain layer purity (zero framework dependencies)
+- Repository pattern (interface in domain, implementation in infrastructure)
+- Application layer orchestration ONLY (no business logic)
+- Presentation delegates ALL operations to application
 
----
-
-## ✅ 一句總結（給你拿去寫規範用）
-
-> **Dependency Rule：
-> Source code dependencies must point inward.
-> Domain knows nothing.
-> Application knows domain.
-> Infrastructure serves application.
-> Presentation only talks to application.**
+**FORBIDDEN in ALL code:**
+- Outward dependencies (domain → application, application → infrastructure)
+- Framework code in domain layer
+- Business logic in application or presentation layers
+- Direct infrastructure access from application/presentation
+- Circular dependencies between layers
+- Shared layer dependencies on other layers
