@@ -1,28 +1,32 @@
 /**
- * App Component (Root Shell)
+ * Root Application Component
  * 
- * Domain-Driven Design: Presentation Layer
- * Layer: Presentation (Root Component)
- * Architecture: Zone-less, Signal-based
- * 
- * This is the root component of the application that provides the
- * router outlet for all routed components.
- * 
- * Zone-less Compliance:
- * - Standalone component (no NgModule)
- * - OnPush change detection strategy
- * - No Zone.js dependency
- * - Compatible with signal-based routing
+ * Layer: Presentation
+ * Architecture: Zone-less, Standalone Component
  */
 
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { WorkspaceContextStore } from '../application/stores/workspace-context.store';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet],
-  template: '<router-outlet />',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `<router-outlet />`,
+  styles: [`
+    :host {
+      display: block;
+      height: 100vh;
+    }
+  `]
 })
-export class AppComponent {}
+export class AppComponent implements OnInit {
+  private readonly workspaceContext = inject(WorkspaceContextStore);
+  
+  ngOnInit(): void {
+    // Load demo data on app initialization
+    this.workspaceContext.loadDemoData();
+  }
+}

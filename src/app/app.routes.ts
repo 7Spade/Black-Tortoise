@@ -3,20 +3,6 @@
  * 
  * Domain-Driven Design: Application Layer Routing
  * Architecture: Zone-less, Lazy Loading with loadComponent
- * 
- * This routing configuration uses Angular's modern loadComponent pattern
- * for lazy loading standalone components without NgModules.
- * 
- * Zone-less Compliance:
- * - All lazy-loaded components are standalone
- * - Components use OnPush change detection
- * - No zone-based initialization hooks
- * - Routes are compatible with zone-less mode
- * 
- * DDD Boundaries:
- * - Routes map to Presentation layer components
- * - Components inject Application layer stores
- * - Stores manage Domain layer models
  */
 
 import { Routes } from '@angular/router';
@@ -24,18 +10,50 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/demo-context',
-    pathMatch: 'full',
-  },
-  {
-    path: 'demo-context',
     loadComponent: () => 
-      import('@presentation/demo-context-page/demo-context-page.component').then(
-        m => m.DemoContextPageComponent
+      import('./presentation/shell/global-shell.component').then(
+        m => m.GlobalShellComponent
       ),
+    children: [
+      {
+        path: 'overview',
+        loadComponent: () =>
+          import('./presentation/modules/demo-dashboard.module').then(
+            m => m.DemoDashboardModule
+          ),
+      },
+      {
+        path: 'documents',
+        loadComponent: () =>
+          import('./presentation/modules/demo-dashboard.module').then(
+            m => m.DemoDashboardModule
+          ),
+      },
+      {
+        path: 'tasks',
+        loadComponent: () =>
+          import('./presentation/modules/demo-dashboard.module').then(
+            m => m.DemoDashboardModule
+          ),
+      },
+      {
+        path: 'calendar',
+        loadComponent: () =>
+          import('./presentation/modules/demo-dashboard.module').then(
+            m => m.DemoDashboardModule
+          ),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./presentation/modules/demo-settings.module').then(
+            m => m.DemoSettingsModule
+          ),
+      },
+    ],
   },
   {
     path: '**',
-    redirectTo: '/demo-context',
+    redirectTo: '',
   },
 ];

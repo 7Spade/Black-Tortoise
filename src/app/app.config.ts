@@ -1,6 +1,6 @@
 import {
   ApplicationConfig,
-  provideZonelessChangeDetection,
+  provideExperimentalZonelessChangeDetection,
 } from '@angular/core';
 import {
   getAnalytics,
@@ -33,9 +33,9 @@ import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 
 /**
- * Application Configuration with Zone-less Change Detection
+ * Application Configuration with Experimental Zone-less Change Detection
  *
- * This configuration enables Angular's zone-less mode (stable in Angular 20+), which provides:
+ * This configuration enables Angular's experimental zone-less mode, which provides:
  *
  * Benefits:
  * - Improved performance: No Zone.js overhead for change detection
@@ -43,32 +43,16 @@ import { environment } from '../environments/environment';
  * - Better debugging: Explicit change detection through signals
  * - Modern architecture: Fully reactive with @ngrx/signals
  *
- * Architecture Compliance:
- * - Zone-less mode requires all state updates to go through signals
- * - @ngrx/signals provides the reactive foundation
- * - @angular/fire observables are consumed and converted to signals
- *
- * How it works:
- * 1. provideZonelessChangeDetection() removes Zone.js dependency (stable API in Angular 20+)
- * 2. Change detection is triggered by:
- *    - Signal updates (via patchState in stores)
- *    - User interactions (click, input, etc.)
- *    - Manual markForCheck() when needed
- * 3. All Firebase operations update signals via rxMethod patterns
- * 4. The reactive chain: Firebase → Observable → Signal → UI
- *
- * Domain Architecture:
- * - Account (Identity via Firebase Auth)
- *   → Workspace (Logical boundary via AuthStore/ContextStore)
- *   → Module (Features via signal stores)
- *   → Entity (State via @ngrx/signals)
+ * DDD Architecture:
+ * - Domain layer: Pure TypeScript (no Angular/RxJS)
+ * - Application layer: Use cases, signal stores
+ * - Infrastructure layer: Event bus implementation with RxJS
+ * - Presentation layer: Zone-less components with OnPush
  */
 export const appConfig: ApplicationConfig = {
   providers: [
-    // Zone-less change detection MUST be the first provider
-    // This tells Angular to use signal-based change detection instead of Zone.js
-    // Note: This is now a stable API in Angular 20+ (no longer experimental)
-    provideZonelessChangeDetection(),
+    // Zone-less change detection (experimental in Angular 20)
+    provideExperimentalZonelessChangeDetection(),
 
     // Router configuration with lazy-loaded routes
     provideRouter(routes),
@@ -78,16 +62,13 @@ export const appConfig: ApplicationConfig = {
     provideFirebaseApp(() => initializeApp(environment.firebase)),
 
     // Firebase Services
-    // All Firebase services work in zone-less mode because:
-    // - Their observables are consumed by @ngrx/signals stores
-    // - State updates trigger change detection via signal modifications
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideAnalytics(() => getAnalytics()),
     ScreenTrackingService,
     UserTrackingService,
 
-    // Firebase App Check with reCAPTCHA Enterprise (disabled in non-production to avoid local 403s)
+    // Firebase App Check with reCAPTCHA Enterprise (disabled in non-production)
     ...(environment.production && environment.appCheckSiteKey
       ? [
           provideAppCheck(() => {
@@ -115,13 +96,5 @@ export const appConfig: ApplicationConfig = {
     provideStorage(() => getStorage()),
     provideRemoteConfig(() => getRemoteConfig()),
     provideVertexAI(() => getVertexAI()),
-
-    /**
-     * Bootstrapping is now 100% reactive:
-     * - AuthStore.withHooks.onInit() syncs Firebase auth state into signals
-     * - ContextStore reacts to AuthStore signals to build workspace context
-     * This removes any reliance on legacy initializer tokens and keeps the app
-     * fully zone-less.
-     */
   ],
 };
