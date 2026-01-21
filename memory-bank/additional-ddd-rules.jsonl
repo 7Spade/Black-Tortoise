@@ -1,0 +1,280 @@
+{
+  "subject": "Reactive Response Pattern",
+  "fact": "Presentation layer must consume Application layer state reactively via Signals, computed signals, or effect, not via imperative subscribe or manual polling",
+  "citations": "Angular Signals: Reactive state management maintains one-way data flow",
+  "reason": "Prevent memory leaks, maintain predictable data flow, and simplify component lifecycle management",
+  "category": "Presentation Layer"
+},
+{
+  "subject": "Signal Composition",
+  "fact": "Application layer Signals must be composed from Domain state using computed() for derived values, never storing duplicate state",
+  "citations": "Angular Signals: computed() ensures referential transparency and automatic dependency tracking",
+  "reason": "Prevent state synchronization issues and maintain single source of truth",
+  "category": "Application Layer"
+},
+{
+  "subject": "Effect Side Effects Isolation",
+  "fact": "effect() in Presentation layer must only handle side effects (DOM updates, logging), not business logic or state mutations",
+  "citations": "Angular Signals: effects are for synchronizing external state with signal state",
+  "reason": "Keep business logic in Application/Domain layers, maintain testability",
+  "category": "Presentation Layer"
+},
+{
+  "subject": "Domain Event Emission",
+  "fact": "Domain Entities can emit Domain Events, but events must be collected by Aggregate Root, not directly published to external systems",
+  "citations": "DDD: Aggregate Root maintains consistency boundary and controls event publication",
+  "reason": "Ensure transactional consistency and prevent partial state changes from being published",
+  "category": "Domain Layer"
+},
+{
+  "subject": "Application Event Handler",
+  "fact": "Application layer Use Cases handle Domain Events and coordinate cross-aggregate operations, not Domain layer",
+  "citations": "DDD: Domain Events trigger Application workflows, not Domain workflows",
+  "reason": "Keep Domain pure and focused on single aggregate consistency",
+  "category": "Application Layer"
+},
+{
+  "subject": "Immutable Entity Updates",
+  "fact": "Domain Entity properties must be immutable; updates return new Entity instances or use builder pattern, never mutate existing properties",
+  "citations": "DDD + Functional Programming: Immutability ensures state history and prevents unintended side effects",
+  "reason": "Enable time-travel debugging, simplify change detection, maintain referential transparency",
+  "category": "Domain Layer"
+},
+{
+  "subject": "Aggregate Transaction Boundary",
+  "fact": "Each Use Case transaction must operate on single Aggregate Root; cross-aggregate operations use Domain Events or eventual consistency",
+  "citations": "DDD: Transaction boundary = Aggregate boundary, prevents distributed transaction complexity",
+  "reason": "Maintain scalability, avoid database locks, enable distributed systems",
+  "category": "Application Layer"
+},
+{
+  "subject": "Repository Query Object",
+  "fact": "Complex queries in Repository must use Query Object pattern with Value Objects, not primitive parameters or SQL strings",
+  "citations": "DDD: Query Objects encapsulate query logic and maintain type safety",
+  "reason": "Prevent SQL injection, maintain domain semantics, enable query reuse",
+  "category": "Domain Layer"
+},
+{
+  "subject": "Signal Store Pattern",
+  "fact": "Application Store must use signalStore() from @ngrx/signals with withMethods/withComputed/withHooks, not manual signal management",
+  "citations": "ngrx/signals: signalStore provides type-safe, composable state management",
+  "reason": "Leverage framework patterns, maintain consistency, enable DevTools integration",
+  "category": "Application Layer"
+},
+{
+  "subject": "Facade Method Return Types",
+  "fact": "Facade methods must return Signal<T> or Promise<void>, never Observable<T> or direct Repository operations",
+  "citations": "Clean Architecture + Angular Signals: Presentation consumes Signals, not Observables",
+  "reason": "Simplify component code, prevent subscription management issues",
+  "category": "Application Layer"
+},
+{
+  "subject": "Value Object Validation",
+  "fact": "Value Object validation must occur in constructor and throw DomainError if invalid, not return null or boolean",
+  "citations": "DDD: Value Objects are always valid or don't exist, fail-fast principle",
+  "reason": "Prevent invalid state from propagating through system",
+  "category": "Shared Layer"
+},
+{
+  "subject": "Entity Factory Pattern",
+  "fact": "Complex Entity creation must use static factory methods that encapsulate validation and business rules, not exposed constructors",
+  "citations": "DDD: Factories encapsulate complex creation logic and enforce invariants",
+  "reason": "Centralize creation logic, maintain consistency, enable evolution",
+  "category": "Domain Layer"
+},
+{
+  "subject": "Repository Unit of Work",
+  "fact": "Multiple Repository operations in single Use Case must be wrapped in transaction/Unit of Work pattern, not individual commits",
+  "citations": "DDD: Unit of Work maintains atomicity across multiple operations",
+  "reason": "Ensure data consistency, enable rollback, prevent partial updates",
+  "category": "Infrastructure Layer"
+},
+{
+  "subject": "Domain Service Statelessness",
+  "fact": "Domain Services must be stateless and operate only on passed Entities/Value Objects, not store internal state",
+  "citations": "DDD: Domain Services are pure operations that don't belong to any Entity",
+  "reason": "Maintain testability, enable concurrent execution, prevent hidden dependencies",
+  "category": "Domain Layer"
+},
+{
+  "subject": "Application Service Orchestration",
+  "fact": "Application Services orchestrate multiple Use Cases or Domain Services, never contain domain logic themselves",
+  "citations": "Clean Architecture: Application Services are workflow coordinators",
+  "reason": "Keep domain logic in Domain layer, maintain single responsibility",
+  "category": "Application Layer"
+},
+{
+  "subject": "Infrastructure Event Publishing",
+  "fact": "Infrastructure layer must publish Domain Events to external message bus only after successful transaction commit",
+  "citations": "DDD: Outbox pattern ensures events match committed state",
+  "reason": "Prevent publishing events for rolled-back transactions, maintain consistency",
+  "category": "Infrastructure Layer"
+},
+{
+  "subject": "Presentation Component Signals",
+  "fact": "Component properties must be Signals or computed Signals, not plain TypeScript properties that need manual change detection",
+  "citations": "Angular Signals: Signal-based components enable fine-grained reactivity",
+  "reason": "Optimize change detection, simplify data flow, enable OnPush strategy",
+  "category": "Presentation Layer"
+},
+{
+  "subject": "Guard Signal Usage",
+  "fact": "Guards must use toSignal() to read Observable-based services or read Signal-based stores directly, not subscribe",
+  "citations": "Angular Signals + Guards: Guards must remain synchronous with Signal access",
+  "reason": "Prevent memory leaks, maintain guard purity, enable testability",
+  "category": "Application Layer"
+},
+{
+  "subject": "Mapper Bidirectionality",
+  "fact": "Mappers must provide both toEntity() and fromEntity() methods for Domain-Application-Presentation conversions",
+  "citations": "Clean Architecture: Mappers maintain layer isolation with bidirectional conversion",
+  "reason": "Enable full data flow, maintain layer boundaries, support serialization",
+  "category": "Application Layer"
+},
+{
+  "subject": "DTO Separation",
+  "fact": "DTOs in Infrastructure must be separate classes from Domain Entities, not reusing Domain classes with decorators",
+  "citations": "DDD: DTOs are Infrastructure concern, not Domain concern",
+  "reason": "Prevent persistence annotations from polluting Domain, enable independent evolution",
+  "category": "Infrastructure Layer"
+},
+{
+  "subject": "Aggregate Root Identity",
+  "fact": "Aggregate Root ID must be generated by Domain (not database), using Value Object wrapper, not auto-increment or UUID generation in Infrastructure",
+  "citations": "DDD: Domain controls identity, not Infrastructure",
+  "reason": "Enable distributed systems, maintain domain ownership, support offline scenarios",
+  "category": "Domain Layer"
+},
+{
+  "subject": "Repository Specification Pattern",
+  "fact": "Complex filtering logic must use Specification pattern with composable predicates, not multiple repository methods or SQL fragments",
+  "citations": "DDD: Specifications encapsulate reusable query logic in Domain",
+  "reason": "Enable query composition, maintain domain semantics, improve testability",
+  "category": "Domain Layer"
+},
+{
+  "subject": "Store Selectors",
+  "fact": "Store must expose computed selectors for derived state, not raw state access that requires Component computation",
+  "citations": "ngrx/signals: Selectors provide memoized, derived state",
+  "reason": "Centralize computation, prevent duplicate logic, optimize performance",
+  "category": "Application Layer"
+},
+{
+  "subject": "Facade Command Pattern",
+  "fact": "Facade command methods (create, update, delete) must return Promise<void>, not Promise<Entity> or Observable",
+  "citations": "CQRS: Commands don't return values, queries read from Signals",
+  "reason": "Separate command and query paths, simplify error handling, enable eventual consistency",
+  "category": "Application Layer"
+},
+{
+  "subject": "Domain Error Hierarchy",
+  "fact": "Domain must define error hierarchy (ValidationError, BusinessRuleError, NotFoundError) extending base DomainError, not generic Error",
+  "citations": "DDD: Domain-specific errors enable precise error handling",
+  "reason": "Enable type-safe error handling, provide context, support recovery strategies",
+  "category": "Shared Layer"
+},
+{
+  "subject": "Infrastructure Error Translation",
+  "fact": "Infrastructure must catch technical errors (network, database) and translate to Domain Errors before propagating to Application",
+  "citations": "Clean Architecture: Infrastructure errors must not leak to Domain/Application",
+  "reason": "Maintain layer abstraction, enable domain-focused error handling",
+  "category": "Infrastructure Layer"
+},
+{
+  "subject": "Value Object Equality",
+  "fact": "Value Objects must implement structural equality via equals() method comparing all properties, not reference equality",
+  "citations": "DDD: Value Objects are equal when their values are equal",
+  "reason": "Enable proper comparison, support collections, maintain domain semantics",
+  "category": "Shared Layer"
+},
+{
+  "subject": "Entity Equality",
+  "fact": "Entities must implement identity equality comparing only ID Value Object, not all properties",
+  "citations": "DDD: Entities are equal when their IDs are equal",
+  "reason": "Support state changes over time, enable proper tracking, maintain domain semantics",
+  "category": "Domain Layer"
+},
+{
+  "subject": "Presentation Effect Cleanup",
+  "fact": "Effects in Components must be created with {allowSignalWrites: false} unless explicitly modifying Signals, not default configuration",
+  "citations": "Angular Signals: Prevent circular dependencies and infinite loops",
+  "reason": "Maintain predictable data flow, prevent runtime errors, enable debugging",
+  "category": "Presentation Layer"
+},
+{
+  "subject": "Signal Store Hydration",
+  "fact": "Store initialization must load state via withHooks onInit, not in constructor or ngOnInit",
+  "citations": "ngrx/signals: withHooks provides lifecycle management for signalStore",
+  "reason": "Ensure proper initialization timing, support SSR, enable testing",
+  "category": "Application Layer"
+},
+{
+  "subject": "Repository Pagination",
+  "fact": "Repository pagination must use Value Object (PageRequest/PageResult), not primitive numbers or tuples",
+  "citations": "DDD: Pagination is domain concept, requires encapsulation",
+  "reason": "Maintain type safety, enable validation, support evolution",
+  "category": "Domain Layer"
+},
+{
+  "subject": "Domain Event Ordering",
+  "fact": "Aggregate Root must maintain ordered collection of unpublished Domain Events, cleared after publication",
+  "citations": "DDD: Event ordering ensures consistent event processing",
+  "reason": "Maintain causality, enable event sourcing, support debugging",
+  "category": "Domain Layer"
+},
+{
+  "subject": "Use Case Input Validation",
+  "fact": "Use Case must validate input using Value Objects before Domain operation, not inside Domain Entity",
+  "citations": "Clean Architecture: Application validates external input, Domain enforces business rules",
+  "reason": "Separate concerns, enable different validation contexts, maintain boundaries",
+  "category": "Application Layer"
+},
+{
+  "subject": "Store Loading State",
+  "fact": "Store must track loading/error states using Signal<RequestState<T>> pattern, not separate boolean flags",
+  "citations": "ngrx/signals: Unified state pattern prevents impossible states",
+  "reason": "Prevent race conditions, simplify UI logic, ensure consistency",
+  "category": "Application Layer"
+},
+{
+  "subject": "Facade Dependency Injection",
+  "fact": "Facade must inject Use Cases via dependency injection, not instantiate directly or use static methods",
+  "citations": "Clean Architecture + Angular: DI enables testing and flexibility",
+  "reason": "Enable mocking, support multiple implementations, maintain loose coupling",
+  "category": "Application Layer"
+},
+{
+  "subject": "Repository Transaction Isolation",
+  "fact": "Repository implementation must not manage transactions; transaction control belongs to Application Use Case or Unit of Work",
+  "citations": "DDD: Repository provides persistence, not transaction management",
+  "reason": "Enable cross-repository transactions, maintain single responsibility",
+  "category": "Infrastructure Layer"
+},
+{
+  "subject": "Signal Effect Dependencies",
+  "fact": "Effect must explicitly list all Signal dependencies in effect block, not access Signals conditionally",
+  "citations": "Angular Signals: Conditional Signal access breaks reactivity tracking",
+  "reason": "Ensure proper reactivity, prevent stale state, enable optimization",
+  "category": "Presentation Layer"
+},
+{
+  "subject": "Domain Invariant Enforcement",
+  "fact": "Aggregate Root must enforce invariants in all mutation methods, using guard clauses or throwing DomainError",
+  "citations": "DDD: Invariants are business rules that must always hold true",
+  "reason": "Prevent invalid state, maintain data integrity, centralize validation",
+  "category": "Domain Layer"
+},
+{
+  "subject": "Application DTO Mapping",
+  "fact": "Application Mapper must not expose Domain Entities directly to Presentation; map to Presentation DTOs/ViewModels",
+  "citations": "Clean Architecture: Presentation layer should not depend on Domain structures",
+  "reason": "Enable independent UI evolution, maintain layer isolation, support multiple UIs",
+  "category": "Application Layer"
+},
+{
+  "subject": "Store Optimistic Updates",
+  "fact": "Store optimistic updates must revert on error using patchState with previous snapshot, not manual state restoration",
+  "citations": "ngrx/signals: State immutability enables automatic rollback",
+  "reason": "Ensure consistency, simplify error handling, maintain audit trail",
+  "category": "Application Layer"
+}
