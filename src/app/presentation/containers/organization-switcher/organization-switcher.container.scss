@@ -1,0 +1,79 @@
+/* Organization Switcher Container Styles */
+
+.organization-switcher {
+  position: relative;
+  display: inline-block;
+}
+
+.organization-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--mdc-text-button-label-text-color);
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--mdc-text-button-container-color);
+  }
+
+  .organization-name {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.organization-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 200px;
+  background: var(--mdc-elevated-card-container-color);
+  border-radius: 8px;
+  box-shadow: var(--mdc-elevated-card-container-elevation);
+  z-index: 1000;
+  margin-top: 4px;
+}
+
+.organization-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: var(--mdc-text-button-label-text-color);
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--mdc-text-button-container-color);
+  }
+
+  &.active {
+    background-color: var(--mdc-text-button-container-color);
+    font-weight: 500;
+  }
+
+  .material-icons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.organization-menu-divider {
+  height: 1px;
+  background-color: var(--mdc-divider-color);
+  margin: 8px 0;
+}

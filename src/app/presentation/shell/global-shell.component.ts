@@ -15,8 +15,8 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
-import { GlobalHeaderComponent } from '@presentation/features/header';
 import { filter, map, startWith } from 'rxjs';
+import { GlobalHeaderComponent } from './global-header.component';
 
 @Component({
   selector: 'app-global-shell',

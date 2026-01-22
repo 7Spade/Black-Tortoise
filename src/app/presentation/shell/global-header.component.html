@@ -1,0 +1,47 @@
+<header class="global-header">
+  <!-- Left Zone: Logo (Icon + Text on Single Line) -->
+  <div class="header-left">
+    <a class="logo" role="link" aria-label="Go to home" (click)="navigateHome()" tabindex="0">
+      <span class="logo-text">Black Tortoise</span>
+      <span class="material-icons" aria-hidden="true">dashboard</span>
+    </a>
+  </div>
+
+  <!-- Center Zone: Workspace Controls + Search + Notifications + Theme -->
+  <div class="header-center">
+    <!-- Workspace Controls (left of search) -->
+    @if (showWorkspaceControls()) {
+      <div class="workspace-controls-wrapper">
+        <!-- TODO: Add workspace switcher container -->
+      </div>
+    }
+
+    <!-- Search Input -->
+    <div class="search-wrapper">
+      <!-- TODO: Add search component -->
+    </div>
+
+    <!-- Notifications (right of search) -->
+    <button class="icon-button" aria-label="Notifications" type="button" (click)="toggleNotifications()">
+      <span class="material-icons">notifications</span>
+      @if (notificationCount() > 0) {
+        <span class="badge">{{ notificationCount() }}</span>
+      }
+    </button>
+
+    <!-- Theme Toggle Component (right of search) -->
+    <!-- TODO: Add theme toggle component -->
+  </div>
+
+  <!-- Right Zone: User Avatar -->
+  <div class="header-right">
+    <!-- TODO: Add user avatar component -->
+  </div>
+
+  <!-- Notification Panel (conditionally shown) -->
+  @if (showNotifications()) {
+    <div class="notification-panel">
+      <!-- TODO: Add notification component -->
+    </div>
+  }
+</header>

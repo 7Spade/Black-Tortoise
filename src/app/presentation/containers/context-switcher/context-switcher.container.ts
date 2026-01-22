@@ -13,11 +13,11 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
   selector: 'app-context-switcher',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './context-switcher.component.html',
-  styleUrls: ['./context-switcher.component.scss'],
+  templateUrl: './context-switcher.container.html',
+  styleUrls: ['./context-switcher.container.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContextSwitcherComponent {
+export class ContextSwitcherContainer {
   // 下拉菜單是否開啟的本地 state
   isOpen = signal(false);
 

@@ -31,8 +31,8 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () =>
-          import('./presentation/features/settings').then(
-            m => m.SettingsComponent
+          import('./presentation/pages/settings/settings.page').then(
+            m => m.SettingsPage
           ),
       },
       

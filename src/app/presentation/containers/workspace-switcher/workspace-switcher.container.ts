@@ -17,7 +17,7 @@ import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
 import { filter, tap } from 'rxjs/operators';
 import { WorkspaceCreateResult } from '../models/workspace-create-result.model';
-import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
+import { WorkspaceCreateTriggerComponent } from './components/workspace-create-trigger.component';
 
 // Import facade from header feature (presentation-to-presentation is allowed for facades)
 import { HeaderFacade } from '../../header/facade/header.facade';
@@ -27,7 +27,7 @@ import { HeaderFacade } from '../../header/facade/header.facade';
   standalone: true,
   imports: [CommonModule, WorkspaceCreateTriggerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./workspace-switcher.component.scss'],
+  styleUrls: ['./workspace-switcher.container.scss'],
   template: `
     <!-- Workspace Switcher -->
     @if (workspaceContext.hasWorkspace()) {
