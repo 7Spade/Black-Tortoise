@@ -20,13 +20,12 @@ import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { WorkspaceCreateResult } from '../models/workspace-create-result.model';
 
 /**
- * Dialog result type
+ * @deprecated Use WorkspaceCreateResult from models/workspace-create-result.model.ts
  */
-export interface WorkspaceCreateDialogResult {
-  readonly workspaceName: string;
-}
+export type WorkspaceCreateDialogResult = WorkspaceCreateResult;
 
 /**
  * Workspace Create Dialog Component
@@ -91,7 +90,7 @@ export class WorkspaceCreateDialogComponent {
 
     this.isSubmitting.set(true);
 
-    const result: WorkspaceCreateDialogResult = {
+    const result: WorkspaceCreateResult = {
       workspaceName,
     };
 

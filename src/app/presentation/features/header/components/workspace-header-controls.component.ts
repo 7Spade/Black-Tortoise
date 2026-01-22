@@ -5,26 +5,25 @@
  * Purpose: Workspace and Identity switcher controls for global header
  * Architecture: Zone-less, OnPush, Angular 20 control flow, Pure Reactive
  * 
- * Reactive Flow:
- * - Dialog result → Observable stream → tapResponse → WorkspaceContextStore
- * - No async/await, no manual subscribe, type-safe result handling
+ * Responsibilities:
+ * - UI controls only - emits user intent events
+ * - Must NOT open dialog or interpret dialog result
+ * - Must only call facade for app actions (switch/create workspace)
+ * - Uses WorkspaceCreateTriggerComponent for dialog opening
  */
 
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, ChangeDetectionStrategy, inject, signal, viewChild } from '@angular/core';
 import { filter, tap } from 'rxjs/operators';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
-import {
-  WorkspaceCreateDialogComponent,
-  WorkspaceCreateDialogResult,
-} from './workspace-create-dialog.component';
+import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
+import { HeaderFacade } from '../facade/header.facade';
+import { WorkspaceCreateResult } from '../models/workspace-create-result.model';
 
 @Component({
   selector: 'app-workspace-header-controls',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, WorkspaceCreateTriggerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./workspace-header-controls.component.scss'],
   template: `
@@ -107,15 +106,20 @@ import {
         </div>
       }
     </div>
+
+    <!-- WorkspaceCreateTriggerComponent - hidden, used programmatically -->
+    <app-workspace-create-trigger />
   `,
 })
 export class WorkspaceHeaderControlsComponent {
   readonly workspaceContext = inject(WorkspaceContextStore);
-  private readonly router = inject(Router);
-  private readonly dialog = inject(MatDialog);
+  private readonly facade = inject(HeaderFacade);
 
   readonly showWorkspaceMenu = signal(false);
   readonly showIdentityMenu = signal(false);
+
+  // Reference to trigger component
+  private readonly createTrigger = viewChild(WorkspaceCreateTriggerComponent);
 
   toggleWorkspaceMenu(): void {
     this.showWorkspaceMenu.update(v => !v);
@@ -127,40 +131,41 @@ export class WorkspaceHeaderControlsComponent {
     this.showWorkspaceMenu.set(false);
   }
 
+  /**
+   * Emit user intent: switch workspace
+   * Delegates to facade for app action
+   */
   selectWorkspace(workspaceId: string): void {
-    this.workspaceContext.switchWorkspace(workspaceId);
     this.showWorkspaceMenu.set(false);
-    this.router.navigate(['/workspace']).catch(() => {
-      this.workspaceContext.setError('Failed to navigate to workspace');
-    });
+    this.facade.switchWorkspace(workspaceId);
   }
 
   /**
-   * Create new workspace via dialog
-   * Pure reactive: Observable → filter → tap → subscribe
-   * Type-safe without generics on afterClosed()
+   * Emit user intent: create new workspace
+   * Uses WorkspaceCreateTriggerComponent to open dialog
+   * Processes result via facade - NO business logic here
    */
   createNewWorkspace(): void {
-    const dialogRef = this.dialog.open(WorkspaceCreateDialogComponent, {
-      width: '500px',
-      disableClose: false,
-      autoFocus: true,
-    });
+    const trigger = this.createTrigger();
+    if (!trigger) {
+      return;
+    }
 
-    // Type-safe result handling without generics
-    // afterClosed() returns Observable<WorkspaceCreateDialogResult | undefined>
-    dialogRef.afterClosed().pipe(
-      // Filter out null/undefined results (user cancelled)
-      filter((result): result is WorkspaceCreateDialogResult => 
-        result !== null && result !== undefined && !!result.workspaceName
+    // Trigger opens dialog and returns Observable<unknown>
+    trigger.openDialog().pipe(
+      // Filter and type-narrow to WorkspaceCreateResult
+      filter((result): result is WorkspaceCreateResult => 
+        result !== null && 
+        result !== undefined && 
+        typeof result === 'object' &&
+        'workspaceName' in result &&
+        typeof (result as WorkspaceCreateResult).workspaceName === 'string' &&
+        !!(result as WorkspaceCreateResult).workspaceName
       ),
-      // Side effects: create workspace and navigate
+      // Delegate to facade for app action
       tap((result) => {
-        this.workspaceContext.createWorkspace(result.workspaceName);
         this.showWorkspaceMenu.set(false);
-        this.router.navigate(['/workspace']).catch(() => {
-          this.workspaceContext.setError('Failed to navigate to workspace');
-        });
+        this.facade.createWorkspace(result);
       })
     ).subscribe({
       error: () => {
