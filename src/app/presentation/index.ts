@@ -13,7 +13,7 @@ export * from './pages';
 
 // Domain-specific presentation layers
 export * from './organization';
-export * from './settings';
+export * from './pages/settings';
 export * from './team';
 export * from './workspace';
 

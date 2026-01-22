@@ -31,7 +31,7 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () =>
-          import('./presentation/settings').then(
+          import('./presentation/pages/settings').then(
             m => m.SettingsComponent
           ),
       },
