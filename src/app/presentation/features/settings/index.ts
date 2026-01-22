@@ -3,5 +3,4 @@
  */
 
 // Components
-export { SettingsEntryComponent } from './components/settings-entry/settings-entry.component';
-export { SettingsPageComponent } from './components/settings-page/settings-page.component';
+export { SettingsComponent } from './settings.component';

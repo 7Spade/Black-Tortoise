@@ -19,7 +19,7 @@
 import { Component, ChangeDetectionStrategy, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DOCUMENT } from '@angular/common';
-import { WorkspaceHeaderControlsComponent } from '../workspace-header/workspace-header-controls.component';
+import { WorkspaceHeaderControlsComponent } from '../../../workspace/components/workspace-header-controls.component';
 import { SearchComponent } from '../../../../shared/components/search/search.component';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 
