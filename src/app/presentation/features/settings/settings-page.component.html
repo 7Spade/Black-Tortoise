@@ -1,0 +1,14 @@
+<!-- Settings Page
+     註解: Presentation component; 實際行為應由 application 層處理 -->
+<section class="settings-page">
+  <h2>設定</h2>
+  <label>
+    <input type="checkbox" [checked]="isDarkMode()" (change)="toggleDarkMode()" />
+    深色模式
+  </label>
+
+  <div class="actions">
+    <button (click)="saveSettings()" [disabled]="saving()">儲存設定</button>
+    <span *ngIf="saving()">儲存中…</span>
+  </div>
+</section>

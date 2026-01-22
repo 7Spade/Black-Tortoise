@@ -1,0 +1,9 @@
+/* Search component styles - 簡單樣式，允許主題覆寫 */
+.search {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  &__controls { display: flex; gap: 8px; align-items: center; }
+  &__input { flex: 1; padding: 8px; }
+  &__btn { padding: 8px 12px; }
+}
