@@ -1,10 +1,10 @@
 /**
- * Settings Page Component
- *
+ * Settings Component
+ * 
  * Layer: Presentation
  * Purpose: Unified settings page for application configuration
  * Architecture: Zone-less, OnPush, Angular 20 control flow, Pure Reactive
- *
+ * 
  * Responsibilities:
  * - Display and manage application settings UI
  * - Use signals for local UI state
@@ -12,7 +12,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 
 @Component({
@@ -20,10 +20,10 @@ import { MatCardModule } from '@angular/material/card';
   standalone: true,
   imports: [CommonModule, MatCardModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './settings.page.html',
-  styleUrls: ['./settings.page.scss'],
+  templateUrl: './settings.component.html',
+  styleUrls: ['./settings.component.scss'],
 })
-export class SettingsPage {
+export class SettingsComponent {
   /**
    * Local UI signals - demonstration only
    * In production, these should be managed by application layer store

@@ -1,7 +1,7 @@
 import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { WorkspaceSwitcherComponent } from './workspace-switcher.container';
+import { WorkspaceSwitcherComponent } from './workspace-switcher.component';
 
 describe('WorkspaceSwitcherComponent', () => {
   let component: WorkspaceSwitcherComponent;
@@ -9,7 +9,7 @@ describe('WorkspaceSwitcherComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WorkspaceSwitcherComponent],
+      imports: [WorkspaceHeaderControlsComponent],
       providers: [
         provideExperimentalZonelessChangeDetection(),
         provideRouter([]),
