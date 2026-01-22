@@ -106,44 +106,138 @@ name: 'Angular 20+ Pure Reactive Agent 5.2-v3'
 ### 6.1 專案結構範例 (Standard DDD)
 ```
 src/app/
-├── domain/                           # 🎯 核心業務邏輯 (Pure TS - No Frameworks)
-│   ├── entities/                     # 具有唯一識別碼的業務對象 (*.entity.ts)
-│   ├── value-objects/                # 描述性且不可變的對象 (*.value-object.ts)
-│   ├── aggregates/                   # 聚合根 (*.aggregate.ts)
-│   ├── events/                       # 領域事件 (*.event.ts)
-│   ├── repositories/                 # 倉儲介面定義 (Interfaces ONLY)
-│   ├── specifications/               # 規格/條件 (Specification pattern)
-│   ├── factories/                    # 聚合/實體建構器 (Factories)
-│   └── types/                        # 業務領域專用的 TypeScript 型別
-├── application/                      # 🏗️ 應用調度與狀態管理
-│   ├── stores/                       # NgRx Signals 狀態中心 (*.store.ts)
-│   ├── commands/                     # 改變狀態的操作封裝 (*.command.ts)
-│   ├── queries/                      # 數據讀取與篩選邏輯 (*.query.ts)
-│   ├── handlers/                     # Command & Query 的執行器 (*.handler.ts)
-│   ├── facades/                      # Facade / Context 層 (presentation ↔ application)
-│   ├── validators/                   # 驗證器 (應用層邏輯驗證)
-│   └── mappers/                      # Domain Model 與 UI/DTO 之間的轉換
-├── infrastructure/                   # 🔌 基礎技術實作 (Framework/Library specific)
-│   ├── persistence/                  # 倉儲介面具體實作 (*.repository.ts)
-│   ├── firebase/                     # Firestore, Auth, Functions 專屬封裝
-│   ├── adapters/                     # 外部 API (REST/GraphQL) 連接器
-│   ├── config/                       # 全域設定、環境參數、Feature Flags
-│   ├── logging/                      # 自訂 logger 或監控 hook
-│   ├── event-bus/                    # 非同步處理/領域事件佇列 (可選)
-│   └── dto/                          # 外部原始數據結構定義 (*.dto.ts)
-└── presentation/                     # 🎨 使用者界面與交互 (Zone-less)
-    ├── containers/                   # 智能容器元件（接收 signals / facade）
-    ├── shell/                        # 全域佈局、導航與根組件 (GlobalShell)
-    ├── pages/                        # 路由入口（薄、無業務）
+├── domain/                           # 🎯 核心業務邏輯 (Pure TS)
+│   ├── entities/                     # 聚合內核心實體
+│   │   ├── user.entity.ts
+│   │   └── order.entity.ts
+│   ├── value-objects/                # 不可變值對象
+│   │   ├── email.value-object.ts
+│   │   └── currency.value-object.ts
+│   ├── aggregates/                   # 聚合根，承擔業務一致性
+│   │   ├── order.aggregate.ts
+│   │   └── cart.aggregate.ts
+│   ├── events/                       # Domain Events (純定義)
+│   │   ├── user-created.event.ts
+│   │   └── order-placed.event.ts
+│   ├── repositories/                 # Interface only
+│   │   ├── user.repository.ts
+│   │   └── order.repository.ts
+│   ├── specifications/               # 條件/驗證規格
+│   │   ├── can-checkout.spec.ts
+│   │   └── is-admin.spec.ts
+│   ├── factories/                    # 聚合/實體建構器
+│   │   ├── order.factory.ts
+│   │   └── user.factory.ts
+│   └── types/                        # Domain 專用 Type
+│       └── domain-types.ts
+│
+├── application/                      # 🏗️ 狀態管理 / Command / Query
+│   ├── stores/                       # Signals Store (接收 domain events)
+│   │   ├── user.store.ts
+│   │   └── cart.store.ts
+│   ├── commands/                     # Command 封裝操作
+│   │   ├── create-user.command.ts
+│   │   └── add-to-cart.command.ts
+│   ├── queries/                      # Query 封裝查詢
+│   │   ├── get-user.query.ts
+│   │   └── list-cart-items.query.ts
+│   ├── handlers/                     # Command/Event Handler
+│   │   ├── create-user.handler.ts
+│   │   └── add-to-cart.handler.ts
+│   ├── facades/                      # Presentation ↔ Application 唯一邊界
+│   │   ├── user.facade.ts
+│   │   └── cart.facade.ts
+│   ├── validators/                   # 驗證器
+│   │   ├── email.validator.ts
+│   │   └── checkout.validator.ts
+│   └── mappers/                      # Domain ↔ DTO/UI
+│       ├── user.mapper.ts
+│       └── order.mapper.ts
+│
+├── infrastructure/                   # 🔌 技術實作 & 事件總線
+│   ├── persistence/                  # Repository 實作 (AngularFire)
+│   │   ├── user.repository.impl.ts   # RxFirestore / collection snapshots
+│   │   └── order.repository.impl.ts
+│   ├── firebase/                     # AngularFire 封裝 / Auth / Firestore / Functions
+│   │   ├── auth.service.ts
+│   │   └── firestore.service.ts
+│   ├── adapters/                     # 外部系統 API / 微服務
+│   │   ├── payment.adapter.ts
+│   │   └── shipping.adapter.ts
+│   ├── config/                       # 環境 / Feature Flags
+│   │   ├── env.config.ts
+│   │   └── feature-flags.ts
+│   ├── logging/                      # Logger / Monitoring
+│   │   ├── logger.service.ts
+│   │   └── monitoring.hook.ts
+│   ├── event-bus/                    # 事件總線 (因果事件流)
+│   │   ├── domain-event-bus.service.ts       # domain events → subscriber → handler → store/facade
+│   │   ├── integration-event-bus.service.ts # 對外事件流 (integration events)
+│   │   ├── event-publisher.ts                # 發布事件
+│   │   └── event-subscriber.ts              # 訂閱事件並觸發 handler
+│   └── dto/                          # 外部資料結構
+│       ├── user.dto.ts
+│       └── order.dto.ts
+│
+└── presentation/                     # 🎨 UI / Interaction (Zone-less)
+    ├── containers/                   # Smart Components (唯一注入 facade/store)
+    │   └── example-container/
+    │       ├── example.container.ts  # ← user.facade.ts → container
+    │       ├── components/           # Dumb components (pure UI)
+    │       │   ├── header.component.ts
+    │       │   ├── footer.component.ts
+    │       │   └── sidebar.component.ts
+    │       └── index.ts               # public re-export
+    │
+    ├── shell/
+    │   ├── global-shell.component.ts
+    │   ├── global-shell.module.ts
+    │   └── index.ts
+    │
+    ├── pages/                        # Route entry (薄層，無業務)
     │   └── settings/
-    │       ├── settings.page.ts      # Route 對應的頁面入口（Presentation 最外層）
-    │       ├── settings.container.ts # Smart Container（UI ↔ Application 的唯一邊界）
-    │       ├── components/           # Dumb UI Components（純展示）
-    │       └── index.ts              # Public API（re-export only）
-    ├── modules/                      # Feature module 的 presentation 層
-    ├── shared/                       # Presentation 層共享資源（directive, pipe, ui library）
-    ├── animations/                   # 動畫與交互效果 (component-level animations)
-    └── theme/                        # M3 設計令牌與樣式 (Styles/Tokens)
+    │       ├── settings.page.ts      # router outlet, container injection
+    │       ├── settings.container.ts # Smart container: inject facade/store
+    │       ├── components/
+    │       │   ├── settings-header.component.ts
+    │       │   ├── settings-form.component.ts
+    │       │   └── settings-footer.component.ts
+    │       └── index.ts
+    │
+    ├── modules/                      # Angular module / routing only
+    │   └── settings.module.ts
+    │
+    ├── shared/
+    │   ├── components/               # Pure UI shared components
+    │   │   ├── button.component.ts
+    │   │   ├── card.component.ts
+    │   │   └── modal.component.ts
+    │   ├── directives/
+    │   │   ├── autofocus.directive.ts
+    │   │   └── hide.directive.ts
+    │   └── pipes/
+    │       ├── date-format.pipe.ts
+    │       └── truncate.pipe.ts
+    │
+    ├── animations/
+    │   ├── fade.animation.ts
+    │   ├── slide.animation.ts
+    │   └── bounce.animation.ts
+    │
+    └── theme/
+        ├── color.tokens.ts
+        ├── typography.tokens.ts
+        └── spacing.tokens.ts
+
+# 🔹事件流 / 因果建議：
+# 1️⃣ Domain Event 發生：domain/events/*.event.ts
+# 2️⃣ Domain Event Bus 處理：infrastructure/event-bus/domain-event-bus.service.ts
+# 3️⃣ Handler 執行業務邏輯：application/handlers/*.handler.ts
+# 4️⃣ 更新狀態 / Signals Store：application/stores/*.store.ts
+# 5️⃣ Facade 傳遞給 Presentation：application/facades/*.facade.ts
+# 6️⃣ Container / Page 監聽 Signals 並渲染：presentation/containers/*.container.ts → presentation/pages/*.page.ts
+# 7️⃣ 對外事件：integration-event-bus → adapters / 外部 API (可選)
+
 ```
 
 ### 6.2 實作範例摘要 (詳見代碼生成規則)
