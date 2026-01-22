@@ -10,13 +10,13 @@
  * - Error notifications
  */
 
-import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { GlobalHeaderComponent } from '@presentation/features/header';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { filter, map, startWith } from 'rxjs';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
+import { GlobalHeaderComponent } from '@presentation/shell/layout/global-header';
+import { filter, map, startWith } from 'rxjs';
 
 @Component({
   selector: 'app-global-shell',

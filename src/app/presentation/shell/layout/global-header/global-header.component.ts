@@ -16,12 +16,11 @@
  * - Manages local UI state (notifications, theme) via signals
  */
 
-import { Component, ChangeDetectionStrategy, inject, input, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { DOCUMENT } from '@angular/common';
-import { WorkspaceHeaderControlsComponent } from '../../../workspace/components/workspace-header-controls.component';
-import { SearchComponent } from '../../../../shared/components/search/search.component';
-import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { WorkspaceHeaderControlsComponent } from '../../../features/workspace/components/workspace-header-controls.component';
+import { NotificationComponent } from '../../../shared/components/notification/notification.component';
+import { SearchComponent } from '../../../shared/components/search/search.component';
 
 @Component({
   selector: 'app-global-header',

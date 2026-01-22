@@ -13,14 +13,14 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, inject, signal, viewChild } from '@angular/core';
-import { filter, tap } from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
-import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
+import { filter, tap } from 'rxjs/operators';
 import { WorkspaceCreateResult } from '../models/workspace-create-result.model';
+import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
 
 // Import facade from header feature (presentation-to-presentation is allowed for facades)
-import { HeaderFacade } from '../../header/facade/header.facade';
+import { HeaderFacade } from '../../../shell/layout/global-header/facade/header.facade';
 
 @Component({
   selector: 'app-workspace-header-controls',
