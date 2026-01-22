@@ -221,14 +221,14 @@ src/app/
 │
 └── presentation/                     # 🎨 UI / Interaction (Zone-less)
     ├── containers/                   # Smart Components (唯一注入 facade/store)
-    │   └── example-container/
-    │       ├── example.container.ts  # ← user.facade.ts → container
-    │       ├── components/           # Dumb components (pure UI)
-    │       │   ├── header.component.ts
-    │       │   ├── footer.component.ts
-    │       │   └── sidebar.component.ts
-    │       └── index.ts               # public re-export
-    │
+    │   ├── example-container/
+    │   │   ├── example.container.ts  # ← user.facade.ts → container
+    │   │   ├── components/           # Dumb components (pure UI)
+    │   │   │   ├── header.component.ts
+    │   │   │   ├── footer.component.ts
+    │   │   │   └── sidebar.component.ts
+    │   │   └── index.ts               # public re-export
+    │   │
     │   ├── workspace-switcher/
     │   │   ├── workspace-switcher.container.ts  # Smart container
     │   │   ├── components/                      # Dumb UI
