@@ -20,6 +20,7 @@ import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom } from 'rxjs';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
 import { 
   WorkspaceCreateDialogComponent, 
@@ -64,7 +65,7 @@ export class GlobalHeaderComponent {
     });
   }
   
-  createNewWorkspace(): void {
+  async createNewWorkspace(): Promise<void> {
     // Open Material 3 dialog
     const dialogRef = this.dialog.open(WorkspaceCreateDialogComponent, {
       width: '500px',
@@ -72,17 +73,19 @@ export class GlobalHeaderComponent {
       autoFocus: true,
     });
 
-    dialogRef.afterClosed().subscribe((result: WorkspaceCreateDialogResult | null) => {
-      if (result?.workspaceName) {
-        // Business logic: create workspace (application layer)
-        this.workspaceContext.createWorkspace(result.workspaceName);
-        
-        // Presentation concern: navigate to workspace view
-        this.showWorkspaceMenu.set(false);
-        this.router.navigate(['/workspace']).catch(() => {
-          this.workspaceContext.setError('Failed to navigate to workspace');
-        });
-      }
-    });
+    const result = await firstValueFrom(
+      dialogRef.afterClosed<WorkspaceCreateDialogResult | null>()
+    );
+
+    if (result?.workspaceName) {
+      // Business logic: create workspace (application layer)
+      this.workspaceContext.createWorkspace(result.workspaceName);
+      
+      // Presentation concern: navigate to workspace view
+      this.showWorkspaceMenu.set(false);
+      this.router.navigate(['/workspace']).catch(() => {
+        this.workspaceContext.setError('Failed to navigate to workspace');
+      });
+    }
   }
 }

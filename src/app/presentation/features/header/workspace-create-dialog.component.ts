@@ -57,7 +57,6 @@ export class WorkspaceCreateDialogComponent {
     nonNullable: true,
     validators: [
       Validators.required,
-      Validators.minLength(1),
       Validators.maxLength(100),
       Validators.pattern(/^[a-zA-Z0-9\s\-_]+$/), // Alphanumeric, spaces, hyphens, underscores
     ],
@@ -107,10 +106,6 @@ export class WorkspaceCreateDialogComponent {
 
     if (control.hasError('required')) {
       return 'Workspace name is required';
-    }
-
-    if (control.hasError('minlength')) {
-      return 'Workspace name must be at least 1 character';
     }
 
     if (control.hasError('maxlength')) {

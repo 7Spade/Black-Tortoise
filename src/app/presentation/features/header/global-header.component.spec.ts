@@ -127,10 +127,7 @@ describe('GlobalHeaderComponent', () => {
       
       spyOn(component.workspaceContext, 'createWorkspace');
       
-      component.createNewWorkspace();
-      
-      // Wait for observable to complete
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await component.createNewWorkspace();
       
       expect(component.workspaceContext.createWorkspace).toHaveBeenCalledWith('Test Workspace');
       expect(component.showWorkspaceMenu()).toBe(false);
@@ -143,10 +140,7 @@ describe('GlobalHeaderComponent', () => {
       
       spyOn(component.workspaceContext, 'createWorkspace');
       
-      component.createNewWorkspace();
-      
-      // Wait for observable to complete
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await component.createNewWorkspace();
       
       expect(component.workspaceContext.createWorkspace).not.toHaveBeenCalled();
       expect(mockRouter.navigate).not.toHaveBeenCalled();
@@ -163,10 +157,10 @@ describe('GlobalHeaderComponent', () => {
       
       spyOn(component.workspaceContext, 'setError');
       
-      component.createNewWorkspace();
+      await component.createNewWorkspace();
       
-      // Wait for observable and promise rejection
-      await new Promise(resolve => setTimeout(resolve, 20));
+      // Wait for promise rejection
+      await new Promise(resolve => setTimeout(resolve, 10));
       
       expect(component.workspaceContext.setError).toHaveBeenCalledWith(
         'Failed to navigate to workspace'
