@@ -133,9 +133,7 @@ export class WorkspaceHeaderControlsComponent {
     let result: WorkspaceCreateDialogResult | null = null;
 
     try {
-      result = await firstValueFrom(
-        dialogRef.afterClosed<WorkspaceCreateDialogResult | null>()
-      );
+      result = await firstValueFrom(dialogRef.afterClosed());
     } catch {
       this.workspaceContext.setError('Failed to open workspace dialog');
       return;

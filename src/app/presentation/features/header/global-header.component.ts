@@ -94,4 +94,12 @@ export class GlobalHeaderComponent {
     const notifications = this.notificationService.getNotifications();
     this.notificationCount.set(notifications.length);
   }
+
+  selectWorkspace(workspaceId: string): void {
+    console.warn('[GlobalHeader] Workspace controls moved to WorkspaceHeaderControlsComponent');
+  }
+
+  createNewWorkspace(): void {
+    console.warn('[GlobalHeader] Workspace controls moved to WorkspaceHeaderControlsComponent');
+  }
 }
