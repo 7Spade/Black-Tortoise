@@ -7,9 +7,10 @@
 // Features
 export * from './features/header';
 export * from './features/dashboard';
+export * from './features/settings';
 
 // Shell
-export { GlobalShellComponent } from './shell/global-shell.component';
+export * from './shell';
 
 // Workspace Host
 export { WorkspaceHostComponent } from './workspace-host/workspace-host.component';
