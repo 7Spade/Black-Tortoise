@@ -11,12 +11,10 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { GlobalHeaderComponent } from '@presentation/features/header';
-import { filter, map, startWith } from 'rxjs';
+import { ShellFacade } from './facade/shell.facade';
 
 @Component({
   selector: 'app-global-shell',
@@ -26,17 +24,17 @@ import { filter, map, startWith } from 'rxjs';
   template: `
     <div class="global-shell">
       <!-- Global Header Component -->
-      <app-global-header [showWorkspaceControls]="showWorkspaceControls()" />
-      
+      <app-global-header [showWorkspaceControls]="shell.showWorkspaceControls()" />
+
       <!-- Main content area -->
       <main class="shell-content">
         <router-outlet />
       </main>
-      
-      @if (workspaceContext.error()) {
+
+      @if (shell.hasWorkspaceError()) {
         <div class="error-banner">
-          {{ workspaceContext.error() }}
-          <button (click)="workspaceContext.setError(null)" type="button">✕</button>
+          {{ shell.workspaceError() }}
+          <button (click)="shell.clearWorkspaceError()" type="button">✕</button>
         </div>
       }
     </div>
@@ -80,16 +78,5 @@ import { filter, map, startWith } from 'rxjs';
   `]
 })
 export class GlobalShellComponent {
-  readonly workspaceContext = inject(WorkspaceContextStore);
-  private readonly router = inject(Router);
-  private readonly urlSignal = toSignal(
-    this.router.events.pipe(
-      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-      map(() => this.router.url),
-      startWith(this.router.url)
-    ),
-    { initialValue: this.router.url }
-  );
-
-  readonly showWorkspaceControls = computed(() => !this.urlSignal().startsWith('/demo'));
+  readonly shell = inject(ShellFacade);
 }

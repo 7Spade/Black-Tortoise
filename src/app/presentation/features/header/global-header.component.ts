@@ -18,8 +18,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { NotificationComponent } from '../../shared/components/notification/notification.component';
 import { SearchComponent } from '../../shared/components/search/search.component';
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
@@ -28,6 +27,7 @@ import {
   WorkspaceCreateTriggerComponent,
   WorkspaceSwitcherComponent
 } from '../workspace';
+import { HeaderPresentationFacade } from './facade/header-presentation.facade';
 
 @Component({
   selector: 'app-global-header',
@@ -46,43 +46,8 @@ import {
   styleUrls: ['./global-header.component.scss']
 })
 export class GlobalHeaderComponent {
-  private readonly router = inject(Router);
-  
+  readonly facade = inject(HeaderPresentationFacade);
+
   // Inputs
   readonly showWorkspaceControls = input(true);
-  
-  // Local UI state using signals
-  readonly showNotifications = signal(false);
-  readonly notificationCount = signal(0);
-  readonly searchQuery = signal('');
-  
-  toggleNotifications(): void {
-    this.showNotifications.update(v => !v);
-  }
-
-  onSearchQuery(query: string): void {
-    this.searchQuery.set(query);
-  }
-
-  onNotificationDismissed(id: string): void {
-    // Handle notification dismissal
-    this.notificationCount.update(count => Math.max(0, count - 1));
-  }
-  
-  onUserMenuItemClicked(action: string): void {
-    // Navigate based on menu action
-    if (action === 'settings') {
-      this.router.navigate(['/settings']);
-    } else if (action === 'profile') {
-      this.router.navigate(['/profile']);
-    }
-  }
-  
-  navigateHome(): void {
-    this.router.navigate(['/']);
-  }
-  constructor() {
-    // Initialize notification count
-    this.notificationCount.set(0);
-  }
 }

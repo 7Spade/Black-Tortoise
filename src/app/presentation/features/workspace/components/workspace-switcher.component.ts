@@ -13,14 +13,13 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
+import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core';
 import { filter, tap } from 'rxjs/operators';
+import { WorkspacePresentationFacade } from '../facade/workspace-presentation.facade';
 import { WorkspaceCreateResult } from '../models/workspace-create-result.model';
 import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
 
 // Import facade from header feature (presentation-to-presentation is allowed for facades)
-import { HeaderFacade } from '../../header/facade/header.facade';
 
 @Component({
   selector: 'app-workspace-switcher',
@@ -30,35 +29,35 @@ import { HeaderFacade } from '../../header/facade/header.facade';
   styleUrls: ['./workspace-switcher.component.scss'],
   template: `
     <!-- Workspace Switcher -->
-    @if (workspaceContext.hasWorkspace()) {
+    @if (facade.hasWorkspace()) {
       <div class="workspace-switcher">
-        <button 
-          class="workspace-button" 
-          (click)="toggleWorkspaceMenu()"
+        <button
+          class="workspace-button"
+          (click)="facade.toggleWorkspaceMenu()"
           aria-label="Switch workspace"
           type="button">
           <span class="material-icons">folder</span>
           <span class="workspace-name">
-            {{ workspaceContext.currentWorkspaceName() }}
+            {{ facade.currentWorkspaceName() }}
           </span>
           <span class="material-icons">expand_more</span>
         </button>
-        
-        @if (showWorkspaceMenu()) {
+
+        @if (facade.showWorkspaceMenu()) {
           <div class="workspace-menu">
-            @for (workspace of workspaceContext.availableWorkspaces(); track workspace.id) {
-              <button 
+            @for (workspace of facade.availableWorkspaces(); track workspace.id) {
+              <button
                 class="workspace-menu-item"
-                [class.active]="workspace.id === workspaceContext.currentWorkspace()?.id"
-                (click)="selectWorkspace(workspace.id)"
+                [class.active]="facade.isWorkspaceActive(workspace.id)"
+                (click)="facade.selectWorkspace(workspace.id)"
                 type="button">
                 <span class="material-icons">folder</span>
                 <span>{{ workspace.name }}</span>
               </button>
             }
             <div class="workspace-menu-divider"></div>
-            <button 
-              class="workspace-menu-item" 
+            <button
+              class="workspace-menu-item"
               (click)="createNewWorkspace()"
               type="button">
               <span class="material-icons">add</span>
@@ -71,26 +70,26 @@ import { HeaderFacade } from '../../header/facade/header.facade';
 
     <!-- Identity Switcher -->
     <div class="identity-switcher">
-      <button 
-        class="identity-button" 
-        (click)="toggleIdentityMenu()"
+      <button
+        class="identity-button"
+        (click)="facade.toggleIdentityMenu()"
         aria-label="Switch identity"
         type="button">
         <span class="material-icons">account_circle</span>
         <span class="identity-type org-name">
-          {{ workspaceContext.currentOrganizationName() }}
+          {{ facade.currentOrganizationName() }}
         </span>
         <span class="identity-type">
-          @if (workspaceContext.isAuthenticated()) {
-            {{ workspaceContext.currentIdentityType() }}
+          @if (facade.isAuthenticated()) {
+            {{ facade.currentIdentityType() }}
           } @else {
             Guest
           }
         </span>
         <span class="material-icons">expand_more</span>
       </button>
-      
-      @if (showIdentityMenu()) {
+
+      @if (facade.showIdentityMenu()) {
         <div class="identity-menu">
           <div class="identity-menu-item">
             <span class="material-icons">person</span>
@@ -114,23 +113,17 @@ import { HeaderFacade } from '../../header/facade/header.facade';
   `,
 })
 export class WorkspaceSwitcherComponent {
-  readonly workspaceContext = inject(WorkspaceContextStore);
-  private readonly facade = inject(HeaderFacade);
-
-  readonly showWorkspaceMenu = signal(false);
-  readonly showIdentityMenu = signal(false);
+  readonly facade = inject(WorkspacePresentationFacade);
 
   // Reference to trigger component
   private readonly createTrigger = viewChild(WorkspaceCreateTriggerComponent);
 
   toggleWorkspaceMenu(): void {
-    this.showWorkspaceMenu.update(v => !v);
-    this.showIdentityMenu.set(false);
+    this.facade.toggleWorkspaceMenu();
   }
 
   toggleIdentityMenu(): void {
-    this.showIdentityMenu.update(v => !v);
-    this.showWorkspaceMenu.set(false);
+    this.facade.toggleIdentityMenu();
   }
 
   /**
@@ -138,8 +131,7 @@ export class WorkspaceSwitcherComponent {
    * Delegates to facade for app action
    */
   selectWorkspace(workspaceId: string): void {
-    this.showWorkspaceMenu.set(false);
-    this.facade.switchWorkspace(workspaceId);
+    this.facade.selectWorkspace(workspaceId);
   }
 
   /**
@@ -156,9 +148,9 @@ export class WorkspaceSwitcherComponent {
     // Trigger opens dialog and returns Observable<unknown>
     trigger.openDialog().pipe(
       // Filter and type-narrow to WorkspaceCreateResult
-      filter((result): result is WorkspaceCreateResult => 
-        result !== null && 
-        result !== undefined && 
+      filter((result): result is WorkspaceCreateResult =>
+        result !== null &&
+        result !== undefined &&
         typeof result === 'object' &&
         'workspaceName' in result &&
         typeof (result as WorkspaceCreateResult).workspaceName === 'string' &&
@@ -166,12 +158,12 @@ export class WorkspaceSwitcherComponent {
       ),
       // Delegate to facade for app action
       tap((result) => {
-        this.showWorkspaceMenu.set(false);
         this.facade.createWorkspace(result);
       })
     ).subscribe({
       error: () => {
-        this.workspaceContext.setError('Failed to process dialog result');
+        // Use facade to set error
+        this.facade.handleError('Failed to process dialog result');
       }
     });
   }

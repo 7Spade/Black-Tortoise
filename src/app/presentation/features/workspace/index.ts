@@ -15,3 +15,6 @@ export {
 // Models
 export { WorkspaceCreateResult } from './models/workspace-create-result.model';
 
+// Facades
+export { WorkspacePresentationFacade } from './facade/workspace-presentation.facade';
+

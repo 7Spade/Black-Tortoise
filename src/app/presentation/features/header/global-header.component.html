@@ -1,12 +1,12 @@
 <header class="global-header">
   <!-- Left Zone: Logo (Icon + Text on Single Line) -->
   <div class="header-left">
-    <a class="logo" role="link" aria-label="Go to home" (click)="navigateHome()" tabindex="0">
+    <a class="logo" role="link" aria-label="Go to home" (click)="facade.navigateHome()" tabindex="0">
       <span class="logo-text">Black Tortoise</span>
       <span class="material-icons" aria-hidden="true">dashboard</span>
     </a>
   </div>
-  
+
   <!-- Center Zone: Workspace Controls + Search + Notifications + Theme -->
   <div class="header-center">
     <!-- Workspace Controls (left of search) -->
@@ -15,37 +15,37 @@
         <app-workspace-switcher />
       </div>
     }
-    
+
     <!-- Search Input -->
     <div class="search-wrapper">
-      <app-search 
+      <app-search
         [placeholder]="'Search workspace, files, and content...'"
-        (searchQuery)="onSearchQuery($event)" />
+        (searchQuery)="facade.onSearchQuery($event)" />
     </div>
-    
+
     <!-- Notifications (right of search) -->
-    <button class="icon-button" aria-label="Notifications" type="button" (click)="toggleNotifications()">
+    <button class="icon-button" aria-label="Notifications" type="button" (click)="facade.toggleNotifications()">
       <span class="material-icons">notifications</span>
-      @if (notificationCount() > 0) {
-        <span class="badge">{{ notificationCount() }}</span>
+      @if (facade.notificationCount() > 0) {
+        <span class="badge">{{ facade.notificationCount() }}</span>
       }
     </button>
-    
+
     <!-- Theme Toggle Component (right of search) -->
     <app-theme-toggle />
   </div>
-  
+
   <!-- Right Zone: User Avatar -->
   <div class="header-right">
-    <app-user-avatar 
-      (menuItemClicked)="onUserMenuItemClicked($event)" />
+    <app-user-avatar
+      (menuItemClicked)="facade.onUserMenuItemClicked($event)" />
   </div>
-  
+
   <!-- Notification Panel (conditionally shown) -->
-  @if (showNotifications()) {
+  @if (facade.showNotifications()) {
     <div class="notification-panel">
-      <app-notification 
-        (notificationDismissed)="onNotificationDismissed($event)" />
+      <app-notification
+        (notificationDismissed)="facade.onNotificationDismissed($event)" />
     </div>
   }
 </header>

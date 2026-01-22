@@ -5,6 +5,7 @@
 // Components
 export { GlobalHeaderComponent } from './global-header.component';
 
-// Facade
+// Facades
+export { HeaderPresentationFacade } from './facade/header-presentation.facade';
 export { HeaderFacade } from './facade/header.facade';
 

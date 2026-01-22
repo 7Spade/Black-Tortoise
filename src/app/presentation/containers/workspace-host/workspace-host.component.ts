@@ -5,11 +5,10 @@
  * Purpose: Hosts workspace modules and provides module navigation
  */
 
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, Router } from '@angular/router';
-import { WorkspaceContextStore } from '../../../application/stores/workspace-context.store';
-import { STANDARD_MODULES, ModuleType } from '../../../domain/module/module.interface';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { WorkspaceHostFacade } from './facade/workspace-host.facade';
 
 @Component({
   selector: 'app-workspace-host',
@@ -17,25 +16,25 @@ import { STANDARD_MODULES, ModuleType } from '../../../domain/module/module.inte
   imports: [CommonModule, RouterOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="workspace-host" [class.collapsed]="isSidebarCollapsed()">
+    <div class="workspace-host" [class.collapsed]="facade.isSidebarCollapsed()">
       <!-- Module Navigation -->
       <nav class="module-nav">
         <div class="module-nav-header">
           <h3>Modules</h3>
-          <button class="collapse-button" type="button" (click)="toggleSidebar()">
+          <button class="collapse-button" type="button" (click)="facade.toggleSidebar()">
             <span class="material-icons">
-              @if (isSidebarCollapsed()) { chevron_right } @else { chevron_left }
+              @if (facade.isSidebarCollapsed()) { chevron_right } @else { chevron_left }
             </span>
           </button>
         </div>
         <ul class="module-list">
-          @for (moduleId of workspaceContext.currentWorkspaceModules(); track moduleId) {
-            @if (getModuleMetadata(moduleId); as module) {
+          @for (moduleId of facade.currentWorkspaceModules(); track moduleId) {
+            @if (facade.getModuleMetadata(moduleId); as module) {
               <li class="module-item">
-                <button 
+                <button
                   class="module-button"
-                  [class.active]="moduleId === workspaceContext.activeModuleId()"
-                  (click)="activateModule(moduleId)">
+                  [class.active]="facade.isModuleActive(moduleId)"
+                  (click)="facade.activateModule(moduleId)">
                   <span class="material-icons">{{ module.icon }}</span>
                   <span>{{ module.name }}</span>
                 </button>
@@ -44,11 +43,11 @@ import { STANDARD_MODULES, ModuleType } from '../../../domain/module/module.inte
           }
         </ul>
       </nav>
-      
+
       <!-- Module Content Area -->
       <div class="module-content">
-        @if (workspaceContext.activeModuleId(); as moduleId) {
-          @if (getModuleMetadata(moduleId); as module) {
+        @if (facade.activeModuleId(); as moduleId) {
+          @if (facade.getModuleMetadata(moduleId); as module) {
             <div class="module-header">
               <h2>
                 <span class="material-icons">{{ module.icon }}</span>
@@ -225,52 +224,26 @@ import { STANDARD_MODULES, ModuleType } from '../../../domain/module/module.inte
   `]
 })
 export class WorkspaceHostComponent implements OnInit {
-  readonly workspaceContext = inject(WorkspaceContextStore);
-  private readonly router = inject(Router);
+  readonly facade = inject(WorkspaceHostFacade);
   private readonly sidebarStorageKey = 'ui.sidebar';
-  readonly isSidebarCollapsed = signal(false);
-  
+
   ngOnInit(): void {
     const stored = localStorage.getItem(this.sidebarStorageKey);
-    this.isSidebarCollapsed.set(stored === 'collapsed');
+    this.facade.setSidebarCollapsed(stored === 'collapsed');
 
     // Auto-activate first module if none active
-    const currentModules = this.workspaceContext.currentWorkspaceModules();
-    const activeModule = this.workspaceContext.activeModuleId();
-    
+    const currentModules = this.facade.currentWorkspaceModules();
+    const activeModule = this.facade.activeModuleId();
+
     const firstModule = currentModules[0];
     if (firstModule && !activeModule) {
-      this.activateModule(firstModule);
+      this.facade.activateModule(firstModule);
     }
-  }
-  
-  activateModule(moduleId: string): void {
-    const module = this.getModuleMetadata(moduleId);
-    if (!module) {
-      return;
-    }
-
-    this.workspaceContext.activateModule(moduleId);
-    // Navigate relative to workspace route
-    this.router.navigate(['/workspace', moduleId]).catch(() => {
-      this.workspaceContext.setError('Failed to navigate to module');
-    });
   }
 
   toggleSidebar(): void {
-    const next = !this.isSidebarCollapsed();
-    this.isSidebarCollapsed.set(next);
+    const next = !this.facade.isSidebarCollapsed();
+    this.facade.setSidebarCollapsed(next);
     localStorage.setItem(this.sidebarStorageKey, next ? 'collapsed' : 'expanded');
-  }
-  
-  getModuleMetadata(moduleId: string) {
-    const moduleType = moduleId as ModuleType;
-    const metadata = STANDARD_MODULES[moduleType];
-    if (!metadata) return null;
-    
-    return {
-      id: moduleId,
-      ...metadata,
-    };
   }
 }
