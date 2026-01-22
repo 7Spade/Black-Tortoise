@@ -89,6 +89,12 @@
   flex-shrink: 0;
 }
 
+.workspace-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .icon-button {
   position: relative;
   display: flex;

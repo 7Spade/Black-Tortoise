@@ -6,46 +6,6 @@
       <span class="material-icons">dashboard</span>
       <span class="logo-text">Black Tortoise</span>
     </div>
-    
-    <!-- Workspace Switcher -->
-    @if (workspaceContext.hasWorkspace()) {
-      <div class="workspace-switcher">
-        <button 
-          class="workspace-button" 
-          (click)="toggleWorkspaceMenu()"
-          aria-label="Switch workspace"
-          type="button">
-          <span class="material-icons">folder</span>
-          <span class="workspace-name">
-            {{ workspaceContext.currentWorkspaceName() }}
-          </span>
-          <span class="material-icons">expand_more</span>
-        </button>
-        
-        @if (showWorkspaceMenu()) {
-          <div class="workspace-menu">
-            @for (workspace of workspaceContext.availableWorkspaces(); track workspace.id) {
-              <button 
-                class="workspace-menu-item"
-                [class.active]="workspace.id === workspaceContext.currentWorkspace()?.id"
-                (click)="selectWorkspace(workspace.id)"
-                type="button">
-                <span class="material-icons">folder</span>
-                <span>{{ workspace.name }}</span>
-              </button>
-            }
-            <div class="workspace-menu-divider"></div>
-            <button 
-              class="workspace-menu-item" 
-              (click)="createNewWorkspace()"
-              type="button">
-              <span class="material-icons">add</span>
-              <span>Create Workspace</span>
-            </button>
-          </div>
-        }
-      </div>
-    }
   </div>
   
   <!-- Center Zone: Global Search -->
@@ -84,7 +44,7 @@
     </button>
 
     @if (showWorkspaceControls()) {
-      <app-workspace-header-controls />
+      <app-workspace-header-controls class="workspace-controls" />
     }
   </div>
 </header>

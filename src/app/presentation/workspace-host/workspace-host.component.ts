@@ -10,8 +10,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
 import { WorkspaceContextStore } from '../../application/stores/workspace-context.store';
 import { STANDARD_MODULES, ModuleType } from '../../domain/module/module.interface';
-import { SearchService } from '../shared/services/search.service';
-import { NotificationService } from '../shared/services/notification.service';
+import { SearchService, NotificationService } from '../shared/services';
 
 @Component({
   selector: 'app-workspace-host',

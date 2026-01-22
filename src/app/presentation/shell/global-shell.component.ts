@@ -46,15 +46,37 @@ import { WorkspaceContextStore } from '@application/stores/workspace-context.sto
       display: flex;
       flex-direction: column;
       height: 100vh;
-      background: var(--md-sys-color-surface-container-lowest, #f5f5f5);
+      background: var(--mat-sys-surface-container-lowest, #f5f5f5);
     }
     
     .shell-content {
       flex: 1;
       overflow: auto;
     }
+
+    .error-banner {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      padding: 1rem 1.5rem;
+      background: var(--mat-sys-error, #ba1a1a);
+      color: var(--mat-sys-on-error, #ffffff);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      z-index: 2000;
+    }
     
-    
+    .error-banner button {
+      background: none;
+      border: none;
+      color: var(--mat-sys-on-error, #ffffff);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 0;
+    }
   `]
 })
 export class GlobalShellComponent {
@@ -71,26 +93,3 @@ export class GlobalShellComponent {
 
   readonly showWorkspaceControls = computed(() => !this.urlSignal().startsWith('/demo'));
 }
-    .error-banner {
-      position: fixed;
-      bottom: 1rem;
-      right: 1rem;
-      padding: 1rem 1.5rem;
-      background: var(--md-sys-color-error, #ba1a1a);
-      color: var(--md-sys-color-on-error, #ffffff);
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      z-index: 2000;
-    }
-    
-    .error-banner button {
-      background: none;
-      border: none;
-      color: var(--md-sys-color-on-error, #ffffff);
-      font-size: 1.25rem;
-      cursor: pointer;
-      padding: 0;
-    }

@@ -18,8 +18,7 @@
 
 import { Component, ChangeDetectionStrategy, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SearchService } from '../../shared/services/search.service';
-import { NotificationService } from '../../shared/services/notification.service';
+import { SearchService, NotificationService } from '../../shared/services';
 import { WorkspaceHeaderControlsComponent } from './workspace-header-controls.component';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
