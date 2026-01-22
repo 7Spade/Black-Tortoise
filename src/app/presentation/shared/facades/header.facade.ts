@@ -16,7 +16,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
-import { WorkspaceCreateResult } from '@presentation/features/workspace/models/workspace-create-result.model';
+import { WorkspaceCreateResult } from '@presentation/workspace/models/workspace-create-result.model';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
