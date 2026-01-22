@@ -25,8 +25,8 @@ import { SearchComponent } from '../../shared/components/search/search.component
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
 import { UserAvatarComponent } from '../user-avatar/user-avatar.component';
 import {
-    WorkspaceCreateTriggerComponent,
-    WorkspaceHeaderControlsComponent
+  WorkspaceCreateTriggerComponent,
+  WorkspaceSwitcherComponent
 } from '../workspace';
 
 @Component({
@@ -34,7 +34,7 @@ import {
   standalone: true,
   imports: [
     CommonModule, 
-    WorkspaceHeaderControlsComponent,
+    WorkspaceSwitcherComponent,
     WorkspaceCreateTriggerComponent,
     SearchComponent, 
     NotificationComponent,

@@ -23,11 +23,11 @@ import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.comp
 import { HeaderFacade } from '../../header/facade/header.facade';
 
 @Component({
-  selector: 'app-workspace-header-controls',
+  selector: 'app-workspace-switcher',
   standalone: true,
   imports: [CommonModule, WorkspaceCreateTriggerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./workspace-header-controls.component.scss'],
+  styleUrls: ['./workspace-switcher.component.scss'],
   template: `
     <!-- Workspace Switcher -->
     @if (workspaceContext.hasWorkspace()) {
@@ -113,7 +113,7 @@ import { HeaderFacade } from '../../header/facade/header.facade';
     <app-workspace-create-trigger />
   `,
 })
-export class WorkspaceHeaderControlsComponent {
+export class WorkspaceSwitcherComponent {
   readonly workspaceContext = inject(WorkspaceContextStore);
   private readonly facade = inject(HeaderFacade);
 

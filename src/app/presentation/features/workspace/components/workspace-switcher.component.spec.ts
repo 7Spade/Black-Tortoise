@@ -1,13 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { WorkspaceHeaderControlsComponent } from './workspace-header-controls.component';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
-import { HeaderFacade } from '../../header/facade/header.facade';
 import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { WorkspaceSwitcherComponent } from './workspace-switcher.component';
 
-describe('WorkspaceHeaderControlsComponent', () => {
-  let component: WorkspaceHeaderControlsComponent;
-  let fixture: ComponentFixture<WorkspaceHeaderControlsComponent>;
+describe('WorkspaceSwitcherComponent', () => {
+  let component: WorkspaceSwitcherComponent;
+  let fixture: ComponentFixture<WorkspaceSwitcherComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -18,7 +16,7 @@ describe('WorkspaceHeaderControlsComponent', () => {
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(WorkspaceHeaderControlsComponent);
+    fixture = TestBed.createComponent(WorkspaceSwitcherComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
