@@ -1,15 +1,15 @@
 /**
- * Workspace Header Controls Component
- * 
+ * Workspace Switcher Component
+ *
  * Layer: Presentation
- * Purpose: Workspace and Identity switcher controls for global header
+ * Purpose: Workspace switcher controls for global header
  * Architecture: Zone-less, OnPush, Angular 20 control flow, Pure Reactive
- * 
+ *
  * Responsibilities:
- * - UI controls only - emits user intent events
+ * - UI controls only - emits user intent events for workspace switching
  * - Must NOT open dialog or interpret dialog result
  * - Must only call facade for app actions (switch/create workspace)
- * - Uses WorkspaceCreateTriggerComponent for dialog opening
+ * - Single responsibility: workspace management UI
  */
 
 import { CommonModule } from '@angular/common';
@@ -18,8 +18,6 @@ import { filter, tap } from 'rxjs/operators';
 import { WorkspacePresentationFacade } from '../facade/workspace-presentation.facade';
 import { WorkspaceCreateResult } from '../models/workspace-create-result.model';
 import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
-
-// Import facade from header feature (presentation-to-presentation is allowed for facades)
 
 @Component({
   selector: 'app-workspace-switcher',
@@ -68,46 +66,6 @@ import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.comp
       </div>
     }
 
-    <!-- Identity Switcher -->
-    <div class="identity-switcher">
-      <button
-        class="identity-button"
-        (click)="facade.toggleIdentityMenu()"
-        aria-label="Switch identity"
-        type="button">
-        <span class="material-icons">account_circle</span>
-        <span class="identity-type org-name">
-          {{ facade.currentOrganizationName() }}
-        </span>
-        <span class="identity-type">
-          @if (facade.isAuthenticated()) {
-            {{ facade.currentIdentityType() }}
-          } @else {
-            Guest
-          }
-        </span>
-        <span class="material-icons">expand_more</span>
-      </button>
-
-      @if (facade.showIdentityMenu()) {
-        <div class="identity-menu">
-          <div class="identity-menu-item">
-            <span class="material-icons">person</span>
-            <span>Personal Account</span>
-          </div>
-          <div class="identity-menu-item">
-            <span class="material-icons">business</span>
-            <span>Organization</span>
-          </div>
-          <div class="identity-menu-divider"></div>
-          <div class="identity-menu-item">
-            <span class="material-icons">logout</span>
-            <span>Sign Out</span>
-          </div>
-        </div>
-      }
-    </div>
-
     <!-- WorkspaceCreateTriggerComponent - hidden, used programmatically -->
     <app-workspace-create-trigger />
   `,
@@ -120,10 +78,6 @@ export class WorkspaceSwitcherComponent {
 
   toggleWorkspaceMenu(): void {
     this.facade.toggleWorkspaceMenu();
-  }
-
-  toggleIdentityMenu(): void {
-    this.facade.toggleIdentityMenu();
   }
 
   /**

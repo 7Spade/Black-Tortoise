@@ -5,6 +5,7 @@
  */
 
 // Components
+export * from './components/header';
 export * from './components/notification';
 export * from './components/search';
 export * from './components/theme-toggle';
