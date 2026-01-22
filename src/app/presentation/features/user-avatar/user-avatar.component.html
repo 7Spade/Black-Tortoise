@@ -1,0 +1,17 @@
+<!--
+  Template for UserAvatarComponent
+
+  說明與指引：
+  - 本 template 僅負責呈現，所有資料來源應由上層組件或 application/facade 注入。
+  - 使用 alt 屬性以維持無障礙（a11y）。
+  - 若未提供 avatar，顯示替代預設樣式。
+-->
+<div class="user-avatar">
+  <ng-container *ngIf="avatarUrl(); else placeholder">
+    <img [src]="avatarUrl() || ''" alt="User avatar" class="avatar-img" />
+  </ng-container>
+
+  <ng-template #placeholder>
+    <div class="avatar-placeholder" aria-hidden="true">U</div>
+  </ng-template>
+</div>
