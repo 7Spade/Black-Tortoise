@@ -51,6 +51,24 @@ const initialState: WorkspaceContextState = {
 };
 
 /**
+ * All 11 standard workspace modules
+ */
+const ALL_MODULE_IDS: string[] = [
+  'overview',
+  'documents',
+  'tasks',
+  'calendar',
+  'daily',
+  'quality-control',
+  'acceptance',
+  'issues',
+  'members',
+  'permissions',
+  'audit',
+  'settings',
+];
+
+/**
  * Workspace Context Store
  * 
  * Global singleton managing workspace and module context.
@@ -121,12 +139,12 @@ export const WorkspaceContextStore = signalStore(
           throw new Error('Cannot create workspace: No identity selected');
         }
         
-        // Execute use case
+        // Execute use case with all modules if not specified
         const workspace = createWorkspaceUseCase.execute({
           name,
           ownerId: identityId,
           ownerType: identityType,
-          moduleIds: moduleIds ?? ['overview', 'documents', 'tasks', 'settings'],
+          moduleIds: moduleIds ?? ALL_MODULE_IDS,
         });
         
         // Create runtime for new workspace
@@ -229,6 +247,7 @@ export const WorkspaceContextStore = signalStore(
       
       /**
        * Load demo data for demonstration
+       * Updated to include all 11 modules
        */
       loadDemoData(): void {
         // Demo identity
@@ -239,19 +258,19 @@ export const WorkspaceContextStore = signalStore(
           currentIdentityType: 'user',
         });
         
-        // Create demo workspaces
+        // Create demo workspaces with all 11 modules
         const workspace1 = createWorkspaceUseCase.execute({
           name: 'Personal Projects',
           ownerId: demoUserId,
           ownerType: 'user',
-          moduleIds: ['overview', 'documents', 'tasks', 'settings'],
+          moduleIds: ALL_MODULE_IDS,
         });
         
         const workspace2 = createWorkspaceUseCase.execute({
           name: 'Team Collaboration',
           ownerId: demoUserId,
           ownerType: 'user',
-          moduleIds: ['overview', 'documents', 'tasks', 'calendar', 'settings'],
+          moduleIds: ALL_MODULE_IDS,
         });
         
         // Create runtimes
