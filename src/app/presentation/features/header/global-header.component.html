@@ -1,22 +1,21 @@
 <header class="global-header">
-  <!-- Left Zone: Logo + Workspace Controls -->
+  <!-- Left Zone: Logo (Icon + Text on Single Line) -->
   <div class="header-left">
-    <!-- Logo - Single Line with Flex -->
     <div class="logo">
       <span class="material-icons">dashboard</span>
       <span class="logo-text">Black Tortoise</span>
     </div>
-    
-    <!-- Workspace Controls Under Logo -->
+  </div>
+  
+  <!-- Center Zone: Workspace Controls + Search + Notifications + Theme -->
+  <div class="header-center">
+    <!-- Workspace Controls (left of search) -->
     @if (showWorkspaceControls()) {
       <div class="workspace-controls-wrapper">
         <app-workspace-header-controls />
       </div>
     }
-  </div>
-  
-  <!-- Center Zone: Search + Notifications + Theme -->
-  <div class="header-center">
+    
     <!-- Search Input -->
     <div class="search-wrapper">
       <app-search 
