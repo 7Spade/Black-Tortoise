@@ -3,41 +3,28 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
 import { GlobalHeaderComponent } from './global-header.component';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
-import { SearchService } from '../../shared/services/search.service';
-import { NotificationService } from '../../shared/services/notification.service';
+import { SearchService } from '../../../shared/services/search.service';
+import { NotificationService } from '../../../shared/services/notification.service';
 
 describe('GlobalHeaderComponent', () => {
   let component: GlobalHeaderComponent;
   let fixture: ComponentFixture<GlobalHeaderComponent>;
-  let mockRouter: jasmine.SpyObj<Router>;
   let mockSearchService: jasmine.SpyObj<SearchService>;
   let mockNotificationService: jasmine.SpyObj<NotificationService>;
-  let mockDialog: jasmine.SpyObj<MatDialog>;
 
   beforeEach(async () => {
     // Create spies
-    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     mockSearchService = jasmine.createSpyObj('SearchService', ['search']);
     mockNotificationService = jasmine.createSpyObj('NotificationService', ['getNotifications']);
-    mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     
-    // Default successful navigation
-    mockRouter.navigate.and.returnValue(Promise.resolve(true));
     mockNotificationService.getNotifications.and.returnValue([]);
     
     await TestBed.configureTestingModule({
       imports: [GlobalHeaderComponent],
       providers: [
-        WorkspaceContextStore,
-        { provide: Router, useValue: mockRouter },
         { provide: SearchService, useValue: mockSearchService },
-        { provide: NotificationService, useValue: mockNotificationService },
-        { provide: MatDialog, useValue: mockDialog }
+        { provide: NotificationService, useValue: mockNotificationService }
       ]
     }).compileComponents();
 
@@ -48,10 +35,6 @@ describe('GlobalHeaderComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should inject WorkspaceContextStore', () => {
-    expect(component.workspaceContext).toBeTruthy();
   });
 
   it('should toggle notifications', () => {
@@ -74,16 +57,9 @@ describe('GlobalHeaderComponent', () => {
     expect(component.notificationCount()).toBe(1);
   });
 
-  it('should toggle workspace menu', () => {
-    expect(component.showWorkspaceMenu()).toBe(false);
-    component.toggleWorkspaceMenu();
-    expect(component.showWorkspaceMenu()).toBe(true);
-  });
-
-  it('should select workspace and navigate', () => {
-    mockRouter.navigate.and.returnValue(Promise.resolve(true));
-    component.selectWorkspace('workspace-id');
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/workspace']);
-    expect(component.showWorkspaceMenu()).toBe(false);
+  it('should toggle theme', () => {
+    const initialTheme = component.themeMode();
+    component.toggleTheme();
+    expect(component.themeMode()).not.toBe(initialTheme);
   });
 });
