@@ -207,6 +207,10 @@ src/app/
 
 當用戶執行以下指令時，必須自動映射並執行連動修改：
 
+*   **"開發啟動" (Development Startup)**:
+    1.  `ACTION`: Use server-sequential-thinking on the requirements and code snippet, output as atomic tasks with priority levels.
+    2.  `ACTION`: Use Software-planning-mcp to generate DDD layer mapping and reactive data flow diagram from the atomic tasks provided.
+    3.  `ACTION`: IF complexity > threshold ::> CALL: runSubagent.
 *   **"增加/修改欄位" (Add/Update Field)**:
     1.  `Domain`: 修改 Entity/Value-Object (純型別)。
     2.  `Infrastructure`: 更新 DTO 與 Mapper。
@@ -228,6 +232,7 @@ src/app/
 
 每項任務完成前，`MUST` 通過以下終點檢查：
 
+*   **P0 (Reasoning)**: 是否已完成 `server-sequential-thinking` 與 `Software-planning-mcp` 任務？
 *   **P0 (Structure)**: `Domain` 無框架依賴；`Interface` 無 Firebase 注入。
 *   **P0 (Reactive)**: 範本無舊指令；非同步必經 `rxMethod` + `tapResponse`。
 *   **P0 (State)**: 狀態更新必經 `patchState`；無手動 `subscribe()`。
@@ -239,6 +244,10 @@ src/app/
 
 ## 總覽與原則 (General Principles)
 
+*   **Advanced Reasoning**: 
+    *   接收需求時 `MUST` 調用 `server-sequential-thinking` 進行原子任務拆解並標記 P0/P1。
+    *   規劃實作前 `MUST` 使用 `Software-planning-mcp` 生成 DDD 分層映射與響應式數據流圖 (Reactive Data Flow Diagram)。
+    *   遭遇跨模組複雜依賴、大規模研究或重構分析時 `MUST` 調用 `runSubagent` (子代理) 執行獨立子任務。
 *   **Zone-less**: 必須確保 `provideExperimentalZonelessChangeDetection()` 為啟用狀態。
 *   **Sequential Thinking**: 啟動任何開發前，必須先列出 TODO Checklist 並規劃數據流。
 *   **Context7 Usage**: 涉及任何外部庫時，禁止憑記憶回答，必須執行 Context7 檢索官方文檔。
