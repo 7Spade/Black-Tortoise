@@ -60,53 +60,44 @@ name: 'Angular 20+ Pure Reactive Agent 5.2-v3'
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## 2. 明確可判斷的規則句 (Rule Sentence)
+## 2. 規則句 (Rule Sentence)
 
-*   **分層依賴**: Domain 層所有檔案 MUST 保持框架無關性 (禁止 import Angular/RxJS/Firebase)。
-*   **響應式數據流**: Infrastructure 層 Repository MUST 返回 `Observable<T>`，禁止使用 `.subscribe()` 或 Promise。
-*   **狀態管理**: Application 層 Store MUST 使用 `signalStore()` 與 `withState`, `withComputed`, `withMethods`。
-*   **非同步處理**: 所有非同步操作 (API/I/O) MUST 在 `rxMethod()` 中使用 `tapResponse()` 處理回調。
-*   **狀態更新**: Application 狀態更新 MUST 僅通過 `patchState()` 進行，禁止直接變更屬性。
-*   **UI 指令**: 所有組件範本 MUST 使用 Angular 20+ 新版控制流 (`@if`, `@for`, `@switch`)。
-*   **組件通訊**: 跨 Store 通訊 MUST 使用 `EventBus` 模式，禁止 Store 之間相互注入。
-*   **命名規範**: 檔案命名 MUST 使用 kebab-case (如: `user-profile.store.ts`)。
+*   **分層依賴**: Domain MUST 框架無關 (禁 import Angular/RxJS/Firebase)。
+*   **響應流**: Infrastructure Repo MUST 返回 `Observable<T>` (禁 .subscribe/Promise)。
+*   **狀態**: Application Store MUST 使用 `signalStore()` 結構。
+*   **非同步**: MUST 在 `rxMethod()` 使用 `tapResponse()`。
+*   **更新**: MUST 僅經由 `patchState()` 更新狀態。
+*   **指令**: 範本 MUST 使用 Angular 20+ 控制流 (@if/@for)。
+*   **通訊**: 跨 Store MUST 使用 `EventBus` (禁直接相互注入)。
+*   **命名**: MUST 使用 kebab-case。
 
-## 3. 適用範圍鎖定句 (Scope Sentence)
+## 3. 範圍鎖定 (Scope Sentence)
 
-*   **applyTo: `src/app/domain/**`**:
-    *   僅包含純 TypeScript 定義 (Model, Policy, Types)。
-    *   嚴禁導入任何以 `@angular/`, `firebase/`, `rxjs/` 開頭的庫。
-*   **applyTo: `src/app/infrastructure/**`**:
-    *   負責封裝 Firebase SDK 與 API 呼叫。
-    *   必須轉換外部 DTO 為 Domain Model 後再回傳。
-*   **applyTo: `src/app/application/**`**:
-    *   負責狀態調度與業務流，嚴禁使用 `async/await`。
-    *   必須確保所有狀態為 Signal-based 且 Zone-less。
-*   **applyTo: `src/app/presentation/**`**:
-    *   僅限展示邏輯，嚴禁直接注入 Firebase 服務。
-    *   必須透過注入 Store 或 Application Services 獲取數據。
-*   **applyTo: `**/*.html`**:
-    *   強制使用 `@if`, `@for`, `@switch`, `@defer`。
+*   **`domain/**`**: 純 TS 定義 (Entity/VO/Type/Event/Repo-Interface)。禁框架庫。
+*   **`infrastructure/**`**: 封裝 Firebase/API。須映射 DTO 為 Domain Model。
+*   **`application/**`**: 狀態調度。禁 `async/await`，須基於 Signal 與 Zone-less。
+*   **`presentation/**`**: 展示邏輯。禁 Firebase 直接注入，須經由 Store/Service。
+*   **`**/*.html`**: 強制運用新版控制流語法。
 
-## 4. 禁止行為句 (Forbidden Sentence)
+## 4. 禁止行為 (Forbidden Sentence)
 
-*   **FORBIDDEN**: 使用傳統 NgRx 包 (`@ngrx/store`, `@ngrx/effects`, `@ngrx/entity`)。
-*   **FORBIDDEN**: 在 Application 或 Interface 層手動調用 `.subscribe()`。
-*   **FORBIDDEN**: 直接在組件中注入 `Firestore`, `Auth`, `Functions` 等 Firebase SDK 服務。
-*   **FORBIDDEN**: 使用 `*ngIf`, `*ngFor` 或 `*ngSwitch` 指令。
-*   **FORBIDDEN**: 使用 `async/await` 處理狀態更新 (Application Layer)。
-*   **FORBIDDEN**: 在 Domain 層中包含任何框架裝飾器 (如 `@Injectable`) 或依賴。
-*   **FORBIDDEN**: 依賴 `zone.js` 進行變更檢測 (本專案為 Zone-less 架構)。
-*   **FORBIDDEN**: 導入 `@angular/platform-browser-dynamic` (僅限 `bootstrapApplication`)。
-*   **FORBIDDEN**: 直接 store-to-store 依賴導致循環引用。
+*   **FORBIDDEN**: 傳統 NgRx (@ngrx/store/effects/entity)。
+*   **FORBIDDEN**: Application/Presentation 手動調用 `.subscribe()`。
+*   **FORBIDDEN**: 在組件直注 Firebase SDK (Firestore/Auth)。
+*   **FORBIDDEN**: 使用 `*ngIf`, `*ngFor`, `*ngSwitch`。
+*   **FORBIDDEN**: Application 層使用 `async/await` 更新狀態。
+*   **FORBIDDEN**: Domain 層包含框架裝飾器 (如 `@Injectable`)。
+*   **FORBIDDEN**: 依賴 `zone.js` (Zone-less 項目)。
+*   **FORBIDDEN**: 導入 `@angular/platform-browser-dynamic` (限 bootstrap)。
+*   **FORBIDDEN**: Store-to-Store 直接依賴。
 
-## 5. 優先權宣告句 (Priority / Severity)
+## 5. 優先權宣告 (Priority / Severity)
 
-*   **CRITICAL**: 若 Domain 層檢測到框架依賴，或 Interface 層檢測到 Firebase 注入，必須立即停止開發並優先修正。
-*   **P0 (Blocker)**: 範本中使用 `*ngIf`/`*ngFor`、或非同步邏輯缺少 `tapResponse` 處理。
-*   **P0 (Correctness)**: 狀態更新未使用 `patchState` 或在 `effect()` 中變更狀態。
-*   **P1 (Standard)**: 檔案命名不符合層級對應 (如 `*.model.ts` 不在 domain 中)。
-*   **P2 (Optimization)**: 未在組件中使用 `computed()` 處理複雜 UI 派生狀態。
+*   **CRITICAL**: Domain 框架依賴或 Presentation 注入 Firebase。
+*   **P0 (Blocker)**: 範本用舊指令、非同步缺 `tapResponse`、或 `effect()` 內變更狀態。
+*   **P0 (Correctness)**: 狀態更新未使用 `patchState()`。
+*   **P1 (Standard)**: 檔案命名不符合層級對應。
+*   **P2 (Optimization)**: 未在組件中使用 `computed()` 處理複雜 UI 狀態。
 
 ---
 
@@ -186,49 +177,68 @@ src/app/
 *   **FORBIDDEN**: `@angular/platform-browser-dynamic` (僅限 `bootstrapApplication`，移除 JIT 依賴)
 *   **FORBIDDEN**: `@ngrx/store`, `@ngrx/effects`, `@ngrx/entity` (嚴禁傳統 Redux 模式，全面信號化)
 
-### ❌ 禁止反模式 (Forbidden Anti-patterns)
-*   **FORBIDDEN**: 在 Domain 層導入框架依賴 (如 `@Injectable`)。
-*   **FORBIDDEN**: 在 Repository 中調用 `.subscribe()`。
-*   **FORBIDDEN**: 在組件中直接注入 Firebase 服務。
-*   **FORBIDDEN**: 在模板中使用 `*ngIf`, `*ngFor` 被取代的舊語法。
-*   **FORBIDDEN**: 在 Application Layer 使用 `async/await` 處理狀態流。
-*   **FORBIDDEN**: 手動變更信號值而不通過 `patchState()`。
-*   **FORBIDDEN**: 跨 Store 直接注入導致循環依賴。
+---
+
+## 7. Copilot 工具調度策略 (Tooling & Context Strategy)
+
+為了最大化工具效率，Copilot MUST 遵循以下判斷邏輯：
+
+*   **符號導航 (Symbol Navigation)**:
+    *   `IF` 需要查找 Store/Signal 定義 ::> `grep_search(includePattern: '**/*.store.ts')`。
+    *   `IF` 需要追蹤事件來源 ::> `list_code_usages(symbolName: 'EventName')`。
+*   **上下文讀取 (Context Buffering)**:
+    *   `BEFORE` 修改 Presentation ::> `MUST` 同時讀取對應的 `application/stores/*.store.ts`。
+    *   `BEFORE` 修改 Application ::> `MUST` 驗證 `domain/entities/*.entity.ts` 的原始定義。
+*   **變更驗證 (Post-Edit Verification)**:
+    *   `AFTER` 任何修改 ::> `MUST` 調用 `get_errors()` 檢查層級違規 (如 TS2339)。
+
+## 8. TS 錯誤碼重構路徑矩陣 (Error-to-Refactor Matrix)
+
+當 `get_errors()` 回報以下錯誤時，禁止直接修正，必須執行對應的架構重構：
+
+| 錯誤碼 | 偵測場景 | 根本原因 | 唯一修正路徑 (The Only Way) |
+| :--- | :--- | :--- | :--- |
+| **TS2339** | UI 訪問 Model 缺失欄位 | 試圖將 Presentation 欄位放進 Domain | 建立 Application `ViewModel` 或 DTO 映射層。 |
+| **TS2345** | Store 參數型別不符 | Domain Model 與 Infrastructure DTO 混用 | 在 `Infrastructure` 層實作 `Mapper` 進行類型轉換。 |
+| **TS2554** | Store 方法調用錯誤 | 跨 Store 直接存取導致的耦合 | 使用 `EventBus` 改為異步事件驅動，解除直接依賴。 |
+| **TS6133** | 變量/導入未使用 | 冗餘的傳統架構殘留 (如 zone.js) | `DELETE` 該變量，確保符合 Zone-less 原則。 |
+
+## 9. 語義錨點與連動規則 (Semantic Anchors & Cascading Rules)
+
+當用戶執行以下指令時，必須自動映射並執行連動修改：
+
+*   **"增加/修改欄位" (Add/Update Field)**:
+    1.  `Domain`: 修改 Entity/Value-Object (純型別)。
+    2.  `Infrastructure`: 更新 DTO 與 Mapper。
+    3.  `Application`: 更新 Store 狀態與 `patchState` 邏輯。
+    4.  `Presentation`: 更新 ViewModel 與 Template 綁定。
+*   **"跨組件呼叫" (Cross-component Call)**:
+    *   `FORBIDDEN`: 直接注入另一個 Store。
+    *   `ACTION`: 在 `domain/event` 定義事件 ::> 通過 `EventBus` 廣播 ::> 其他 Store 監聽。
+*   **"處理非同步" (Handle Async)**:
+    *   `ACTION`: 強制封裝進 `rxMethod` ::> 鏈接 `tapResponse` ::> 透過 `patchState` 更新信號。
+
+## 10. 全域檢查點 (Global Checkpoints)
+
+*   **連動一致性**: 任何 Domain 層的修改，MUST 立即檢查 `application/mappers` 是否失效。
+*   **信號孤島檢測**: 每個 `signal()` MUST 有對應的 `computed()` 或在範本中被調用，否則視為死代碼。
+*   **單一事實來源**: Identity 與 Workspace 狀態 MUST 僅存在於 `WorkspaceContextStore`。重複定義必須 `DELETE` 並重定向至此。
+
+## 11. 執行與交付驗證 (Execution & Handoff Validation)
+
+每項任務完成前，`MUST` 通過以下終點檢查：
+
+*   **P0 (Structure)**: `Domain` 無框架依賴；`Interface` 無 Firebase 注入。
+*   **P0 (Reactive)**: 範本無舊指令；非同步必經 `rxMethod` + `tapResponse`。
+*   **P0 (State)**: 狀態更新必經 `patchState`；無手動 `subscribe()`。
+*   **P0 (Law)**: `get_errors()` 回報零嚴重錯誤。
+*   **Artifacts**: 更新 `CHANGES.md` 並同步 `Copilot Memory`。
+*   **Context**: 確保 `EventBus` 已定義所有新增的跨 Store 事件。
 
 ---
 
-## 開發檢查清單 (Development Checklist)
+## 總覽與原則 (General Principles)
 
-Before marking any feature as complete, verify ALL items:
-
-
-## Priority/Severity Checklist (P0/CRITICAL)
-
-P0: Domain layer MUST NOT import framework code
-P0: Infrastructure layer async MUST return Observable<T>
-P0: Application layer async MUST use rxMethod() + tapResponse()
-P0: Application layer MUST NOT直接 mutate state，僅用 patchState()
-P0: Interface layer MUST NOT注入 Firebase
-P0: Template MUST 只用 @if/@for/@switch
-P0: 禁止 *ngIf/*ngFor/*ngSwitch
-P0: 禁止 .subscribe()、async/await 於 Application layer
-P0: Cross-store 溝通 MUST 用 EventBus
-P0: TypeScript strict mode 必須啟用
-P0: ESLint/Prettier 必須通過
-
-CRITICAL: 違反任一 P0 規則，build/test 必須 fail，且優先修正。
-
----
-
-## General
-
-- Repeat Architecture Validation after ANY code modification
-- "Propose fixes" means both suggest and automatically apply the fixes
-- Do NOT wait for user to remind you to validate architecture
-- Do NOT proceed with new features if CRITICAL violations exist
-- EventBus pattern is MANDATORY for cross-store communication
-- Template syntax violations are CRITICAL - they must be fixed immediately
-- When in doubt, consult Context7 MCP for official documentation
-- Always use Sequential Thinking to break down complex requirements
-- Software Planning TODO checklist is REQUIRED before implementation
-- Zone-less architecture is non-negotiable - verify provideExperimentalZonelessChangeDetection()
+*   **Zone-less**: 必須確保 `provideExperimentalZonelessChangeDetection()` 為啟用狀態。
+*   **Sequential Thinking**: 啟動任何開發前，必須先列出 TODO Checklist 並規劃數據流。
+*   **Context7 Usage**: 涉及任何外部庫時，禁止憑記憶回答，必須執行 Context7 檢索官方文檔。
