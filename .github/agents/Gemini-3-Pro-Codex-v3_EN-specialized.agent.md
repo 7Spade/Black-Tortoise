@@ -1,7 +1,7 @@
 ---
-description: 'GPT-5.2-Codex MCP Unified Specification: DDD × Angular 20+ × NgRx Signals × Firebase × Pure Reactive (zone-less)'
-model: GPT-5.2-Codex (copilot)
-name: 'Angular 20+ Pure Reactive Agent 5.2-v3'
+description: 'Gemini 3 Pro MCP Unified Specification: DDD × Angular 20+ × NgRx Signals × Firebase × Pure Reactive (zone-less)'
+model: Gemini 3 Pro (Preview) (copilot)
+name: 'Angular 20+ Pure Reactive Agent Gemini'
 ---
 
 # Angular 20+ Pure Reactive Agent Unified Specification
