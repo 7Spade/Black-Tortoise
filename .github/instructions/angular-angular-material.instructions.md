@@ -5,21 +5,21 @@ applyTo: '**/*.ts'
 
 # @angular/material Implementation Instructions
 
-## CRITICAL: Animation Provider
+## Animation Provider
 
 **REQUIRED in app.config.ts:**
 - `provideAnimations()` MUST be included
 - NEVER use `provideNoopAnimations()` in production
 - ONLY use `provideNoopAnimations()` in test environments
 
-**VIOLATION:** Component styling failures, animations broken
+**FORBIDDEN:** Component styling failures, animations broken
 
 ## Module Imports
 
 **REQUIRED:**
 - Import specific Material modules: `MatButtonModule`, `MatFormFieldModule`, etc.
-- NEVER import entire Material library
 - Add modules to component `imports` array
+- NEVER import entire Material library
 
 **FORBIDDEN:**
 - Wildcard Material imports
@@ -52,7 +52,7 @@ applyTo: '**/*.ts'
 
 ## Button Variants
 
-**REQUIRED usage:**
+**REQUIRED:**
 - `mat-button` for text buttons
 - `mat-raised-button` for contained buttons
 - `mat-flat-button` for flat colored buttons
@@ -71,14 +71,10 @@ applyTo: '**/*.ts'
 - Define `matColumnDef`, `mat-header-cell`, `mat-cell`
 - Reference `displayedColumns` in row definitions
 - Import `MatTableModule`
-
-**Sorting:**
 - `matSort` directive on table
 - `mat-sort-header` on sortable columns
 - Handle `(matSortChange)` event
 - Import `MatSortModule`
-
-**Pagination:**
 - `mat-paginator` with `[length]`, `[pageSize]`, `[pageSizeOptions]`
 - Handle `(page)` event
 - Import `MatPaginatorModule`
@@ -90,17 +86,15 @@ applyTo: '**/*.ts'
 
 ## Dialog Pattern
 
-**REQUIRED structure:**
+**REQUIRED:**
 - `<h2 mat-dialog-title>` for dialog title
 - `<mat-dialog-content>` for dialog body
 - `<mat-dialog-actions>` for action buttons
 - `[mat-dialog-close]` on buttons for auto-close
-- Import `MatDialogModule`
-
-**REQUIRED configuration:**
 - Define `width` in dialog config
 - Pass `data` for dialog inputs
 - Subscribe to `afterClosed()` for result handling
+- Import `MatDialogModule`
 
 **FORBIDDEN:**
 - Dialogs without proper structure
@@ -109,12 +103,10 @@ applyTo: '**/*.ts'
 
 ## Sidenav Pattern
 
-**REQUIRED structure:**
+**REQUIRED:**
 - `mat-sidenav-container` (with explicit height)
 - `mat-sidenav` (with mode: `over`, `push`, `side`)
 - `mat-sidenav-content` for main content
-
-**Navigation:**
 - `mat-nav-list` for navigation items
 - `@for` with `track` for list items
 - `routerLinkActive` for active states
@@ -151,7 +143,7 @@ applyTo: '**/*.ts'
 
 ## Card Layout
 
-**REQUIRED sections:**
+**REQUIRED:**
 - `mat-card` for card container
 - `mat-card-header` for card title area
 - `mat-card-content` for main content
