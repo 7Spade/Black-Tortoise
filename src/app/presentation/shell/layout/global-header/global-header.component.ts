@@ -5,9 +5,9 @@
  * Purpose: Global header layout - composes child components
  * Architecture: Zone-less, OnPush, Angular 20 control flow, M3 tokens
  * 
- * Header Layout (comment_new 3783888611):
- * - Left: Logo only (single line "Black Tortoise")
- * - Center: Workspace Switcher + Search + Notifications + Theme Toggle
+ * Header Layout (comment_new 3784287204):
+ * - Left: Logo (icon + text on single line) + Workspace Controls (rendered under logo)
+ * - Center: Search + Notifications + Theme Toggle
  * - Right: User Avatar with menu (settings/profile links)
  * 
  * Responsibilities:
@@ -34,7 +34,8 @@ import { UserAvatarComponent } from '../../../features/user-avatar/user-avatar.c
   standalone: true,
   imports: [
     CommonModule, 
-    WorkspaceHeaderControlsComponent, 
+    WorkspaceHeaderControlsComponent,
+    WorkspaceCreateTriggerComponent,
     SearchComponent, 
     NotificationComponent,
     ThemeToggleComponent,

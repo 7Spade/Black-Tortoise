@@ -25,11 +25,13 @@
   }
 }
 
-/* Left Zone: Logo Only */
+/* Left Zone: Logo + Workspace Controls */
 .header-left {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   flex-shrink: 0;
+  gap: 0.5rem;
   min-width: fit-content;
 
   @media (max-width: 768px) {
@@ -44,6 +46,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--mat-sys-primary, #6750a4);
+  white-space: nowrap;
 
   .material-icons {
     font-size: 2rem;
@@ -58,7 +61,12 @@
   }
 }
 
-/* Center Zone: Workspace Switcher + Search + Notifications + Theme */
+.workspace-controls-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+/* Center Zone: Search + Notifications + Theme */
 .header-center {
   flex: 1;
   display: flex;
@@ -73,10 +81,6 @@
     max-width: 100%;
     gap: 0.5rem;
   }
-}
-
-.workspace-switcher-wrapper {
-  flex-shrink: 0;
 }
 
 .search-wrapper {
