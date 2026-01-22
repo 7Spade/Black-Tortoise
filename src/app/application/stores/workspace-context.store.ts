@@ -9,6 +9,12 @@
  * and integrates with the DDD domain layer and use cases.
  */
 
+import { computed, inject } from '@angular/core';
+import { CreateWorkspaceUseCase } from '@application/workspace/create-workspace.use-case';
+import { SwitchWorkspaceUseCase } from '@application/workspace/switch-workspace.use-case';
+import { OrganizationEntity } from '@domain/organization/organization.entity';
+import { WorkspaceEntity } from '@domain/workspace/workspace.entity';
+import { WorkspaceRuntimeFactory } from '@infrastructure/runtime/workspace-runtime.factory';
 import {
   patchState,
   signalStore,
@@ -17,13 +23,6 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { computed, inject } from '@angular/core';
-import { WorkspaceEntity } from '../../domain/workspace/workspace.entity';
-import { OrganizationEntity } from '../../domain/organization/organization.entity';
-import { ModuleType } from '../../domain/module/module.interface';
-import { CreateWorkspaceUseCase } from '../workspace/create-workspace.use-case';
-import { SwitchWorkspaceUseCase } from '../workspace/switch-workspace.use-case';
-import { WorkspaceRuntimeFactory } from '../../infrastructure/runtime/workspace-runtime.factory';
 
 /**
  * Workspace Context State

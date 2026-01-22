@@ -12,7 +12,7 @@
  * Implementation with RxJS will be in Infrastructure layer
  */
 
-import { DomainEvent } from '../event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 /**
  * Event handler function type

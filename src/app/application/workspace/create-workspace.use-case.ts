@@ -5,9 +5,9 @@
  * Purpose: Orchestrates workspace creation with proper event publishing
  */
 
-import { inject, Injectable } from '@angular/core';
-import { createWorkspace, WorkspaceEntity } from '../../domain/workspace/workspace.entity';
-import { WorkspaceCreated } from '../../domain/event/domain-event';
+import { Injectable } from '@angular/core';
+import { WorkspaceCreated } from '@domain/event/domain-event';
+import { createWorkspace, WorkspaceEntity } from '@domain/workspace/workspace.entity';
 
 /**
  * Create Workspace Command

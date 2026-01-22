@@ -11,25 +11,25 @@
  * - Zone-less operation with signals
  */
 
-import { 
-  Component, 
-  ChangeDetectionStrategy, 
-  Input, 
-  ViewChild,
-  ViewContainerRef,
-  ComponentRef,
-  OnInit,
-  OnDestroy,
-  inject,
-  signal,
-  effect,
-  Type
-} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { WorkspaceEventBus } from '../../../domain/workspace/workspace-event-bus';
-import { Module } from '../../../domain/module/module.interface';
-import { WorkspaceContextStore } from '../../../application/stores/workspace-context.store';
-import { WorkspaceRuntimeFactory } from '../../../infrastructure/runtime/workspace-runtime.factory';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ComponentRef,
+  effect,
+  inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  signal,
+  Type,
+  ViewChild,
+  ViewContainerRef
+} from '@angular/core';
+import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
+import { Module } from '@domain/module/module.interface';
+import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
+import { WorkspaceRuntimeFactory } from '@infrastructure/runtime/workspace-runtime.factory';
 
 @Component({
   selector: 'app-module-host-container',

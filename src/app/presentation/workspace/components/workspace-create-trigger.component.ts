@@ -12,10 +12,10 @@
  * - NO knowledge of workspace/org/auth
  */
 
-import { Component, ChangeDetectionStrategy, inject, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { WorkspaceCreateDialogComponent } from '@presentation/workspace/dialogs/workspace-create-dialog.component';
 import { Observable } from 'rxjs';
-import { WorkspaceCreateDialogComponent } from '../dialogs/workspace-create-dialog.component';
 
 @Component({
   selector: 'app-workspace-create-trigger',

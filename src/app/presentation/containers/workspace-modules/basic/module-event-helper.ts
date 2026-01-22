@@ -11,9 +11,8 @@
  * - Events flow through handle-domain-event.use-case (central bridge)
  */
 
-import { WorkspaceEventBus, EventHandler } from '../../../../domain/workspace/workspace-event-bus';
-import { DomainEvent } from '../../../../domain/event/domain-event';
-import { ModuleInitialized, ModuleDataChanged, ModuleError } from '../../../../domain/module/module-event';
+import { ModuleDataChanged, ModuleError, ModuleInitialized } from '@domain/module/module-event';
+import { EventHandler, WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
 
 /**
  * Subscription manager for module lifecycle

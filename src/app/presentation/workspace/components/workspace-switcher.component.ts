@@ -15,8 +15,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core';
 import { WorkspaceFacade } from '@application/workspace/workspace.facade';
+import { WorkspaceCreateResult } from '@presentation/workspace/models/workspace-create-result.model';
 import { filter, tap } from 'rxjs/operators';
-import { WorkspaceCreateResult } from '../models/workspace-create-result.model';
 import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
 
 @Component({

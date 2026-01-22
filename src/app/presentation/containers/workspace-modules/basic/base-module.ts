@@ -11,8 +11,8 @@
  */
 
 import { Input, OnDestroy } from '@angular/core';
-import { Module } from '../../../../domain/module/module.interface';
-import { WorkspaceEventBus } from '../../../../domain/workspace/workspace-event-bus';
+import { Module } from '@domain/module/module.interface';
+import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
 import { ModuleEventHelper, ModuleEventSubscriptions } from './module-event-helper';
 
 /**

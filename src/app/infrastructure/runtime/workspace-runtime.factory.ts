@@ -8,9 +8,9 @@
  */
 
 import { Injectable } from '@angular/core';
-import { WorkspaceEntity } from '../../domain/workspace/workspace.entity';
-import { WorkspaceContext, createWorkspaceContext, createDefaultPermissions } from '../../domain/workspace/workspace-context';
-import { WorkspaceEventBus } from '../../domain/workspace/workspace-event-bus';
+import { WorkspaceContext, createWorkspaceContext } from '@domain/workspace/workspace-context';
+import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
+import { WorkspaceEntity } from '@domain/workspace/workspace.entity';
 import { InMemoryEventBus } from './in-memory-event-bus';
 
 /**
