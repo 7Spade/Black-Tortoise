@@ -73,9 +73,16 @@ export class GlobalHeaderComponent {
       autoFocus: true,
     });
 
-    const result = await firstValueFrom(
-      dialogRef.afterClosed<WorkspaceCreateDialogResult | null>()
-    );
+    let result: WorkspaceCreateDialogResult | null = null;
+
+    try {
+      result = await firstValueFrom(
+        dialogRef.afterClosed<WorkspaceCreateDialogResult | null>()
+      );
+    } catch {
+      this.workspaceContext.setError('Failed to open workspace dialog');
+      return;
+    }
 
     if (result?.workspaceName) {
       // Business logic: create workspace (application layer)

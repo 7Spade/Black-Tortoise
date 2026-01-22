@@ -66,6 +66,12 @@ describe('WorkspaceCreateDialogComponent', () => {
       expect(component.workspaceNameControl.hasError('pattern')).toBe(true);
     });
 
+    it('should be invalid when workspace name is whitespace only', () => {
+      component.workspaceNameControl.setValue('   ');
+      expect(component.workspaceNameControl.invalid).toBe(true);
+      expect(component.workspaceNameControl.hasError('pattern')).toBe(true);
+    });
+
     it('should be invalid when exceeding max length', () => {
       const longName = 'a'.repeat(101);
       component.workspaceNameControl.setValue(longName);

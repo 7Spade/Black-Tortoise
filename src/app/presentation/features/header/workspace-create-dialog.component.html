@@ -16,7 +16,7 @@
         autocomplete="off"
         maxlength="100"
         autofocus
-        (keydown.enter)="onSubmit()">
+        (keydown.enter)="!workspaceNameControl.invalid && !isSubmitting() && onSubmit()">
       @if (workspaceNameControl.invalid && workspaceNameControl.touched) {
         <mat-error>{{ getErrorMessage() }}</mat-error>
       }

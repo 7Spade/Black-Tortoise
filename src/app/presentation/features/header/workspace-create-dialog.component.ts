@@ -58,7 +58,7 @@ export class WorkspaceCreateDialogComponent {
     validators: [
       Validators.required,
       Validators.maxLength(100),
-      Validators.pattern(/^[a-zA-Z0-9\s\-_]+$/), // Alphanumeric, spaces, hyphens, underscores
+      Validators.pattern(/^(?=.*\S)[a-zA-Z0-9\s\-_]+$/), // Alphanumeric + spaces, must contain non-space
     ],
   });
 
