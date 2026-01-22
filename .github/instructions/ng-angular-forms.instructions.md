@@ -7,41 +7,42 @@ applyTo: '**'
 
 ## CRITICAL: Reactive Forms Requirement
 
-Multi-field forms with validation MUST use Reactive Forms with typed `FormControl<T>`. Template-driven forms FORBIDDEN.
+- Multi-field forms MUST use Reactive Forms with typed `FormControl<T>`
+- Template-driven forms are FORBIDDEN
 
 ## Validation Rules
 
 **REQUIRED:**
-- Validators on ALL inputs (built-in: `required`, `email`, `min`, `max`, `pattern`)
-- Show errors ONLY after field touched using `@if (control.invalid && control.touched)`
+- Validators on all inputs (built-in: `required`, `email`, `min`, `max`, `pattern`)
+- Show errors ONLY after field touched: `@if (control.invalid && control.touched)`
 - Specific error messages per validation rule
-- Disable submit when form invalid
+- Disable submit button when form invalid
 
-**Custom validators:**
-- Return `null` for valid, `ValidationErrors` object for invalid
-- No side effects or state modification
+**Custom Validators:**
+- Return `null` if valid, `ValidationErrors` object if invalid
+- Must NOT modify state or produce side effects
 
 ## CRITICAL: NgRx Signals Integration
 
-**REQUIRED store pattern:**
-- Form instance in `signalStore` state
-- `submitting` and `error` flags
-- `rxMethod` for async submission with `tapResponse`
-- Form reset on success via `patchState`
-- Error state update on failure
+**Store Pattern REQUIRED:**
+- Form instance stored in `signalStore` state
+- Maintain `submitting` and `error` flags
+- Use `rxMethod` with `tapResponse` for async submissions
+- Reset form on success via `patchState`
+- Update error state on failure
 
 **FORBIDDEN:**
 - Form state outside NgRx Signals
-- Synchronous submission
+- Synchronous submissions
 - Missing error handling
-- Form persistence after success
+- Persisting form after success
 
 ## Submit Button State
 
-Button MUST be `[disabled]="form.invalid || submitting()"` with visual feedback during submission.
+- Button MUST be `[disabled]="form.invalid || submitting()"` with visual feedback during submission
 
 **REQUIRED in ALL forms:**
-- Reactive Forms with typed controls
+- Typed Reactive Forms
 - Validators + error display after touched
-- NgRx Signals integration with rxMethod
-- Submit button disabled when invalid/submitting
+- NgRx Signals integration via `rxMethod`
+- Submit button disabled when invalid or submitting
