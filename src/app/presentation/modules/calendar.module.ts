@@ -10,11 +10,11 @@
  * - Uses shared ModuleEventHelper for common patterns
  */
 
-import { Component, ChangeDetectionStrategy, Input, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
 import { Module, ModuleType } from '../../domain/module/module.interface';
 import { WorkspaceEventBus } from '../../domain/workspace/workspace-event-bus';
-import { ModuleEventHelper, ModuleEventSubscriptions } from './shared/module-event-helper';
+import { ModuleEventHelper } from './basic/module-event-helper';
 
 @Component({
   selector: 'app-calendar-module',
