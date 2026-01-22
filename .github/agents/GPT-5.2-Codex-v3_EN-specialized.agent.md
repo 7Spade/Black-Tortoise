@@ -112,27 +112,32 @@ src/app/
 │   ├── aggregates/                  # 聚合根 (*.aggregate.ts)
 │   ├── events/                      # 領域事件 (*.event.ts)
 │   ├── repositories/                # 倉儲介面定義 (Interfaces ONLY)
-│   ├── services/                    # 跨多個實體或聚合的業務邏輯
+│   ├── specifications/              # 規格/條件 (Specification pattern)
+│   ├── factories/                   # 聚合/實體建構器 (Factories)
 │   └── types/                       # 業務領域專用的 TypeScript 型別
 ├── application/                     # 🏗️ 應用調度與狀態管理
 │   ├── stores/                      # NgRx Signals 狀態中心 (*.store.ts)
 │   ├── commands/                    # 改變狀態的操作封裝 (*.command.ts)
 │   ├── queries/                     # 數據讀取與篩選邏輯 (*.query.ts)
 │   ├── handlers/                    # Command & Query 的執行器 (*.handler.ts)
-│   ├── services/                    # 應用層級服務 (Orchestration)
+│   ├── facades/                     # Facade / Context 層 (presentation ↔ application)
+│   ├── validators/                  # 驗證器 (應用層邏輯驗證)
 │   └── mappers/                     # Domain Model 與 UI/DTO 之間的轉換
 ├── infrastructure/                  # 🔌 基礎技術實作 (Framework/Library specific)
 │   ├── persistence/                 # 倉儲介面具體實作 (*.repository.ts)
 │   ├── firebase/                    # Firestore, Auth, Functions 專屬封裝
 │   ├── adapters/                    # 外部 API (REST/GraphQL) 連接器
+│   ├── config/                      # 全域設定、環境參數、Feature Flags
+│   ├── logging/                     # 自訂 logger 或監控 hook
+│   ├── event-bus/                   # 非同步處理/領域事件佇列 (可選)
 │   └── dto/                         # 外部原始數據結構定義 (*.dto.ts)
 └── presentation/                    # 🎨 使用者界面與交互 (Zone-less)
     ├── containers/                  # 智能容器元件（接收 signals / facade）
     ├── shell/                       # 全域佈局、導航與根組件 (GlobalShell)
     ├── features/                    # 具體業務功能組件 (Features/Pages)
-    ├── pages/                       # 路由頁面
     ├── modules/                     # Feature module 的 presentation 層
     ├── shared/                      # Presentation 層共享資源（directive, pipe, ui library）
+    ├── animations/                  # 動畫與交互效果 (component-level animations)
     └── theme/                       # M3 設計令牌與樣式 (Styles/Tokens)
 ```
 
