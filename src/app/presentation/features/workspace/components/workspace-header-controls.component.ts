@@ -17,8 +17,10 @@ import { Component, ChangeDetectionStrategy, inject, signal, viewChild } from '@
 import { filter, tap } from 'rxjs/operators';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
 import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
-import { HeaderFacade } from '../../facade/header.facade';
-import { WorkspaceCreateResult } from '../../models/workspace-create-result.model';
+import { WorkspaceCreateResult } from '../models/workspace-create-result.model';
+
+// Import facade from header feature (presentation-to-presentation is allowed for facades)
+import { HeaderFacade } from '../../header/facade/header.facade';
 
 @Component({
   selector: 'app-workspace-header-controls',
