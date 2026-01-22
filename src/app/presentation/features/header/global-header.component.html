@@ -1,10 +1,10 @@
 <header class="global-header">
   <!-- Left Zone: Logo (Icon + Text on Single Line) -->
   <div class="header-left">
-    <div class="logo">
-      <span class="material-icons">dashboard</span>
+    <a class="logo" role="link" aria-label="Go to home" (click)="navigateHome()" tabindex="0">
       <span class="logo-text">Black Tortoise</span>
-    </div>
+      <span class="material-icons" aria-hidden="true">dashboard</span>
+    </a>
   </div>
   
   <!-- Center Zone: Workspace Controls + Search + Notifications + Theme -->

@@ -20,14 +20,14 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { 
-  WorkspaceHeaderControlsComponent, 
-  WorkspaceCreateTriggerComponent 
-} from '../workspace';
 import { NotificationComponent } from '../../shared/components/notification/notification.component';
 import { SearchComponent } from '../../shared/components/search/search.component';
 import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
 import { UserAvatarComponent } from '../user-avatar/user-avatar.component';
+import {
+    WorkspaceCreateTriggerComponent,
+    WorkspaceHeaderControlsComponent
+} from '../workspace';
 
 @Component({
   selector: 'app-global-header',
@@ -78,6 +78,9 @@ export class GlobalHeaderComponent {
     }
   }
   
+  navigateHome(): void {
+    this.router.navigate(['/']);
+  }
   constructor() {
     // Initialize notification count
     this.notificationCount.set(0);
