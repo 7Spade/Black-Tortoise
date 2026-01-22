@@ -134,9 +134,9 @@ export class AcceptanceModule implements Module {
     });
   }
   
-  initialize(eventBus: WorkspaceEventBus): void {
+  initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
-    this.workspaceId.set(eventBus.getWorkspaceId());
+    this.workspaceId.set(eventBus.workspaceId);
     
     // Subscribe to workspace events
     this.subscriptions.add(

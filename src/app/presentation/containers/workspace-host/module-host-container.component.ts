@@ -2,13 +2,18 @@
  * Module Host Container Component
  * 
  * Layer: Presentation
- * Purpose: Dynamically hosts workspace modules and passes WorkspaceEventBus via @Input()
+ * Purpose: Dynamically hosts workspace modules and passes event bus via @Input()
  * 
  * Architecture:
  * - Receives module component dynamically
- * - Passes WorkspaceEventBus to module via @Input()
+ * - Passes IModuleEventBus to module via @Input()
  * - Manages module lifecycle
  * - Zone-less operation with signals
+ * 
+ * Clean Architecture Compliance:
+ * - Uses ModuleFacade from Application layer
+ * - Uses IAppModule and IModuleEventBus interfaces
+ * - No direct Infrastructure or Domain dependencies
  */
 
 import { CommonModule } from '@angular/common';
@@ -27,9 +32,9 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
-import { Module } from '@domain/module/module.interface';
-import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
-import { WorkspaceRuntimeFactory } from '@infrastructure/runtime/workspace-runtime.factory';
+import { ModuleFacade } from '@application/facades/module.facade';
+import { IAppModule } from '@application/interfaces/module.interface';
+import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 
 @Component({
   selector: 'app-module-host-container',
@@ -94,7 +99,7 @@ export class ModuleHostContainerComponent implements OnInit, OnDestroy {
   /**
    * Module component type to load
    */
-  @Input() moduleComponent?: Type<Module>;
+  @Input() moduleComponent?: Type<IAppModule>;
   
   /**
    * Module ID for debugging
@@ -108,25 +113,24 @@ export class ModuleHostContainerComponent implements OnInit, OnDestroy {
   error = signal<string | null>(null);
   
   /**
-   * Dependencies
+   * Dependencies (using Application layer)
    */
   private readonly workspaceContext = inject(WorkspaceContextStore);
-  private readonly runtimeFactory = inject(WorkspaceRuntimeFactory);
+  private readonly moduleFacade = inject(ModuleFacade);
   
   /**
    * Current module instance
    */
-  private moduleRef?: ComponentRef<Module>;
-  private eventBus?: WorkspaceEventBus;
+  private moduleRef?: ComponentRef<IAppModule>;
+  private eventBus?: IModuleEventBus;
   
   constructor() {
     // Watch for workspace changes and recreate eventBus
     effect(() => {
       const workspace = this.workspaceContext.currentWorkspace();
       if (workspace) {
-        const runtime = this.runtimeFactory.getRuntime(workspace.id);
-        if (runtime) {
-          this.eventBus = runtime.eventBus;
+        this.eventBus = this.moduleFacade.getEventBus(workspace.id) ?? undefined;
+        if (this.eventBus) {
           this.reloadModule();
         }
       }
@@ -156,13 +160,11 @@ export class ModuleHostContainerComponent implements OnInit, OnDestroy {
       return;
     }
     
-    const runtime = this.runtimeFactory.getRuntime(workspace.id);
-    if (!runtime) {
-      this.error.set('Workspace runtime not found');
+    this.eventBus = this.moduleFacade.getEventBus(workspace.id) ?? undefined;
+    if (!this.eventBus) {
+      this.error.set('Workspace event bus not found');
       return;
     }
-    
-    this.eventBus = runtime.eventBus;
     this.isLoading.set(true);
     this.error.set(null);
     

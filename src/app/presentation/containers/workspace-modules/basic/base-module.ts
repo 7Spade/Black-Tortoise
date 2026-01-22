@@ -8,11 +8,16 @@
  * - Modules can extend this or follow the pattern manually
  * - Event bus MUST be passed via @Input() or constructor
  * - No direct injection of stores or use-cases
+ * 
+ * Clean Architecture Compliance:
+ * - Uses Application layer interfaces (IAppModule, IModuleEventBus)
+ * - No direct Domain dependencies
+ * - Receives event bus via dependency injection pattern
  */
 
 import { Input, OnDestroy } from '@angular/core';
-import { Module } from '@domain/module/module.interface';
-import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
+import { IAppModule } from '@application/interfaces/module.interface';
+import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { ModuleEventHelper, ModuleEventSubscriptions } from './module-event-helper';
 
 /**
@@ -21,12 +26,12 @@ import { ModuleEventHelper, ModuleEventSubscriptions } from './module-event-help
  * Note: This is an abstract class that modules can extend.
  * Alternatively, modules can implement the pattern manually.
  */
-export abstract class BaseModule implements Module, OnDestroy {
+export abstract class BaseModule implements IAppModule, OnDestroy {
   /**
    * Event bus input - parent component must provide this
    * This is the ONLY way modules should receive dependencies
    */
-  @Input() eventBus?: WorkspaceEventBus;
+  @Input() eventBus?: IModuleEventBus;
   
   /**
    * Subscription manager for cleanup
@@ -39,13 +44,13 @@ export abstract class BaseModule implements Module, OnDestroy {
    */
   abstract readonly id: string;
   abstract readonly name: string;
-  abstract readonly type: any;
+  abstract readonly type: string;
   
   /**
    * Initialize module with event bus
    * Called when event bus is available
    */
-  initialize(eventBus: WorkspaceEventBus): void {
+  initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
     this.setupEventSubscriptions(eventBus);
     ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
@@ -54,7 +59,7 @@ export abstract class BaseModule implements Module, OnDestroy {
   /**
    * Setup event subscriptions - override in subclass
    */
-  protected setupEventSubscriptions(eventBus: WorkspaceEventBus): void {
+  protected setupEventSubscriptions(eventBus: IModuleEventBus): void {
     // Default: subscribe to workspace switched
     this.subscriptions.add(
       ModuleEventHelper.onWorkspaceSwitched(eventBus, (event) => {

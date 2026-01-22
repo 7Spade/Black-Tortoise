@@ -12,9 +12,9 @@
 import { computed, inject } from '@angular/core';
 import { CreateWorkspaceUseCase } from '@application/workspace/create-workspace.use-case';
 import { SwitchWorkspaceUseCase } from '@application/workspace/switch-workspace.use-case';
+import { WORKSPACE_RUNTIME_FACTORY } from '@application/tokens/workspace-runtime.token';
 import { OrganizationEntity } from '@domain/organization/organization.entity';
 import { WorkspaceEntity } from '@domain/workspace/workspace.entity';
-import { WorkspaceRuntimeFactory } from '@infrastructure/runtime/workspace-runtime.factory';
 import {
   patchState,
   signalStore,
@@ -126,7 +126,7 @@ export const WorkspaceContextStore = signalStore(
   withMethods((store) => {
     const createWorkspaceUseCase = inject(CreateWorkspaceUseCase);
     const switchWorkspaceUseCase = inject(SwitchWorkspaceUseCase);
-    const runtimeFactory = inject(WorkspaceRuntimeFactory);
+    const runtimeFactory = inject(WORKSPACE_RUNTIME_FACTORY);
     let demoRuntimeInitialized = false;
     
     return {

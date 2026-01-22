@@ -13,8 +13,8 @@ export {
     WorkspaceCreateDialogResult
 } from './dialogs/workspace-create-dialog.component';
 
-// Models
-export { WorkspaceCreateResult } from './models/workspace-create-result.model';
+// Re-export WorkspaceCreateResult from Application layer (backward compatibility)
+export { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
 
 // Facades
 export { IdentityFacade } from '@application/workspace/identity.facade';

@@ -2,26 +2,35 @@
  * Module Facade
  *
  * Layer: Application - Facade
- * Purpose: Coordinates module presentation concerns
+ * Purpose: Provides module management services for Presentation layer
  * Architecture: Zone-less, Pure Reactive, Angular 20+
  *
  * Responsibilities:
  * - Provides reactive interface for module components
- * - Coordinates module event handling
+ * - Coordinates module event handling via Application abstractions
  * - Manages module state coordination
+ * - Provides event bus access without exposing Domain layer
  * - No business logic - pure presentation orchestration
+ * 
+ * Clean Architecture Compliance:
+ * - Uses Application layer interfaces (IModuleEventBus, IAppModule)
+ * - Wraps Domain event bus in Application adapter
+ * - Presentation depends only on this facade
  */
 
-import { computed, Injectable, signal } from '@angular/core';
-import { Module, ModuleType } from '@domain/module/module.interface';
-import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
-import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { WorkspaceEventBusAdapter } from '../adapters/workspace-event-bus.adapter';
+import { IAppModule } from '../interfaces/module.interface';
+import { IModuleEventBus } from '../interfaces/module-event-bus.interface';
+import { WORKSPACE_RUNTIME_FACTORY } from '../tokens/workspace-runtime.token';
 
 @Injectable({ providedIn: 'root' })
 export class ModuleFacade {
+  private readonly runtimeFactory = inject(WORKSPACE_RUNTIME_FACTORY);
+  
   // Module state signals
-  private readonly _activeModules = signal<Module[]>([]);
-  private readonly _currentModule = signal<Module | null>(null);
+  private readonly _activeModules = signal<IAppModule[]>([]);
+  private readonly _currentModule = signal<IAppModule | null>(null);
 
   // Computed signals
   readonly activeModules = computed(() => this._activeModules());
@@ -29,26 +38,38 @@ export class ModuleFacade {
   readonly hasActiveModules = computed(() => this._activeModules().length > 0);
 
   /**
-   * Create a module event subscription helper
-   * Returns an unsubscribe function
+   * Get event bus for a workspace
+   * 
+   * Returns Application-layer IModuleEventBus interface
    */
-  createModuleSubscription(
-    eventBus: WorkspaceEventBus,
-    eventType: string,
-    handler: (event: any) => void
-  ): () => void {
-    return eventBus.subscribe(eventType, handler);
+  getEventBus(workspaceId: string): IModuleEventBus | null {
+    const runtime = this.runtimeFactory.getRuntime(workspaceId);
+    
+    if (!runtime) {
+      console.warn(`[ModuleFacade] Runtime not found for workspace: ${workspaceId}`);
+      return null;
+    }
+    
+    // Wrap domain event bus in application adapter
+    return new WorkspaceEventBusAdapter(runtime.eventBus);
+  }
+  
+  /**
+   * Check if runtime exists for workspace
+   */
+  hasRuntime(workspaceId: string): boolean {
+    return this.runtimeFactory.getRuntime(workspaceId) !== null;
   }
 
   /**
    * Initialize module with event bus
    */
   initializeModule(
-    module: Module,
-    eventBus: WorkspaceEventBus
+    module: IAppModule,
+    eventBus: IModuleEventBus
   ): void {
-    // Publish module initialized event
-    ModuleEventHelper.publishModuleInitialized(eventBus, module.id);
+    // Initialize the module
+    module.initialize(eventBus);
 
     // Add to active modules
     this._activeModules.update(modules => [...modules, module]);
@@ -57,7 +78,8 @@ export class ModuleFacade {
   /**
    * Activate a module
    */
-  activateModule(module: Module): void {
+  activateModule(module: IAppModule): void {
+    module.activate();
     this._currentModule.set(module);
   }
 
@@ -65,32 +87,32 @@ export class ModuleFacade {
    * Deactivate current module
    */
   deactivateCurrentModule(): void {
+    const current = this._currentModule();
+    if (current) {
+      current.deactivate();
+    }
     this._currentModule.set(null);
-  }
-
-  /**
-   * Get module interface and event bus types
-   * This provides type-safe access without direct domain imports
-   */
-  getModuleTypes(): {
-    Module: typeof Module;
-    ModuleType: typeof ModuleType;
-    WorkspaceEventBus: typeof WorkspaceEventBus;
-  } {
-    return {
-      Module,
-      ModuleType,
-      WorkspaceEventBus
-    };
   }
 
   /**
    * Create subscription manager for modules
    */
   createSubscriptionManager(): {
+    subscriptions: (() => void)[];
     add: (unsubscribeFn: () => void) => void;
     unsubscribeAll: () => void;
   } {
-    return ModuleEventHelper.createSubscriptionManager();
+    const subscriptions: (() => void)[] = [];
+    
+    return {
+      subscriptions,
+      add: (unsubscribeFn: () => void) => {
+        subscriptions.push(unsubscribeFn);
+      },
+      unsubscribeAll: () => {
+        subscriptions.forEach(unsub => unsub());
+        subscriptions.length = 0;
+      }
+    };
   }
 }
