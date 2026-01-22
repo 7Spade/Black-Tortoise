@@ -12,13 +12,13 @@
 
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterOutlet, Router } from '@angular/router';
 import { WorkspaceContextStore } from '../../application/stores/workspace-context.store';
-import { WorkspaceHostComponent } from '../workspace-host/workspace-host.component';
 
 @Component({
   selector: 'app-global-shell',
   standalone: true,
-  imports: [CommonModule, WorkspaceHostComponent],
+  imports: [CommonModule, RouterOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="global-shell">
@@ -76,21 +76,7 @@ import { WorkspaceHostComponent } from '../workspace-host/workspace-host.compone
       
       <!-- Main content area -->
       <main class="shell-content">
-        @if (workspaceContext.hasWorkspace()) {
-          <app-workspace-host />
-        } @else {
-          <div class="no-workspace">
-            <div class="empty-state">
-              <span class="material-icons">folder_off</span>
-              <h2>No Workspace Selected</h2>
-              <p>Create or select a workspace to get started</p>
-              <button class="create-workspace-btn" (click)="createNewWorkspace()">
-                <span class="material-icons">add</span>
-                Create Workspace
-              </button>
-            </div>
-          </div>
-        }
+        <router-outlet />
       </main>
       
       <!-- Error display -->
@@ -218,52 +204,6 @@ import { WorkspaceHostComponent } from '../workspace-host/workspace-host.compone
       overflow: auto;
     }
     
-    .no-workspace {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-    }
-    
-    .empty-state {
-      text-align: center;
-      padding: 2rem;
-    }
-    
-    .empty-state .material-icons {
-      font-size: 4rem;
-      color: #ccc;
-      margin-bottom: 1rem;
-    }
-    
-    .empty-state h2 {
-      margin: 0 0 0.5rem 0;
-      color: #666;
-    }
-    
-    .empty-state p {
-      color: #999;
-      margin-bottom: 1.5rem;
-    }
-    
-    .create-workspace-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      background: #1976d2;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.2s;
-    }
-    
-    .create-workspace-btn:hover {
-      background: #1565c0;
-    }
-    
     .error-banner {
       position: fixed;
       bottom: 1rem;
@@ -307,6 +247,7 @@ import { WorkspaceHostComponent } from '../workspace-host/workspace-host.compone
 })
 export class GlobalShellComponent {
   readonly workspaceContext = inject(WorkspaceContextStore);
+  private readonly router = inject(Router);
   
   showWorkspaceMenu = false;
   
@@ -317,6 +258,10 @@ export class GlobalShellComponent {
   selectWorkspace(workspaceId: string): void {
     this.workspaceContext.switchWorkspace(workspaceId);
     this.showWorkspaceMenu = false;
+    // Navigate to workspace after selecting
+    this.router.navigate(['/workspace']).catch(() => {
+      this.workspaceContext.setError('Failed to navigate to workspace');
+    });
   }
   
   createNewWorkspace(): void {
@@ -324,6 +269,10 @@ export class GlobalShellComponent {
     if (name && name.trim()) {
       this.workspaceContext.createWorkspace(name.trim());
       this.showWorkspaceMenu = false;
+      // Navigate to workspace after creating
+      this.router.navigate(['/workspace']).catch(() => {
+        this.workspaceContext.setError('Failed to navigate to workspace');
+      });
     }
   }
 }
