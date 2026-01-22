@@ -14,7 +14,7 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { IdentityPresentationFacade } from '../facade/identity-presentation.facade';
+import { IdentityFacade } from '@application/workspace/identity.facade';
 
 @Component({
   selector: 'app-identity-switcher',
@@ -131,5 +131,5 @@ import { IdentityPresentationFacade } from '../facade/identity-presentation.faca
   `]
 })
 export class IdentitySwitcherComponent {
-  readonly facade = inject(IdentityPresentationFacade);
+  readonly facade = inject(IdentityFacade);
 }

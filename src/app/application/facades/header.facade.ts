@@ -1,7 +1,7 @@
 /**
  * Header Facade
  * 
- * Layer: Presentation - Facade
+ * Layer: Application - Facade
  * Purpose: Application entry point for header feature - receives intent events,
  *          coordinates with WorkspaceContextStore for app actions (switch/create workspace, navigate)
  * Architecture: Zone-less, Pure Reactive, uses Router for navigation

@@ -1,7 +1,7 @@
 /**
  * Workspace Presentation Facade
  *
- * Layer: Presentation - Facade
+ * Layer: Application - Facade
  * Purpose: Coordinates workspace feature presentation concerns
  * Architecture: Zone-less, Pure Reactive, Angular 20+
  *
@@ -14,12 +14,12 @@
 
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { HeaderFacade } from '@application/facades/header.facade';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
 import { PresentationStore } from '@presentation/shared';
-import { HeaderFacade } from '@presentation/shared/facades/header.facade';
 
 @Injectable({ providedIn: 'root' })
-export class WorkspacePresentationFacade {
+export class WorkspaceFacade {
   private readonly router = inject(Router);
   private readonly presentation = inject(PresentationStore);
   private readonly workspaceContext = inject(WorkspaceContextStore);

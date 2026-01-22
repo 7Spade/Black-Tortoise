@@ -9,14 +9,14 @@ export { WorkspaceSwitcherComponent } from './components/workspace-switcher.comp
 
 // Dialogs
 export {
-  WorkspaceCreateDialogComponent,
-  WorkspaceCreateDialogResult
+    WorkspaceCreateDialogComponent,
+    WorkspaceCreateDialogResult
 } from './dialogs/workspace-create-dialog.component';
 
 // Models
 export { WorkspaceCreateResult } from './models/workspace-create-result.model';
 
 // Facades
-export { IdentityPresentationFacade } from './facade/identity-presentation.facade';
-export { WorkspacePresentationFacade } from './facade/workspace-presentation.facade';
+export { IdentityFacade } from '@application/workspace/identity.facade';
+export { WorkspaceFacade } from '@application/workspace/workspace.facade';
 

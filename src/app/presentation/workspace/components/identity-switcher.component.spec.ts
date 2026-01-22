@@ -25,7 +25,7 @@ describe('IdentitySwitcherComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should inject IdentityPresentationFacade', () => {
+  it('should inject IdentityFacade', () => {
     expect(component.facade).toBeDefined();
   });
 });</content>

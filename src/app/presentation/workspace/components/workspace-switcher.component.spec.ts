@@ -25,7 +25,7 @@ describe('WorkspaceSwitcherComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should inject WorkspacePresentationFacade', () => {
+  it('should inject WorkspaceFacade', () => {
     expect(component.facade).toBeDefined();
   });
 

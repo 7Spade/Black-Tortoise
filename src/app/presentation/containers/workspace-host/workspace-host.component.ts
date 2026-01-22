@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { ModuleContentComponent } from './components/module-content.component';
 import { ModuleNavigationComponent } from './components/module-navigation.component';
-import { WorkspaceHostFacade } from './facade/workspace-host.facade';
+import { WorkspaceHostFacade } from '@application/facades/workspace-host.facade';
 
 @Component({
   selector: 'app-workspace-host',

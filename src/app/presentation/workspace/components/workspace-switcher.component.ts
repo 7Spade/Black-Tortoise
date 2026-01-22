@@ -14,8 +14,8 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core';
+import { WorkspaceFacade } from '@application/workspace/workspace.facade';
 import { filter, tap } from 'rxjs/operators';
-import { WorkspacePresentationFacade } from '../facade/workspace-presentation.facade';
 import { WorkspaceCreateResult } from '../models/workspace-create-result.model';
 import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
 
@@ -71,7 +71,7 @@ import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.comp
   `,
 })
 export class WorkspaceSwitcherComponent {
-  readonly facade = inject(WorkspacePresentationFacade);
+  readonly facade = inject(WorkspaceFacade);
 
   // Reference to trigger component
   private readonly createTrigger = viewChild(WorkspaceCreateTriggerComponent);

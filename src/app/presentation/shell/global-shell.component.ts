@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from '@presentation/shared/components/header';
-import { ShellFacade } from './facade/shell.facade';
+import { ShellFacade } from '@application/facades/shell.facade';
 
 @Component({
   selector: 'app-global-shell',

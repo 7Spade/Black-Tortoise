@@ -12,6 +12,6 @@ export * from './components/theme-toggle';
 // Stores
 export { PresentationStore } from './stores/presentation.store';
 
-// Facades
-export { HeaderFacade } from './facades/header.facade';
+// Facades - moved to application layer
+// export { HeaderFacade } from './facades/header.facade';
 

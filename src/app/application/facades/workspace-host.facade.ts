@@ -1,7 +1,7 @@
 /**
  * Workspace Host Facade
  *
- * Layer: Presentation - Facade
+ * Layer: Application - Facade
  * Purpose: Coordinates workspace host presentation concerns
  * Architecture: Zone-less, Pure Reactive, Angular 20+
  *

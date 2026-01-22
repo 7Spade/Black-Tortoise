@@ -1,7 +1,7 @@
 /**
  * Identity Presentation Facade
  *
- * Layer: Presentation - Facade
+ * Layer: Application - Facade
  * Purpose: Coordinates identity feature presentation concerns
  * Architecture: Zone-less, Pure Reactive, Angular 20+
  *
@@ -16,7 +16,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
 
 @Injectable({ providedIn: 'root' })
-export class IdentityPresentationFacade {
+export class IdentityFacade {
   private readonly workspaceContext = inject(WorkspaceContextStore);
 
   // Local identity UI state

@@ -1,7 +1,7 @@
 /**
  * Shell Facade
  *
- * Layer: Presentation - Facade
+ * Layer: Application - Facade
  * Purpose: Coordinates shell-level presentation concerns
  * Architecture: Zone-less, Pure Reactive, Angular 20+
  *
