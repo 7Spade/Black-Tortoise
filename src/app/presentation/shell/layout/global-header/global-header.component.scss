@@ -2,6 +2,7 @@
  * Global Header Styles
  * Using Material 3 Design Tokens (--mat-sys-*)
  * Layout: Flex with left/center/right zones
+ * Updated for comment_new 3783888611
  */
 
 .global-header {
@@ -24,17 +25,15 @@
   }
 }
 
-/* Left Zone: Logo + Workspace Switcher */
+/* Left Zone: Logo Only */
 .header-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
   flex-shrink: 0;
-  min-width: 200px;
+  min-width: fit-content;
 
   @media (max-width: 768px) {
-    gap: 0.5rem;
-    min-width: 150px;
+    min-width: fit-content;
   }
 }
 
@@ -59,139 +58,34 @@
   }
 }
 
-/* Workspace Switcher in Left Zone */
-.workspace-switcher {
-  position: relative;
-}
-
-.workspace-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--mat-sys-surface-container, #f3edf7);
-  border: 1px solid var(--mat-sys-outline, #79747e);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  color: var(--mat-sys-on-surface, #1d1b20);
-  transition: all 0.2s;
-  min-width: 180px;
-
-  &:hover {
-    background: var(--mat-sys-surface-container-high, #ece6f0);
-    border-color: var(--mat-sys-primary, #6750a4);
-  }
-
-  .workspace-name {
-    font-weight: 500;
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  @media (max-width: 768px) {
-    min-width: 120px;
-    padding: 0.5rem;
-
-    .workspace-name {
-      max-width: 80px;
-    }
-  }
-}
-
-.workspace-menu {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  left: 0;
-  background: var(--mat-sys-surface-container, #f3edf7);
-  border: 1px solid var(--mat-sys-outline-variant, #cac4d0);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  min-width: 280px;
-  z-index: 1000;
-}
-
-.workspace-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.875rem;
-  color: var(--mat-sys-on-surface, #1d1b20);
-  text-align: left;
-  transition: background 0.2s;
-
-  &:hover {
-    background: var(--mat-sys-surface-container-high, #ece6f0);
-  }
-
-  &.active {
-    background: var(--mat-sys-primary-container, #eaddff);
-    color: var(--mat-sys-on-primary-container, #21005e);
-  }
-}
-
-.workspace-menu-divider {
-  height: 1px;
-  background: var(--mat-sys-outline-variant, #cac4d0);
-  margin: 0.25rem 0;
-}
-
-/* Center Zone: Search Input */
+/* Center Zone: Workspace Switcher + Search + Notifications + Theme */
 .header-center {
   flex: 1;
-  max-width: 600px;
   display: flex;
+  align-items: center;
+  gap: 1rem;
   justify-content: center;
-  min-width: 200px;
+  max-width: 800px;
 
   @media (max-width: 768px) {
     flex-basis: 100%;
     order: 3;
     max-width: 100%;
+    gap: 0.5rem;
   }
 }
 
-.search-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  background: var(--mat-sys-surface-container, #f3edf7);
-  border: 1px solid var(--mat-sys-outline-variant, #cac4d0);
-  border-radius: 24px;
-  color: var(--mat-sys-on-surface-variant, #49454f);
-
-  .material-icons {
-    font-size: 1.25rem;
-  }
+.workspace-switcher-wrapper {
+  flex-shrink: 0;
 }
 
-.search-input {
+.search-wrapper {
   flex: 1;
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 0.875rem;
-  color: var(--mat-sys-on-surface, #1d1b20);
-
-  &::placeholder {
-    color: var(--mat-sys-on-surface-variant, #49454f);
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-  }
+  max-width: 400px;
+  min-width: 200px;
 }
 
-/* Right Zone: Action Buttons + Identity Placeholder */
+/* Right Zone: User Avatar */
 .header-right {
   display: flex;
   align-items: center;
@@ -201,52 +95,6 @@
 
   @media (max-width: 768px) {
     gap: 0.25rem;
-  }
-}
-
-/* Identity Placeholder in Right Zone */
-.identity-placeholder {
-  margin-left: 0.5rem;
-}
-
-.identity-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--mat-sys-primary-container, #eaddff);
-  border: 1px solid var(--mat-sys-primary, #6750a4);
-  border-radius: 20px;
-  cursor: not-allowed;
-  font-size: 0.875rem;
-  color: var(--mat-sys-on-primary-container, #21005e);
-  opacity: 0.7;
-
-  .identity-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.125rem;
-  }
-
-  .org-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--mat-sys-on-surface-variant, #49454f);
-  }
-
-  .user-label {
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-transform: capitalize;
-  }
-
-  @media (max-width: 768px) {
-    padding: 0.5rem;
-    
-    .identity-info {
-      display: none;
-    }
   }
 }
 
