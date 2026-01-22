@@ -1,5 +1,5 @@
 /**
- * Workspace Header Controls Component
+ * Workspace Switcher Component
  * 
  * Layer: Presentation
  * Purpose: Workspace and Identity switcher controls for global header
