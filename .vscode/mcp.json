@@ -27,6 +27,10 @@
 			},
 			"gallery": "https://api.mcp.github.com",
 			"version": "1.0.31"
+		},
+		"github": {
+			"type": "http",
+			"url": "https://api.githubcopilot.com/mcp/"
 		}
 	},
 	"inputs": [
