@@ -1,0 +1,57 @@
+================================================================================
+REFACTORING - Complete File List (Comment 3783505741)
+================================================================================
+
+CREATED FILES (9):
+--------------------------------------------------------------------------------
+1.  src/app/presentation/features/settings/settings-entry/settings-entry.component.ts
+2.  src/app/presentation/features/settings/settings-entry/settings-entry.component.html
+3.  src/app/presentation/features/settings/settings-entry/settings-entry.component.scss
+4.  src/app/presentation/features/settings/settings-entry/settings-entry.component.spec.ts
+5.  src/app/presentation/shared/components/search/search.component.spec.ts
+6.  src/app/presentation/shared/components/notification/notification.component.spec.ts
+7.  src/app/presentation/features/header/components/workspace-header/workspace-create-trigger.component.html
+8.  src/app/presentation/features/header/components/workspace-header/workspace-create-trigger.component.scss
+9.  src/app/presentation/features/header/components/workspace-header/workspace-create-trigger.component.spec.ts
+
+MODIFIED FILES (14):
+--------------------------------------------------------------------------------
+1.  src/app/app.routes.ts
+2.  src/app/presentation/features/settings/index.ts
+3.  src/app/presentation/features/header/index.ts
+4.  src/app/presentation/features/header/components/global-header/global-header.component.ts
+5.  src/app/presentation/features/header/components/global-header/global-header.component.html
+6.  src/app/presentation/features/header/components/global-header/global-header.component.spec.ts
+7.  src/app/presentation/features/header/components/workspace-header/workspace-header-controls.component.ts
+8.  src/app/presentation/features/header/components/workspace-header/workspace-create-trigger.component.ts
+9.  src/app/presentation/shared/components/search/index.ts
+10. src/app/presentation/shared/components/search/search.component.ts
+11. src/app/presentation/shared/components/notification/index.ts
+12. src/app/presentation/shared/components/notification/notification.component.ts
+13. src/app/presentation/shared/services/index.ts
+14. src/app/presentation/workspace-host/workspace-host.component.ts
+
+DELETED FILES (3):
+--------------------------------------------------------------------------------
+1.  src/app/presentation/shared/components/settings-entry.component.ts
+2.  src/app/presentation/shared/services/search.service.ts
+3.  src/app/presentation/shared/services/notification.service.ts
+
+MOVED FILES (8):
+--------------------------------------------------------------------------------
+From: src/app/presentation/features/header/components/
+To:   src/app/presentation/features/header/components/global-header/
+1.  global-header.component.ts
+2.  global-header.component.html
+3.  global-header.component.scss
+4.  global-header.component.spec.ts
+
+From: src/app/presentation/features/header/components/
+To:   src/app/presentation/features/header/components/workspace-header/
+5.  workspace-header-controls.component.ts
+6.  workspace-header-controls.component.scss
+7.  workspace-header-controls.component.spec.ts
+8.  workspace-create-trigger.component.ts
+
+TOTAL FILES AFFECTED: 34
+================================================================================

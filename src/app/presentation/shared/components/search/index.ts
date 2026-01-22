@@ -1,1 +1,1 @@
-export * from './search.component';
+export { SearchComponent, SearchResult } from './search.component';

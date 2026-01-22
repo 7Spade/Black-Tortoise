@@ -3,9 +3,9 @@
  */
 
 // Components
-export { GlobalHeaderComponent } from './components/global-header.component';
-export { WorkspaceHeaderControlsComponent } from './components/workspace-header-controls.component';
-export { WorkspaceCreateTriggerComponent } from './components/workspace-create-trigger.component';
+export { GlobalHeaderComponent } from './components/global-header/global-header.component';
+export { WorkspaceHeaderControlsComponent } from './components/workspace-header/workspace-header-controls.component';
+export { WorkspaceCreateTriggerComponent } from './components/workspace-header/workspace-create-trigger.component';
 
 // Dialogs
 export { 
