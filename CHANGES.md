@@ -1,5 +1,40 @@
 # Implementation Changes Summary
 
+## Latest Changes (2025-01-22)
+
+### Presentation Layer Structure Cleanup + Routing Corrections
+
+**Files Modified (3)**:
+1. **`src/app/app.routes.ts`**
+   - Restructured routing with `/demo` and `/workspace` separation
+   - Demo modules (demo-dashboard, demo-settings) under `/demo` route
+   - All workspace modules under `/workspace` route with workspace-host
+   - Changed default entry point from 'overview' to 'demo'
+   - Fixed pathMatch for all redirects
+
+2. **`src/app/presentation/shell/global-shell.component.ts`**
+   - Updated to use RouterOutlet instead of direct WorkspaceHostComponent
+   - Added Router injection for navigation after workspace selection
+   - Navigate to `/workspace` after selecting/creating workspace
+   - Removed unused no-workspace template and styles
+
+3. **`src/app/presentation/workspace-host/workspace-host.component.ts`**
+   - Updated module navigation to use `/workspace` relative paths
+   - Changed from `navigateByUrl` to `navigate` with route array
+
+**Files Removed (1)**:
+- **`src/app/presentation/.gitkeep`** - Removed as directory contains real code
+
+### Architecture Improvements
+- ✅ Clean separation between demo and workspace routes
+- ✅ Demo modules accessible only via `/demo` (not as workspace default)
+- ✅ Workspace modules accessible only via `/workspace` with workspace-host
+- ✅ No routing logic under modules directory
+- ✅ Maintained DDD boundaries and event-driven architecture
+- ✅ Presentation structure verified: only modules + shared/ under modules/
+
+---
+
 ## Files Created (4)
 
 1. **`src/app/presentation/modules/calendar.module.ts`**
@@ -21,19 +56,14 @@
    - Color, typography, spacing, elevation systems
    - CSS custom properties for theming
 
-## Files Modified (3)
+## Files Modified (Original Implementation)
 
-1. **`src/app/app.routes.ts`**
-   - Added routes for all 11 modules
-   - Lazy loading configuration
-   - Clean route structure
-
-2. **`src/app/application/stores/workspace-context.store.ts`**
+1. **`src/app/application/stores/workspace-context.store.ts`**
    - Added ALL_MODULE_IDS constant (11 modules)
    - Updated createWorkspace() default
    - Updated loadDemoData() with all modules
 
-3. **`src/global_styles.scss`**
+2. **`src/global_styles.scss`**
    - Imported M3 tokens using @use
    - Modern Sass syntax (no deprecation warnings)
 

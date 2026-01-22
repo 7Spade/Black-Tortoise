@@ -1,5 +1,5 @@
 ---
-description: 'Angular 20 control flow enforcement: @if, @for, @switch, @defer syntax requirements, signal integration constraints, and deprecated directive prohibition'
+description: 'Angular 20 control flow enforcement: @if, @for, @switch, @defer syntax requirements, signal integration, forbidden directives'
 applyTo: '**/*.html, **/*.ts'
 ---
 
@@ -7,14 +7,14 @@ applyTo: '**/*.html, **/*.ts'
 
 ## CRITICAL: Syntax & Signal Requirements
 
-ALL control flow MUST use built-in syntax with signals. Structural directives FORBIDDEN.
+All control flow must use Angular 20 built-in syntax integrated with signals. Legacy structural directives are forbidden.
 
 | Operator | Syntax | Mandatory Features |
 |----------|--------|-------------------|
 | `@if` | `@if (signal()) {}` with optional `@else` / `@else if` | Signal invocation `()` |
 | `@for` | `@for (item of items(); track item.id) {}` | `track` expression + signal |
 | `@switch` | `@switch (status()) { @case / @default }` | Signal invocation `()` |
-| `@defer` | `@defer (on trigger) {}` with `@placeholder` / `@loading` / `@error` | Trigger strategy |
+| `@defer` | `@defer (trigger) {}` with `@placeholder` / `@loading` / `@error` | Trigger strategy |
 
 **FORBIDDEN (compilation failure):** `*ngIf`, `*ngFor`, `*ngSwitch`
 
@@ -22,18 +22,18 @@ ALL control flow MUST use built-in syntax with signals. Structural directives FO
 
 | Rule | Requirement | Violation Consequence |
 |------|-------------|----------------------|
-| **Track Expression** | MUST exist in ALL `@for` loops | Compilation error |
-| **Track Strategy** | By unique ID (`item.id`) or `$index` for static lists ONLY | Inefficient re-rendering |
-| **Track Anti-patterns** | NEVER by object reference or function call | Memory leaks |
-| **Signal Integration** | ALL control flow operates on signals, NOT plain properties | No reactivity |
-| **Signal Initialization** | Collections: `signal<Item[]>([])` NOT `undefined`/`null` | Type errors |
-| **Type Narrowing** | Multiple nullable access → `@if (user(); as currentUser)` | Repeated `!` assertions |
-| **@empty Block** | REQUIRED for user-facing `@for` lists | Poor UX |
-| **@switch Usage** | Use for >2 branches, NOT nested `@if` | Code smell |
-| **Nesting Depth** | Max 3 levels, else refactor with `computed()` | Complexity |
-| **@defer Trigger** | Required when >50KB or >100ms render | Performance |
-| **@loading Duration** | MUST specify `minimum 500ms` to prevent flicker | UI flash |
-| **Context Variables** | Use `$` prefix: `$index`, `$first`, `$last`, `$even`, `$odd`, `$count` | Convention |
+| Track Expression | MUST exist in all `@for` loops | Compilation error |
+| Track Strategy | Unique ID (`item.id`) or `$index` for static lists | Inefficient re-rendering |
+| Track Anti-patterns | Never track by object reference or function call | Memory leaks |
+| Signal Integration | Control flow must operate on signals, not plain properties | Loss of reactivity |
+| Signal Initialization | Collections: `signal<Item[]>([])`, not `undefined`/`null` | Type errors |
+| Type Narrowing | Use `@if (user(); as currentUser)` for nullable access | Excessive non-null assertions |
+| @empty Block | Required for user-facing `@for` lists | Poor UX |
+| @switch Usage | For >2 branches only; avoid nested `@if` | Code smell |
+| Nesting Depth | Max 3 levels; otherwise refactor with `computed()` | Complexity |
+| @defer Trigger | Required when rendering >50KB or >100ms | Performance issues |
+| @loading Duration | Minimum 500ms to prevent flicker | UI flash |
+| Context Variables | Use `$` prefix: `$index`, `$first`, `$last`, `$even`, `$odd`, `$count` | Naming convention |
 
 ## @defer Triggers
 
@@ -47,6 +47,6 @@ ALL control flow MUST use built-in syntax with signals. Structural directives FO
 
 ## Enforcement Summary
 
-**REQUIRED:** `@if/@for/@switch/@defer` syntax, signals with `()`, `track` expressions, `@empty` blocks, `@loading (minimum 500ms)`
+**REQUIRED:** `@if`, `@for`, `@switch`, `@defer` syntax; signals with `()`; `track` expressions; `@empty` blocks; `@loading` minimum 500ms.
 
-**FORBIDDEN:** `*ng` directives, plain properties, missing `track`, object/function tracking, deep nesting (>3), undefined/null collections
+**FORBIDDEN:** `*ng` directives; plain properties; missing `track`; object/function tracking; deep nesting (>3); undefined/null collections.

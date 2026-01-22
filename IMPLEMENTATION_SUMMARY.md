@@ -47,10 +47,12 @@ Created `ModuleHostContainerComponent` (`src/app/presentation/workspace-host/mod
 
 ### ✅ Phase 4: Routing Configuration
 Updated `src/app/app.routes.ts`:
-- All 11 modules properly routed
-- Lazy loading with `loadComponent()`
-- Clean route structure under global shell
-- Default redirect to overview module
+- **Route Structure**: `/demo` for demo modules, `/workspace` for workspace modules
+- **Demo Routes**: demo-dashboard and demo-settings under `/demo`
+- **Workspace Routes**: All 11 workspace modules under `/workspace` with workspace-host
+- **Default Entry**: Application defaults to `/demo` route
+- Lazy loading with `loadComponent()` for all modules
+- Clean separation between demo and production workspace
 
 ### ✅ Phase 5: WorkspaceContextStore Updates
 Updated `src/app/application/stores/workspace-context.store.ts`:
