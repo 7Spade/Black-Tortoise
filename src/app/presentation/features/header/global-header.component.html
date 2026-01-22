@@ -55,60 +55,36 @@
       <input 
         type="text" 
         class="search-input" 
-        placeholder="Search workspaces, documents, tasks..."
+        placeholder="Search (not implemented)"
         aria-label="Global search"
-        disabled>
+        (input)="onSearchInput($event)">
     </div>
   </div>
   
   <!-- Right Zone: Notifications + Settings + Identity Switcher -->
   <div class="header-right">
     <!-- Notifications -->
-    <button class="icon-button" aria-label="Notifications" type="button" disabled>
+    <button class="icon-button" aria-label="Notifications" type="button" (click)="toggleNotifications()">
       <span class="material-icons">notifications</span>
-      <span class="badge">3</span>
+      @if (notificationCount() > 0) {
+        <span class="badge">{{ notificationCount() }}</span>
+      }
     </button>
     
     <!-- Settings -->
-    <button class="icon-button" aria-label="Settings" type="button" disabled>
+    <button class="icon-button" aria-label="Settings" type="button" (click)="openSettings()">
       <span class="material-icons">settings</span>
     </button>
     
-    <!-- Identity Switcher -->
-    <div class="identity-switcher">
-      <button 
-        class="identity-button" 
-        (click)="toggleIdentityMenu()"
-        aria-label="Switch identity"
-        type="button">
-        <span class="material-icons">account_circle</span>
-        <span class="identity-type">
-          @if (workspaceContext.isAuthenticated()) {
-            {{ workspaceContext.currentIdentityType() }}
-          } @else {
-            Guest
-          }
-        </span>
-        <span class="material-icons">expand_more</span>
-      </button>
-      
-      @if (showIdentityMenu()) {
-        <div class="identity-menu">
-          <div class="identity-menu-item">
-            <span class="material-icons">person</span>
-            <span>Personal Account</span>
-          </div>
-          <div class="identity-menu-item">
-            <span class="material-icons">business</span>
-            <span>Organization</span>
-          </div>
-          <div class="identity-menu-divider"></div>
-          <div class="identity-menu-item">
-            <span class="material-icons">logout</span>
-            <span>Sign Out</span>
-          </div>
-        </div>
-      }
-    </div>
+    <!-- Theme Toggle -->
+    <button class="icon-button" aria-label="Toggle theme" type="button" (click)="toggleTheme()">
+      <span class="material-icons">
+        @if (themeMode() === 'dark') { light_mode } @else { dark_mode }
+      </span>
+    </button>
+
+    @if (showWorkspaceControls()) {
+      <app-workspace-header-controls />
+    }
   </div>
 </header>

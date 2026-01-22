@@ -10,11 +10,13 @@
  * - Error notifications
  */
 
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { GlobalHeaderComponent } from '@presentation/features/header';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map, startWith } from 'rxjs';
+import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
 
 @Component({
   selector: 'app-global-shell',
@@ -24,14 +26,13 @@ import { GlobalHeaderComponent } from '@presentation/features/header';
   template: `
     <div class="global-shell">
       <!-- Global Header Component -->
-      <app-global-header />
+      <app-global-header [showWorkspaceControls]="showWorkspaceControls()" />
       
       <!-- Main content area -->
       <main class="shell-content">
         <router-outlet />
       </main>
       
-      <!-- Error display -->
       @if (workspaceContext.error()) {
         <div class="error-banner">
           {{ workspaceContext.error() }}
@@ -53,6 +54,23 @@ import { GlobalHeaderComponent } from '@presentation/features/header';
       overflow: auto;
     }
     
+    
+  `]
+})
+export class GlobalShellComponent {
+  readonly workspaceContext = inject(WorkspaceContextStore);
+  private readonly router = inject(Router);
+  private readonly urlSignal = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map(() => this.router.url),
+      startWith(this.router.url)
+    ),
+    { initialValue: this.router.url }
+  );
+
+  readonly showWorkspaceControls = computed(() => !this.urlSignal().startsWith('/demo'));
+}
     .error-banner {
       position: fixed;
       bottom: 1rem;
@@ -76,8 +94,3 @@ import { GlobalHeaderComponent } from '@presentation/features/header';
       cursor: pointer;
       padding: 0;
     }
-  `]
-})
-export class GlobalShellComponent {
-  readonly workspaceContext = inject(WorkspaceContextStore);
-}

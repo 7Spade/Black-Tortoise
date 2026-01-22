@@ -16,42 +16,62 @@
  * - Business logic delegated to WorkspaceContextStore (application layer)
  */
 
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SearchService } from '../../shared/services/search.service';
+import { NotificationService } from '../../shared/services/notification.service';
+import { WorkspaceHeaderControlsComponent } from './workspace-header-controls.component';
+import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { firstValueFrom } from 'rxjs';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
-import { 
-  WorkspaceCreateDialogComponent, 
-  WorkspaceCreateDialogResult 
-} from './workspace-create-dialog.component';
 
 @Component({
   selector: 'app-global-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, WorkspaceHeaderControlsComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './global-header.component.html',
   styleUrls: ['./global-header.component.scss']
 })
 export class GlobalHeaderComponent {
-  readonly workspaceContext = inject(WorkspaceContextStore);
+  readonly showWorkspaceControls = input(true);
+  private readonly searchService = inject(SearchService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
-  private readonly dialog = inject(MatDialog);
   
   // Local UI state using signals
-  readonly showWorkspaceMenu = signal(false);
-  readonly showIdentityMenu = signal(false);
+  readonly showNotifications = signal(false);
+  readonly notificationCount = signal(0);
+  readonly themeMode = signal<'light' | 'dark'>('light');
+  private readonly themeStorageKey = 'ui.theme';
+  readonly searchQuery = signal('');
   
-  toggleWorkspaceMenu(): void {
-    this.showWorkspaceMenu.update(v => !v);
-    this.showIdentityMenu.set(false);
+  toggleNotifications(): void {
+    this.showNotifications.update(v => !v);
+    const notifications = this.notificationService.getNotifications();
+    this.notificationCount.set(notifications.length);
   }
-  
-  toggleIdentityMenu(): void {
-    this.showIdentityMenu.update(v => !v);
-    this.showWorkspaceMenu.set(false);
+
+  onSearchInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const value = input.value.trim();
+    this.searchQuery.set(value);
+    this.searchService.search(value);
+  }
+
+  openSettings(): void {
+    this.showNotifications.set(false);
+    this.router.navigate(['/settings']).catch(() => {
+      console.info('[Settings] Not implemented');
+    });
+  }
+
+  toggleTheme(): void {
+    const next = this.themeMode() === 'dark' ? 'light' : 'dark';
+    this.themeMode.set(next);
+    localStorage.setItem(this.themeStorageKey, next);
+    this.document.body.classList.remove('light', 'dark');
+    this.document.body.classList.add(next);
   }
   
   selectWorkspace(workspaceId: string): void {
@@ -65,34 +85,14 @@ export class GlobalHeaderComponent {
     });
   }
   
-  async createNewWorkspace(): Promise<void> {
-    // Open Material 3 dialog
-    const dialogRef = this.dialog.open(WorkspaceCreateDialogComponent, {
-      width: '500px',
-      disableClose: false,
-      autoFocus: true,
-    });
+  constructor() {
+    const storedTheme = localStorage.getItem(this.themeStorageKey);
+    const initialTheme = storedTheme === 'dark' ? 'dark' : 'light';
+    this.themeMode.set(initialTheme);
+    this.document.body.classList.remove('light', 'dark');
+    this.document.body.classList.add(initialTheme);
 
-    let result: WorkspaceCreateDialogResult | null = null;
-
-    try {
-      result = await firstValueFrom(
-        dialogRef.afterClosed<WorkspaceCreateDialogResult | null>()
-      );
-    } catch {
-      this.workspaceContext.setError('Failed to open workspace dialog');
-      return;
-    }
-
-    if (result?.workspaceName) {
-      // Business logic: create workspace (application layer)
-      this.workspaceContext.createWorkspace(result.workspaceName);
-      
-      // Presentation concern: navigate to workspace view
-      this.showWorkspaceMenu.set(false);
-      this.router.navigate(['/workspace']).catch(() => {
-        this.workspaceContext.setError('Failed to navigate to workspace');
-      });
-    }
+    const notifications = this.notificationService.getNotifications();
+    this.notificationCount.set(notifications.length);
   }
 }

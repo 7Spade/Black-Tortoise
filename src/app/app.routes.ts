@@ -20,12 +20,19 @@ export const routes: Routes = [
         m => m.GlobalShellComponent
       ),
     children: [
-      // Demo route - demonstration/showcase dashboard
+      // Demo route - presentation-only dashboard
       {
         path: 'demo',
         loadComponent: () =>
           import('./presentation/features/dashboard').then(
             m => m.DemoDashboardComponent
+          ),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./presentation/shared/components/settings-entry.component').then(
+            m => m.SettingsEntryComponent
           ),
       },
       
@@ -37,6 +44,13 @@ export const routes: Routes = [
             m => m.WorkspaceHostComponent
           ),
         children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./presentation/modules/overview.module').then(
+                m => m.OverviewModule
+              ),
+          },
           {
             path: 'overview',
             loadComponent: () =>
@@ -120,11 +134,6 @@ export const routes: Routes = [
               import('./presentation/modules/settings.module').then(
                 m => m.SettingsModule
               ),
-          },
-          {
-            path: '',
-            redirectTo: 'overview',
-            pathMatch: 'full',
           },
         ],
       },

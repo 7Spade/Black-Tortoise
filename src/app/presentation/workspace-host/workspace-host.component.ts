@@ -5,11 +5,13 @@
  * Purpose: Hosts workspace modules and provides module navigation
  */
 
-import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
 import { WorkspaceContextStore } from '../../application/stores/workspace-context.store';
 import { STANDARD_MODULES, ModuleType } from '../../domain/module/module.interface';
+import { SearchService } from '../shared/services/search.service';
+import { NotificationService } from '../shared/services/notification.service';
 
 @Component({
   selector: 'app-workspace-host',
@@ -17,11 +19,16 @@ import { STANDARD_MODULES, ModuleType } from '../../domain/module/module.interfa
   imports: [CommonModule, RouterOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="workspace-host">
+    <div class="workspace-host" [class.collapsed]="isSidebarCollapsed()">
       <!-- Module Navigation -->
       <nav class="module-nav">
         <div class="module-nav-header">
           <h3>Modules</h3>
+          <button class="collapse-button" type="button" (click)="toggleSidebar()">
+            <span class="material-icons">
+              @if (isSidebarCollapsed()) { chevron_right } @else { chevron_left }
+            </span>
+          </button>
         </div>
         <ul class="module-list">
           @for (moduleId of workspaceContext.currentWorkspaceModules(); track moduleId) {
@@ -84,6 +91,9 @@ import { STANDARD_MODULES, ModuleType } from '../../domain/module/module.interfa
     .module-nav-header {
       padding: 1rem 1.5rem;
       border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     
     .module-nav-header h3 {
@@ -93,6 +103,13 @@ import { STANDARD_MODULES, ModuleType } from '../../domain/module/module.interfa
       color: #666;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+    }
+
+    .collapse-button {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: #666;
     }
     
     .module-list {
@@ -141,6 +158,18 @@ import { STANDARD_MODULES, ModuleType } from '../../domain/module/module.interfa
       display: flex;
       flex-direction: column;
       overflow: auto;
+    }
+
+    .workspace-host.collapsed .module-nav {
+      width: 64px;
+    }
+
+    .workspace-host.collapsed .module-button span:last-child {
+      display: none;
+    }
+
+    .workspace-host.collapsed .module-nav-header h3 {
+      display: none;
     }
     
     .module-header {
@@ -200,8 +229,17 @@ import { STANDARD_MODULES, ModuleType } from '../../domain/module/module.interfa
 export class WorkspaceHostComponent implements OnInit {
   readonly workspaceContext = inject(WorkspaceContextStore);
   private readonly router = inject(Router);
+  private readonly searchService = inject(SearchService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly sidebarStorageKey = 'ui.sidebar';
+  readonly isSidebarCollapsed = signal(false);
   
   ngOnInit(): void {
+    const stored = localStorage.getItem(this.sidebarStorageKey);
+    this.isSidebarCollapsed.set(stored === 'collapsed');
+    this.searchService.search('');
+    this.notificationService.getNotifications();
+
     // Auto-activate first module if none active
     const currentModules = this.workspaceContext.currentWorkspaceModules();
     const activeModule = this.workspaceContext.activeModuleId();
@@ -223,6 +261,12 @@ export class WorkspaceHostComponent implements OnInit {
     this.router.navigate(['/workspace', moduleId]).catch(() => {
       this.workspaceContext.setError('Failed to navigate to module');
     });
+  }
+
+  toggleSidebar(): void {
+    const next = !this.isSidebarCollapsed();
+    this.isSidebarCollapsed.set(next);
+    localStorage.setItem(this.sidebarStorageKey, next ? 'collapsed' : 'expanded');
   }
   
   getModuleMetadata(moduleId: string) {
