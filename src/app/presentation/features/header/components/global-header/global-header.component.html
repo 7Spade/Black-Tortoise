@@ -15,15 +15,9 @@
   
   <!-- Center Zone: Global Search -->
   <div class="header-center">
-    <div class="search-container">
-      <span class="material-icons">search</span>
-      <input 
-        type="text" 
-        class="search-input" 
-        placeholder="Search (not implemented)"
-        aria-label="Global search"
-        (input)="onSearchInput($event)">
-    </div>
+    <app-search 
+      [placeholder]="'Search (placeholder)'"
+      (searchQuery)="onSearchQuery($event)" />
   </div>
   
   <!-- Right Zone: Notifications + Theme + Folder -->

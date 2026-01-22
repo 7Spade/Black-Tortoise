@@ -17,8 +17,8 @@ import { Component, ChangeDetectionStrategy, inject, signal, viewChild } from '@
 import { filter, tap } from 'rxjs/operators';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
 import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
-import { HeaderFacade } from '../facade/header.facade';
-import { WorkspaceCreateResult } from '../models/workspace-create-result.model';
+import { HeaderFacade } from '../../facade/header.facade';
+import { WorkspaceCreateResult } from '../../models/workspace-create-result.model';
 
 @Component({
   selector: 'app-workspace-header-controls',

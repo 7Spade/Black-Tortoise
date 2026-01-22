@@ -7,8 +7,8 @@
  * 
  * Header Layout (from integrated-system-spec.md §6.2):
  * - Left: Logo + Workspace Switcher (via WorkspaceHeaderControlsComponent)
- * - Center: Search Input (placeholder)
- * - Right: Notifications + Theme + Folder + Org/User Placeholders
+ * - Center: Search Input (via SearchComponent)
+ * - Right: Notifications (via NotificationComponent) + Theme + Folder + Org/User Placeholders
  * 
  * Responsibilities:
  * - Layout only - no MatDialog, no afterClosed, no use case calls
@@ -18,14 +18,15 @@
 
 import { Component, ChangeDetectionStrategy, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SearchService, NotificationService } from '../../../shared/services';
 import { DOCUMENT } from '@angular/common';
-import { WorkspaceHeaderControlsComponent } from './workspace-header-controls.component';
+import { WorkspaceHeaderControlsComponent } from '../workspace-header/workspace-header-controls.component';
+import { SearchComponent } from '../../../../shared/components/search/search.component';
+import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 
 @Component({
   selector: 'app-global-header',
   standalone: true,
-  imports: [CommonModule, WorkspaceHeaderControlsComponent],
+  imports: [CommonModule, WorkspaceHeaderControlsComponent, SearchComponent, NotificationComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './global-header.component.html',
   styleUrls: ['./global-header.component.scss']
@@ -35,8 +36,6 @@ export class GlobalHeaderComponent {
   readonly showWorkspaceControls = input(true);
   
   // Injected dependencies
-  private readonly searchService = inject(SearchService);
-  private readonly notificationService = inject(NotificationService);
   private readonly document = inject(DOCUMENT);
   
   // Local UI state using signals
@@ -48,15 +47,15 @@ export class GlobalHeaderComponent {
   
   toggleNotifications(): void {
     this.showNotifications.update(v => !v);
-    const notifications = this.notificationService.getNotifications();
-    this.notificationCount.set(notifications.length);
   }
 
-  onSearchInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const value = input.value.trim();
-    this.searchQuery.set(value);
-    this.searchService.search(value);
+  onSearchQuery(query: string): void {
+    this.searchQuery.set(query);
+  }
+
+  onNotificationDismissed(id: string): void {
+    // Handle notification dismissal
+    this.notificationCount.update(count => Math.max(0, count - 1));
   }
 
   toggleTheme(): void {
@@ -74,7 +73,7 @@ export class GlobalHeaderComponent {
     this.document.body.classList.remove('light', 'dark');
     this.document.body.classList.add(initialTheme);
 
-    const notifications = this.notificationService.getNotifications();
-    this.notificationCount.set(notifications.length);
+    // Initialize notification count
+    this.notificationCount.set(0);
   }
 }

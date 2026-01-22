@@ -10,7 +10,6 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
 import { WorkspaceContextStore } from '../../application/stores/workspace-context.store';
 import { STANDARD_MODULES, ModuleType } from '../../domain/module/module.interface';
-import { SearchService, NotificationService } from '../shared/services';
 
 @Component({
   selector: 'app-workspace-host',
@@ -228,16 +227,12 @@ import { SearchService, NotificationService } from '../shared/services';
 export class WorkspaceHostComponent implements OnInit {
   readonly workspaceContext = inject(WorkspaceContextStore);
   private readonly router = inject(Router);
-  private readonly searchService = inject(SearchService);
-  private readonly notificationService = inject(NotificationService);
   private readonly sidebarStorageKey = 'ui.sidebar';
   readonly isSidebarCollapsed = signal(false);
   
   ngOnInit(): void {
     const stored = localStorage.getItem(this.sidebarStorageKey);
     this.isSidebarCollapsed.set(stored === 'collapsed');
-    this.searchService.search('');
-    this.notificationService.getNotifications();
 
     // Auto-activate first module if none active
     const currentModules = this.workspaceContext.currentWorkspaceModules();

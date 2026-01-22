@@ -15,13 +15,14 @@
 import { Component, ChangeDetectionStrategy, inject, output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { WorkspaceCreateDialogComponent } from '../dialogs/workspace-create-dialog.component';
+import { WorkspaceCreateDialogComponent } from '../../dialogs/workspace-create-dialog.component';
 
 @Component({
   selector: 'app-workspace-create-trigger',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '',
+  templateUrl: './workspace-create-trigger.component.html',
+  styleUrls: ['./workspace-create-trigger.component.scss'],
 })
 export class WorkspaceCreateTriggerComponent {
   private readonly dialog = inject(MatDialog);

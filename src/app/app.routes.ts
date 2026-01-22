@@ -31,7 +31,7 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () =>
-          import('./presentation/shared/components/settings-entry.component').then(
+          import('./presentation/features/settings').then(
             m => m.SettingsEntryComponent
           ),
       },

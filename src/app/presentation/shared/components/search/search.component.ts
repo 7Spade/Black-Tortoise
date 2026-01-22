@@ -1,35 +1,50 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, output, signal, input } from '@angular/core';
+
+export interface SearchResult {
+  readonly id: string;
+  readonly title: string;
+  readonly type: string;
+}
 
 /**
  * SearchComponent
- * - Presentation 層的共用搜尋元件（Standalone component）
- * - 註解摘要: 元件僅負責顯示與輸入（query）行為；實際搜尋應由 Application 層（store / service / use-case）執行。
- * - 設計要點:
- *   1) 使用 `signal()` 儲存本地輸入狀態以便 UI 綁定。
- *   2) 不在元件內直接呼叫基礎設施或執行副作用；改由注入的 store 或外部 handler 處理。
- *   3) 若需要 debounce / 非同步控制，請在 application 層以 rxMethod/tapResponse 或相應策略處理。
+ * - Presentation layer shared search component (Standalone component)
+ * - Component is only responsible for display and input (query) behavior; actual search should be performed by Application layer (store / service / use-case).
+ * - Design points:
+ *   1) Use `signal()` to store local input state for UI binding.
+ *   2) Do not directly call infrastructure or execute side effects in the component; use injected store or external handler instead.
+ *   3) If debounce / async control is needed, handle it in application layer with rxMethod/tapResponse or corresponding strategy.
  */
 @Component({
   selector: 'app-search',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent {
-  // 本地 UI state：使用者輸入的查詢字串
+  // Inputs
+  readonly placeholder = input<string>('Search...');
+  
+  // Outputs - component events
+  readonly searchQuery = output<string>();
+  readonly searchResults = output<SearchResult[]>();
+  
+  // Local UI state: user input query string
   query = signal('');
 
-  // 範例事件發射方法：實際系統應提供 callback 或注入 store
-  onQueryChange(value: string) {
-    // TODO: 將此事件傳遞給 application 層的搜尋 handler（不要在此直接發出網路請求）
+  onQueryChange(value: string): void {
     this.query.set(value);
+    this.searchQuery.emit(value);
+    
+    // Placeholder logic - emit empty results
+    const results: SearchResult[] = [];
+    this.searchResults.emit(results);
   }
 
-  // 當按下搜尋時呼叫（示範）
-  submit() {
-    // TODO: 呼叫注入的 service 或 dispatch action（示範用）
-    console.log('Search submitted:', this.query());
+  submit(): void {
+    this.searchQuery.emit(this.query());
   }
 }
