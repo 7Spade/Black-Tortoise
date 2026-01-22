@@ -12,9 +12,6 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, Input, signal } from '@angular/core';
-import { Module, ModuleType } from '@domain/module/module.interface';
-import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
-import { ModuleEventHelper } from './basic/module-event-helper';
 
 @Component({
   selector: 'app-acceptance-module',
