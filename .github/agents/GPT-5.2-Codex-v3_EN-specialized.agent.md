@@ -32,54 +32,75 @@ Configuration for AI behavior when developing Angular 20+ applications with DDD 
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 1: Context7 Documentation Lookup                          │
-│  → Query official docs for Angular 20+, NgRx Signals, Firebase │
-│  → Tool: get-library-docs                                      │
+│ Step 1: Documentation Lookup                                     │
+│ INPUT: Angular 20+, NgRx Signals, Firebase                      │
+│ TASKS:                                                           │
+│  → Query official docs                                           │
+│  → Extract API usage and best practices                          │
+│ TOOL: get-library-docs                                           │
+│ OUTPUT: Verified reference data                                   │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 2: Sequential Thinking Analysis                           │
-│  → List current errors and anti-patterns                       │
-│  → Break down requirements into atomic tasks                   │
-│  → Assign priority levels (P0/P1/P2)                           │
+│ Step 2: Sequential Thinking Analysis                             │
+│ INPUT: Verified reference data                                   │
+│ TASKS:                                                           │
+│  → List current errors and anti-patterns                        │
+│  → Break requirements into atomic tasks                         │
+│  → Assign priority levels (P0 / P1 / P2)                        │
+│ OUTPUT: Prioritized task list                                    │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 3: Software Planning                                      │
-│  → Generate DDD layer mapping                                  │
-│  → Create reactive data flow diagram                           │
-│  → Define EventBus events                                      │
-│  → Output: TODO checklist                                      │
+│ Step 3: Software Planning                                        │
+│ INPUT: Prioritized task list                                      │
+│ TASKS:                                                           │
+│  → Generate DDD layer mapping                                     │
+│  → Create reactive data flow diagram                              │
+│  → Define EventBus events                                         │
+│  → Produce TODO checklist                                         │
+│ OUTPUT: Step 4-7 Implementation Plan                              │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 4-7: Implementation (Layer by Layer)                      │
-│  → Step 4: Domain Layer (Models, Policies, Types)             │
-│  → Step 5: Infrastructure Layer (Repositories)                │
-│  → Step 6: Application Layer (Stores with signalStore)        │
-│  → Step 7: Interface Layer (Components, Templates)            │
+│ Step 4-7: Layered Implementation                                 │
+│ TASKS:                                                           │
+│  → Step 4: Domain Layer (Models, Policies, Types)               │
+│  → Step 5: Infrastructure Layer (Repositories)                  │
+│  → Step 6: Application Layer (Stores with signalStore)          │
+│  → Step 7: Interface Layer (Components, Templates)              │
+│ OUTPUT: Fully implemented code                                   │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 8: Architecture Validation                                │
-│  → Verify no framework deps in Domain                         │
-│  → Verify no Firebase in Interface                            │
-│  → Verify all templates use @if/@for/@switch                  │
-│  → Check for anti-patterns                                    │
+│ Step 8: Architecture Validation                                   │
+│ INPUT: Implemented code                                          │
+│ TASKS:                                                           │
+│  → Verify no framework dependencies in Domain                   │
+│  → Verify no Firebase in Interface                               │
+│  → Verify templates use @if/@for/@switch                        │
+│  → Detect anti-patterns                                          │
+│ OUTPUT: Validation report                                        │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 9: Testing                                                │
-│  → Test store methods and computed signals                    │
-│  → Test component rendering with new control flow             │
-│  → Verify reactive data flow                                  │
+│ Step 9: Testing                                                   │
+│ INPUT: Validated code                                            │
+│ TASKS:                                                           │
+│  → Test store methods and computed signals                       │
+│  → Test component rendering with new control flow               │
+│  → Verify reactive data flow                                     │
+│ OUTPUT: Test results                                             │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 10: Completion Checklist                                 │
-│  → All items from Step 3 TODO must be ✓                       │
-│  → Architecture Validation must pass                          │
-│  → No CRITICAL or P0 issues remaining                         │
+│ Step 10: Completion Checklist                                     │
+│ INPUT: Test results                                              │
+│ TASKS:                                                           │
+│  → Ensure all Step 3 TODO items are ✓                             │
+│  → Ensure architecture validation passed                         │
+│  → Ensure no CRITICAL or P0 issues remain                        │
+│ OUTPUT: Production-ready, verified code                           │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
