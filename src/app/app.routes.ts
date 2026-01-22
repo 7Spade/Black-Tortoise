@@ -5,7 +5,7 @@
  * Architecture: Zone-less, Lazy Loading with loadComponent
  * 
  * Route Structure:
- * - /demo - Demo modules (demo-dashboard, demo-settings)
+ * - /demo - Demo dashboard (showcase of DDD architecture)
  * - /workspace - Workspace host with all workspace modules
  * - Default entry: /demo
  */
@@ -20,25 +20,13 @@ export const routes: Routes = [
         m => m.GlobalShellComponent
       ),
     children: [
-      // Demo routes - demonstration/showcase modules
+      // Demo route - demonstration/showcase dashboard
       {
         path: 'demo',
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./presentation/modules/demo-dashboard.module').then(
-                m => m.DemoDashboardModule
-              ),
-          },
-          {
-            path: 'settings',
-            loadComponent: () =>
-              import('./presentation/modules/demo-settings.module').then(
-                m => m.DemoSettingsModule
-              ),
-          },
-        ],
+        loadComponent: () =>
+          import('./presentation/features/dashboard').then(
+            m => m.DemoDashboardComponent
+          ),
       },
       
       // Workspace routes - actual workspace with modules

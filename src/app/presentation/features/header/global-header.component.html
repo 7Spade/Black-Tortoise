@@ -1,0 +1,114 @@
+<header class="global-header">
+  <!-- Left Zone: Logo + Workspace Switcher -->
+  <div class="header-left">
+    <!-- Logo -->
+    <div class="logo">
+      <span class="material-icons">dashboard</span>
+      <span class="logo-text">Black Tortoise</span>
+    </div>
+    
+    <!-- Workspace Switcher -->
+    @if (workspaceContext.hasWorkspace()) {
+      <div class="workspace-switcher">
+        <button 
+          class="workspace-button" 
+          (click)="toggleWorkspaceMenu()"
+          aria-label="Switch workspace"
+          type="button">
+          <span class="material-icons">folder</span>
+          <span class="workspace-name">
+            {{ workspaceContext.currentWorkspaceName() }}
+          </span>
+          <span class="material-icons">expand_more</span>
+        </button>
+        
+        @if (showWorkspaceMenu()) {
+          <div class="workspace-menu">
+            @for (workspace of workspaceContext.availableWorkspaces(); track workspace.id) {
+              <button 
+                class="workspace-menu-item"
+                [class.active]="workspace.id === workspaceContext.currentWorkspace()?.id"
+                (click)="selectWorkspace(workspace.id)"
+                type="button">
+                <span class="material-icons">folder</span>
+                <span>{{ workspace.name }}</span>
+              </button>
+            }
+            <div class="workspace-menu-divider"></div>
+            <button 
+              class="workspace-menu-item" 
+              (click)="createNewWorkspace()"
+              type="button">
+              <span class="material-icons">add</span>
+              <span>Create Workspace</span>
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+  
+  <!-- Center Zone: Global Search -->
+  <div class="header-center">
+    <div class="search-container">
+      <span class="material-icons">search</span>
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Search workspaces, documents, tasks..."
+        aria-label="Global search"
+        disabled>
+    </div>
+  </div>
+  
+  <!-- Right Zone: Notifications + Settings + Identity Switcher -->
+  <div class="header-right">
+    <!-- Notifications -->
+    <button class="icon-button" aria-label="Notifications" type="button" disabled>
+      <span class="material-icons">notifications</span>
+      <span class="badge">3</span>
+    </button>
+    
+    <!-- Settings -->
+    <button class="icon-button" aria-label="Settings" type="button" disabled>
+      <span class="material-icons">settings</span>
+    </button>
+    
+    <!-- Identity Switcher -->
+    <div class="identity-switcher">
+      <button 
+        class="identity-button" 
+        (click)="toggleIdentityMenu()"
+        aria-label="Switch identity"
+        type="button">
+        <span class="material-icons">account_circle</span>
+        <span class="identity-type">
+          @if (workspaceContext.isAuthenticated()) {
+            {{ workspaceContext.currentIdentityType() }}
+          } @else {
+            Guest
+          }
+        </span>
+        <span class="material-icons">expand_more</span>
+      </button>
+      
+      @if (showIdentityMenu()) {
+        <div class="identity-menu">
+          <div class="identity-menu-item">
+            <span class="material-icons">person</span>
+            <span>Personal Account</span>
+          </div>
+          <div class="identity-menu-item">
+            <span class="material-icons">business</span>
+            <span>Organization</span>
+          </div>
+          <div class="identity-menu-divider"></div>
+          <div class="identity-menu-item">
+            <span class="material-icons">logout</span>
+            <span>Sign Out</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</header>

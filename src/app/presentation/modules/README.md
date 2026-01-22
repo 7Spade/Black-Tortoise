@@ -46,14 +46,15 @@ All modules follow the same architecture pattern:
 1. **overview** - Workspace overview dashboard
 2. **documents** - Document and folder management
 3. **tasks** - Task and todo management
-4. **daily** - Daily standup and activity log
-5. **quality-control** - Quality assurance and control
-6. **acceptance** - Acceptance criteria and testing
-7. **issues** - Issue tracking and management
-8. **members** - Team member management
-9. **permissions** - Access control and permissions
-10. **audit** - Audit log and activity trail
-11. **settings** - Workspace settings
+4. **calendar** - Calendar and event scheduling
+5. **daily** - Daily standup and activity log
+6. **quality-control** - Quality assurance and control
+7. **acceptance** - Acceptance criteria and testing
+8. **issues** - Issue tracking and management
+9. **members** - Team member management
+10. **permissions** - Access control and permissions
+11. **audit** - Audit log and activity trail
+12. **settings** - Workspace settings
 
 ## Shared Utilities
 
@@ -140,13 +141,17 @@ grep "@Input() eventBus" *.module.ts
 
 All checks should show proper event-driven patterns.
 
-## Legacy Modules
+## Demo Modules (Moved)
 
-The following demo modules contain deprecated patterns:
-- `demo-dashboard.module.ts` - Contains store/factory injections (legacy)
-- `demo-settings.module.ts` - Contains store/factory injections (legacy)
+The following demo modules have been moved to `presentation/features/`:
+- **demo-dashboard** → `presentation/features/dashboard/demo-dashboard.component.ts`
+  - Showcases clean DDD architecture
+  - Uses WorkspaceContextStore via Application layer only
+  - No domain/infrastructure imports
+  - Angular 20 control flow, M3 tokens, zone-less
 
-These are kept for reference but should not be used as templates.
+**Removed modules**:
+- `demo-settings.module.ts` - Removed as it was not actively used
 
 ## Event Types
 

@@ -1,6 +1,55 @@
 # Implementation Changes Summary
 
-## Latest Changes (2025-01-22)
+## Latest Changes (2026-01-22)
+
+### Presentation Layer Restructuring - Header Skeleton + Demo Module Refactoring
+
+**Added**
+- Created `GlobalHeaderComponent` in `presentation/features/header/` following integrated-system-spec.md §6.2
+  - Left zone: Logo + Workspace Switcher
+  - Center zone: Global search input (placeholder)
+  - Right zone: Notifications + Settings + Identity Switcher
+  - Uses Angular 20 control flow (@if/@for), M3 design tokens, OnPush, zone-less
+  - Signal-based local UI state for menu toggles
+  - No domain/infrastructure imports (depends only on WorkspaceContextStore from application layer)
+- Moved `demo-dashboard` from modules to `presentation/features/dashboard/`
+  - Refactored to standalone component with separate .ts/.html/.scss/.spec.ts files
+  - Removed Module interface implementation and event bus dependencies
+  - Uses only WorkspaceContextStore (application layer) - no domain/infrastructure imports
+  - Updated to use M3 design tokens instead of hardcoded colors
+  - Maintains Angular 20 control flow and OnPush change detection
+- Created `presentation/features/index.ts` and individual feature index files for clean exports
+
+**Changed**
+- Updated `GlobalShellComponent` to use new `GlobalHeaderComponent`
+  - Removed inline header markup and styles
+  - Eliminated duplicate workspace/identity switcher logic
+  - Simplified to header + router-outlet + error banner
+  - Uses M3 tokens for error banner styling
+- Updated `app.routes.ts` to reflect new structure
+  - Changed demo-dashboard route to `presentation/features/dashboard`
+  - Removed `/demo/settings` route
+  - Simplified demo route structure (single route instead of nested children)
+- Updated `presentation/modules/README.md` to document demo module changes
+  - Added "Demo Modules (Moved)" section
+  - Noted removal of demo-settings module
+  - Updated module count and descriptions
+- Updated `presentation/index.ts` with new feature exports
+
+**Removed**
+- Deleted `presentation/modules/demo-dashboard.module.ts` (legacy file)
+- Deleted `presentation/modules/demo-settings.module.ts` (unused module)
+
+**Architecture Notes**
+- All presentation components strictly follow DDD layering: no domain or infrastructure imports
+- Path aliases (@presentation, @application) used throughout for clean imports
+- Header component is presentation-only skeleton (no business logic or I/O)
+- Single workspace/identity switcher now exists in GlobalHeaderComponent only
+
+---
+
+## Previous Changes (2025-01-22)
+
 
 ### Presentation Layer Structure Cleanup + Routing Corrections
 
