@@ -1,0 +1,18 @@
+<!-- NotificationComponent（Presentation, Shared） -->
+<!-- 註解: 顯示通知清單；新增/移除應由 application 層發出事件或提供 API 接口 -->
+<!-- Architecture: Angular 20 control flow (@for instead of *ngFor) -->
+<ul class="notification">
+  @for (n of notifications(); track n.id) {
+    <li class="notification__item" (click)="onClick(n)">
+      <div class="notification__content">
+        <strong class="notification__type">{{ n.type }}</strong>
+        <span class="notification__message">{{ n.message }}</span>
+      </div>
+      <button class="notification__dismiss" (click)="dismiss(n.id); $event.stopPropagation()" type="button">關閉</button>
+    </li>
+  } @empty {
+    <li class="notification__empty">
+      No notifications
+    </li>
+  }
+</ul>

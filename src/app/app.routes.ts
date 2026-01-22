@@ -20,12 +20,19 @@ export const routes: Routes = [
         m => m.GlobalShellComponent
       ),
     children: [
-      // Demo route - demonstration/showcase dashboard
+      // Demo route - presentation-only dashboard
       {
         path: 'demo',
         loadComponent: () =>
-          import('./presentation/features/dashboard').then(
+          import('./presentation/pages/dashboard').then(
             m => m.DemoDashboardComponent
+          ),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./presentation/pages/settings').then(
+            m => m.SettingsComponent
           ),
       },
       
@@ -33,98 +40,100 @@ export const routes: Routes = [
       {
         path: 'workspace',
         loadComponent: () =>
-          import('./presentation/workspace-host/workspace-host.component').then(
+          import('./presentation/containers/workspace-host/workspace-host.component').then(
             m => m.WorkspaceHostComponent
           ),
         children: [
           {
+            path: '',
+            loadComponent: () =>
+              import('./presentation/containers/workspace-modules/overview.module').then(
+                m => m.OverviewModule
+              ),
+          },
+          {
             path: 'overview',
             loadComponent: () =>
-              import('./presentation/modules/overview.module').then(
+              import('./presentation/containers/workspace-modules/overview.module').then(
                 m => m.OverviewModule
               ),
           },
           {
             path: 'documents',
             loadComponent: () =>
-              import('./presentation/modules/documents.module').then(
+              import('./presentation/containers/workspace-modules/documents.module').then(
                 m => m.DocumentsModule
               ),
           },
           {
             path: 'tasks',
             loadComponent: () =>
-              import('./presentation/modules/tasks.module').then(
+              import('./presentation/containers/workspace-modules/tasks.module').then(
                 m => m.TasksModule
               ),
           },
           {
             path: 'calendar',
             loadComponent: () =>
-              import('./presentation/modules/calendar.module').then(
+              import('./presentation/containers/workspace-modules/calendar.module').then(
                 m => m.CalendarModule
               ),
           },
           {
             path: 'daily',
             loadComponent: () =>
-              import('./presentation/modules/daily.module').then(
+              import('./presentation/containers/workspace-modules/daily.module').then(
                 m => m.DailyModule
               ),
           },
           {
             path: 'quality-control',
             loadComponent: () =>
-              import('./presentation/modules/quality-control.module').then(
+              import('./presentation/containers/workspace-modules/quality-control.module').then(
                 m => m.QualityControlModule
               ),
           },
           {
             path: 'acceptance',
             loadComponent: () =>
-              import('./presentation/modules/acceptance.module').then(
+              import('./presentation/containers/workspace-modules/acceptance.module').then(
                 m => m.AcceptanceModule
               ),
           },
           {
             path: 'issues',
             loadComponent: () =>
-              import('./presentation/modules/issues.module').then(
+              import('./presentation/containers/workspace-modules/issues.module').then(
                 m => m.IssuesModule
               ),
           },
           {
             path: 'members',
             loadComponent: () =>
-              import('./presentation/modules/members.module').then(
+              import('./presentation/containers/workspace-modules/members.module').then(
                 m => m.MembersModule
               ),
           },
           {
             path: 'permissions',
             loadComponent: () =>
-              import('./presentation/modules/permissions.module').then(
+              import('./presentation/containers/workspace-modules/permissions.module').then(
                 m => m.PermissionsModule
               ),
           },
           {
             path: 'audit',
             loadComponent: () =>
-              import('./presentation/modules/audit.module').then(
+              import('./presentation/containers/workspace-modules/audit.module').then(
                 m => m.AuditModule
               ),
           },
           {
             path: 'settings',
             loadComponent: () =>
-              import('./presentation/modules/settings.module').then(
+              import('./presentation/containers/workspace-modules/settings.module').then(
                 m => m.SettingsModule
               ),
-          },
-          {
-            path: '',
-            redirectTo: 'overview',
-            pathMatch: 'full',
           },
         ],
       },

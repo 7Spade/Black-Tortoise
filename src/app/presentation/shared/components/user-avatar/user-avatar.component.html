@@ -1,0 +1,43 @@
+<!--
+  Template for UserAvatarComponent
+  
+  Presentation-only component with dropdown menu for user actions.
+  - Displays avatar with menu toggle
+  - Shows dropdown menu with links to Settings and Profile
+  - Uses Angular 20 @if control flow
+  - Maintains accessibility (a11y) with ARIA labels
+-->
+<div class="user-avatar-container">
+  <button 
+    class="avatar-button" 
+    (click)="toggleMenu()"
+    aria-label="User menu"
+    type="button">
+    @if (avatarUrl(); as url) {
+      <img [src]="url" alt="User avatar" class="avatar-img" />
+    } @else {
+      <div class="avatar-placeholder" aria-hidden="true">
+        <span class="material-icons">account_circle</span>
+      </div>
+    }
+  </button>
+  
+  @if (showMenu()) {
+    <div class="avatar-menu">
+      <button 
+        class="avatar-menu-item" 
+        (click)="onMenuItemClick('settings')"
+        type="button">
+        <span class="material-icons">settings</span>
+        <span>Settings</span>
+      </button>
+      <button 
+        class="avatar-menu-item" 
+        (click)="onMenuItemClick('profile')"
+        type="button">
+        <span class="material-icons">person</span>
+        <span>Profile</span>
+      </button>
+    </div>
+  }
+</div>

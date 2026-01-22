@@ -6,7 +6,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { DomainEvent } from '../../domain/event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 /**
  * Domain Event Handler Use Case

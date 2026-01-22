@@ -5,15 +5,17 @@
  * Purpose: Orchestrates workspace creation with proper event publishing
  */
 
-import { inject, Injectable } from '@angular/core';
-import { createWorkspace, WorkspaceEntity } from '../../domain/workspace/workspace.entity';
-import { WorkspaceCreated } from '../../domain/event/domain-event';
+import { Injectable } from '@angular/core';
+import { WorkspaceCreated } from '@domain/event/domain-event';
+import { createWorkspace, WorkspaceEntity } from '@domain/workspace/workspace.entity';
 
 /**
  * Create Workspace Command
  */
 export interface CreateWorkspaceCommand {
   readonly name: string;
+  readonly organizationId: string;
+  readonly organizationDisplayName: string;
   readonly ownerId: string;
   readonly ownerType: 'user' | 'organization';
   readonly moduleIds: string[];
@@ -33,6 +35,8 @@ export class CreateWorkspaceUseCase {
     const workspace = createWorkspace(
       workspaceId,
       command.name,
+      command.organizationId,
+      command.organizationDisplayName,
       command.ownerId,
       command.ownerType,
       command.moduleIds

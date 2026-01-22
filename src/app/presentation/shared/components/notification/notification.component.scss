@@ -1,0 +1,6 @@
+/* Notification styles - 保持簡單以便主題覆寫 */
+.notification { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.notification__item { display:flex; justify-content:space-between; align-items:center; padding:8px; border-radius:6px; background: rgba(0,0,0,0.04); }
+.notification__content { display:flex; gap:8px; align-items:center; }
+.notification__message { color: rgba(0,0,0,0.8); }
+.notification__dismiss { background:transparent; border:none; cursor:pointer; }

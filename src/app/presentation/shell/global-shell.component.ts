@@ -10,32 +10,31 @@
  * - Error notifications
  */
 
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
-import { GlobalHeaderComponent } from '@presentation/features/header';
+import { ShellFacade } from '@application/facades/shell.facade';
+import { HeaderComponent } from '@presentation/shared/components/header';
 
 @Component({
   selector: 'app-global-shell',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, GlobalHeaderComponent],
+  imports: [CommonModule, RouterOutlet, HeaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="global-shell">
       <!-- Global Header Component -->
-      <app-global-header />
-      
+      <app-header [showWorkspaceControls]="shell.showWorkspaceControls()" />
+
       <!-- Main content area -->
       <main class="shell-content">
         <router-outlet />
       </main>
-      
-      <!-- Error display -->
-      @if (workspaceContext.error()) {
+
+      @if (shell.hasWorkspaceError()) {
         <div class="error-banner">
-          {{ workspaceContext.error() }}
-          <button (click)="workspaceContext.setError(null)" type="button">✕</button>
+          {{ shell.workspaceError() }}
+          <button (click)="shell.clearWorkspaceError()" type="button">✕</button>
         </div>
       }
     </div>
@@ -45,21 +44,21 @@ import { GlobalHeaderComponent } from '@presentation/features/header';
       display: flex;
       flex-direction: column;
       height: 100vh;
-      background: var(--md-sys-color-surface-container-lowest, #f5f5f5);
+      background: var(--mat-sys-surface-container-lowest, #f5f5f5);
     }
     
     .shell-content {
       flex: 1;
       overflow: auto;
     }
-    
+
     .error-banner {
       position: fixed;
       bottom: 1rem;
       right: 1rem;
       padding: 1rem 1.5rem;
-      background: var(--md-sys-color-error, #ba1a1a);
-      color: var(--md-sys-color-on-error, #ffffff);
+      background: var(--mat-sys-error, #ba1a1a);
+      color: var(--mat-sys-on-error, #ffffff);
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       display: flex;
@@ -71,7 +70,7 @@ import { GlobalHeaderComponent } from '@presentation/features/header';
     .error-banner button {
       background: none;
       border: none;
-      color: var(--md-sys-color-on-error, #ffffff);
+      color: var(--mat-sys-on-error, #ffffff);
       font-size: 1.25rem;
       cursor: pointer;
       padding: 0;
@@ -79,5 +78,5 @@ import { GlobalHeaderComponent } from '@presentation/features/header';
   `]
 })
 export class GlobalShellComponent {
-  readonly workspaceContext = inject(WorkspaceContextStore);
+  readonly shell = inject(ShellFacade);
 }
