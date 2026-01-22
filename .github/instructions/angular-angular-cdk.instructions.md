@@ -1,104 +1,153 @@
 ---
-description: 'Angular CDK: Component Dev Kit for accessibility, overlays, drag-drop, virtual scrolling, and responsive layout utilities'
+description: 'Angular CDK: Component Dev Kit usage rules for accessibility, overlays, drag-drop, virtual scrolling, and responsive layout. Presentation-layer only.'
 applyTo: '**/*.ts'
 ---
 
-# @angular/cdk Implementation Instructions
+# @angular/cdk Implementation Instructions (Presentation Layer Only)
 
-## CRITICAL: Resource Management
+==================================================
+SCOPE DEFINITION (MANDATORY)
+==================================================
 
-**REQUIRED cleanup in ngOnDestroy():**
-- `focusTrap?.destroy()` for focus traps
-- `overlayRef?.dispose()` for overlays
-- `focusMonitor?.stopMonitoring()` for focus monitoring
-- `keyManager?.destroy()` for keyboard managers
+Angular CDK usage is a PRESENTATION-ONLY concern.
 
-**VIOLATION:** Memory leaks, event listener accumulation
+CDK utilities MUST NOT:
+- Trigger domain logic
+- Invoke Application Use Cases
+- Access repositories or infrastructure
+- Control business workflows or decisions
 
-## Accessibility (a11y) Module
+CDK exists ONLY to support UI behavior, accessibility, and layout.
 
-**REQUIRED for focus management:**
-- `FocusTrap` MUST be initialized in `ngOnInit()` with `focusTrapFactory.create()`
-- `focusTrap.focusInitialElement()` MUST be called after creation
-- NEVER create focus traps without destroy cleanup
+==================================================
+CRITICAL: Resource Lifecycle Management
+==================================================
 
-**REQUIRED for live announcements:**
-- Use `LiveAnnouncer` for dynamic content changes
-- NEVER rely on DOM manipulation for screen reader updates
+ALL CDK resources MUST be explicitly released in ngOnDestroy().
 
-## Overlay Module
+REQUIRED CLEANUP:
+- focusTrap?.destroy()
+- overlayRef?.dispose()
+- focusMonitor?.stopMonitoring()
+- keyManager?.destroy()
 
-**REQUIRED positioning:**
-- `flexibleConnectedTo()` MUST define ≥2 fallback positions
-- Configure `scrollStrategy` and `backdrop` explicitly
-- NEVER create overlays without `dispose()` in cleanup
+VIOLATION CONSEQUENCES:
+- Memory leaks
+- Event listener accumulation
+- Detached DOM references
 
-**FORBIDDEN:**
-- Creating overlays without fallback positions
+==================================================
+Accessibility (a11y)
+==================================================
+
+REQUIRED:
+- FocusTrap MUST be created in ngOnInit() using focusTrapFactory.create()
+- focusTrap.focusInitialElement() MUST be invoked after creation
+- LiveAnnouncer MUST be used for dynamic content announcements
+
+FORBIDDEN:
+- Creating focus traps without destroy cleanup
+- Relying on manual DOM manipulation for screen reader updates
+- Accessibility state derived from non-signal mutable flags
+
+==================================================
+Overlay Module
+==================================================
+
+REQUIRED:
+- flexibleConnectedTo() MUST define AT LEAST two fallback positions
+- scrollStrategy MUST be explicitly configured
+- backdrop configuration MUST be explicit
+- overlayRef MUST be disposed in ngOnDestroy()
+
+FORBIDDEN:
+- Overlays without fallback positions
 - Missing viewport boundary handling
 - Overlays without scroll strategy
+- Long-lived overlays outside component lifecycle
 
-## Virtual Scrolling
+==================================================
+Virtual Scrolling
+==================================================
 
-**REQUIRED for lists >100 items:**
-- `CdkVirtualScrollViewport` MUST have explicit `itemSize`
-- Configure `minBufferPx` and `maxBufferPx` for performance
-- Viewport MUST have fixed height (no `auto`)
+REQUIRED:
+- Use CdkVirtualScrollViewport ONLY for lists with more than 100 items
+- itemSize MUST be explicitly defined
+- minBufferPx and maxBufferPx MUST be configured
+- Viewport MUST have a fixed height
 
-**FORBIDDEN:**
+FORBIDDEN:
 - Auto-height virtual scroll viewports
-- Missing `itemSize` configuration
-- Virtual scrolling for <100 items
+- Missing itemSize configuration
+- Using virtual scrolling for small lists (<100 items)
 
-## Drag and Drop
+==================================================
+Drag and Drop
+==================================================
 
-**REQUIRED structure:**
-- `cdkDropList` container with `(cdkDropListDropped)` handler
-- `cdkDrag` items within drop list
-- Track expressions MUST be included in `@for` loops
+REQUIRED:
+- cdkDropList container with (cdkDropListDropped) handler
+- cdkDrag items MUST be children of a drop list
+- Track expressions MUST be used in @for loops
 
-**FORBIDDEN:**
-- Drag-drop without drop handlers
+FORBIDDEN:
+- Drag-and-drop without drop handlers
 - Missing track expressions
-- Nested drop lists without `connectedTo`
+- Nested drop lists without explicit connectedTo configuration
 
-## Responsive Layout
+==================================================
+Responsive Layout
+==================================================
 
-**REQUIRED:**
-- Use `BreakpointObserver` with `toSignal()` and `initialValue`
-- NEVER use `window.innerWidth` or manual resize listeners
-- Breakpoint queries MUST use CDK constants
+REQUIRED:
+- Use BreakpointObserver with toSignal()
+- initialValue MUST be provided when converting to signals
+- Breakpoint queries MUST use CDK-provided constants
 
-**FORBIDDEN:**
-- Manual window resize event listeners
-- Direct `window.matchMedia` usage
-- Missing cleanup for breakpoint subscriptions
+FORBIDDEN:
+- window.innerWidth access
+- Manual resize event listeners
+- Direct window.matchMedia usage
+- Missing cleanup for breakpoint observers
 
-## Keyboard Navigation
+==================================================
+Keyboard Navigation
+==================================================
 
-**REQUIRED for lists:**
-- `FocusKeyManager` for keyboard list navigation
-- ARIA labels on all interactive elements
-- Tab order MUST follow visual order
+REQUIRED:
+- Use FocusKeyManager for keyboard-navigable lists
+- ARIA labels REQUIRED on all interactive elements
+- Tab order MUST reflect visual order
 
-## Testing
+FORBIDDEN:
+- Custom keyboard handling without CDK utilities
+- Implicit or unmanaged tab order
 
-**REQUIRED:**
-- Inject `OverlayContainer` in tests
-- Clean up overlay container in `afterEach()`
-- Test focus management and keyboard navigation
+==================================================
+Testing Rules
+==================================================
 
-## Enforcement Checklist
+REQUIRED:
+- Inject OverlayContainer in tests
+- Clean up overlay container in afterEach()
+- Verify focus management and keyboard navigation behavior
 
-**REQUIRED:**
-- All CDK resources destroyed in `ngOnDestroy()`
-- Virtual scrolling for lists >100 items
-- Focus traps with cleanup
+FORBIDDEN:
+- Leaving overlays mounted between tests
+- Skipping accessibility-related assertions
+
+==================================================
+ENFORCEMENT CHECKLIST
+==================================================
+
+REQUIRED:
+- Explicit ngOnDestroy() cleanup for all CDK resources
+- Virtual scrolling only when justified
+- Focus traps with deterministic lifecycle
 - Overlay positioning with fallbacks
-- `BreakpointObserver` with signals
+- BreakpointObserver integrated via signals
 
-**FORBIDDEN:**
-- Missing `ngOnDestroy()` cleanup
-- Auto-height virtual scrolling
-- Manual window event listeners
-- Overlays without fallback positions
+FORBIDDEN:
+- CDK driving application flow
+- CDK triggering domain or use case logic
+- Manual DOM or window event management

@@ -3,6 +3,11 @@
  * 
  * Domain-Driven Design: Application Layer Routing
  * Architecture: Zone-less, Lazy Loading with loadComponent
+ * 
+ * Route Structure:
+ * - /demo - Demo modules (demo-dashboard, demo-settings)
+ * - /workspace - Workspace host with all workspace modules
+ * - Default entry: /demo
  */
 
 import { Routes } from '@angular/router';
@@ -15,45 +20,138 @@ export const routes: Routes = [
         m => m.GlobalShellComponent
       ),
     children: [
+      // Demo routes - demonstration/showcase modules
       {
-        path: 'overview',
-        loadComponent: () =>
-          import('./presentation/modules/demo-dashboard.module').then(
-            m => m.DemoDashboardModule
-          ),
+        path: 'demo',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./presentation/modules/demo-dashboard.module').then(
+                m => m.DemoDashboardModule
+              ),
+          },
+          {
+            path: 'settings',
+            loadComponent: () =>
+              import('./presentation/modules/demo-settings.module').then(
+                m => m.DemoSettingsModule
+              ),
+          },
+        ],
       },
+      
+      // Workspace routes - actual workspace with modules
       {
-        path: 'documents',
+        path: 'workspace',
         loadComponent: () =>
-          import('./presentation/modules/demo-dashboard.module').then(
-            m => m.DemoDashboardModule
+          import('./presentation/workspace-host/workspace-host.component').then(
+            m => m.WorkspaceHostComponent
           ),
+        children: [
+          {
+            path: 'overview',
+            loadComponent: () =>
+              import('./presentation/modules/overview.module').then(
+                m => m.OverviewModule
+              ),
+          },
+          {
+            path: 'documents',
+            loadComponent: () =>
+              import('./presentation/modules/documents.module').then(
+                m => m.DocumentsModule
+              ),
+          },
+          {
+            path: 'tasks',
+            loadComponent: () =>
+              import('./presentation/modules/tasks.module').then(
+                m => m.TasksModule
+              ),
+          },
+          {
+            path: 'calendar',
+            loadComponent: () =>
+              import('./presentation/modules/calendar.module').then(
+                m => m.CalendarModule
+              ),
+          },
+          {
+            path: 'daily',
+            loadComponent: () =>
+              import('./presentation/modules/daily.module').then(
+                m => m.DailyModule
+              ),
+          },
+          {
+            path: 'quality-control',
+            loadComponent: () =>
+              import('./presentation/modules/quality-control.module').then(
+                m => m.QualityControlModule
+              ),
+          },
+          {
+            path: 'acceptance',
+            loadComponent: () =>
+              import('./presentation/modules/acceptance.module').then(
+                m => m.AcceptanceModule
+              ),
+          },
+          {
+            path: 'issues',
+            loadComponent: () =>
+              import('./presentation/modules/issues.module').then(
+                m => m.IssuesModule
+              ),
+          },
+          {
+            path: 'members',
+            loadComponent: () =>
+              import('./presentation/modules/members.module').then(
+                m => m.MembersModule
+              ),
+          },
+          {
+            path: 'permissions',
+            loadComponent: () =>
+              import('./presentation/modules/permissions.module').then(
+                m => m.PermissionsModule
+              ),
+          },
+          {
+            path: 'audit',
+            loadComponent: () =>
+              import('./presentation/modules/audit.module').then(
+                m => m.AuditModule
+              ),
+          },
+          {
+            path: 'settings',
+            loadComponent: () =>
+              import('./presentation/modules/settings.module').then(
+                m => m.SettingsModule
+              ),
+          },
+          {
+            path: '',
+            redirectTo: 'overview',
+            pathMatch: 'full',
+          },
+        ],
       },
+      
+      // Default: redirect to demo
       {
-        path: 'tasks',
-        loadComponent: () =>
-          import('./presentation/modules/demo-dashboard.module').then(
-            m => m.DemoDashboardModule
-          ),
-      },
-      {
-        path: 'calendar',
-        loadComponent: () =>
-          import('./presentation/modules/demo-dashboard.module').then(
-            m => m.DemoDashboardModule
-          ),
-      },
-      {
-        path: 'settings',
-        loadComponent: () =>
-          import('./presentation/modules/demo-settings.module').then(
-            m => m.DemoSettingsModule
-          ),
+        path: '',
+        redirectTo: 'demo',
+        pathMatch: 'full',
       },
     ],
   },
   {
     path: '**',
-    redirectTo: '',
+    redirectTo: 'demo',
+    pathMatch: 'full',
   },
 ];

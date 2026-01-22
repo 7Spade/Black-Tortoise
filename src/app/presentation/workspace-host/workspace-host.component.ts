@@ -213,7 +213,16 @@ export class WorkspaceHostComponent implements OnInit {
   }
   
   activateModule(moduleId: string): void {
+    const module = this.getModuleMetadata(moduleId);
+    if (!module) {
+      return;
+    }
+
     this.workspaceContext.activateModule(moduleId);
+    // Navigate relative to workspace route
+    this.router.navigate(['/workspace', moduleId]).catch(() => {
+      this.workspaceContext.setError('Failed to navigate to module');
+    });
   }
   
   getModuleMetadata(moduleId: string) {

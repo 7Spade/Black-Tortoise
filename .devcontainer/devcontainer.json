@@ -72,7 +72,9 @@
           "**/node_modules/**": true,   // node_modules 不監聽
           "**/dist/**": true,           // build 產物不監聽
           "**/.angular/**": true,       // Angular cache 不監聽
-          "**/.npm-cache/**": true     // npm cache 不監聽
+          "**/.npm-cache/**": true,     // npm cache 不監聽
+          "**/dataconnect/**": true,     // dataconnect 不監聽
+          "src/dataconnect-generated/**": true     // dataconnect 產物不監聽
         },
 
         // 搜尋時排除大型目錄
@@ -80,7 +82,9 @@
           "**/node_modules": true,      // 搜尋時忽略 node_modules
           "**/dist": true,              // 忽略 build 輸出
           "**/.angular": true,           // 忽略 Angular cache
-          "**/.npm-cache": true         // 忽略 npm cache
+          "**/.npm-cache": true,         // 忽略 npm cache
+          "**/dataconnect/**": true,     // dataconnect 不監聽
+          "src/dataconnect-generated/**": true     // 忽略 dataconnect 產物
         },
 
         // 限制 TypeScript Server 記憶體，避免暴走拖慢 Copilot
