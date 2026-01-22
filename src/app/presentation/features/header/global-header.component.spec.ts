@@ -4,6 +4,7 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { GlobalHeaderComponent } from './global-header.component';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
@@ -16,12 +17,14 @@ describe('GlobalHeaderComponent', () => {
   let mockRouter: jasmine.SpyObj<Router>;
   let mockSearchService: jasmine.SpyObj<SearchService>;
   let mockNotificationService: jasmine.SpyObj<NotificationService>;
+  let mockDialog: jasmine.SpyObj<MatDialog>;
 
   beforeEach(async () => {
     // Create spies
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     mockSearchService = jasmine.createSpyObj('SearchService', ['search']);
     mockNotificationService = jasmine.createSpyObj('NotificationService', ['getNotifications']);
+    mockDialog = jasmine.createSpyObj('MatDialog', ['open']);
     
     // Default successful navigation
     mockRouter.navigate.and.returnValue(Promise.resolve(true));
@@ -33,7 +36,8 @@ describe('GlobalHeaderComponent', () => {
         WorkspaceContextStore,
         { provide: Router, useValue: mockRouter },
         { provide: SearchService, useValue: mockSearchService },
-        { provide: NotificationService, useValue: mockNotificationService }
+        { provide: NotificationService, useValue: mockNotificationService },
+        { provide: MatDialog, useValue: mockDialog }
       ]
     }).compileComponents();
 
@@ -50,7 +54,7 @@ describe('GlobalHeaderComponent', () => {
     expect(component.workspaceContext).toBeTruthy();
   });
 
-  it('should toggle workspace menu', () => {
+  it('should toggle notifications', () => {
     expect(component.showNotifications()).toBe(false);
     component.toggleNotifications();
     expect(component.showNotifications()).toBe(true);
@@ -70,9 +74,16 @@ describe('GlobalHeaderComponent', () => {
     expect(component.notificationCount()).toBe(1);
   });
 
-  it('should navigate to settings on openSettings', () => {
+  it('should toggle workspace menu', () => {
+    expect(component.showWorkspaceMenu()).toBe(false);
+    component.toggleWorkspaceMenu();
+    expect(component.showWorkspaceMenu()).toBe(true);
+  });
+
+  it('should select workspace and navigate', () => {
     mockRouter.navigate.and.returnValue(Promise.resolve(true));
-    component.openSettings();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/settings']);
+    component.selectWorkspace('workspace-id');
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/workspace']);
+    expect(component.showWorkspaceMenu()).toBe(false);
   });
 });
