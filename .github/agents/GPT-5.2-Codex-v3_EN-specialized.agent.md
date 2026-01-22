@@ -94,8 +94,10 @@ name: 'Angular 20+ Pure Reactive Agent 5.2-v3'
 *   **FORBIDDEN**: 在 Application 或 Interface 層手動調用 `.subscribe()`。
 *   **FORBIDDEN**: 直接在組件中注入 `Firestore`, `Auth`, `Functions` 等 Firebase SDK 服務。
 *   **FORBIDDEN**: 使用 `*ngIf`, `*ngFor` 或 `*ngSwitch` 指令。
+*   **FORBIDDEN**: 使用 `async/await` 處理狀態更新 (Application Layer)。
 *   **FORBIDDEN**: 在 Domain 層中包含任何框架裝飾器 (如 `@Injectable`) 或依賴。
 *   **FORBIDDEN**: 依賴 `zone.js` 進行變更檢測 (本專案為 Zone-less 架構)。
+*   **FORBIDDEN**: 導入 `@angular/platform-browser-dynamic` (僅限 `bootstrapApplication`)。
 *   **FORBIDDEN**: 直接 store-to-store 依賴導致循環引用。
 
 ## 5. 優先權宣告句 (Priority / Severity)
@@ -146,14 +148,28 @@ src/app/
 - **Component**: `inject(UserStore)`, binding via `userStore.users()`
 - **Template**: `@for (user of users(); track user.id) { ... }`
 
-### 6.3 響應式技術棧整合 (Reactive Tech Stack Integration)
-本專案採用 **Zone-less 純響應式架構**，各技術組件協作模式如下：
-
-1.  **數據源 (Infrastructure)**: 使用 `@angular/fire` 獲取 Firebase 實時數據流 (`Observable`)。
-2.  **狀態橋接 (Application)**: 透過 `@ngrx/signals` 的 `rxMethod` 結合 `rxjs` 操作符與 `@ngrx/operators` 的 `tapResponse`，將 `Observable` 轉換為 Store 中的 `Signal` 狀態。
-3.  **變更檢測 (Change Detection)**: 由於移除 `zone.js`，UI 更新完全由 `Signal` 的值變更驅動。
-4.  **展示層 (Presentation)**: 利用 Angular 20 **控制流語法** (`@if`, `@for`) 直接綁定 Store 信號，實現高效、低延遲的渲染。
-5.  **互動組件 (UI)**: 搭配 `@angular/material` (M3) 與 `@angular/cdk` 構建無障礙且高性能的互動介面。
+### 6.3 響應式技術棧整合流 (Reactive Tech Stack Flow)
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. Infrastructure: Data Source                                   │
+│  → 使用 @angular/fire 獲取 Firebase 實時數據流 (Observable)      │
+│  → 執行 DTO 到 Domain Model 的轉換映射                           │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 2. Application: State Bridging                                   │
+│  → 使用 rxMethod + tapResponse 將 Observable 橋接至 Signal       │
+│  → 僅透過 patchState() 進行不可變狀態更新                        │
+│  → P0: 嚴禁使用 async/await 或手動 subscribe                     │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ 3. Presentation: Efficient Rendering                             │
+│  → 基於 Signal 的 Zone-less 變更檢測                             │
+│  → 使用 Angular 20 控制流語法 (@if/@for) 直接綁定信號渲染        │
+│  → 搭配 M3 與 CDK 實現高效組件交互                               │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 #### 驗證通過的核心響應式包 (Approved Reactive Stack):
 *   `@angular/core`: ~20.0.0 (Signals 響應式核心)
@@ -168,34 +184,16 @@ src/app/
 #### 必須排除或移除的封裝包 (To Be Excluded/Removed):
 *   **FORBIDDEN**: `zone.js` (必須移除以實現真正的 Zone-less 純響應)
 *   **FORBIDDEN**: `@angular/platform-browser-dynamic` (僅限 `bootstrapApplication`，移除 JIT 依賴)
-*   **FORBIDDEN**: `@ngrx/store`, `@ngrx/effects`, `@ngrx/entity` (嚴禁傳統紅利，全面信號化)
+*   **FORBIDDEN**: `@ngrx/store`, `@ngrx/effects`, `@ngrx/entity` (嚴禁傳統 Redux 模式，全面信號化)
 
-### ❌ INCORRECT: Anti-patterns to avoid
-
-```typescript
-// ❌ Domain layer with framework dependency
-import { Injectable } from '@angular/core';
-export class User { } // WRONG - Domain should have NO Angular imports
-
-// ❌ Repository using .subscribe()
-getUsers() {
-  this.firestore.collection('users').valueChanges().subscribe(users => {
-    // WRONG - should return Observable
-  });
-}
-
-// ❌ Component injecting Firebase directly
-constructor(private firestore: Firestore) { } // WRONG - use Store
-
-// ❌ Template using old structural directives
-<div *ngIf="loading">Loading...</div> <!-- WRONG - use @if -->
-
-// ❌ Manual state mutation
-this.store.users.push(newUser); // WRONG - use patchState()
-
-// ❌ Direct store-to-store dependency
-constructor(private otherStore: OtherStore) { } // WRONG - use EventBus
-```
+### ❌ 禁止反模式 (Forbidden Anti-patterns)
+*   **FORBIDDEN**: 在 Domain 層導入框架依賴 (如 `@Injectable`)。
+*   **FORBIDDEN**: 在 Repository 中調用 `.subscribe()`。
+*   **FORBIDDEN**: 在組件中直接注入 Firebase 服務。
+*   **FORBIDDEN**: 在模板中使用 `*ngIf`, `*ngFor` 被取代的舊語法。
+*   **FORBIDDEN**: 在 Application Layer 使用 `async/await` 處理狀態流。
+*   **FORBIDDEN**: 手動變更信號值而不通過 `patchState()`。
+*   **FORBIDDEN**: 跨 Store 直接注入導致循環依賴。
 
 ---
 
