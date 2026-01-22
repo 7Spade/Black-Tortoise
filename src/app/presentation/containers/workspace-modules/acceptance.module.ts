@@ -11,7 +11,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, Input, signal } from '@angular/core';
 import { Module, ModuleType } from '@domain/module/module.interface';
 import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
 import { ModuleEventHelper } from './basic/module-event-helper';
@@ -100,7 +100,7 @@ import { ModuleEventHelper } from './basic/module-event-helper';
     }
   `]
 })
-export class AcceptanceModule implements Module, OnInit, OnDestroy {
+export class AcceptanceModule implements Module {
   readonly id = 'acceptance';
   readonly name = 'Acceptance';
   readonly type: ModuleType = 'acceptance';
@@ -108,7 +108,14 @@ export class AcceptanceModule implements Module, OnInit, OnDestroy {
   /**
    * Event bus MUST be passed from parent - no injection
    */
-  @Input() eventBus?: WorkspaceEventBus;
+  @Input() 
+  set eventBus(value: WorkspaceEventBus | undefined) {
+    this._eventBus.set(value);
+  }
+  get eventBus(): WorkspaceEventBus | undefined {
+    return this._eventBus();
+  }
+  private _eventBus = signal<WorkspaceEventBus | undefined>(undefined);
   
   /**
    * Module state (using signals for zone-less)
@@ -120,10 +127,14 @@ export class AcceptanceModule implements Module, OnInit, OnDestroy {
    */
   private subscriptions = ModuleEventHelper.createSubscriptionManager();
   
-  ngOnInit(): void {
-    if (this.eventBus) {
-      this.initialize(this.eventBus);
-    }
+  constructor() {
+    // Initialize when eventBus is set
+    effect(() => {
+      const eventBus = this._eventBus();
+      if (eventBus) {
+        this.initialize(eventBus);
+      }
+    });
   }
   
   initialize(eventBus: WorkspaceEventBus): void {
@@ -153,9 +164,5 @@ export class AcceptanceModule implements Module, OnInit, OnDestroy {
   destroy(): void {
     this.subscriptions.unsubscribeAll();
     console.log(`[AcceptanceModule] Destroyed`);
-  }
-  
-  ngOnDestroy(): void {
-    this.destroy();
   }
 }
