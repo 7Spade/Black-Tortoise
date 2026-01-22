@@ -16,7 +16,7 @@
   <!-- Center Zone: Global Search -->
   <div class="header-center">
     <app-search 
-      [placeholder]="'Search (placeholder)'"
+      [placeholder]="'Search workspace, files, and content...'"
       (searchQuery)="onSearchQuery($event)" />
   </div>
   
@@ -30,16 +30,20 @@
       }
     </button>
     
-    <!-- Theme Toggle -->
-    <button class="icon-button" aria-label="Toggle theme" type="button" (click)="toggleTheme()">
-      <span class="material-icons">
-        @if (themeMode() === 'dark') { light_mode } @else { dark_mode }
-      </span>
-    </button>
+    <!-- Theme Toggle Component (delegated to ThemeToggleComponent) -->
+    <app-theme-toggle />
     
     <!-- Folder Placeholder -->
     <button class="icon-button" aria-label="Folder" type="button" disabled>
       <span class="material-icons">folder_open</span>
     </button>
   </div>
+  
+  <!-- Notification Panel (conditionally shown) -->
+  @if (showNotifications()) {
+    <div class="notification-panel">
+      <app-notification 
+        (notificationDismissed)="onNotificationDismissed($event)" />
+    </div>
+  }
 </header>

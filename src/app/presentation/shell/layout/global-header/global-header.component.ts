@@ -12,20 +12,28 @@
  * 
  * Responsibilities:
  * - Layout only - no MatDialog, no afterClosed, no use case calls
- * - Composes child components for workspace controls
- * - Manages local UI state (notifications, theme) via signals
+ * - Composes child components for workspace controls, search, notifications, theme
+ * - Manages local UI state (notifications visibility) via signals
+ * - Delegates theme management to ThemeToggleComponent
  */
 
-import { CommonModule, DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { WorkspaceHeaderControlsComponent } from '../../../features/workspace/components/workspace-header-controls.component';
 import { NotificationComponent } from '../../../shared/components/notification/notification.component';
 import { SearchComponent } from '../../../shared/components/search/search.component';
+import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-global-header',
   standalone: true,
-  imports: [CommonModule, WorkspaceHeaderControlsComponent, SearchComponent, NotificationComponent],
+  imports: [
+    CommonModule, 
+    WorkspaceHeaderControlsComponent, 
+    SearchComponent, 
+    NotificationComponent,
+    ThemeToggleComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './global-header.component.html',
   styleUrls: ['./global-header.component.scss']
@@ -34,14 +42,9 @@ export class GlobalHeaderComponent {
   // Inputs
   readonly showWorkspaceControls = input(true);
   
-  // Injected dependencies
-  private readonly document = inject(DOCUMENT);
-  
   // Local UI state using signals
   readonly showNotifications = signal(false);
   readonly notificationCount = signal(0);
-  readonly themeMode = signal<'light' | 'dark'>('light');
-  private readonly themeStorageKey = 'ui.theme';
   readonly searchQuery = signal('');
   
   toggleNotifications(): void {
@@ -56,22 +59,8 @@ export class GlobalHeaderComponent {
     // Handle notification dismissal
     this.notificationCount.update(count => Math.max(0, count - 1));
   }
-
-  toggleTheme(): void {
-    const next = this.themeMode() === 'dark' ? 'light' : 'dark';
-    this.themeMode.set(next);
-    localStorage.setItem(this.themeStorageKey, next);
-    this.document.body.classList.remove('light', 'dark');
-    this.document.body.classList.add(next);
-  }
   
   constructor() {
-    const storedTheme = localStorage.getItem(this.themeStorageKey);
-    const initialTheme = storedTheme === 'dark' ? 'dark' : 'light';
-    this.themeMode.set(initialTheme);
-    this.document.body.classList.remove('light', 'dark');
-    this.document.body.classList.add(initialTheme);
-
     // Initialize notification count
     this.notificationCount.set(0);
   }

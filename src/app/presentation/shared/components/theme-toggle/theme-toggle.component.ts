@@ -1,42 +1,89 @@
-import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 
 /**
  * ThemeToggleComponent
- * - Presentation 層共用元件：切換應用主題（light / dark）
- * - 註解摘要: 元件只處理 UI 層級的切換與暫存，實際持久化（localStorage、user profile）或
- *   全局樣式應由 Application 層或主題服務負責；此處僅示範 signal 綁定與介面。
- * - 設計要點:
- *   1) 使用 `signal()` 儲存本地狀態，保持元件純粹、無副作用。
- *   2) 若需跨應用共享/持久化，注入 application 層的 store 或 service 並以 rxMethod 處理。
+ * - Presentation layer shared component: Toggle application theme (light / dark)
+ * - Architecture: Zone-less, OnPush, Angular 20, Signal-based
+ * - Component manages UI-level theme toggle and persistence in localStorage
+ * - Global theme application is handled via document body class manipulation
+ * 
+ * Design:
+ *   1) Uses `signal()` to store local state for reactive UI binding
+ *   2) Persists theme preference in localStorage
+ *   3) Applies theme by toggling body classes for global CSS effect
+ *   4) Can be enhanced to emit events to Application layer store if needed
  */
 @Component({
   selector: 'app-theme-toggle',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './theme-toggle.component.html',
-  styleUrls: ['./theme-toggle.component.scss']
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <button 
+      class="icon-button theme-toggle" 
+      aria-label="Toggle theme" 
+      type="button" 
+      (click)="toggle()">
+      <span class="material-icons">
+        @if (isDark()) { light_mode } @else { dark_mode }
+      </span>
+    </button>
+  `,
+  styles: [`
+    .theme-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: inherit;
+      transition: opacity 0.2s ease;
+    }
+    
+    .theme-toggle:hover {
+      opacity: 0.7;
+    }
+    
+    .theme-toggle:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .theme-toggle .material-icons {
+      font-size: 1.25rem;
+    }
+  `]
 })
 export class ThemeToggleComponent {
-  // 本地 ui state：是否為深色模式
+  private readonly document = inject(DOCUMENT);
+  private readonly themeStorageKey = 'ui.theme';
+  
+  // Local UI state: dark mode enabled
   isDark = signal(false);
 
-  toggle() {
-    // 範例：切換本地狀態並觸發簡單 DOM 類名變更（如需），但建議將樣式變更委派至全局主題服務
-    this.isDark.update(v => !v);
-    // TODO: 將變更通知 application 層或呼叫注入的 ThemeService 以進行持久化與全域生效
-    if (this.isDark()) {
-      document.documentElement.classList.add('theme-dark');
-    } else {
-      document.documentElement.classList.remove('theme-dark');
-    }
+  toggle(): void {
+    const nextMode = !this.isDark();
+    this.isDark.set(nextMode);
+    
+    // Persist to localStorage
+    localStorage.setItem(this.themeStorageKey, nextMode ? 'dark' : 'light');
+    
+    // Apply global theme via body class
+    this.document.body.classList.remove('light', 'dark');
+    this.document.body.classList.add(nextMode ? 'dark' : 'light');
   }
 
   constructor() {
-    // 可在此初始化狀態（例如從 localStorage 或注入的 service 讀取），但不要直接存取基礎設施
-    // TODO: 用 application 層提供的初始化來源取代下列硬編碼
+    // Initialize from localStorage or system preference
+    const storedTheme = localStorage.getItem(this.themeStorageKey);
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    this.isDark.set(prefersDark);
-    if (prefersDark) document.documentElement.classList.add('theme-dark');
+    const initialDark = storedTheme === 'dark' || (!storedTheme && prefersDark);
+    
+    this.isDark.set(initialDark);
+    this.document.body.classList.remove('light', 'dark');
+    this.document.body.classList.add(initialDark ? 'dark' : 'light');
   }
 }

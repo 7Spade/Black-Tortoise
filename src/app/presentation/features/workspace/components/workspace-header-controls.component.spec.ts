@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { WorkspaceHeaderControlsComponent } from './workspace-header-controls.component';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
-import { HeaderFacade } from '../../header/facade/header.facade';
+import { HeaderFacade } from '../../../shell/layout/global-header/facade/header.facade';
 import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
 
 describe('WorkspaceHeaderControlsComponent', () => {
   let component: WorkspaceHeaderControlsComponent;
@@ -13,6 +14,7 @@ describe('WorkspaceHeaderControlsComponent', () => {
       imports: [WorkspaceHeaderControlsComponent],
       providers: [
         provideExperimentalZonelessChangeDetection(),
+        provideRouter([]),
       ]
     }).compileComponents();
 

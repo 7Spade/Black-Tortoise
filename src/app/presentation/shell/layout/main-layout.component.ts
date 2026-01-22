@@ -11,7 +11,7 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { GlobalHeaderComponent } from '@presentation/features/header';
+import { GlobalHeaderComponent } from './global-header';
 
 @Component({
   selector: 'app-main-layout',
@@ -25,7 +25,7 @@ import { GlobalHeaderComponent } from '@presentation/features/header';
       
       <!-- Main content area -->
       <main class="layout-content">
-        <ng-content />
+        <router-outlet />
       </main>
     </div>
   `,
