@@ -5,12 +5,12 @@ applyTo: '**/*.ts'
 
 # @angular/fire Implementation Instructions
 
-## CRITICAL: Injection Pattern
+## Injection Pattern
 
 **REQUIRED:**
 - Use `inject()` for ALL Firebase services (Firestore, Auth, Storage, Functions)
 - NEVER import Firebase SDK directly
-- ALL Firebase operations MUST be in repository layer
+- ALL Firebase operations MUST reside in repository layer
 
 **FORBIDDEN:**
 - Direct Firebase SDK imports in components or application layer
@@ -20,8 +20,8 @@ applyTo: '**/*.ts'
 
 **REQUIRED:**
 - Use `toSignal()` with `initialValue` for auth state observables
-- NEVER use manual subscriptions for auth state
 - Auth state MUST be managed in NgRx Signals store
+- NEVER use manual subscriptions for auth state
 
 **FORBIDDEN:**
 - Manual `authState()` subscriptions
@@ -33,8 +33,8 @@ applyTo: '**/*.ts'
 **REQUIRED:**
 - All Firestore calls in repository implementations
 - Use query constraints (where clauses) for filtered reads
-- NEVER fetch entire collections without constraints
 - Input validation BEFORE database operations
+- NEVER fetch entire collections without constraints
 
 **FORBIDDEN:**
 - Firestore operations in components or facades
@@ -52,7 +52,7 @@ applyTo: '**/*.ts'
 
 ## Observable to Signal Conversion
 
-**REQUIRED pattern:**
+**REQUIRED:**
 - `toSignal(firestoreObservable$, { initialValue })` in stores
 - Use `rxMethod()` for async Firebase operations
 - Use `tapResponse()` for error handling
@@ -66,8 +66,8 @@ applyTo: '**/*.ts'
 
 **REQUIRED:**
 - Firebase config in environment files
-- NEVER hardcode API keys or project IDs
 - Use environment variable replacement for builds
+- NEVER hardcode API keys or project IDs
 
 **FORBIDDEN:**
 - Hardcoded credentials in version control

@@ -5,13 +5,13 @@ applyTo: '**/*.ts'
 
 # @angular/core Implementation Instructions
 
-## CRITICAL: Signal-First Architecture
+## Signal-First Architecture
 
 **REQUIRED:**
 - Use `signal()`, `computed()`, `effect()` for reactive state
-- NEVER use `BehaviorSubject` or manual observables for component state
 - Signal invocation MUST include `()` in templates
 - Initialize all signals (NEVER leave undefined)
+- NEVER use `BehaviorSubject` or manual observables for component state
 
 **FORBIDDEN:**
 - RxJS subjects for local component state
@@ -23,28 +23,28 @@ applyTo: '**/*.ts'
 **REQUIRED:**
 - Use `inject()` function in constructors and initialization
 - Provider configuration in `app.config.ts` or component `providers`
-- NEVER use `@Injectable()` without proper scope
+- Proper scoping required; avoid multiple unintended levels
 
 **FORBIDDEN:**
-- Constructor parameter injection in standalone components (use `inject()`)
+- Constructor injection in standalone components (use `inject()`)
 - Circular dependencies between services
-- Providing services at multiple levels unintentionally
+- `@Injectable()` without proper scope
 
 ## Lifecycle Hooks
 
-**REQUIRED implementation:**
+**REQUIRED:**
 - `ngOnInit()` for initialization logic
 - `ngOnDestroy()` for cleanup (subscriptions, event listeners)
-- `ngOnChanges()` ONLY for `@Input()` change detection
+- `ngOnChanges()` ONLY for `@Input()` changes
 
 **FORBIDDEN:**
 - Logic in constructor (use `ngOnInit()`)
 - Missing cleanup in `ngOnDestroy()`
-- Using lifecycle hooks in services
+- Lifecycle hooks used in services
 
 ## Component Decorators
 
-**REQUIRED in Angular 20:**
+**REQUIRED:**
 - `standalone: true` for all components
 - Explicit `imports` array for dependencies
 - `changeDetection: ChangeDetectionStrategy.OnPush` with signals
@@ -56,7 +56,7 @@ applyTo: '**/*.ts'
 
 ## Input/Output Signal Functions
 
-**REQUIRED in Angular 19+:**
+**REQUIRED:**
 - `input()` and `input.required()` for component inputs
 - `output()` for component outputs
 - `viewChild()` and `viewChildren()` for view queries
@@ -68,7 +68,7 @@ applyTo: '**/*.ts'
 
 ## Zone-less Configuration
 
-**REQUIRED for zone-less:**
+**REQUIRED:**
 - `provideExperimentalZonelessChangeDetection()` in app config
 - NEVER import `zone.js` in zone-less applications
 - Signals MUST trigger change detection automatically
