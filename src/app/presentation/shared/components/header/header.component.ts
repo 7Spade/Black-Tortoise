@@ -18,7 +18,7 @@ import { NotificationComponent } from '@presentation/shared/components/notificat
 import { SearchComponent } from '@presentation/shared/components/search';
 import { ThemeToggleComponent } from '@presentation/shared/components/theme-toggle';
 import { UserAvatarComponent } from '@presentation/shared/components/user-avatar/user-avatar.component';
-import { IdentitySwitcherComponent, WorkspaceCreateTriggerComponent, WorkspaceSwitcherComponent } from '@presentation/workspace';
+import { IdentitySwitcherComponent, WorkspaceSwitcherComponent } from '@presentation/workspace';
 
 @Component({
   selector: 'app-header',
@@ -27,7 +27,6 @@ import { IdentitySwitcherComponent, WorkspaceCreateTriggerComponent, WorkspaceSw
     CommonModule,
     WorkspaceSwitcherComponent,
     IdentitySwitcherComponent,
-    WorkspaceCreateTriggerComponent,
     SearchComponent,
     NotificationComponent,
     ThemeToggleComponent,

@@ -11,7 +11,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, Input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, Input, signal, OnDestroy } from '@angular/core';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { ModuleEventHelper } from './basic/module-event-helper';
@@ -100,7 +100,7 @@ import { ModuleEventHelper } from './basic/module-event-helper';
     }
   `]
 })
-export class MembersModule implements Module {
+export class MembersModule implements IAppModule, OnDestroy {
   readonly id = 'members';
   readonly name = 'Members';
   readonly type: ModuleType = 'members';
@@ -109,13 +109,13 @@ export class MembersModule implements Module {
    * Event bus MUST be passed from parent - no injection
    */
   @Input() 
-  set eventBus(value: WorkspaceEventBus | undefined) {
+  set eventBus(value: IModuleEventBus | undefined) {
     this._eventBus.set(value);
   }
-  get eventBus(): WorkspaceEventBus | undefined {
+  get eventBus(): IModuleEventBus | undefined {
     return this._eventBus();
   }
-  private _eventBus = signal<WorkspaceEventBus | undefined>(undefined);
+  private _eventBus = signal<IModuleEventBus | undefined>(undefined);
   
   /**
    * Module state (using signals for zone-less)
@@ -164,5 +164,9 @@ export class MembersModule implements Module {
   destroy(): void {
     this.subscriptions.unsubscribeAll();
     console.log(`[MembersModule] Destroyed`);
+  }
+  
+  ngOnDestroy(): void {
+    this.destroy();
   }
 }
