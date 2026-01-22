@@ -1,82 +1,125 @@
 ---
-description: 'Angular Animations: trigger-based animations, state transitions, and performance optimization for zone-less architecture'
+description: 'Angular Animations: trigger-based animations, state transitions, and performance optimization for zone-less architecture. Presentation-layer only.'
 applyTo: '**/*.ts'
 ---
 
-# @angular/animations Implementation Instructions
+# @angular/animations Implementation Instructions (Presentation Layer Only)
 
-## CRITICAL: Animation Provider Requirement
+==================================================
+SCOPE DEFINITION (MANDATORY)
+==================================================
 
-**REQUIRED in app.config.ts:**
-- `provideAnimations()` MUST be included in application providers
-- NEVER use `provideNoopAnimations()` in production
-- Test environments ONLY MAY use `provideNoopAnimations()`
+Animations are a PRESENTATION-ONLY concern.
 
-## Animation Module Usage
+Animations MUST NOT:
+- Trigger domain logic
+- Invoke Application Use Cases
+- Interact with repositories or infrastructure
+- Affect business decisions or workflow control
 
-**REQUIRED:**
-- Import `BrowserAnimationsModule` OR use `provideAnimations()` for standalone
+Animations exist ONLY to express UI state.
+
+==================================================
+CRITICAL: Animation Provider Requirement
+==================================================
+
+REQUIRED in app.config.ts:
+- provideAnimations() MUST be included in application providers
+- provideNoopAnimations() MUST NOT be used in production
+- Test environments ONLY MAY use provideNoopAnimations()
+
+==================================================
+Animation Module Usage
+==================================================
+
+REQUIRED:
+- Use BrowserAnimationsModule OR provideAnimations() for standalone applications
 - NEVER mix module-based and standalone animation providers
-- Define animations in component metadata using `animations` property
+- Define animations ONLY in component metadata via the `animations` property
 
-## Trigger-Based Animation Pattern
-
-**REQUIRED structure:**
-- Use `trigger()` to define animation name and states
-- Use `state()` for discrete animation states
-- Use `transition()` to define state changes
-- Use `style()` for CSS properties
-- Use `animate()` for timing and easing
-
-**FORBIDDEN:**
+FORBIDDEN:
 - Inline animation definitions in templates
 - JavaScript-based animations where CSS transitions suffice
-- Animations without proper cleanup in `ngOnDestroy()`
 
-## Performance Optimization
+==================================================
+Trigger-Based Animation Pattern
+==================================================
 
-**REQUIRED:**
-- Animations MUST use GPU-accelerated properties: `transform`, `opacity`
-- NEVER animate `width`, `height`, `top`, `left`, `margin`, `padding`
-- Use `:enter` and `:leave` aliases for route transitions
-- Implement `@.disabled` binding for accessibility preferences
+REQUIRED STRUCTURE:
+- Use trigger() to define animation name and states
+- Use state() for discrete animation states
+- Use transition() for state changes
+- Use style() for CSS properties
+- Use animate() for timing and easing
 
-## Zone-less Compatibility
+FORBIDDEN:
+- Animations without explicit state definitions
+- Side effects inside animation callbacks
+- Animation-driven state mutation
 
-**REQUIRED for zone-less Angular:**
-- Animations work with zone-less architecture without modification
+==================================================
+Performance Optimization (MANDATORY)
+==================================================
+
+REQUIRED:
+- Animations MUST use GPU-accelerated properties only:
+  - transform
+  - opacity
+
+FORBIDDEN:
+- Animating width, height, top, left, margin, padding
+- Layout-thrashing or CPU-intensive animation properties
+
+RECOMMENDED:
+- Use :enter and :leave aliases for route-based transitions
+- Bind @.disabled for accessibility and reduced-motion preferences
+
+==================================================
+Zone-less Angular Compatibility
+==================================================
+
+REQUIRED:
+- Animations MUST function correctly in zone-less Angular
 - NEVER manually trigger change detection for animations
-- Use `@defer` with animations for deferred rendering
+- Use @defer with animations for deferred rendering where appropriate
 
-## State Management Integration
+==================================================
+State Management Integration (NgRx Signals)
+==================================================
 
-**REQUIRED with NgRx Signals:**
+REQUIRED:
 - Animation state MUST derive from signal values
-- NEVER mutate component state within animation callbacks
-- Use `[@triggerName]="signal()"` binding syntax
+- Bind animation triggers using:
+  [@triggerName]="signal()"
 
-**FORBIDDEN:**
+FORBIDDEN:
 - Storing animation state outside signals
-- Side effects in animation callbacks
-- Manual animation state synchronization
+- Mutating state inside animation callbacks
+- Manual synchronization of animation state
 
-## Testing
+==================================================
+Testing Rules
+==================================================
 
-**REQUIRED:**
-- Use `provideNoopAnimations()` in test configuration
-- NEVER test animation timing in unit tests
-- Integration tests MAY verify animation presence
+REQUIRED:
+- Use provideNoopAnimations() in test configuration
+- Unit tests MUST NOT assert animation timing
 
-## Enforcement Checklist
+ALLOWED:
+- Integration tests MAY verify animation presence or trigger binding
 
-**REQUIRED:**
-- `provideAnimations()` in app config
+==================================================
+ENFORCEMENT CHECKLIST
+==================================================
+
+REQUIRED:
+- provideAnimations() configured in application
 - GPU-accelerated properties only
-- Signal-based animation state
+- Signal-derived animation state
 - No animation-triggered side effects
 
-**FORBIDDEN:**
-- `provideNoopAnimations()` in production
+FORBIDDEN:
+- provideNoopAnimations() in production
 - CPU-intensive animation properties
 - Manual change detection for animations
-- Animation state outside signals
+- Animation logic influencing application flow

@@ -1,0 +1,189 @@
+/**
+ * Material Design 3 Style Tokens
+ * 
+ * Layer: Presentation (Global Styles)
+ * Purpose: Design system tokens for consistent UI
+ * 
+ * Architecture:
+ * - CSS Custom Properties for theming
+ * - Material Design 3 color system
+ * - Typography scale
+ * - Spacing system
+ * - Elevation levels
+ */
+
+:root {
+  /* ========== Color Tokens ========== */
+  
+  /* Primary Color */
+  --md-sys-color-primary: #1976d2;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #e3f2fd;
+  --md-sys-color-on-primary-container: #0d47a1;
+  
+  /* Secondary Color */
+  --md-sys-color-secondary: #03a9f4;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #e1f5fe;
+  --md-sys-color-on-secondary-container: #01579b;
+  
+  /* Tertiary Color */
+  --md-sys-color-tertiary: #00bcd4;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: #e0f7fa;
+  --md-sys-color-on-tertiary-container: #006064;
+  
+  /* Error Color */
+  --md-sys-color-error: #d32f2f;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #ffebee;
+  --md-sys-color-on-error-container: #b71c1c;
+  
+  /* Surface Colors */
+  --md-sys-color-surface: #ffffff;
+  --md-sys-color-on-surface: #212121;
+  --md-sys-color-surface-variant: #fafafa;
+  --md-sys-color-on-surface-variant: #616161;
+  
+  /* Background */
+  --md-sys-color-background: #fafafa;
+  --md-sys-color-on-background: #212121;
+  
+  /* Outline */
+  --md-sys-color-outline: #e0e0e0;
+  --md-sys-color-outline-variant: #f5f5f5;
+  
+  /* ========== Typography Tokens ========== */
+  
+  /* Display */
+  --md-sys-typescale-display-large-font-size: 3.5rem;
+  --md-sys-typescale-display-large-line-height: 4rem;
+  --md-sys-typescale-display-large-font-weight: 400;
+  
+  --md-sys-typescale-display-medium-font-size: 2.75rem;
+  --md-sys-typescale-display-medium-line-height: 3.25rem;
+  --md-sys-typescale-display-medium-font-weight: 400;
+  
+  --md-sys-typescale-display-small-font-size: 2.25rem;
+  --md-sys-typescale-display-small-line-height: 2.75rem;
+  --md-sys-typescale-display-small-font-weight: 400;
+  
+  /* Headline */
+  --md-sys-typescale-headline-large-font-size: 2rem;
+  --md-sys-typescale-headline-large-line-height: 2.5rem;
+  --md-sys-typescale-headline-large-font-weight: 400;
+  
+  --md-sys-typescale-headline-medium-font-size: 1.75rem;
+  --md-sys-typescale-headline-medium-line-height: 2.25rem;
+  --md-sys-typescale-headline-medium-font-weight: 400;
+  
+  --md-sys-typescale-headline-small-font-size: 1.5rem;
+  --md-sys-typescale-headline-small-line-height: 2rem;
+  --md-sys-typescale-headline-small-font-weight: 400;
+  
+  /* Title */
+  --md-sys-typescale-title-large-font-size: 1.375rem;
+  --md-sys-typescale-title-large-line-height: 1.75rem;
+  --md-sys-typescale-title-large-font-weight: 500;
+  
+  --md-sys-typescale-title-medium-font-size: 1rem;
+  --md-sys-typescale-title-medium-line-height: 1.5rem;
+  --md-sys-typescale-title-medium-font-weight: 500;
+  
+  --md-sys-typescale-title-small-font-size: 0.875rem;
+  --md-sys-typescale-title-small-line-height: 1.25rem;
+  --md-sys-typescale-title-small-font-weight: 500;
+  
+  /* Body */
+  --md-sys-typescale-body-large-font-size: 1rem;
+  --md-sys-typescale-body-large-line-height: 1.5rem;
+  --md-sys-typescale-body-large-font-weight: 400;
+  
+  --md-sys-typescale-body-medium-font-size: 0.875rem;
+  --md-sys-typescale-body-medium-line-height: 1.25rem;
+  --md-sys-typescale-body-medium-font-weight: 400;
+  
+  --md-sys-typescale-body-small-font-size: 0.75rem;
+  --md-sys-typescale-body-small-line-height: 1rem;
+  --md-sys-typescale-body-small-font-weight: 400;
+  
+  /* Label */
+  --md-sys-typescale-label-large-font-size: 0.875rem;
+  --md-sys-typescale-label-large-line-height: 1.25rem;
+  --md-sys-typescale-label-large-font-weight: 500;
+  
+  --md-sys-typescale-label-medium-font-size: 0.75rem;
+  --md-sys-typescale-label-medium-line-height: 1rem;
+  --md-sys-typescale-label-medium-font-weight: 500;
+  
+  --md-sys-typescale-label-small-font-size: 0.6875rem;
+  --md-sys-typescale-label-small-line-height: 1rem;
+  --md-sys-typescale-label-small-font-weight: 500;
+  
+  /* ========== Spacing Tokens ========== */
+  
+  --md-sys-spacing-xs: 0.25rem;
+  --md-sys-spacing-sm: 0.5rem;
+  --md-sys-spacing-md: 1rem;
+  --md-sys-spacing-lg: 1.5rem;
+  --md-sys-spacing-xl: 2rem;
+  --md-sys-spacing-xxl: 3rem;
+  
+  /* ========== Elevation Tokens ========== */
+  
+  --md-sys-elevation-level0: none;
+  --md-sys-elevation-level1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --md-sys-elevation-level2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  --md-sys-elevation-level3: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  --md-sys-elevation-level4: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  --md-sys-elevation-level5: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+  
+  /* ========== Border Radius Tokens ========== */
+  
+  --md-sys-shape-corner-none: 0;
+  --md-sys-shape-corner-xs: 0.25rem;
+  --md-sys-shape-corner-sm: 0.5rem;
+  --md-sys-shape-corner-md: 0.75rem;
+  --md-sys-shape-corner-lg: 1rem;
+  --md-sys-shape-corner-xl: 1.75rem;
+  --md-sys-shape-corner-full: 9999px;
+  
+  /* ========== State Tokens ========== */
+  
+  --md-sys-state-hover-opacity: 0.08;
+  --md-sys-state-focus-opacity: 0.12;
+  --md-sys-state-pressed-opacity: 0.12;
+  --md-sys-state-dragged-opacity: 0.16;
+  
+  /* ========== Transition Tokens ========== */
+  
+  --md-sys-motion-easing-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --md-sys-motion-duration-short: 200ms;
+  --md-sys-motion-duration-medium: 300ms;
+  --md-sys-motion-duration-long: 400ms;
+}
+
+/* ========== Utility Classes ========== */
+
+.md-surface {
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+
+.md-primary {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.md-elevation-1 {
+  box-shadow: var(--md-sys-elevation-level1);
+}
+
+.md-elevation-2 {
+  box-shadow: var(--md-sys-elevation-level2);
+}
+
+.md-elevation-3 {
+  box-shadow: var(--md-sys-elevation-level3);
+}
