@@ -127,9 +127,12 @@ src/app/
 │   ├── adapters/                    # 外部 API (REST/GraphQL) 連接器
 │   └── dto/                         # 外部原始數據結構定義 (*.dto.ts)
 └── presentation/                    # 🎨 使用者界面與交互 (Zone-less)
+    ├── containers/                  # 智能容器元件（接收 signals / facade）
     ├── shell/                       # 全域佈局、導航與根組件 (GlobalShell)
     ├── features/                    # 具體業務功能組件 (Features/Pages)
-    ├── components/                  # 純展示用共用組件 (UI Components)
+    ├── pages/                       # 路由頁面
+    ├── modules/                     # Feature module 的 presentation 層
+    ├── shared/                      # Presentation 層共享資源（directive, pipe, ui library）
     └── theme/                       # M3 設計令牌與樣式 (Styles/Tokens)
 ```
 
