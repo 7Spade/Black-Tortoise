@@ -1,108 +1,140 @@
 ---
-description: 'Angular Common: pipes, directives, HTTP client, and common utilities for zone-less Angular applications'
+description: 'Angular Common: pipes, directives, HTTP client, and common utilities for zone-less Angular. Presentation-layer only.'
 applyTo: '**/*.ts'
 ---
 
-# @angular/common Implementation Instructions
+# @angular/common Implementation Instructions (Presentation Layer Only)
 
-## CRITICAL: Control Flow Migration
+==================================================
+SCOPE DEFINITION (MANDATORY)
+==================================================
 
-**REQUIRED in Angular 20:**
-- Use `@if`, `@for`, `@switch`, `@defer` built-in control flow
-- NEVER use `*ngIf`, `*ngFor`, `*ngSwitch` structural directives
-- Migration MUST be complete before production deployment
+Angular Common usage is PRESENTATION-ONLY.
 
-**FORBIDDEN:**
-- Structural directives in new code
+Common utilities MUST NOT:
+- Trigger domain logic
+- Invoke Application Use Cases
+- Access repositories or infrastructure
+- Control business workflows
+
+Common utilities exist ONLY for UI logic, formatting, platform compatibility, and signal integration.
+
+==================================================
+Control Flow Migration
+==================================================
+
+REQUIRED:
+- Use built-in zone-less control flow: `@if`, `@for`, `@switch`, `@defer`
+- Fully migrate away from `*ngIf`, `*ngFor`, `*ngSwitch` in new code
+- Migration MUST complete before production deployment
+
+FORBIDDEN:
 - Mixing old and new control flow syntax
+- Structural directives in new code
 
-## Pipes Usage
+==================================================
+Pipes Usage
+==================================================
 
-**REQUIRED built-in pipes:**
-- `AsyncPipe` ONLY for observables without `toSignal()` conversion
-- `DatePipe` for date formatting
-- `CurrencyPipe` for monetary values
-- `DecimalPipe` for number formatting
-- `JsonPipe` for debugging only
+REQUIRED:
+- AsyncPipe ONLY for observables that cannot be converted with `toSignal()`
+- DatePipe, CurrencyPipe, DecimalPipe for formatting
+- JsonPipe ONLY for debugging
+- Pipes MUST be pure unless explicitly declared stateful (`pure: false`)
 
-**FORBIDDEN:**
-- `AsyncPipe` when signals are available
+FORBIDDEN:
+- AsyncPipe when signal is available
 - Custom pipes with side effects
-- Stateful pipes without `pure: false` declaration
+- Stateful pipes without explicit declaration
 
-## HTTP Client Integration
+==================================================
+HTTP Client Integration
+==================================================
 
-**REQUIRED pattern:**
-- Inject `HttpClient` in services, NEVER in components
-- Use `toSignal()` to convert HTTP observables to signals
+REQUIRED:
+- Inject HttpClient in SERVICES only
+- Convert HTTP observables to signals using `toSignal()`
 - NEVER subscribe manually in components
 - Error handling MUST use `tapResponse()` in stores
 
-**FORBIDDEN:**
+FORBIDDEN:
 - Direct HTTP calls in components
 - Manual subscriptions without cleanup
-- Missing error handling
 - Storing HTTP state outside signals
 
-## Common Directives
+==================================================
+Common Directives
+==================================================
 
-**REQUIRED:**
-- `NgClass` with signal binding: `[ngClass]="classSignal()"`
-- `NgStyle` with signal binding: `[ngStyle]="styleSignal()"`
-- `NgOptimizedImage` for all images (performance)
+REQUIRED:
+- NgClass with signal binding: `[ngClass]="classSignal()"`
+- NgStyle with signal binding: `[ngStyle]="styleSignal()"`
+- NgOptimizedImage for all images
 
-**FORBIDDEN:**
-- `NgClass`/`NgStyle` with object literals (use computed signals)
-- Standard `<img>` tags (use `NgOptimizedImage`)
-- `NgIf`/`NgFor`/`NgSwitch` (use built-in control flow)
+FORBIDDEN:
+- NgClass/NgStyle with object literals
+- Standard `<img>` tags (use NgOptimizedImage)
+- Structural directives (`NgIf`, `NgFor`, `NgSwitch`)
 
-## Location and Navigation
+==================================================
+Location and Navigation
+==================================================
 
-**REQUIRED:**
+REQUIRED:
 - Use `Location` service for URL manipulation
+- Use `Router` for navigation
 - NEVER manipulate `window.location` directly
-- Use `Router` for navigation, not `Location.go()`
 
-## Document and Platform
+==================================================
+Document and Platform
+==================================================
 
-**REQUIRED:**
-- Inject `DOCUMENT` token, NEVER access global `document`
+REQUIRED:
+- Inject `DOCUMENT` token
 - Use `isPlatformBrowser()` for SSR compatibility
 - NEVER assume browser environment
 
-## Date and Locale
+==================================================
+Date and Locale
+==================================================
 
-**REQUIRED:**
-- Configure locale in app providers: `provideLocaleId()`
-- Use `DatePipe` with locale parameter
+REQUIRED:
+- Configure locale via `provideLocaleId()`
+- Use DatePipe with locale parameter
 - NEVER use `Date.toLocaleString()` directly
 
-## Performance Optimization
+==================================================
+Performance Optimization
+==================================================
 
-**REQUIRED:**
-- Pure pipes ONLY unless stateful behavior essential
-- Memoize pipe transformations for expensive operations
-- Use `OnPush` change detection with pipes
+REQUIRED:
+- Use pure pipes by default
+- Memoize expensive pipe transformations
+- OnPush change detection MUST be used with pipes
 
-## Testing
+==================================================
+Testing
+==================================================
 
-**REQUIRED:**
-- Mock `HttpClient` with `provideHttpClientTesting()`
+REQUIRED:
+- Mock HttpClient with `provideHttpClientTesting()`
 - Test pipes in isolation
 - Verify SSR compatibility with `isPlatformBrowser()`
 
-## Enforcement Checklist
+==================================================
+ENFORCEMENT CHECKLIST
+==================================================
 
-**REQUIRED:**
-- Built-in control flow (`@if`, `@for`, `@switch`)
-- `HttpClient` in services with `toSignal()`
-- `NgOptimizedImage` for all images
-- `DOCUMENT` injection over global access
-- Pure pipes as default
+REQUIRED:
+- Built-in control flow (`@if`, `@for`, `@switch`, `@defer`)
+- HttpClient in services only, with `toSignal()`
+- NgOptimizedImage for all images
+- DOCUMENT injection, no global access
+- Pipes pure by default
 
-**FORBIDDEN:**
+FORBIDDEN:
 - Structural directives
-- `AsyncPipe` with available signals
-- Direct `document`/`window` access
+- AsyncPipe with available signals
+- Direct document/window access
 - Manual HTTP subscriptions in components
 - Stateful pipes without declaration

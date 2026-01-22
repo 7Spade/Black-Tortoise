@@ -5,12 +5,12 @@ applyTo: '**/*.ts'
 
 # @angular/forms Implementation Instructions
 
-## CRITICAL: Reactive Forms Requirement
+## Reactive Forms Requirement
 
 **REQUIRED:**
 - Use Reactive Forms with `FormControl<T>` for typed forms
-- NEVER use template-driven forms for multi-field forms
 - All form controls MUST have explicit types
+- NEVER use template-driven forms for multi-field forms
 
 **FORBIDDEN:**
 - Template-driven forms for complex forms
@@ -28,7 +28,7 @@ applyTo: '**/*.ts'
 - `FormArray<FormControl<T>>` for dynamic lists
 
 **FORBIDDEN:**
-- `FormControl` without type parameter
+- FormControl without type parameter
 - Implicit typing in forms
 - Mixed types without union types
 
@@ -51,8 +51,8 @@ applyTo: '**/*.ts'
 **REQUIRED:**
 - Return `null` for valid state
 - Return `ValidationErrors` object for invalid state
-- NEVER modify state in validators
 - Pure functions ONLY
+- NEVER modify state in validators
 
 **FORBIDDEN:**
 - Side effects in validators
@@ -61,7 +61,7 @@ applyTo: '**/*.ts'
 
 ## NgRx Signals Integration
 
-**REQUIRED store pattern:**
+**REQUIRED:**
 - Form instance in `signalStore` state
 - `submitting` signal for loading state
 - `error` signal for error messages
@@ -89,90 +89,3 @@ submitForm: rxMethod<FormData>(
     })
   )
 )
-```
-
-**FORBIDDEN:**
-- Manual form submission without store integration
-- Missing loading state management
-- No error state handling
-
-## Form Reset
-
-**REQUIRED:**
-- Reset form on successful submission
-- Clear error state on reset
-- NEVER preserve form data after success
-
-**FORBIDDEN:**
-- Partial form resets
-- Preserving submitted data
-- Missing error state cleanup
-
-## Submit Button State
-
-**REQUIRED:**
-- `[disabled]="form.invalid || submitting()"`
-- Visual feedback during submission
-- Accessibility labels for loading state
-
-**FORBIDDEN:**
-- Always-enabled submit buttons
-- Missing loading indicators
-- Submit without disabled state
-
-## Form Value Changes
-
-**REQUIRED:**
-- Use `valueChanges` with `toSignal()` for reactive updates
-- NEVER subscribe manually to value changes
-- Use `debounceTime()` for search/filter inputs
-
-**FORBIDDEN:**
-- Manual subscriptions without cleanup
-- Missing debounce on frequent updates
-- Synchronous processing of value changes
-
-## Dynamic Forms
-
-**REQUIRED:**
-- Use `FormArray` for dynamic form fields
-- Type all array elements
-- Provide removal and addition methods
-
-**FORBIDDEN:**
-- Untyped form arrays
-- Direct array manipulation
-- Missing array controls management
-
-## Testing
-
-**REQUIRED:**
-- Test form validation rules
-- Test form submission flow
-- Verify error message display
-- Test form reset behavior
-
-**FORBIDDEN:**
-- Skipping validation tests
-- Missing submission error tests
-- Incomplete form state verification
-
-## Enforcement Checklist
-
-**REQUIRED:**
-- Reactive Forms with `FormControl<T>`
-- Validators on all inputs
-- Error display after touched
-- NgRx Signals integration
-- `rxMethod` for submission
-- Submit button `[disabled]="form.invalid || submitting()"`
-- Form reset on success
-- `toSignal()` for value changes
-
-**FORBIDDEN:**
-- Template-driven forms for complex cases
-- Untyped form controls
-- Missing validation
-- Manual subscriptions
-- Form state outside signals
-- Always-enabled submit buttons
