@@ -20,10 +20,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { WorkspaceCreateResult } from '@presentation/workspace/models/workspace-create-result.model';
+import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
 
 /**
- * @deprecated Use WorkspaceCreateResult from models/workspace-create-result.model.ts
+ * @deprecated Use WorkspaceCreateResult from @application/models/workspace-create-result.model
  */
 export type WorkspaceCreateDialogResult = WorkspaceCreateResult;
 

@@ -5,29 +5,25 @@
  * Purpose: Factory for creating workspace runtime instances
  * 
  * Each workspace gets its own runtime with a scoped event bus
+ * 
+ * Clean Architecture Compliance:
+ * - Implements IWorkspaceRuntimeFactory from Application layer
+ * - Registered via DI token in app.config.ts
+ * - Application and Presentation use abstraction, not this class
  */
 
 import { Injectable } from '@angular/core';
+import { IWorkspaceRuntimeFactory, WorkspaceRuntime } from '@application/interfaces/workspace-runtime-factory.interface';
 import { WorkspaceContext, createWorkspaceContext } from '@domain/workspace/workspace-context';
-import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
 import { WorkspaceEntity } from '@domain/workspace/workspace.entity';
 import { InMemoryEventBus } from './in-memory-event-bus';
 
 /**
- * Workspace Runtime
- * Combines workspace context with its scoped event bus
- */
-export interface WorkspaceRuntime {
-  readonly context: WorkspaceContext;
-  readonly eventBus: WorkspaceEventBus;
-}
-
-/**
- * Workspace Runtime Factory
+ * Workspace Runtime Factory Implementation
  * Creates isolated runtime environments for each workspace
  */
-@Injectable({ providedIn: 'root' })
-export class WorkspaceRuntimeFactory {
+@Injectable()
+export class WorkspaceRuntimeFactory implements IWorkspaceRuntimeFactory {
   private readonly runtimes = new Map<string, WorkspaceRuntime>();
   
   /**

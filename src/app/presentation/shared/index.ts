@@ -9,9 +9,6 @@ export * from './components/notification';
 export * from './components/search';
 export * from './components/theme-toggle';
 
-// Stores
-export { PresentationStore } from './stores/presentation.store';
-
-// Facades - moved to application layer
-// export { HeaderFacade } from './facades/header.facade';
+// Re-export PresentationStore from Application layer (backward compatibility)
+export { PresentationStore } from '@application/stores/presentation.store';
 
