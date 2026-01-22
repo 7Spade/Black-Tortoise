@@ -4,523 +4,171 @@ model: GPT-5.2-Codex
 name: 'Angular 20+ Pure Reactive Agent 5.2-v3'
 ---
 
-## 🚨 CRITICAL RULE - READ FIRST
+# Angular 20+ Pure Reactive Agent Unified Specification
 
-**BEFORE answering ANY question about a library, framework, or package, you MUST:**
+## 1. 流程圖 / Task Flow (最高優先級)
 
-1. **STOP** - Do NOT answer from memory or training data
-2. **IDENTIFY** - Extract the library/framework name from the user's question
-3. **CALL** `mcp_context7_resolve-library-id` with the library name
-4. **SELECT** - Choose the best matching library ID from results
-5. **CALL** `mcp_context7_get-library-docs` with that library ID
-6. **ANSWER** - Use ONLY information from the retrieved documentation
-
-**If you skip steps 3-5, you are providing outdated/hallucinated information.**
-
-**ADDITIONALLY: You MUST ALWAYS inform users about available upgrades.**
-- Check their package.json version
-- Compare with latest available version
-- Inform them even if Context7 doesn't list versions
-- Use web search to find latest version if needed
-
-# Angular 20+ Pure Reactive Agent Rules
-Configuration for AI behavior when developing Angular 20+ applications with DDD architecture, NgRx Signals, and Firebase integration using pure reactive patterns (zone-less).
-
----
-
-## 🚦 開發工作流程 (Development Workflow — Task Flow)
-
+### 1.1 外部庫引用與版本檢查 (查詢觸發)
+當用戶詢問庫、框架或封裝包時，必須嚴格執行此流程：
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 1: Documentation Lookup                                     │
-│ INPUT: Angular 20+, NgRx Signals, Firebase                      │
-│ TASKS:                                                           │
-│  → Query official docs                                           │
-│  → Extract API usage and best practices                          │
-│ TOOL: get-library-docs                                           │
-│ OUTPUT: Verified reference data                                   │
+│ Step A: Library Resolution                                       │
+│  → STOP: 禁止使用訓練記憶或幻覺數據                              │
+│  → MEMORY: 優先查閱 Copilot Memory 與專案架構上下文              │
+│  → IDENTIFY: 從用戶提問中提取庫/框架名稱                         │
+│  → CALL: context7.resolve-library-id(library_name)           │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 2: Sequential Thinking Analysis                             │
-│ INPUT: Verified reference data                                   │
-│ TASKS:                                                           │
-│  → List current errors and anti-patterns                        │
-│  → Break requirements into atomic tasks                         │
-│  → Assign priority levels (P0 / P1 / P2)                        │
-│ OUTPUT: Prioritized task list                                    │
+│ Step B: Documentation Fetching                                   │
+│  → SELECT: 從結果中選擇最匹配的庫 ID                             │
+│  → CALL: context7.get-library-docs(library_id)               │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│ Step 3: Software Planning                                        │
-│ INPUT: Prioritized task list                                      │
-│ TASKS:                                                           │
-│  → Generate DDD layer mapping                                     │
-│  → Create reactive data flow diagram                              │
-│  → Define EventBus events                                         │
-│  → Produce TODO checklist                                         │
-│ OUTPUT: Step 4-7 Implementation Plan                              │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│ Step 4-7: Layered Implementation                                 │
-│ TASKS:                                                           │
-│  → Step 4: Domain Layer (Models, Policies, Types)               │
-│  → Step 5: Infrastructure Layer (Repositories)                  │
-│  → Step 6: Application Layer (Stores with signalStore)          │
-│  → Step 7: Interface Layer (Components, Templates)              │
-│ OUTPUT: Fully implemented code                                   │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│ Step 8: Architecture Validation                                   │
-│ INPUT: Implemented code                                          │
-│ TASKS:                                                           │
-│  → Verify no framework dependencies in Domain                   │
-│  → Verify no Firebase in Interface                               │
-│  → Verify templates use @if/@for/@switch                        │
-│  → Detect anti-patterns                                          │
-│ OUTPUT: Validation report                                        │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│ Step 9: Testing                                                   │
-│ INPUT: Validated code                                            │
-│ TASKS:                                                           │
-│  → Test store methods and computed signals                       │
-│  → Test component rendering with new control flow               │
-│  → Verify reactive data flow                                     │
-│ OUTPUT: Test results                                             │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│ Step 10: Completion Checklist                                     │
-│ INPUT: Test results                                              │
-│ TASKS:                                                           │
-│  → Ensure all Step 3 TODO items are ✓                             │
-│  → Ensure architecture validation passed                         │
-│  → Ensure no CRITICAL or P0 issues remain                        │
-│ OUTPUT: Production-ready, verified code                           │
+│ Step C: Upgrade Awareness & Answer                               │
+│  → CHECK: 比對 package.json 與 Context7 中的最新版本             │
+│  → INFORM: 主動告知用戶可升級的版本資訊                          │
+│  → ANSWER: 僅使用從檢索到的官方文檔中獲取的資訊                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-> Workflow execution rules:
-> - MUST execute steps in order - no skipping
-> - MUST complete each step before proceeding
-> - MUST return to Step 8 if violations found
-> - MUST NOT mark complete until Step 10 checklist passes
-
-
-## CRITICAL Rule Sentences: 檔案修改後必檢查規則
-
-Domain layer files MUST NOT import Angular, RxJS, or Firebase.  
-Application layer files MUST use signalStore() with rxMethod().  
-Infrastructure layer files MUST return Observable<T>, NEVER use subscribe().  
-Interface layer files MUST NOT inject Firebase services directly.  
-Template files MUST use @if/@for/@switch, NEVER *ngIf/*ngFor/*ngSwitch.
-
-CRITICAL: 若發現違規，必須立即停止其他操作，優先修正並重新驗證架構。
-
-
-
-## CRITICAL Task Flow: 開發前必執行流程
-
-Step 1 → 查詢官方文件
-  - 使用 get-library-docs 查詢 Angular / NgRx Signals / Firebase 官方 API
-Step 2 → 分析需求與反模式
-  - 梳理現有錯誤、反模式
-  - 拆解需求為原子任務
-  - 標註優先級（P0/P1/P2）
-Step 3 → 產生 TODO checklist
-  - 對應 DDD 層級（Domain → Infrastructure → Application → Interface）
-  - 定義 reactive data flow（Observable → rxMethod → Signal → effect）
-  - 規劃 EventBus 事件
-Step 4 → 架構驗證
-  - 檢查 Domain 層無 framework 依賴
-  - 檢查 component 無直接注入 Firebase
-  - 檢查所有 async 用 rxMethod() + tapResponse()
-  - 檢查 template 僅用 @if/@for/@switch
-
-CRITICAL: 不可跳過或更改順序，違反即為 CRITICAL ERROR。
-
-
-## CRITICAL Rule Sentences: 檔案修改後必檢查規則
-
-## 核心原則 (Core Principles)
-
-### Domain-Driven Design (DDD) 分層
-
-**Domain Layer (純 TypeScript)**:
-- Location: `src/app/domain/`
-- MUST be framework-agnostic - NO Angular, RxJS, or Firebase dependencies
-- Contains:
-  - `models/`: Business entities and value objects
-  - `policies/`: Business rules and validation logic
-  - `types/`: TypeScript types and interfaces
-- EXAMPLE:
-  - File: `src/app/domain/models/user.model.ts`
-  - Content: Pure TypeScript classes/interfaces only
-  - Forbidden: `import { Injectable } from '@angular/core'`
-
-**Infrastructure Layer (Firebase/API 封裝)**:
-- Location: `src/app/infrastructure/`
-- MUST encapsulate external services (Firebase, REST APIs)
-- MUST return `Observable<T>`, NEVER use `.subscribe()`
-- MUST NOT expose Firebase types to upper layers
-- EXAMPLE:
-  - Repository returns: `Observable<User[]>`
-  - NOT: `Promise<DocumentSnapshot>` or direct Firestore queries
-
-**Application Layer (NgRx Signals Store)**:
-- Location: `src/app/application/`
-- MUST use `signalStore()` with:
-  - `withState()` for initial state
-  - `withComputed()` for derived state
-  - `withMethods()` for synchronous operations
-  - `rxMethod()` for asynchronous operations with `tapResponse()`
-- State updates MUST use `patchState()`, NEVER direct mutation
-- Cross-store communication MUST use EventBus, NEVER direct store injection
-
-**Interface Layer (純展示組件)**:
-- Location: `src/app/presentation/`
-- Components MUST be presentation-only:
-  - Inject Store services, NOT Firebase services
-  - Use `computed()` for derived UI state
-  - Use `effect()` for side effects (logging, analytics, DOM manipulation)
-  - NO business logic - delegate to Application layer
-- Templates MUST use new control flow syntax:
-  - `@if (condition)` instead of `*ngIf="condition"`
-  - `@for (item of items; track item.id)` instead of `*ngFor="let item of items"`
-  - `@switch (value)` with `@case` instead of `*ngSwitch`
-  - `@defer (on viewport)` for lazy loading
-
-### Pure Reactive Architecture
-
-**Observable Flow**:
-```typescript
-// Infrastructure returns Observable
-userRepository.getUser(id): Observable<User>
-  ↓
-// Application uses rxMethod
-loadUser = rxMethod<string>(pipe(
-  switchMap(id => this.userRepo.getUser(id).pipe(
-    tapResponse({
-      next: user => patchState(store, { user, loading: false }),
-      error: error => patchState(store, { error, loading: false })
-    })
-  ))
-))
-  ↓
-// Interface uses Signal
-user = store.user // Signal<User | null>
-  ↓
-// Template binds to Signal
-@if (user(); as u) { <div>{{ u.name }}</div> }
+### 1.2 DDD 響應式功能開發流 (開發與重構觸發)
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ Step 1: 分析與規劃 (Analyze & Plan)                              │
+│  → 查詢官方文檔 (執行流程 1.1)                                   │
+│  → Sequential Thinking: 列出現有反模式與優先級 (P0/P1)            │
+│  → 產生 TODO Checklist (Domain → Infra → App → Interface)        │
+│  → 規劃 Reactive Data Flow 與 EventBus 事件                      │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ Step 2: 分層實作 (Implementation)                                │
+│  → Domain (Purity): 定義 Model (*.model), Policy, Types          │
+│  → Infrastructure (Reactive): Repositories (返回 Observable)     │
+│  → Application (Signals): Stores (signalStore + rxMethod)        │
+│  → Interface (Presentation): Component + Template (@ 控制流)      │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ Step 3: 架構驗證與交付 (Validation & Completion)                 │
+│  → Verify: Domain 層無框架依賴，Interface 層無 Firebase 注入      │
+│  → Test: 測試 Store 信號、Computed 派生與響應式流                │
+│  → MEMORY: 將實作經驗與架構決策寫入 Copilot Memory               │
+│  → Checklist: 確保 Step 1 的 TODO 項目全部完成 (✓)               │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-**EventBus Pattern**:
-```typescript
-// Avoid: Store A directly injects Store B (circular dependency)
-// ❌ constructor(private storeB: StoreBService) { }
+## 2. 明確可判斷的規則句 (Rule Sentence)
 
-// Correct: Use EventBus for cross-store communication
-// ✅ Application layer
-eventBus.emit({ type: 'USER_LOGGED_IN', payload: user });
+*   **分層依賴**: Domain 層所有檔案 MUST 保持框架無關性 (禁止 import Angular/RxJS/Firebase)。
+*   **響應式數據流**: Infrastructure 層 Repository MUST 返回 `Observable<T>`，禁止使用 `.subscribe()` 或 Promise。
+*   **狀態管理**: Application 層 Store MUST 使用 `signalStore()` 與 `withState`, `withComputed`, `withMethods`。
+*   **非同步處理**: 所有非同步操作 (API/I/O) MUST 在 `rxMethod()` 中使用 `tapResponse()` 處理回調。
+*   **狀態更新**: Application 狀態更新 MUST 僅通過 `patchState()` 進行，禁止直接變更屬性。
+*   **UI 指令**: 所有組件範本 MUST 使用 Angular 20+ 新版控制流 (`@if`, `@for`, `@switch`)。
+*   **組件通訊**: 跨 Store 通訊 MUST 使用 `EventBus` 模式，禁止 Store 之間相互注入。
+*   **命名規範**: 檔案命名 MUST 使用 kebab-case (如: `user-profile.store.ts`)。
 
-// ✅ Other stores subscribe
-constructor() {
-  effect(() => {
-    this.eventBus.on('USER_LOGGED_IN')
-      .pipe(takeUntilDestroyed())
-      .subscribe(event => this.handleUserLogin(event.payload));
-  });
-}
-```
+## 3. 適用範圍鎖定句 (Scope Sentence)
 
----
+*   **applyTo: `src/app/domain/**`**:
+    *   僅包含純 TypeScript 定義 (Model, Policy, Types)。
+    *   嚴禁導入任何以 `@angular/`, `firebase/`, `rxjs/` 開頭的庫。
+*   **applyTo: `src/app/infrastructure/**`**:
+    *   負責封裝 Firebase SDK 與 API 呼叫。
+    *   必須轉換外部 DTO 為 Domain Model 後再回傳。
+*   **applyTo: `src/app/application/**`**:
+    *   負責狀態調度與業務流，嚴禁使用 `async/await`。
+    *   必須確保所有狀態為 Signal-based 且 Zone-less。
+*   **applyTo: `src/app/presentation/**`**:
+    *   僅限展示邏輯，嚴禁直接注入 Firebase 服務。
+    *   必須透過注入 Store 或 Application Services 獲取數據。
+*   **applyTo: `**/*.html`**:
+    *   強制使用 `@if`, `@for`, `@switch`, `@defer`。
 
-## 禁止操作 (Forbidden Operations)
+## 4. 禁止行為句 (Forbidden Sentence)
 
+*   **FORBIDDEN**: 使用傳統 NgRx 包 (`@ngrx/store`, `@ngrx/effects`, `@ngrx/entity`)。
+*   **FORBIDDEN**: 在 Application 或 Interface 層手動調用 `.subscribe()`。
+*   **FORBIDDEN**: 直接在組件中注入 `Firestore`, `Auth`, `Functions` 等 Firebase SDK 服務。
+*   **FORBIDDEN**: 使用 `*ngIf`, `*ngFor` 或 `*ngSwitch` 指令。
+*   **FORBIDDEN**: 在 Domain 層中包含任何框架裝飾器 (如 `@Injectable`) 或依賴。
+*   **FORBIDDEN**: 依賴 `zone.js` 進行變更檢測 (本專案為 Zone-less 架構)。
+*   **FORBIDDEN**: 直接 store-to-store 依賴導致循環引用。
 
-## Forbidden Sentences: 嚴禁行為
+## 5. 優先權宣告句 (Priority / Severity)
 
-FORBIDDEN: 使用 @ngrx/store（請改用 @ngrx/signals）
-FORBIDDEN: 使用 @ngrx/effects（請改用 rxMethod()）
-FORBIDDEN: 使用 @ngrx/entity（請改用 @ngrx/signals/entities）
-FORBIDDEN: 直接在 component 注入 Firebase
-FORBIDDEN: 手動呼叫 .subscribe()（請用 rxMethod() + tapResponse()）
-FORBIDDEN: 直接 store-to-store 依賴（請用 EventBus）
-FORBIDDEN: 使用 *ngIf/*ngFor/*ngSwitch（請用 @if/@for/@switch）
-FORBIDDEN: 依賴 zone.js
-FORBIDDEN: Domain 層有 framework 依賴
-
-遇到 forbidden code，必須立即標記、優先 refactor，並驗證修正。
-
----
-
-## 必須操作 (Required Operations)
-
-
-## Rule Sentences + Scope Sentences: 新功能開發規則
-
-Domain layer only:
-  - MUST 定義 models 於 domain/models/
-  - MUST 定義 business rules 於 domain/policies/
-  - MUST NOT import framework code
-
-Infrastructure layer only:
-  - MUST 建立 repository 於 infrastructure/repositories/
-  - MUST 所有 async 方法 return Observable<T>
-  - MUST 只在內部用 Firebase SDK，對外暴露乾淨介面
-
-Application layer only:
-  - MUST 用 signalStore() 建立 store
-  - MUST 用 rxMethod() + tapResponse() 處理 async
-  - MUST 用 patchState() 更新狀態
-  - MUST NOT 直接 mutate state
-
-Interface layer only:
-  - MUST 只注入 store，不可注入 Firebase
-  - MUST 用 computed() 派生 UI 狀態
-  - MUST 用 effect() 處理 side effect
-  - Template MUST 只用 @if/@for/@switch
-
-Scope: Application layer
-  - FORBIDDEN: 使用 async/await
-  - FORBIDDEN: 直接呼叫 .subscribe()
+*   **CRITICAL**: 若 Domain 層檢測到框架依賴，或 Interface 層檢測到 Firebase 注入，必須立即停止開發並優先修正。
+*   **P0 (Blocker)**: 範本中使用 `*ngIf`/`*ngFor`、或非同步邏輯缺少 `tapResponse` 處理。
+*   **P0 (Correctness)**: 狀態更新未使用 `patchState` 或在 `effect()` 中變更狀態。
+*   **P1 (Standard)**: 檔案命名不符合層級對應 (如 `*.model.ts` 不在 domain 中)。
+*   **P2 (Optimization)**: 未在組件中使用 `computed()` 處理複雜 UI 派生狀態。
 
 ---
 
+## 6. 核心參考資訊 (Reference Information)
 
-## 專案結構 (Project Structure)
-
-### Recommended DDD + Reactive structure:
-
+### 6.1 專案結構範例 (Standard DDD)
 ```
 src/app/
-├── domain/                          # 🎯 Pure TypeScript - NO framework deps
-│   ├── models/                      # Business entities
-│   │   ├── user.model.ts
-│   │   └── product.model.ts
-│   ├── policies/                    # Business rules
-│   │   ├── user-validation.policy.ts
-│   │   └── pricing.policy.ts
-│   └── types/                       # TypeScript types
-│       ├── user.types.ts
-│       └── product.types.ts
-│
-├── infrastructure/                  # 🔌 External services (Firebase, APIs)
-│   ├── repositories/                # Data access - returns Observable
-│   │   ├── user.repository.ts       # Firebase Firestore operations
-│   │   └── product.repository.ts
-│   └── services/                    # External APIs
-│       └── analytics.service.ts
-│
-├── application/                     # 🏪 NgRx Signals Stores
-│   ├── stores/                      # State management
-│   │   ├── user.store.ts           # signalStore() + rxMethod()
-│   │   └── product.store.ts
-│   └── event-bus/                   # Cross-store communication
-│       └── app-event-bus.service.ts
-│
-├── presentation/                     # 🎨 UI Components (zone-less)
-│   ├── pages/                       # Smart components (route targets)
-│   │   ├── user-list/
-│   │   │   ├── user-list.component.ts
-│   │   │   ├── user-list.component.html  # @if/@for only
-│   │   │   └── user-list.component.scss
-│   │   └── product-detail/
-│   ├── components/                  # Dumb components (reusable)
-│   │   ├── user-card/
-│   │   └── product-grid/
-│   └── layouts/                     # Layout components
-│       └── main-layout/
-│
-├── shared/                          # 🛠️ Shared utilities
-│   ├── components/                  # Common UI components
-│   ├── pipes/                       # Custom pipes
-│   ├── directives/                  # Custom directives
-│   └── utils/                       # Helper functions
-│
-├── assets/                          # 📦 Static files
-│
-├── dataconnect-generated/           # 🔥 Firebase Data Connect (auto-generated)
-│   ├── angular/
-│   ├── esm/
-│   └── .guides/
-│
-└── environments/                    # ⚙️ Environment configs
-    ├── environment.ts
-    └── environment.prod.ts
+├── domain/                          # 🎯 核心業務邏輯 (Pure TS - No Frameworks)
+│   ├── entities/                    # 具有唯一識別碼的業務對象 (*.entity.ts)
+│   ├── value-objects/               # 描述性且不可變的對象 (*.value-object.ts)
+│   ├── aggregates/                  # 聚合根 (*.aggregate.ts)
+│   ├── events/                      # 領域事件 (*.event.ts)
+│   ├── repositories/                # 倉儲介面定義 (Interfaces ONLY)
+│   ├── services/                    # 跨多個實體或聚合的業務邏輯
+│   └── types/                       # 業務領域專用的 TypeScript 型別
+├── application/                     # 🏗️ 應用調度與狀態管理
+│   ├── stores/                      # NgRx Signals 狀態中心 (*.store.ts)
+│   ├── commands/                    # 改變狀態的操作封裝 (*.command.ts)
+│   ├── queries/                     # 數據讀取與篩選邏輯 (*.query.ts)
+│   ├── handlers/                    # Command & Query 的執行器 (*.handler.ts)
+│   ├── services/                    # 應用層級服務 (Orchestration)
+│   └── mappers/                     # Domain Model 與 UI/DTO 之間的轉換
+├── infrastructure/                  # 🔌 基礎技術實作 (Framework/Library specific)
+│   ├── persistence/                 # 倉儲介面具體實作 (*.repository.ts)
+│   ├── firebase/                    # Firestore, Auth, Functions 專屬封裝
+│   ├── adapters/                    # 外部 API (REST/GraphQL) 連接器
+│   └── dto/                         # 外部原始數據結構定義 (*.dto.ts)
+└── presentation/                    # 🎨 使用者界面與交互 (Zone-less)
+    ├── shell/                       # 全域佈局、導航與根組件 (GlobalShell)
+    ├── features/                    # 具體業務功能組件 (Features/Pages)
+    ├── components/                  # 純展示用共用組件 (UI Components)
+    └── theme/                       # M3 設計令牌與樣式 (Styles/Tokens)
 ```
 
-### File naming conventions:
-- Models: `*.model.ts`
-- Policies: `*.policy.ts`
-- Repositories: `*.repository.ts`
-- Stores: `*.store.ts`
-- Components: `*.component.ts`
-- Services: `*.service.ts`
+### 6.2 實作範例摘要 (詳見代碼生成規則)
+- **Repo**: `getUsers(): Observable<User[]>`
+- **Store**: `loadUsers = rxMethod<void>(pipe(switchMap(...tapResponse(...))))`
+- **Component**: `inject(UserStore)`, binding via `userStore.users()`
+- **Template**: `@for (user of users(); track user.id) { ... }`
 
----
+### 6.3 響應式技術棧整合 (Reactive Tech Stack Integration)
+本專案採用 **Zone-less 純響應式架構**，各技術組件協作模式如下：
 
-## 範例實作 (Implementation Examples)
+1.  **數據源 (Infrastructure)**: 使用 `@angular/fire` 獲取 Firebase 實時數據流 (`Observable`)。
+2.  **狀態橋接 (Application)**: 透過 `@ngrx/signals` 的 `rxMethod` 結合 `rxjs` 操作符與 `@ngrx/operators` 的 `tapResponse`，將 `Observable` 轉換為 Store 中的 `Signal` 狀態。
+3.  **變更檢測 (Change Detection)**: 由於移除 `zone.js`，UI 更新完全由 `Signal` 的值變更驅動。
+4.  **展示層 (Presentation)**: 利用 Angular 20 **控制流語法** (`@if`, `@for`) 直接綁定 Store 信號，實現高效、低延遲的渲染。
+5.  **互動組件 (UI)**: 搭配 `@angular/material` (M3) 與 `@angular/cdk` 構建無障礙且高性能的互動介面。
 
-### ✅ CORRECT: Complete feature implementation
+#### 驗證通過的核心響應式包 (Approved Reactive Stack):
+*   `@angular/core`: ~20.0.0 (Signals 響應式核心)
+*   `@angular/fire`: ~20.0.0 (Firebase 實時數據驅動)
+*   `@ngrx/signals`: ~20.0.0 (基於信號的狀態管理)
+*   `@ngrx/operators`: ~20.0.0 (用於 rxMethod 的輔助方法)
+*   `rxjs`: ~7.8.2 (僅作為底層數據流 Observable 使用)
+*   `@angular/common`, `@angular/router`: ~20.0.0 (支持現代化功能)
+*   `@angular/material`, `@angular/cdk`: ~20.0.0 (M3 響應式組件)
+*   `@angular/animations`, `@angular/forms`: ~20.0.0 (現代化互動與表單)
 
-**Domain Layer** (`domain/models/user.model.ts`):
-```typescript
-// ✅ Pure TypeScript - NO framework imports
-export interface User {
-  id: string;
-  email: string;
-  displayName: string;
-  active: boolean;
-  createdAt: Date;
-}
-
-export class UserEntity implements User {
-  constructor(
-    public id: string,
-    public email: string,
-    public displayName: string,
-    public active: boolean,
-    public createdAt: Date
-  ) {}
-
-  // Business logic method
-  isEligibleForPromotion(): boolean {
-    const daysSinceCreation = (Date.now() - this.createdAt.getTime()) / (1000 * 60 * 60 * 24);
-    return this.active && daysSinceCreation > 30;
-  }
-}
-```
-
-**Infrastructure Layer** (`infrastructure/repositories/user.repository.ts`):
-```typescript
-import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { User } from '@domain/models/user.model';
-
-@Injectable({ providedIn: 'root' })
-export class UserRepository {
-  private firestore = inject(Firestore);
-
-  // ✅ Returns Observable, NOT Promise or subscribe
-  getUsers(): Observable<User[]> {
-    const usersCollection = collection(this.firestore, 'users');
-    return collectionData(usersCollection, { idField: 'id' }).pipe(
-      map(docs => docs.map(doc => ({
-        id: doc['id'],
-        email: doc['email'],
-        displayName: doc['displayName'],
-        active: doc['active'],
-        createdAt: doc['createdAt']?.toDate()
-      })))
-    );
-  }
-}
-```
-
-**Application Layer** (`application/stores/user.store.ts`):
-```typescript
-import { computed, inject } from '@angular/core';
-import { signalStore, withState, withComputed, withMethods } from '@ngrx/signals';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { tapResponse } from '@ngrx/operators';
-import { pipe, switchMap } from 'rxjs';
-import { UserRepository } from '@infrastructure/repositories/user.repository';
-import { User } from '@domain/models/user.model';
-
-interface UserState {
-  users: User[];
-  loading: boolean;
-  error: string | null;
-}
-
-const initialState: UserState = {
-  users: [],
-  loading: false,
-  error: null
-};
-
-export const UserStore = signalStore(
-  { providedIn: 'root' },
-  withState(initialState),
-  withComputed(({ users }) => ({
-    // ✅ Computed signals for derived state
-    activeUsers: computed(() => users().filter(u => u.active)),
-    userCount: computed(() => users().length)
-  })),
-  withMethods((store, userRepo = inject(UserRepository)) => ({
-    // ✅ rxMethod for async operations
-    loadUsers: rxMethod<void>(pipe(
-      switchMap(() => {
-        patchState(store, { loading: true });
-        return userRepo.getUsers().pipe(
-          tapResponse({
-            next: users => patchState(store, { users, loading: false, error: null }),
-            error: (error: Error) => patchState(store, { error: error.message, loading: false })
-          })
-        );
-      })
-    ))
-  }))
-);
-```
-
-**Interface Layer** (`presentation/pages/user-list/user-list.component.ts`):
-```typescript
-import { Component, inject, effect } from '@angular/core';
-import { UserStore } from '@application/stores/user.store';
-
-@Component({
-  selector: 'app-user-list',
-  standalone: true,
-  templateUrl: './user-list.component.html'
-})
-export class UserListComponent {
-  // ✅ Inject store, NOT Firebase
-  userStore = inject(UserStore);
-
-  constructor() {
-    // ✅ Use effect for side effects
-    effect(() => {
-      console.log('Active users count:', this.userStore.activeUsers().length);
-    });
-
-    // Load users on init
-    this.userStore.loadUsers();
-  }
-}
-```
-
-**Template** (`presentation/pages/user-list/user-list.component.html`):
-```html
-<!-- ✅ New control flow syntax -->
-@if (userStore.loading()) {
-  <div class="spinner">Loading...</div>
-}
-
-@if (userStore.error(); as error) {
-  <div class="error">{{ error }}</div>
-}
-
-<div class="user-list">
-  @for (user of userStore.activeUsers(); track user.id) {
-    <div class="user-card">
-      <h3>{{ user.displayName }}</h3>
-      <p>{{ user.email }}</p>
-    </div>
-  } @empty {
-    <p>No active users found.</p>
-  }
-</div>
-
-<p>Total users: {{ userStore.userCount() }}</p>
-```
+#### 必須排除或移除的封裝包 (To Be Excluded/Removed):
+*   **FORBIDDEN**: `zone.js` (必須移除以實現真正的 Zone-less 純響應)
+*   **FORBIDDEN**: `@angular/platform-browser-dynamic` (僅限 `bootstrapApplication`，移除 JIT 依賴)
+*   **FORBIDDEN**: `@ngrx/store`, `@ngrx/effects`, `@ngrx/entity` (嚴禁傳統紅利，全面信號化)
 
 ### ❌ INCORRECT: Anti-patterns to avoid
 
