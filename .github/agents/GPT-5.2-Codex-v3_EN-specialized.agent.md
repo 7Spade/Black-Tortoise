@@ -109,61 +109,98 @@ src/app/
 ├── domain/                           # 🎯 核心業務邏輯 (Pure TS)
 │   ├── entities/                     # 聚合內核心實體
 │   │   ├── user.entity.ts
-│   │   └── order.entity.ts
+│   │   ├── order.entity.ts
+│   │   ├── workspace.entity.ts
+│   │   ├── organization.entity.ts
+│   │   └── team.entity.ts
 │   ├── value-objects/                # 不可變值對象
 │   │   ├── email.value-object.ts
-│   │   └── currency.value-object.ts
+│   │   ├── currency.value-object.ts
+│   │   └── workspace-id.value-object.ts
 │   ├── aggregates/                   # 聚合根，承擔業務一致性
 │   │   ├── order.aggregate.ts
-│   │   └── cart.aggregate.ts
+│   │   ├── cart.aggregate.ts
+│   │   ├── workspace.aggregate.ts
+│   │   ├── organization.aggregate.ts
+│   │   └── team.aggregate.ts
 │   ├── events/                       # Domain Events (純定義)
 │   │   ├── user-created.event.ts
-│   │   └── order-placed.event.ts
+│   │   ├── order-placed.event.ts
+│   │   ├── workspace-switched.event.ts
+│   │   ├── organization-switched.event.ts
+│   │   └── team-switched.event.ts
 │   ├── repositories/                 # Interface only
 │   │   ├── user.repository.ts
-│   │   └── order.repository.ts
+│   │   ├── order.repository.ts
+│   │   ├── workspace.repository.ts
+│   │   ├── organization.repository.ts
+│   │   └── team.repository.ts
 │   ├── specifications/               # 條件/驗證規格
 │   │   ├── can-checkout.spec.ts
-│   │   └── is-admin.spec.ts
+│   │   ├── is-admin.spec.ts
+│   │   └── is-member-of-team.spec.ts
 │   ├── factories/                    # 聚合/實體建構器
 │   │   ├── order.factory.ts
-│   │   └── user.factory.ts
+│   │   ├── user.factory.ts
+│   │   └── workspace.factory.ts
 │   └── types/                        # Domain 專用 Type
 │       └── domain-types.ts
 │
 ├── application/                      # 🏗️ 狀態管理 / Command / Query
 │   ├── stores/                       # Signals Store (接收 domain events)
 │   │   ├── user.store.ts
-│   │   └── cart.store.ts
+│   │   ├── cart.store.ts
+│   │   ├── workspace.store.ts
+│   │   ├── organization.store.ts
+│   │   └── team.store.ts
 │   ├── commands/                     # Command 封裝操作
 │   │   ├── create-user.command.ts
-│   │   └── add-to-cart.command.ts
+│   │   ├── add-to-cart.command.ts
+│   │   ├── switch-workspace.command.ts
+│   │   ├── switch-organization.command.ts
+│   │   └── switch-team.command.ts
 │   ├── queries/                      # Query 封裝查詢
 │   │   ├── get-user.query.ts
-│   │   └── list-cart-items.query.ts
+│   │   ├── list-cart-items.query.ts
+│   │   ├── get-current-workspace.query.ts
+│   │   ├── get-current-organization.query.ts
+│   │   └── get-current-team.query.ts
 │   ├── handlers/                     # Command/Event Handler
 │   │   ├── create-user.handler.ts
-│   │   └── add-to-cart.handler.ts
+│   │   ├── add-to-cart.handler.ts
+│   │   ├── switch-workspace.handler.ts
+│   │   ├── switch-organization.handler.ts
+│   │   └── switch-team.handler.ts
 │   ├── facades/                      # Presentation ↔ Application 唯一邊界
 │   │   ├── user.facade.ts
-│   │   └── cart.facade.ts
+│   │   ├── cart.facade.ts
+│   │   ├── workspace.facade.ts
+│   │   ├── organization.facade.ts
+│   │   └── team.facade.ts
 │   ├── validators/                   # 驗證器
 │   │   ├── email.validator.ts
-│   │   └── checkout.validator.ts
+│   │   ├── checkout.validator.ts
+│   │   └── workspace.validator.ts
 │   └── mappers/                      # Domain ↔ DTO/UI
 │       ├── user.mapper.ts
-│       └── order.mapper.ts
+│       ├── order.mapper.ts
+│       └── workspace.mapper.ts
 │
 ├── infrastructure/                   # 🔌 技術實作 & 事件總線
 │   ├── persistence/                  # Repository 實作 (AngularFire)
-│   │   ├── user.repository.impl.ts   # RxFirestore / collection snapshots
-│   │   └── order.repository.impl.ts
+│   │   ├── user.repository.impl.ts
+│   │   ├── order.repository.impl.ts
+│   │   ├── workspace.repository.impl.ts
+│   │   ├── organization.repository.impl.ts
+│   │   └── team.repository.impl.ts
 │   ├── firebase/                     # AngularFire 封裝 / Auth / Firestore / Functions
 │   │   ├── auth.service.ts
-│   │   └── firestore.service.ts
+│   │   ├── firestore.service.ts
+│   │   └── functions.service.ts
 │   ├── adapters/                     # 外部系統 API / 微服務
 │   │   ├── payment.adapter.ts
-│   │   └── shipping.adapter.ts
+│   │   ├── shipping.adapter.ts
+│   │   └── analytics.adapter.ts
 │   ├── config/                       # 環境 / Feature Flags
 │   │   ├── env.config.ts
 │   │   └── feature-flags.ts
@@ -171,13 +208,16 @@ src/app/
 │   │   ├── logger.service.ts
 │   │   └── monitoring.hook.ts
 │   ├── event-bus/                    # 事件總線 (因果事件流)
-│   │   ├── domain-event-bus.service.ts       # domain events → subscriber → handler → store/facade
-│   │   ├── integration-event-bus.service.ts # 對外事件流 (integration events)
-│   │   ├── event-publisher.ts                # 發布事件
-│   │   └── event-subscriber.ts              # 訂閱事件並觸發 handler
+│   │   ├── domain-event-bus.service.ts        # domain events → subscriber → handlers → stores/facade
+│   │   ├── integration-event-bus.service.ts  # 對外事件
+│   │   ├── event-publisher.ts
+│   │   └── event-subscriber.ts
 │   └── dto/                          # 外部資料結構
 │       ├── user.dto.ts
-│       └── order.dto.ts
+│       ├── order.dto.ts
+│       ├── workspace.dto.ts
+│       ├── organization.dto.ts
+│       └── team.dto.ts
 │
 └── presentation/                     # 🎨 UI / Interaction (Zone-less)
     ├── containers/                   # Smart Components (唯一注入 facade/store)
@@ -189,6 +229,30 @@ src/app/
     │       │   └── sidebar.component.ts
     │       └── index.ts               # public re-export
     │
+    │   ├── workspace-switcher/
+    │   │   ├── workspace-switcher.container.ts  # Smart container
+    │   │   ├── components/                      # Dumb UI
+    │   │   │   ├── workspace-list.component.ts
+    │   │   │   └── workspace-item.component.ts
+    │   │   └── index.ts
+    │   │
+    │   ├── organization-switcher/
+    │   │   ├── organization-switcher.container.ts
+    │   │   ├── components/
+    │   │   │   ├── org-list.component.ts
+    │   │   │   └── org-item.component.ts
+    │   │   └── index.ts
+    │   │
+    │   ├── team-switcher/
+    │   │   ├── team-switcher.container.ts
+    │   │   ├── components/
+    │   │   │   ├── team-list.component.ts
+    │   │   │   └── team-item.component.ts
+    │   │   └── index.ts
+    │   │
+    │   └── context-switcher/
+    │       ├── context-switcher.container.ts   # 組合 workspace/org/team switchers
+    │       └── index.ts
     ├── shell/
     │   ├── global-shell.component.ts
     │   ├── global-shell.module.ts
