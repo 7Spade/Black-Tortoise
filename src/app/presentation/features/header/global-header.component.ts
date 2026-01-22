@@ -73,17 +73,6 @@ export class GlobalHeaderComponent {
     this.document.body.classList.add(next);
   }
   
-  selectWorkspace(workspaceId: string): void {
-    // Business logic: switch workspace (application layer)
-    this.workspaceContext.switchWorkspace(workspaceId);
-    
-    // Presentation concern: navigate to workspace view
-    this.showWorkspaceMenu.set(false);
-    this.router.navigate(['/workspace']).catch(() => {
-      this.workspaceContext.setError('Failed to navigate to workspace');
-    });
-  }
-  
   constructor() {
     const storedTheme = localStorage.getItem(this.themeStorageKey);
     const initialTheme = storedTheme === 'dark' ? 'dark' : 'light';
@@ -95,7 +84,7 @@ export class GlobalHeaderComponent {
     this.notificationCount.set(notifications.length);
   }
 
-  selectWorkspace(workspaceId: string): void {
+  selectWorkspace(): void {
     console.warn('[GlobalHeader] Workspace controls moved to WorkspaceHeaderControlsComponent');
   }
 
