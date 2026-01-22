@@ -14,12 +14,18 @@
  * - Uses Angular Router directly (see ADR 0001-router-in-presentation-components.md)
  * - Router is a presentation-layer framework concern, not business logic
  * - Business logic delegated to WorkspaceContextStore (application layer)
+ * 
+ * State Management:
+ * - Workspace context managed by WorkspaceContextStore (application layer)
+ * - Local UI state (notifications, theme) managed via signals
+ * - No async/await in presentation layer, pure reactive patterns
  */
 
 import { Component, ChangeDetectionStrategy, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SearchService, NotificationService } from '../../shared/services';
 import { WorkspaceHeaderControlsComponent } from './workspace-header-controls.component';
+import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -32,7 +38,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./global-header.component.scss']
 })
 export class GlobalHeaderComponent {
+  // Inputs
   readonly showWorkspaceControls = input(true);
+  
+  // Injected dependencies
+  readonly workspaceContext = inject(WorkspaceContextStore);
   private readonly searchService = inject(SearchService);
   private readonly notificationService = inject(NotificationService);
   private readonly document = inject(DOCUMENT);
@@ -82,13 +92,5 @@ export class GlobalHeaderComponent {
 
     const notifications = this.notificationService.getNotifications();
     this.notificationCount.set(notifications.length);
-  }
-
-  selectWorkspace(): void {
-    console.warn('[GlobalHeader] Workspace controls moved to WorkspaceHeaderControlsComponent');
-  }
-
-  createNewWorkspace(): void {
-    console.warn('[GlobalHeader] Workspace controls moved to WorkspaceHeaderControlsComponent');
   }
 }

@@ -1,8 +1,20 @@
+/**
+ * Workspace Header Controls Component
+ * 
+ * Layer: Presentation
+ * Purpose: Workspace and Identity switcher controls for global header
+ * Architecture: Zone-less, OnPush, Angular 20 control flow, Pure Reactive
+ * 
+ * Reactive Flow:
+ * - Dialog result → Observable stream → tapResponse → WorkspaceContextStore
+ * - No async/await, no manual subscribe, type-safe result handling
+ */
+
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { firstValueFrom } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
 import {
   WorkspaceCreateDialogComponent,
@@ -123,28 +135,37 @@ export class WorkspaceHeaderControlsComponent {
     });
   }
 
-  async createNewWorkspace(): Promise<void> {
+  /**
+   * Create new workspace via dialog
+   * Pure reactive: Observable → filter → tap → subscribe
+   * Type-safe without generics on afterClosed()
+   */
+  createNewWorkspace(): void {
     const dialogRef = this.dialog.open(WorkspaceCreateDialogComponent, {
       width: '500px',
       disableClose: false,
       autoFocus: true,
     });
 
-    let result: WorkspaceCreateDialogResult | null = null;
-
-    try {
-      result = await firstValueFrom(dialogRef.afterClosed());
-    } catch {
-      this.workspaceContext.setError('Failed to open workspace dialog');
-      return;
-    }
-
-    if (result?.workspaceName) {
-      this.workspaceContext.createWorkspace(result.workspaceName);
-      this.showWorkspaceMenu.set(false);
-      this.router.navigate(['/workspace']).catch(() => {
-        this.workspaceContext.setError('Failed to navigate to workspace');
-      });
-    }
+    // Type-safe result handling without generics
+    // afterClosed() returns Observable<WorkspaceCreateDialogResult | undefined>
+    dialogRef.afterClosed().pipe(
+      // Filter out null/undefined results (user cancelled)
+      filter((result): result is WorkspaceCreateDialogResult => 
+        result !== null && result !== undefined && !!result.workspaceName
+      ),
+      // Side effects: create workspace and navigate
+      tap((result) => {
+        this.workspaceContext.createWorkspace(result.workspaceName);
+        this.showWorkspaceMenu.set(false);
+        this.router.navigate(['/workspace']).catch(() => {
+          this.workspaceContext.setError('Failed to navigate to workspace');
+        });
+      })
+    ).subscribe({
+      error: () => {
+        this.workspaceContext.setError('Failed to process dialog result');
+      }
+    });
   }
 }
