@@ -20,7 +20,10 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { WorkspaceHeaderControlsComponent } from '../../../features/workspace/components/workspace-header-controls.component';
+import { 
+  WorkspaceHeaderControlsComponent, 
+  WorkspaceCreateTriggerComponent 
+} from '../../../features/workspace';
 import { NotificationComponent } from '../../../shared/components/notification/notification.component';
 import { SearchComponent } from '../../../shared/components/search/search.component';
 import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle.component';
