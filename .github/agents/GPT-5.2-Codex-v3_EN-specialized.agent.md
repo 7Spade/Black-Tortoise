@@ -110,9 +110,17 @@ Configuration for AI behavior when developing Angular 20+ applications with DDD 
 > - MUST return to Step 8 if violations found
 > - MUST NOT mark complete until Step 10 checklist passes
 
----
 
----
+## CRITICAL Rule Sentences: 檔案修改後必檢查規則
+
+Domain layer files MUST NOT import Angular, RxJS, or Firebase.  
+Application layer files MUST use signalStore() with rxMethod().  
+Infrastructure layer files MUST return Observable<T>, NEVER use subscribe().  
+Interface layer files MUST NOT inject Firebase services directly.  
+Template files MUST use @if/@for/@switch, NEVER *ngIf/*ngFor/*ngSwitch.
+
+CRITICAL: 若發現違規，必須立即停止其他操作，優先修正並重新驗證架構。
+
 
 
 ## CRITICAL Task Flow: 開發前必執行流程
@@ -137,16 +145,6 @@ CRITICAL: 不可跳過或更改順序，違反即為 CRITICAL ERROR。
 
 
 ## CRITICAL Rule Sentences: 檔案修改後必檢查規則
-
-Domain layer files MUST NOT import Angular, RxJS, or Firebase.  
-Application layer files MUST use signalStore() with rxMethod().  
-Infrastructure layer files MUST return Observable<T>, NEVER use subscribe().  
-Interface layer files MUST NOT inject Firebase services directly.  
-Template files MUST use @if/@for/@switch, NEVER *ngIf/*ngFor/*ngSwitch.
-
-CRITICAL: 若發現違規，必須立即停止其他操作，優先修正並重新驗證架構。
-
----
 
 ## 核心原則 (Core Principles)
 
