@@ -153,6 +153,18 @@ The following demo modules have been moved to `presentation/features/`:
 **Removed modules**:
 - `demo-settings.module.ts` - Removed as it was not actively used
 
+### Module Architecture Strategy
+
+For detailed analysis of the event-driven vs. direct store access patterns, see:
+**[ADR 0003: Module Migration Strategy](../../../docs/adr/0003-module-migration-strategy.md)**
+
+This ADR documents:
+- Current dual patterns (event-driven modules vs. direct store access)
+- Migration options and trade-offs
+- Recommended hybrid approach
+- Decision criteria for pattern selection
+- Future migration roadmap
+
 ## Event Types
 
 Modules use types from `domain/module/module-event.ts`:

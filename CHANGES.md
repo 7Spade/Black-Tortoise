@@ -1,6 +1,132 @@
 # Implementation Changes Summary
 
-## Latest Changes (2026-01-22)
+## Latest Changes (2024-01-22) - PR #13 Review Implementation
+
+### Material 3 Dialog Implementation + Architecture Documentation
+
+**Added**
+- **WorkspaceCreateDialogComponent** - Material 3 dialog replacing browser `prompt()`
+  - Standalone component with reactive forms (FormControl<string>)
+  - MatDialog + MatFormField + MatInput integration
+  - M3 design tokens only (--mat-sys-*), no hardcoded colors
+  - Typed result interface (WorkspaceCreateDialogResult)
+  - Signal-based submission state
+  - Comprehensive validation (required, minLength, maxLength, pattern)
+  - Files: `workspace-create-dialog.component.{ts,html,scss}`
+  - Location: `src/app/presentation/features/header/`
+
+- **Architecture Decision Records (ADRs)**
+  - Created `docs/adr/` directory
+  - **ADR 0001**: Router Usage in Presentation Components
+    - Justifies Router injection in presentation layer
+    - Documents testing strategy with Router mocks
+    - Defines guidelines and review triggers
+  - **ADR 0002**: WorkspaceContextStore Architecture
+    - Analyzes store compliance with @ngrx/signals patterns
+    - Documents direct domain service exposure
+    - Recommends Command/Facade pattern for future growth
+    - Confirms no modifications required (P0-01 review)
+  - **ADR 0003**: Module Migration Strategy
+    - Documents dual patterns (event-driven vs. direct store access)
+    - Proposes hybrid approach for future
+    - Provides migration roadmap
+    - Sets decision criteria for pattern selection
+
+**Changed**
+- **GlobalHeaderComponent** - Replaced `prompt()` with Material dialog
+  - Imports MatDialog service
+  - Opens WorkspaceCreateDialogComponent with config
+  - Handles dialog result via observable subscription
+  - Updated JSDoc to reference ADR 0001 for Router justification
+  - Enhanced error handling for navigation failures
+  - Files: `global-header.component.{ts,spec.ts}`
+
+- **global-header.component.scss** - M3 Token Migration (P2 requirement)
+  - Replaced all `--md-sys-color-*` tokens with `--mat-sys-*`
+  - Removed any hardcoded color values
+  - Full M3 design token compliance
+  - Tokens updated: surface, outline, primary, error, on-surface, etc.
+
+- **Test Coverage Enhancements**
+  - **global-header.component.spec.ts**
+    - Added MatDialog mock with jasmine.createSpyObj
+    - Added MatDialogRef mock for dialog result testing
+    - New tests: dialog opening, result handling, cancellation
+    - Navigation error handling tests for both workspace selection and creation
+    - Router mock verified in all navigation scenarios
+  
+  - **demo-dashboard.component.spec.ts**
+    - Created stub WorkspaceContextStore with signal-backed methods
+    - Added signal change detection tests
+    - Verifies UI updates when currentWorkspaceModules() signal changes
+    - Tests module list rendering with different signal values
+    - Validates stable track expression (track moduleId)
+    - Tests list updates with reordering and clearing
+
+- **presentation/features/header/index.ts**
+  - Exported WorkspaceCreateDialogComponent and WorkspaceCreateDialogResult
+  - Maintains barrel export consistency
+
+- **presentation/modules/README.md**
+  - Added "Module Architecture Strategy" section
+  - Linked to ADR 0003 for detailed migration analysis
+  - Documents dual pattern rationale and future roadmap
+
+**Verified**
+- ✅ Track expression uses stable identity (moduleId as string)
+- ✅ No new dependencies added (uses existing @angular/material)
+- ✅ No domain/infrastructure imports in dialog or header
+- ✅ All M3 tokens use --mat-sys-* prefix
+- ✅ Tests cover dialog behavior and signal reactivity
+- ✅ Router mocked in all component tests
+- ✅ WorkspaceContextStore analysis confirms correct signals/patchState/rxMethod usage
+- ✅ No circular dependencies in barrel exports
+
+**Architecture Compliance**
+- **P0-01 (WorkspaceContextStore)**: Analyzed and confirmed correct
+  - ✅ Uses `signalStore()` with proper structure
+  - ✅ State updates exclusively via `patchState()`
+  - ✅ Computed signals for derived state
+  - ✅ No async issues (no rxMethod needed for current operations)
+  - ✅ Zone-less compatible
+  - ⚠️ Direct use case injection acceptable at current scale
+  - 📋 ADR 0002 recommends Command/Facade pattern for future
+
+- **P2 Series (Module Migration)**: Documented in ADR 0003
+  - 📋 Dual patterns documented with rationale
+  - 📋 Hybrid approach proposed for future
+  - 📋 No immediate code changes required
+  - 📋 Clear migration path defined
+
+**Files Modified (8)**
+1. `src/app/presentation/features/header/global-header.component.ts`
+2. `src/app/presentation/features/header/global-header.component.scss`
+3. `src/app/presentation/features/header/global-header.component.spec.ts`
+4. `src/app/presentation/features/header/index.ts`
+5. `src/app/presentation/features/dashboard/demo-dashboard.component.spec.ts`
+6. `src/app/presentation/modules/README.md`
+7. `CHANGES.md` (this file)
+
+**Files Created (7)**
+1. `src/app/presentation/features/header/workspace-create-dialog.component.ts`
+2. `src/app/presentation/features/header/workspace-create-dialog.component.html`
+3. `src/app/presentation/features/header/workspace-create-dialog.component.scss`
+4. `docs/adr/0001-router-in-presentation-components.md`
+5. `docs/adr/0002-workspace-context-store-architecture.md`
+6. `docs/adr/0003-module-migration-strategy.md`
+7. `docs/adr/` (directory)
+
+**Critical Implementation Highlights**
+- **Line 22** (`global-header.component.ts`): MatDialog injection for dialog management
+- **Line 64-78** (`global-header.component.ts`): Dialog open with config + result handling
+- **Line 12-49** (`workspace-create-dialog.component.ts`): Typed FormControl<string> with comprehensive validators
+- **Line 90-108** (`global-header.component.spec.ts`): Dialog mock setup and result testing
+- **Line 45-70** (`demo-dashboard.component.spec.ts`): Signal change detection tests with stub store
+- **All SCSS files**: Complete M3 token migration (--mat-sys-*)
+
+---
+
+## Previous Changes (2026-01-22)
 
 ### Presentation Layer Restructuring - Header Skeleton + Demo Module Refactoring
 

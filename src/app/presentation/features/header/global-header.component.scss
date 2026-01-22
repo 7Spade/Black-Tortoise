@@ -1,6 +1,6 @@
 /**
  * Global Header Styles
- * Using Material 3 Design Tokens
+ * Using Material 3 Design Tokens (--mat-sys-*)
  */
 
 .global-header {
@@ -8,8 +8,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1.5rem;
-  background: var(--md-sys-color-surface, #fef7ff);
-  border-bottom: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+  background: var(--mat-sys-surface, #fef7ff);
+  border-bottom: 1px solid var(--mat-sys-outline-variant, #cac4d0);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   height: 64px;
   gap: 1rem;
@@ -29,7 +29,7 @@
   gap: 0.5rem;
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--md-sys-color-primary, #6750a4);
+  color: var(--mat-sys-primary, #6750a4);
 
   .material-icons {
     font-size: 2rem;
@@ -49,18 +49,18 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: var(--md-sys-color-surface-container, #f3edf7);
-  border: 1px solid var(--md-sys-color-outline, #79747e);
+  background: var(--mat-sys-surface-container, #f3edf7);
+  border: 1px solid var(--mat-sys-outline, #79747e);
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.875rem;
-  color: var(--md-sys-color-on-surface, #1d1b20);
+  color: var(--mat-sys-on-surface, #1d1b20);
   transition: all 0.2s;
   min-width: 200px;
 
   &:hover {
-    background: var(--md-sys-color-surface-container-high, #ece6f0);
-    border-color: var(--md-sys-color-primary, #6750a4);
+    background: var(--mat-sys-surface-container-high, #ece6f0);
+    border-color: var(--mat-sys-primary, #6750a4);
   }
 
   .workspace-name {
@@ -73,8 +73,8 @@
   position: absolute;
   top: calc(100% + 0.5rem);
   left: 0;
-  background: var(--md-sys-color-surface-container, #f3edf7);
-  border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+  background: var(--mat-sys-surface-container, #f3edf7);
+  border: 1px solid var(--mat-sys-outline-variant, #cac4d0);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 280px;
@@ -91,23 +91,23 @@
   border: none;
   cursor: pointer;
   font-size: 0.875rem;
-  color: var(--md-sys-color-on-surface, #1d1b20);
+  color: var(--mat-sys-on-surface, #1d1b20);
   text-align: left;
   transition: background 0.2s;
 
   &:hover {
-    background: var(--md-sys-color-surface-container-high, #ece6f0);
+    background: var(--mat-sys-surface-container-high, #ece6f0);
   }
 
   &.active {
-    background: var(--md-sys-color-primary-container, #eaddff);
-    color: var(--md-sys-color-on-primary-container, #21005e);
+    background: var(--mat-sys-primary-container, #eaddff);
+    color: var(--mat-sys-on-primary-container, #21005e);
   }
 }
 
 .workspace-menu-divider {
   height: 1px;
-  background: var(--md-sys-color-outline-variant, #cac4d0);
+  background: var(--mat-sys-outline-variant, #cac4d0);
   margin: 0.25rem 0;
 }
 
@@ -125,10 +125,10 @@
   gap: 0.5rem;
   width: 100%;
   padding: 0.5rem 1rem;
-  background: var(--md-sys-color-surface-container, #f3edf7);
-  border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+  background: var(--mat-sys-surface-container, #f3edf7);
+  border: 1px solid var(--mat-sys-outline-variant, #cac4d0);
   border-radius: 24px;
-  color: var(--md-sys-color-on-surface-variant, #49454f);
+  color: var(--mat-sys-on-surface-variant, #49454f);
 
   .material-icons {
     font-size: 1.25rem;
@@ -141,10 +141,10 @@
   background: transparent;
   outline: none;
   font-size: 0.875rem;
-  color: var(--md-sys-color-on-surface, #1d1b20);
+  color: var(--mat-sys-on-surface, #1d1b20);
 
   &::placeholder {
-    color: var(--md-sys-color-on-surface-variant, #49454f);
+    color: var(--mat-sys-on-surface-variant, #49454f);
   }
 
   &:disabled {
@@ -171,11 +171,11 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  color: var(--md-sys-color-on-surface-variant, #49454f);
+  color: var(--mat-sys-on-surface-variant, #49454f);
   transition: background 0.2s;
 
   &:hover:not(:disabled) {
-    background: var(--md-sys-color-surface-container-high, #ece6f0);
+    background: var(--mat-sys-surface-container-high, #ece6f0);
   }
 
   &:disabled {
@@ -190,8 +190,8 @@
     min-width: 16px;
     height: 16px;
     padding: 0 4px;
-    background: var(--md-sys-color-error, #ba1a1a);
-    color: var(--md-sys-color-on-error, #ffffff);
+    background: var(--mat-sys-error, #ba1a1a);
+    color: var(--mat-sys-on-error, #ffffff);
     border-radius: 8px;
     font-size: 0.625rem;
     font-weight: 600;
@@ -210,17 +210,17 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: var(--md-sys-color-primary-container, #eaddff);
-  border: 1px solid var(--md-sys-color-primary, #6750a4);
+  background: var(--mat-sys-primary-container, #eaddff);
+  border: 1px solid var(--mat-sys-primary, #6750a4);
   border-radius: 20px;
   cursor: pointer;
   font-size: 0.875rem;
-  color: var(--md-sys-color-on-primary-container, #21005e);
+  color: var(--mat-sys-on-primary-container, #21005e);
   transition: all 0.2s;
 
   &:hover {
-    background: var(--md-sys-color-primary, #6750a4);
-    color: var(--md-sys-color-on-primary, #ffffff);
+    background: var(--mat-sys-primary, #6750a4);
+    color: var(--mat-sys-on-primary, #ffffff);
   }
 
   .identity-type {
@@ -233,8 +233,8 @@
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
-  background: var(--md-sys-color-surface-container, #f3edf7);
-  border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+  background: var(--mat-sys-surface-container, #f3edf7);
+  border: 1px solid var(--mat-sys-outline-variant, #cac4d0);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 200px;
@@ -248,17 +248,17 @@
   padding: 0.75rem 1rem;
   cursor: pointer;
   font-size: 0.875rem;
-  color: var(--md-sys-color-on-surface, #1d1b20);
+  color: var(--mat-sys-on-surface, #1d1b20);
   transition: background 0.2s;
 
   &:hover {
-    background: var(--md-sys-color-surface-container-high, #ece6f0);
+    background: var(--mat-sys-surface-container-high, #ece6f0);
   }
 }
 
 .identity-menu-divider {
   height: 1px;
-  background: var(--md-sys-color-outline-variant, #cac4d0);
+  background: var(--mat-sys-outline-variant, #cac4d0);
   margin: 0.25rem 0;
 }
 
