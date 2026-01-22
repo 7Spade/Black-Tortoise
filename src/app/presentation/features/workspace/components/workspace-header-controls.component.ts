@@ -20,7 +20,7 @@ import { WorkspaceCreateResult } from '../models/workspace-create-result.model';
 import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
 
 // Import facade from header feature (presentation-to-presentation is allowed for facades)
-import { HeaderFacade } from '../../../shell/layout/global-header/facade/header.facade';
+import { HeaderFacade } from '../../header/facade/header.facade';
 
 @Component({
   selector: 'app-workspace-header-controls',
