@@ -5,15 +5,20 @@
  * Purpose: Workspace overview dashboard module
  * 
  * Architecture:
- * - Communicates ONLY via WorkspaceEventBus (no store/use-case injection)
+ * - Communicates ONLY via IModuleEventBus (Application interface)
  * - Event bus passed via @Input() from parent component
  * - Uses shared ModuleEventHelper for common patterns
+ * 
+ * Clean Architecture Compliance:
+ * - Implements IAppModule from Application layer
+ * - Uses IModuleEventBus from Application layer
+ * - No direct Domain dependencies
  */
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit, signal } from '@angular/core';
-import { Module, ModuleType } from '@domain/module/module.interface';
-import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
+import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
+import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { ModuleEventHelper } from './basic/module-event-helper';
 
 @Component({
@@ -110,7 +115,7 @@ import { ModuleEventHelper } from './basic/module-event-helper';
     }
   `]
 })
-export class OverviewModule implements Module, OnInit {
+export class OverviewModule implements IAppModule, OnInit {
   readonly id = 'overview';
   readonly name = 'Overview';
   readonly type: ModuleType = 'overview';
@@ -118,7 +123,7 @@ export class OverviewModule implements Module, OnInit {
   /**
    * Event bus MUST be passed from parent - no injection
    */
-  @Input() eventBus?: WorkspaceEventBus;
+  @Input() eventBus?: IModuleEventBus;
   
   /**
    * Module state (using signals for zone-less)
@@ -137,9 +142,9 @@ export class OverviewModule implements Module, OnInit {
     }
   }
   
-  initialize(eventBus: WorkspaceEventBus): void {
+  initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
-    this.workspaceId.set(eventBus.getWorkspaceId());
+    this.workspaceId.set(eventBus.workspaceId);
     
     // Subscribe to workspace switched events
     this.subscriptions.add(

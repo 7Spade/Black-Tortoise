@@ -12,8 +12,8 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
-import { Module, ModuleType } from '@domain/module/module.interface';
-import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
+import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
+import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { ModuleEventHelper } from './basic/module-event-helper';
 
 @Component({
@@ -100,7 +100,7 @@ import { ModuleEventHelper } from './basic/module-event-helper';
     }
   `]
 })
-export class DocumentsModule implements Module, OnInit, OnDestroy {
+export class DocumentsModule implements IAppModule, OnInit, OnDestroy {
   readonly id = 'documents';
   readonly name = 'Documents';
   readonly type: ModuleType = 'documents';
@@ -108,7 +108,7 @@ export class DocumentsModule implements Module, OnInit, OnDestroy {
   /**
    * Event bus MUST be passed from parent - no injection
    */
-  @Input() eventBus?: WorkspaceEventBus;
+  @Input() eventBus?: IModuleEventBus;
   
   /**
    * Module state (using signals for zone-less)
@@ -126,9 +126,9 @@ export class DocumentsModule implements Module, OnInit, OnDestroy {
     }
   }
   
-  initialize(eventBus: WorkspaceEventBus): void {
+  initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
-    this.workspaceId.set(eventBus.getWorkspaceId());
+    this.workspaceId.set(eventBus.workspaceId);
     
     // Subscribe to workspace events
     this.subscriptions.add(

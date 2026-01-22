@@ -22,7 +22,7 @@ import { Observable } from 'rxjs';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<!-- Workspace Create Trigger Component - Hidden trigger component -->`,
-  styles: [`// Workspace Create Trigger Component styles - This component has no visual representation`],
+  styles: [`/* Workspace Create Trigger Component styles - This component has no visual representation */`],
 })
 export class WorkspaceCreateTriggerComponent {
   private readonly dialog = inject(MatDialog);

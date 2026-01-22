@@ -2,17 +2,31 @@
  * Module Event Helper
  * 
  * Layer: Presentation/Shared
- * Purpose: Shared utilities for module event handling via WorkspaceEventBus
+ * Purpose: Shared utilities for module event handling via event bus
  * 
  * Architecture:
  * - Modules should NOT inject stores or use-cases directly
- * - All communication via WorkspaceEventBus (publish/subscribe)
+ * - All communication via Application IModuleEventBus (publish/subscribe)
  * - This helper provides common event subscription patterns
  * - Events flow through handle-domain-event.use-case (central bridge)
+ * 
+ * Clean Architecture Compliance:
+ * - Uses Application layer interfaces (IModuleEventBus)
+ * - Uses Application layer events (not Domain events)
+ * - No direct Domain dependencies
  */
 
-import { ModuleDataChanged, ModuleError, ModuleInitialized } from '@domain/module/module-event';
-import { EventHandler, WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
+import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
+import {
+  ModuleDataChanged,
+  ModuleError,
+  ModuleInitialized
+} from '@application/events/module-events';
+
+/**
+ * Event handler type
+ */
+type EventHandler<T = any> = (event: T) => void;
 
 /**
  * Subscription manager for module lifecycle
@@ -47,7 +61,7 @@ export class ModuleEventHelper {
    * Common pattern: modules need to react when workspace changes
    */
   static onWorkspaceSwitched(
-    eventBus: WorkspaceEventBus,
+    eventBus: IModuleEventBus,
     handler: EventHandler
   ): () => void {
     return eventBus.subscribe('WorkspaceSwitched', handler);
@@ -58,7 +72,7 @@ export class ModuleEventHelper {
    * Modules can react when they or other modules are activated
    */
   static onModuleActivated(
-    eventBus: WorkspaceEventBus,
+    eventBus: IModuleEventBus,
     handler: EventHandler
   ): () => void {
     return eventBus.subscribe('ModuleActivated', handler);
@@ -68,7 +82,7 @@ export class ModuleEventHelper {
    * Subscribe to ModuleDeactivated events
    */
   static onModuleDeactivated(
-    eventBus: WorkspaceEventBus,
+    eventBus: IModuleEventBus,
     handler: EventHandler
   ): () => void {
     return eventBus.subscribe('ModuleDeactivated', handler);
@@ -79,15 +93,14 @@ export class ModuleEventHelper {
    * Modules can listen for data changes from other modules
    */
   static onModuleDataChanged(
-    eventBus: WorkspaceEventBus,
+    eventBus: IModuleEventBus,
     handler: EventHandler<ModuleDataChanged>,
     filterByModule?: string
   ): () => void {
     if (filterByModule) {
-      return eventBus.subscribe('ModuleDataChanged', (event) => {
-        const moduleEvent = event as ModuleDataChanged;
-        if (moduleEvent.moduleId === filterByModule) {
-          handler(moduleEvent);
+      return eventBus.subscribe('ModuleDataChanged', (event: ModuleDataChanged) => {
+        if (event.moduleId === filterByModule) {
+          handler(event);
         }
       });
     }
@@ -98,7 +111,7 @@ export class ModuleEventHelper {
    * Publish module initialized event
    */
   static publishModuleInitialized(
-    eventBus: WorkspaceEventBus,
+    eventBus: IModuleEventBus,
     moduleId: string
   ): void {
     const event: ModuleInitialized = {
@@ -106,7 +119,7 @@ export class ModuleEventHelper {
       eventType: 'ModuleInitialized',
       occurredAt: new Date(),
       moduleId,
-      workspaceId: eventBus.getWorkspaceId(),
+      workspaceId: eventBus.workspaceId,
     };
     eventBus.publish(event);
   }
@@ -115,7 +128,7 @@ export class ModuleEventHelper {
    * Publish module data changed event
    */
   static publishModuleDataChanged(
-    eventBus: WorkspaceEventBus,
+    eventBus: IModuleEventBus,
     moduleId: string,
     dataType: string,
     data: unknown
@@ -125,7 +138,7 @@ export class ModuleEventHelper {
       eventType: 'ModuleDataChanged',
       occurredAt: new Date(),
       moduleId,
-      workspaceId: eventBus.getWorkspaceId(),
+      workspaceId: eventBus.workspaceId,
       dataType,
       data,
     };
@@ -136,7 +149,7 @@ export class ModuleEventHelper {
    * Publish module error event
    */
   static publishModuleError(
-    eventBus: WorkspaceEventBus,
+    eventBus: IModuleEventBus,
     moduleId: string,
     error: string
   ): void {
@@ -145,7 +158,7 @@ export class ModuleEventHelper {
       eventType: 'ModuleError',
       occurredAt: new Date(),
       moduleId,
-      workspaceId: eventBus.getWorkspaceId(),
+      workspaceId: eventBus.workspaceId,
       error,
     };
     eventBus.publish(event);

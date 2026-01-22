@@ -1,14 +1,7 @@
 /**
- * Workspace Create Dialog Result Model
- * 
- * Layer: Presentation - Models
- * Purpose: Plain result type for workspace creation dialog payload
- * Architecture: Pure TypeScript interface, no framework dependencies
+ * @deprecated This file has been moved to Application layer
+ * Import from '@application/models/workspace-create-result.model' instead
+ * This re-export is for backward compatibility only
  */
 
-/**
- * Dialog result type for workspace creation
- */
-export interface WorkspaceCreateResult {
-  readonly workspaceName: string;
-}
+export { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
