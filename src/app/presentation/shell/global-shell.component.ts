@@ -13,18 +13,18 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { GlobalHeaderComponent } from '@presentation/features/header';
+import { HeaderComponent } from '@presentation/shared/components/header';
 import { ShellFacade } from './facade/shell.facade';
 
 @Component({
   selector: 'app-global-shell',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, GlobalHeaderComponent],
+  imports: [CommonModule, RouterOutlet, HeaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="global-shell">
       <!-- Global Header Component -->
-      <app-global-header [showWorkspaceControls]="shell.showWorkspaceControls()" />
+      <app-header [showWorkspaceControls]="shell.showWorkspaceControls()" />
 
       <!-- Main content area -->
       <main class="shell-content">

@@ -9,7 +9,7 @@ describe('WorkspaceSwitcherComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WorkspaceHeaderControlsComponent],
+      imports: [WorkspaceSwitcherComponent],
       providers: [
         provideExperimentalZonelessChangeDetection(),
         provideRouter([]),
@@ -25,35 +25,35 @@ describe('WorkspaceSwitcherComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should toggle workspace menu', () => {
-    expect(component.showWorkspaceMenu()).toBe(false);
-    component.toggleWorkspaceMenu();
-    expect(component.showWorkspaceMenu()).toBe(true);
-    component.toggleWorkspaceMenu();
-    expect(component.showWorkspaceMenu()).toBe(false);
+  it('should inject WorkspacePresentationFacade', () => {
+    expect(component.facade).toBeDefined();
   });
 
-  it('should toggle identity menu', () => {
-    expect(component.showIdentityMenu()).toBe(false);
-    component.toggleIdentityMenu();
-    expect(component.showIdentityMenu()).toBe(true);
-    component.toggleIdentityMenu();
-    expect(component.showIdentityMenu()).toBe(false);
+  it('should call facade.toggleWorkspaceMenu when toggleWorkspaceMenu is called', () => {
+    spyOn(component.facade, 'toggleWorkspaceMenu');
+    component.toggleWorkspaceMenu();
+    expect(component.facade.toggleWorkspaceMenu).toHaveBeenCalled();
   });
 
-  it('should close identity menu when workspace menu is opened', () => {
-    component.toggleIdentityMenu();
-    expect(component.showIdentityMenu()).toBe(true);
-    component.toggleWorkspaceMenu();
-    expect(component.showWorkspaceMenu()).toBe(true);
-    expect(component.showIdentityMenu()).toBe(false);
+  it('should call facade.selectWorkspace when selectWorkspace is called', () => {
+    spyOn(component.facade, 'selectWorkspace');
+    component.selectWorkspace('test-id');
+    expect(component.facade.selectWorkspace).toHaveBeenCalledWith('test-id');
   });
 
-  it('should close workspace menu when identity menu is opened', () => {
-    component.toggleWorkspaceMenu();
-    expect(component.showWorkspaceMenu()).toBe(true);
-    component.toggleIdentityMenu();
-    expect(component.showIdentityMenu()).toBe(true);
-    expect(component.showWorkspaceMenu()).toBe(false);
+  it('should call createNewWorkspace and handle dialog result', () => {
+    spyOn(component.facade, 'createWorkspace');
+    spyOn(component.facade, 'handleError');
+    // Mock the trigger
+    const mockTrigger = {
+      openDialog: jasmine.createSpy().and.returnValue({
+        pipe: jasmine.createSpy().and.returnValue({
+          subscribe: jasmine.createSpy()
+        })
+      })
+    };
+    (component as any).createTrigger = jasmine.createSpy().and.returnValue(mockTrigger);
+    component.createNewWorkspace();
+    expect(mockTrigger.openDialog).toHaveBeenCalled();
   });
 });

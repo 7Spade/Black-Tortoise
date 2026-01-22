@@ -16,8 +16,8 @@
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
+import { WorkspaceCreateResult } from '@presentation/features/workspace/models/workspace-create-result.model';
 import { Observable } from 'rxjs';
-import { WorkspaceCreateResult } from '../../workspace/models/workspace-create-result.model';
 
 @Injectable({ providedIn: 'root' })
 export class HeaderFacade {
