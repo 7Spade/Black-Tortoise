@@ -1,5 +1,5 @@
 /**
- * Identity Presentation Facade
+ * Identity Facade
  *
  * Layer: Application - Facade
  * Purpose: Coordinates identity feature presentation concerns

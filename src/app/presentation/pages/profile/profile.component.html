@@ -2,11 +2,10 @@
 <!-- 註解: 此元件為展示用途，實際資料應由 Application 層提供（store / use-case）。 -->
 <section class="profile">
   <h2 class="profile__title">個人檔案</h2>
-  <div *ngIf="userProfile(); else noProfile">
+  @if (userProfile()) {
     <p class="profile__name">{{ fullName() }}</p>
     <p class="profile__email">{{ userProfile()?.email }}</p>
-  </div>
-  <ng-template #noProfile>
+  } @else {
     <p class="profile__empty">尚未載入使用者資料。</p>
-  </ng-template>
+  }
 </section>

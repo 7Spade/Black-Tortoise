@@ -10,12 +10,11 @@
     Switch Context
   </button>
 
-  <div class="context-list" *ngIf="isOpen()">
-    <!--
-      範例項目：實際應以 ngFor 與注入的 context 列表呈現
-      <button *ngFor="let ctx of contexts" (click)="switch(ctx.id)">{{ctx.name}}</button>
-    -->
-    <div class="context-item">(placeholder) Context A</div>
-    <div class="context-item">(placeholder) Context B</div>
-  </div>
+  @if (isOpen()) {
+    <div class="context-list">
+      @for (ctx of contexts; track ctx.id) {
+        <button (click)="switch(ctx.id)">{{ctx.name}}</button>
+      }
+    </div>
+  }
 </div>

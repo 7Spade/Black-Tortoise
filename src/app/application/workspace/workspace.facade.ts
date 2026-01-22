@@ -1,5 +1,5 @@
 /**
- * Workspace Presentation Facade
+ * Workspace Facade
  *
  * Layer: Application - Facade
  * Purpose: Coordinates workspace feature presentation concerns
