@@ -1,23 +1,24 @@
 /**
- * WorkspaceEventBus
+ * InMemoryEventBus Implementation
  * 
- * Layer: Domain (DEPRECATED - VIOLATION)
- * DDD Pattern: Event Bus Implementation
+ * Layer: Infrastructure
+ * DDD Pattern: Event Bus Concrete Implementation
  * 
- * @deprecated This is a DDD boundary violation. Concrete implementations belong in Infrastructure layer.
- * Use `@infrastructure/events/InMemoryEventBus` instead.
+ * Purpose: In-memory implementation of the EventBus interface.
+ * Uses native Map/Set for event distribution (no RxJS dependency).
  * 
- * This file will be removed in a future version.
- * Migration: import { InMemoryEventBus } from '@infrastructure/events';
+ * Event Flow Implementation:
+ * - Synchronous event publishing
+ * - Type-based and global subscriptions
+ * - Automatic cleanup on unsubscribe
+ * 
+ * Note: For RxJS-based implementation, see in-memory-event-bus-rxjs.impl.ts
  */
 
-import { EventBus, EventHandler } from './event-bus.interface';
-import { DomainEvent } from '../event/domain-event';
+import { EventBus, EventHandler } from '@domain/event-bus/event-bus.interface';
+import { DomainEvent } from '@domain/event/domain-event';
 
-/**
- * @deprecated Use InMemoryEventBus from @infrastructure/events instead
- */
-export class WorkspaceEventBus implements EventBus {
+export class InMemoryEventBus implements EventBus {
   private subscribers: Map<string, Set<EventHandler>> = new Map();
   private globalSubscribers: Set<EventHandler> = new Set();
 

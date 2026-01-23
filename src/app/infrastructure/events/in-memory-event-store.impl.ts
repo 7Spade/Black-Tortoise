@@ -1,22 +1,23 @@
 /**
- * InMemoryEventStore
+ * InMemoryEventStore Implementation
  * 
- * Layer: Domain (DEPRECATED - VIOLATION)
- * DDD Pattern: Event Store Implementation (for testing)
+ * Layer: Infrastructure
+ * DDD Pattern: Event Store Concrete Implementation
  * 
- * @deprecated This is a DDD boundary violation. Concrete implementations belong in Infrastructure layer.
- * Use `@infrastructure/events/InMemoryEventStore` instead.
+ * Purpose: In-memory implementation of the EventStore interface for testing and development.
  * 
- * This file will be removed in a future version.
- * Migration: import { InMemoryEventStore } from '@infrastructure/events';
+ * WARNING: This should NOT be used in production.
+ * Use FirestoreEventStore or another persistent implementation instead.
+ * 
+ * Event Sourcing Implementation:
+ * - Stores events in memory array
+ * - Supports all query patterns from EventStore interface
+ * - No persistence across restarts
  */
 
-import { EventStore } from './event-store.interface';
-import { DomainEvent } from '../event/domain-event';
+import { EventStore } from '@domain/event-store/event-store.interface';
+import { DomainEvent } from '@domain/event/domain-event';
 
-/**
- * @deprecated Use InMemoryEventStore from @infrastructure/events instead
- */
 export class InMemoryEventStore implements EventStore {
   private events: DomainEvent[] = [];
 
