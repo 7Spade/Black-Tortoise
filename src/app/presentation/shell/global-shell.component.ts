@@ -11,9 +11,10 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ShellFacade } from '@application/facades/shell.facade';
+import { WorkspaceContextStore } from '@application/workspace';
 import { HeaderComponent } from '@presentation/shared/components/header';
 
 @Component({
@@ -77,6 +78,13 @@ import { HeaderComponent } from '@presentation/shared/components/header';
     }
   `]
 })
-export class GlobalShellComponent {
+export class GlobalShellComponent implements OnInit {
   readonly shell = inject(ShellFacade);
+  private readonly workspaceStore = inject(WorkspaceContextStore);
+
+  ngOnInit(): void {
+    // Ensure workspace store is initialized
+    // The injection above triggers the store's onInit hook
+    console.log('[GlobalShell] Workspace store initialized');
+  }
 }
