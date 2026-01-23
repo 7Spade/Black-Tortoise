@@ -11,7 +11,7 @@
  * - Each module is independent and self-contained
  */
 
-import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
+import { WorkspaceEventBus } from '@domain/workspace';
 
 /**
  * Module Lifecycle Interface

@@ -31,8 +31,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
-import { WORKSPACE_RUNTIME_FACTORY } from '@application/tokens/workspace-runtime.token';
-import { WorkspaceRuntimeFactory } from '@infrastructure/runtime/workspace-runtime.factory';
+import { WORKSPACE_RUNTIME_FACTORY } from '@application/workspace/tokens/workspace-runtime.token';
+import { WorkspaceRuntimeFactory } from '@infrastructure/workspace';
 
 /**
  * Application Configuration with Zone-less Change Detection

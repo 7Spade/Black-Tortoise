@@ -39,7 +39,11 @@
             "outputPath": "dist/demo",
             "scripts": [],
             "styles": ["src/global_styles.scss"],
-            "tsConfig": "src/tsconfig.app.json"
+            "tsConfig": "src/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "optimization": {
+              "fonts": false
+            }
           }
         },
         "serve": {
