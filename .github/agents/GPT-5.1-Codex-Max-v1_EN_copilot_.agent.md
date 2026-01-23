@@ -23,21 +23,21 @@ name: 'GPT-5.1-Codex-Max v1 Angular 20+ signals Agent'
 Before generating ANY code, you must execute the following **Cognitive Pipeline**, intelligently combining available MCP tools:
 
 ### 2.1 Strategic Planning Phase (Software-planning-mcp)
-*   **Goal**: Define roadmap and track progress.
-*   **Action**: Use `Software-planning-mcp` to create or update the implementation plan (`start_planning`, `save_plan`).
-*   **Trigger**: Start of a complex task or significant pivot.
+- **Goal**: Define roadmap and track progress.
+- **Action**: Use `Software-planning-mcp` to create or update the implementation plan (`start_planning`, `save_plan`).
+- **Trigger**: Start of a complex task or significant pivot.
 
 ### 2.2 Deep Analysis Phase (server-sequential-thinking)
-*   **Goal**: Decompose complex problems and self-correct.
-*   **Action**: Use `server-sequential-thinking` (`sequential_thinking`) to break down requirements.
-*   **Trigger**: Ambiguous requirements, architectural decisions, or debugging complex logic.
+- **Goal**: Decompose complex problems and self-correct.
+- **Action**: Use `server-sequential-thinking` (`sequential_thinking`) to break down requirements.
+- **Trigger**: Ambiguous requirements, architectural decisions, or debugging complex logic.
 
 ### 2.3 Research & Knowledge Phase (context7)
-*   **Goal**: Retrieve accurate, version-specific external documentation.
-*   **Action**:
+- **Goal**: Retrieve accurate, version-specific external documentation.
+- **Action**:
     1.  `resolve-library-id`: Find the correct library ID (e.g., Angular, Firebase, NgRx).
     2.  `get-library-docs`: Fetch authoritative docs/examples.
-*   **Trigger**: Uncertainty about an API, library version mismatch (e.g., Angular 19 vs 18), or best practices research.
+- **Trigger**: Uncertainty about an API, library version mismatch (e.g., Angular 19 vs 18), or best practices research.
 
 ### 2.4 Architecture Analysis Phase
 1.  **Context Map**: Identify which DDD Layer this task touches (Domain, Application, Infra, Presentation).
@@ -50,12 +50,12 @@ Before generating ANY code, you must execute the following **Cognitive Pipeline*
 3.  **Simulation**: Mentally "compile" the proposed changes. If `tsc --noEmit` would fail, **REVISE**.
 
 ### 2.6 Validation Phase (playwright-mcp-server)
-*   **Goal**: Verify functionality and UI behavior.
-*   **Action**: Use `playwright-mcp-server` to:
-    *   Navigate and inspect UI state (`playwright_navigate`, `playwright_evaluate`).
-    *   Perform end-to-end interactions (`playwright_click`, `playwright_fill`).
-    *   Capture evidence of success (`playwright_screenshot`).
-*   **Trigger**: Post-implementation verification, regression testing, or UI debugging.
+- **Goal**: Verify functionality and UI behavior.
+- **Action**: Use `playwright-mcp-server` to:
+    - Navigate and inspect UI state (`playwright_navigate`, `playwright_evaluate`).
+    - Perform end-to-end interactions (`playwright_click`, `playwright_fill`).
+    - Capture evidence of success (`playwright_screenshot`).
+- **Trigger**: Post-implementation verification, regression testing, or UI debugging.
 
 ### 2.7 Tool Combination Logic (The "Smart Loop")
 ```mermaid
@@ -92,17 +92,17 @@ graph TD
 ```
 
 ### 2.9 Copilot Memory Integration Strategy (Knowledge Persistence)
-*   **Objective**: Ensure architectural continuity and prevent regression.
-*   **Retrieval Trigger (Read)**:
-    *   **Start of Task**: Always check for existing patterns in `memory-bank/` or project context.
-    *   **Decision Point**: Before introducing a new pattern, check if a similar one exists.
-*   **Storage Trigger (Write)**:
-    *   **Post-Task**: Record "What worked" and "What failed" to allow future inference.
-    *   **Architecture Change**: Document any deviation from standard patterns.
-    *   **Refactoring**: Note why a specific refactor was necessary (Context).
-*   **Smart Usage Rules**:
-    *   *Do not* memorize trivial code.
-    *   *Do* memorize **decisions**, **constraints**, and **hidden dependencies**.
+- **Objective**: Ensure architectural continuity and prevent regression.
+- **Retrieval Trigger (Read)**:
+    - **Start of Task**: Always check for existing patterns in `memory-bank/` or project context.
+    - **Decision Point**: Before introducing a new pattern, check if a similar one exists.
+- **Storage Trigger (Write)**:
+    - **Post-Task**: Record "What worked" and "What failed" to allow future inference.
+    - **Architecture Change**: Document any deviation from standard patterns.
+    - **Refactoring**: Note why a specific refactor was necessary (Context).
+- **Smart Usage Rules**:
+    - *Do not* memorize trivial code.
+    - *Do* memorize **decisions**, **constraints**, and **hidden dependencies**.
 
 > **Constraint**: If complexity is high, explicitly output your plan in markdown and update memory before coding.
 
@@ -147,34 +147,34 @@ src/app/
 You must strictly reject and correct the following anti-patterns:
 
 ### 4.1 Layer Violations
-*   **Anti-Pattern**: UI binding to a Domain Entity field that doesn't exist (e.g., `user.displayName` when Entity has `firstName`).
-    *   **Action**: Create a **ViewModel** in Application layer. Map Entity -> ViewModel.
-*   **Anti-Pattern**: Store holding raw HTTP Observables.
-    *   **Action**: Use `rxMethod` to unwrap Observable -> verify success -> `patchState`.
-*   **Anti-Pattern**: Domain importing `@angular/*`, `rxjs`, or `firebase`.
-    *   **Action**: **DELETE** import. Abstract behavior to a Domain Interface. Move implementation to Infrastructure.
+- **Anti-Pattern**: UI binding to a Domain Entity field that doesn't exist (e.g., `user.displayName` when Entity has `firstName`).
+    - **Action**: Create a **ViewModel** in Application layer. Map Entity -> ViewModel.
+- **Anti-Pattern**: Store holding raw HTTP Observables.
+    - **Action**: Use `rxMethod` to unwrap Observable -> verify success -> `patchState`.
+- **Anti-Pattern**: Domain importing `@angular/*`, `rxjs`, or `firebase`.
+    - **Action**: **DELETE** import. Abstract behavior to a Domain Interface. Move implementation to Infrastructure.
 
 ### 4.2 State Governance (Signal Law)
-*   **Single Truth**: State exists ONLY in `signalStore`.
-*   **Zoneless Law**: No `zone.js`. No `Promise`-based UI updates. All updates via `signal`.
-*   **No Redundant Streams**: `Observable` -> `rxMethod` -> `State`. No intermediate `BehaviorSubject`.
-*   **Cross-Store**: MUST use `EventBus` or Application Services. Direct Store-to-Store dependence is **FORBIDDEN**.
+- **Single Truth**: State exists ONLY in `signalStore`.
+- **Zoneless Law**: No `zone.js`. No `Promise`-based UI updates. All updates via `signal`.
+- **No Redundant Streams**: `Observable` -> `rxMethod` -> `State`. No intermediate `BehaviorSubject`.
+- **Cross-Store**: MUST use `EventBus` or Application Services. Direct Store-to-Store dependence is **FORBIDDEN**.
 
 ### 4.3 Advanced Signal Patterns (Projection & Interaction)
-*   **Projection Complexity Rule**:
-    *   **Heavy Computation**: MUST use `computed()` inside `signalStore` (Memoized).
-    *   **Light Formatting**: Use Pipe or Component `computed()` for UI-specific formatting.
-    *   **Async Derivation**: NEVER use `startWith` / `asyncPipe` for state. Use `rxMethod` to sync async data into signals.
-*   **Cross-Store Interaction Rule**:
-    *   **Forbidden**: `Store A` injecting `Store B`.
-    *   **Approved**: `Application Service` orchestrates `Store A` and `Store B`.
-    *   **Approved**: `Presentation Layer` subscribes to `Store A` and `Store B` independently.
+- **Projection Complexity Rule**:
+    - **Heavy Computation**: MUST use `computed()` inside `signalStore` (Memoized).
+    - **Light Formatting**: Use Pipe or Component `computed()` for UI-specific formatting.
+    - **Async Derivation**: NEVER use `startWith` / `asyncPipe` for state. Use `rxMethod` to sync async data into signals.
+- **Cross-Store Interaction Rule**:
+    - **Forbidden**: `Store A` injecting `Store B`.
+    - **Approved**: `Application Service` orchestrates `Store A` and `Store B`.
+    - **Approved**: `Presentation Layer` subscribes to `Store A` and `Store B` independently.
 
 ### 4.4 Error Handling & Resilience
-*   **Local Catch**: Errors inside `rxMethod` MUST use `tapResponse`'s `error:` callback.
-*   **State Reflection**: Store MUST expect errors: `patchState({ error: err, loading: false })`.
-*   **Global Catch**: Use `HttpInterceptor` for auth/network failures; do not handle 401/403 in components.
-*   **UI Feedback**: Components react to `store.error()` signal; NEVER subscribe to error observables directly.
+- **Local Catch**: Errors inside `rxMethod` MUST use `tapResponse`'s `error:` callback.
+- **State Reflection**: Store MUST expect errors: `patchState({ error: err, loading: false })`.
+- **Global Catch**: Use `HttpInterceptor` for auth/network failures; do not handle 401/403 in components.
+- **UI Feedback**: Components react to `store.error()` signal; NEVER subscribe to error observables directly.
 
 ## 5. Technology Stack Specs
 
