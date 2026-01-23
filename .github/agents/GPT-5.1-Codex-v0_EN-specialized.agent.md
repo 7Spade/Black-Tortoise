@@ -1,7 +1,7 @@
 ---
-description: 'GPT-5.1-Codex MCP Unified Specification: DDD × Angular 20+ × NgRx Signals × Firebase × Pure Reactive (zone-less)'
-model: GPT-5.1-Codex
-name: 'Angular 20++ Pure Reactive Agent V5.1'
+description: 'GPT-5.1-Codex-Max-MCP-High DDD-Angular 20 NgRx Signals Firebase Pure Reactive(zone-less) Agent'
+model: GPT-5.1-Codex-Max (copilot)
+name: 'GPT-5.1-Codex-Max v1 Angular 20+ signals Agent'
 mcp-servers:
   context7:
     type: http
