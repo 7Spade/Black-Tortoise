@@ -21,12 +21,14 @@ describe('InMemoryEventStore', () => {
     });
 
     it('should clear all events', async () => {
+      const now = new Date();
       await store.append({
         eventId: 'e1',
         eventType: 'Test',
         aggregateId: 'agg1',
         workspaceId: 'ws1',
-        timestamp: new Date(),
+        timestamp: now,
+        occurredAt: now,
         causalityId: 'c1',
         payload: {},
         metadata: { version: 1 },
@@ -40,12 +42,14 @@ describe('InMemoryEventStore', () => {
     it('should return correct event count', async () => {
       expect(store.count()).toBe(0);
 
+      const now = new Date();
       await store.append({
         eventId: 'e1',
         eventType: 'Test',
         aggregateId: 'agg1',
         workspaceId: 'ws1',
-        timestamp: new Date(),
+        timestamp: now,
+        occurredAt: now,
         causalityId: 'c1',
         payload: {},
         metadata: { version: 1 },

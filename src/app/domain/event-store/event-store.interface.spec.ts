@@ -17,12 +17,14 @@ function createTestEvent(
   aggregateId: string = 'test-aggregate',
   workspaceId: string = 'test-workspace'
 ): DomainEvent {
+  const now = new Date();
   return {
     eventId: `event-${Date.now()}-${Math.random()}`,
     eventType,
     aggregateId,
     workspaceId,
-    timestamp: new Date(),
+    timestamp: now,
+    occurredAt: now,
     causalityId: 'test-causality',
     payload: { test: 'data' },
     metadata: createEventMetadata(1, 'test-user'),
