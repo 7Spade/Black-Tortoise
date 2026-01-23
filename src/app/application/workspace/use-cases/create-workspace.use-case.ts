@@ -7,7 +7,7 @@
 
 import { Injectable } from '@angular/core';
 import { WorkspaceCreated } from '@domain/event/domain-event';
-import { createWorkspace, WorkspaceEntity } from '@domain/workspace';
+import { WorkspaceEntity, WorkspaceId, createWorkspaceEntity } from '@domain/workspace';
 
 /**
  * Create Workspace Command
@@ -29,10 +29,10 @@ export class CreateWorkspaceUseCase {
   
   execute(command: CreateWorkspaceCommand): WorkspaceEntity {
     // Generate unique workspace ID
-    const workspaceId = `ws-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const workspaceId = WorkspaceId.generate().getValue();
     
     // Create workspace entity
-    const workspace = createWorkspace(
+    const workspace = createWorkspaceEntity(
       workspaceId,
       command.name,
       command.organizationId,
