@@ -20,15 +20,14 @@ import { NotificationComponent } from '@presentation/shared/components/notificat
 import { SearchComponent } from '@presentation/shared/components/search';
 import { ThemeToggleComponent } from '@presentation/shared/components/theme-toggle';
 import { UserAvatarComponent } from '@presentation/shared/components/user-avatar/user-avatar.component';
-import { IdentitySwitcherComponent } from '@presentation/workspace';
-import { WorkspaceSwitcherContainerComponent } from '@presentation/shared/components/workspace-switcher';
+import { IdentitySwitcherComponent, WorkspaceSwitcherComponent } from '@presentation/features/workspace';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [
     CommonModule,
-    WorkspaceSwitcherContainerComponent,
+    WorkspaceSwitcherComponent,
     IdentitySwitcherComponent,
     SearchComponent,
     NotificationComponent,

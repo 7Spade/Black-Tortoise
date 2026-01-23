@@ -15,7 +15,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
+import { WorkspaceContextStore } from '@application/workspace';
 import { filter, map, startWith } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -38,10 +38,7 @@ export class ShellFacade {
   );
 
   // Computed signals for shell UI
-  readonly showWorkspaceControls = computed(() => {
-    const url = this.urlSignal();
-    return !url.startsWith('/demo') && this._showWorkspaceControls();
-  });
+  readonly showWorkspaceControls = computed(() => this._showWorkspaceControls());
 
   readonly isDemoMode = computed(() => {
     const url = this.urlSignal();

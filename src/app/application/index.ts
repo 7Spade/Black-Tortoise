@@ -30,8 +30,8 @@ export * from './stores/presentation.store';
 export * from './models/workspace-create-result.model';
 
 // Use Cases
-export * from './workspace/create-workspace.use-case';
-export * from './workspace/switch-workspace.use-case';
-export * from './workspace/handle-domain-event.use-case';
+export * from './workspace/use-cases/create-workspace.use-case';
+export * from './workspace/use-cases/switch-workspace.use-case';
+export * from './workspace/use-cases/handle-domain-event.use-case';
 export * from './workspace/identity.facade';
 export * from './workspace/workspace.facade';

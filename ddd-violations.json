@@ -3,11 +3,6 @@
   "validImports": [
     {
       "from": "application",
-      "to": "domain",
-      "file": "src/app/application/adapters/workspace-event-bus.adapter.ts"
-    },
-    {
-      "from": "application",
       "to": "application",
       "file": "src/app/application/facades/header.facade.ts"
     },
@@ -23,93 +18,83 @@
     },
     {
       "from": "application",
-      "to": "application",
-      "file": "src/app/application/facades/workspace-host.facade.ts"
-    },
-    {
-      "from": "application",
       "to": "domain",
-      "file": "src/app/application/facades/workspace-host.facade.ts"
-    },
-    {
-      "from": "application",
-      "to": "domain",
-      "file": "src/app/application/interfaces/workspace-runtime-factory.interface.ts"
-    },
-    {
-      "from": "application",
-      "to": "domain",
-      "file": "src/app/application/interfaces/workspace-runtime-factory.interface.ts"
-    },
-    {
-      "from": "application",
-      "to": "domain",
-      "file": "src/app/application/interfaces/workspace-runtime-factory.interface.ts"
+      "file": "src/app/application/workspace/adapters/workspace-event-bus.adapter.ts"
     },
     {
       "from": "application",
       "to": "application",
-      "file": "src/app/application/stores/workspace-context.store.ts"
+      "file": "src/app/application/workspace/facades/identity.facade.ts"
     },
     {
       "from": "application",
       "to": "application",
-      "file": "src/app/application/stores/workspace-context.store.ts"
+      "file": "src/app/application/workspace/facades/workspace-host.facade.ts"
+    },
+    {
+      "from": "application",
+      "to": "domain",
+      "file": "src/app/application/workspace/facades/workspace-host.facade.ts"
     },
     {
       "from": "application",
       "to": "application",
-      "file": "src/app/application/stores/workspace-context.store.ts"
-    },
-    {
-      "from": "application",
-      "to": "domain",
-      "file": "src/app/application/stores/workspace-context.store.ts"
-    },
-    {
-      "from": "application",
-      "to": "domain",
-      "file": "src/app/application/stores/workspace-context.store.ts"
-    },
-    {
-      "from": "application",
-      "to": "domain",
-      "file": "src/app/application/workspace/create-workspace.use-case.ts"
-    },
-    {
-      "from": "application",
-      "to": "domain",
-      "file": "src/app/application/workspace/create-workspace.use-case.ts"
-    },
-    {
-      "from": "application",
-      "to": "domain",
-      "file": "src/app/application/workspace/handle-domain-event.use-case.ts"
+      "file": "src/app/application/workspace/facades/workspace.facade.ts"
     },
     {
       "from": "application",
       "to": "application",
-      "file": "src/app/application/workspace/identity.facade.ts"
+      "file": "src/app/application/workspace/facades/workspace.facade.ts"
     },
     {
       "from": "application",
       "to": "domain",
-      "file": "src/app/application/workspace/switch-workspace.use-case.ts"
+      "file": "src/app/application/workspace/interfaces/workspace-runtime-factory.interface.ts"
     },
     {
       "from": "application",
       "to": "application",
-      "file": "src/app/application/workspace/workspace.facade.ts"
+      "file": "src/app/application/workspace/stores/workspace-context.store.ts"
     },
     {
       "from": "application",
       "to": "application",
-      "file": "src/app/application/workspace/workspace.facade.ts"
+      "file": "src/app/application/workspace/stores/workspace-context.store.ts"
     },
     {
       "from": "application",
       "to": "application",
-      "file": "src/app/application/workspace/workspace.facade.ts"
+      "file": "src/app/application/workspace/stores/workspace-context.store.ts"
+    },
+    {
+      "from": "application",
+      "to": "domain",
+      "file": "src/app/application/workspace/stores/workspace-context.store.ts"
+    },
+    {
+      "from": "application",
+      "to": "domain",
+      "file": "src/app/application/workspace/stores/workspace-context.store.ts"
+    },
+    {
+      "from": "application",
+      "to": "domain",
+      "file": "src/app/application/workspace/use-cases/create-workspace.use-case.ts"
+    },
+    {
+      "from": "application",
+      "to": "domain",
+      "file": "src/app/application/workspace/use-cases/create-workspace.use-case.ts"
+    },
+    {
+      "from": "application",
+      "to": "domain",
+      "file": "src/app/application/workspace/use-cases/handle-domain-event.use-case.ts"
+    },
+    {
+      "from": "application",
+      "to": "domain",
+      "file": "src/app/application/workspace/use-cases/switch-workspace.use-case.ts"
     },
     {
       "from": "domain",
@@ -124,32 +109,37 @@
     {
       "from": "domain",
       "to": "domain",
-      "file": "src/app/domain/workspace/workspace-event-bus.ts"
+      "file": "src/app/domain/workspace/interfaces/workspace-event-bus.interface.ts"
     },
     {
       "from": "infrastructure",
       "to": "domain",
-      "file": "src/app/infrastructure/runtime/in-memory-event-bus.ts"
+      "file": "src/app/infrastructure/workspace/factories/in-memory-event-bus.ts"
     },
     {
       "from": "infrastructure",
       "to": "domain",
-      "file": "src/app/infrastructure/runtime/in-memory-event-bus.ts"
+      "file": "src/app/infrastructure/workspace/factories/in-memory-event-bus.ts"
     },
     {
       "from": "infrastructure",
       "to": "application",
-      "file": "src/app/infrastructure/runtime/workspace-runtime.factory.ts"
+      "file": "src/app/infrastructure/workspace/factories/workspace-runtime.factory.ts"
     },
     {
       "from": "infrastructure",
       "to": "domain",
-      "file": "src/app/infrastructure/runtime/workspace-runtime.factory.ts"
+      "file": "src/app/infrastructure/workspace/factories/workspace-runtime.factory.ts"
     },
     {
       "from": "infrastructure",
       "to": "domain",
-      "file": "src/app/infrastructure/runtime/workspace-runtime.factory.ts"
+      "file": "src/app/infrastructure/workspace/persistence/workspace.repository.impl.ts"
+    },
+    {
+      "from": "infrastructure",
+      "to": "domain",
+      "file": "src/app/infrastructure/workspace/persistence/workspace.repository.impl.ts"
     },
     {
       "from": "presentation",
@@ -185,6 +175,16 @@
       "from": "presentation",
       "to": "application",
       "file": "src/app/presentation/containers/workspace-host/workspace-host.component.ts"
+    },
+    {
+      "from": "presentation",
+      "to": "application",
+      "file": "src/app/presentation/containers/workspace-modules/acceptance.module.ts"
+    },
+    {
+      "from": "presentation",
+      "to": "application",
+      "file": "src/app/presentation/containers/workspace-modules/acceptance.module.ts"
     },
     {
       "from": "presentation",
@@ -314,6 +314,41 @@
     {
       "from": "presentation",
       "to": "application",
+      "file": "src/app/presentation/features/workspace/components/identity-switcher.component.ts"
+    },
+    {
+      "from": "presentation",
+      "to": "presentation",
+      "file": "src/app/presentation/features/workspace/components/workspace-create-trigger.component.ts"
+    },
+    {
+      "from": "presentation",
+      "to": "application",
+      "file": "src/app/presentation/features/workspace/components/workspace-create-trigger.component.ts"
+    },
+    {
+      "from": "presentation",
+      "to": "application",
+      "file": "src/app/presentation/features/workspace/components/workspace-create-trigger.component.ts"
+    },
+    {
+      "from": "presentation",
+      "to": "application",
+      "file": "src/app/presentation/features/workspace/components/workspace-switcher.component.ts"
+    },
+    {
+      "from": "presentation",
+      "to": "application",
+      "file": "src/app/presentation/features/workspace/components/workspace-switcher.component.ts"
+    },
+    {
+      "from": "presentation",
+      "to": "application",
+      "file": "src/app/presentation/features/workspace/dialogs/workspace-create-dialog.component.ts"
+    },
+    {
+      "from": "presentation",
+      "to": "application",
       "file": "src/app/presentation/pages/dashboard/demo-dashboard.component.ts"
     },
     {
@@ -348,33 +383,13 @@
     },
     {
       "from": "presentation",
-      "to": "presentation",
+      "to": "application",
       "file": "src/app/presentation/shell/global-shell.component.ts"
     },
     {
       "from": "presentation",
-      "to": "application",
-      "file": "src/app/presentation/workspace/components/identity-switcher.component.ts"
-    },
-    {
-      "from": "presentation",
       "to": "presentation",
-      "file": "src/app/presentation/workspace/components/workspace-create-trigger.component.ts"
-    },
-    {
-      "from": "presentation",
-      "to": "application",
-      "file": "src/app/presentation/workspace/components/workspace-switcher.component.ts"
-    },
-    {
-      "from": "presentation",
-      "to": "application",
-      "file": "src/app/presentation/workspace/components/workspace-switcher.component.ts"
-    },
-    {
-      "from": "presentation",
-      "to": "application",
-      "file": "src/app/presentation/workspace/dialogs/workspace-create-dialog.component.ts"
+      "file": "src/app/presentation/shell/global-shell.component.ts"
     }
   ]
 }

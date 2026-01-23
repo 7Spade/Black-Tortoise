@@ -22,7 +22,9 @@
       "@application/*": ["src/app/application/*"],
       "@domain/*": ["src/app/domain/*"],
       "@infrastructure/*": ["src/app/infrastructure/*"],
-      "@shared/*": ["src/app/shared/*"]
+      "@shared/*": ["src/app/shared/*"],
+      "@env/*": ["src/environments/*"],
+      "@styles/*": ["src/styles/*"]
     },
     "target": "ES2022",
     "module": "ES2022",

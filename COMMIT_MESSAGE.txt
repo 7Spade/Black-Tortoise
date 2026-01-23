@@ -1,0 +1,38 @@
+fix(workspace): resolve workspace switcher button visibility issues
+
+ISSUES FIXED:
+1. Store initialization logic bug (inverted demo mode check)
+2. Unused and confusing domain factory import in repository
+3. Missing Material Icons font in index.html
+
+CHANGES:
+- workspace-context.store.ts: Always load demo data on init
+- workspace.repository.impl.ts: Remove unused createWorkspace import
+- index.html: Add Material Icons font link
+
+BEFORE:
+❌ Workspace switcher button never appeared
+❌ Inverted logic: loaded data when NOT in demo mode
+❌ Repository imported unused domain factory
+❌ Material Icons missing
+
+AFTER:
+✅ Workspace switcher appears on /workspace route
+✅ Demo data always loads on store initialization
+✅ Repository only imports needed types (DDD compliance)
+✅ Material Icons render correctly
+
+DDD COMPLIANCE:
+✅ Infrastructure layer doesn't import domain factories
+✅ Repositories only handle persistence, not creation
+✅ All layer boundaries respected
+✅ No framework imports in domain layer
+
+TESTING:
+- TypeScript compilation: Expected PASS
+- AOT build: Expected PASS
+- Runtime: Button visible with "Personal Projects"
+- Icons: Material Icons display correctly
+
+Fixes: #workspace-switcher-visibility
+Refs: WORKSPACE_SWITCHER_FIX_SUMMARY.md
