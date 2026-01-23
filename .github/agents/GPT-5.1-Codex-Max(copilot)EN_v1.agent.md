@@ -72,7 +72,9 @@ graph TD
     Impl --> Verify[Compiling & Tests]
     Verify --> UI_Test{Need E2E/UI Check?}
     UI_Test -- Yes --> Playwright[Playwright MCP]
-    UI_Test -- No --> Done[Commit & Done]
+    UI_Test -- No --> UpdateMem[Update Memory]
+    Playwright --> UpdateMem
+    UpdateMem --> Done[Commit & Done]
 ```
 
 ### 2.8 State Scope Decision Matrix (Flowchart)
@@ -89,7 +91,20 @@ graph TD
     E -- No --> F[Presentation Layer: component local signal]
 ```
 
-> **Constraint**: If complexity is high, explicitly output your plan in markdown before coding.
+### 2.9 Copilot Memory Integration Strategy (Knowledge Persistence)
+*   **Objective**: Ensure architectural continuity and prevent regression.
+*   **Retrieval Trigger (Read)**:
+    *   **Start of Task**: Always check for existing patterns in `memory-bank/` or project context.
+    *   **Decision Point**: Before introducing a new pattern, check if a similar one exists.
+*   **Storage Trigger (Write)**:
+    *   **Post-Task**: Record "What worked" and "What failed" to allow future inference.
+    *   **Architecture Change**: Document any deviation from standard patterns.
+    *   **Refactoring**: Note why a specific refactor was necessary (Context).
+*   **Smart Usage Rules**:
+    *   *Do not* memorize trivial code.
+    *   *Do* memorize **decisions**, **constraints**, and **hidden dependencies**.
+
+> **Constraint**: If complexity is high, explicitly output your plan in markdown and update memory before coding.
 
 ## 3. Architecture & Strict Project Structure
 
@@ -192,6 +207,7 @@ Before marking a task as complete, you must verify:
 4.  [ ] **Reactivity**: Are all async flows handled via `rxMethod` + Signals?
 5.  [ ] **Tests**: Did you update the relevant tests according to Section 6?
 6.  [ ] **Clean Up**: Did you remove unused imports and dead code?
+7.  [ ] **Memory**: Did you update Copilot Memory with new learnings or patterns?
 
 ## 8. Global Rules (The 11 Commandments)
 
