@@ -10,13 +10,17 @@
  * - Emits dialog result via signal output
  * - NO result interpretation or business logic
  * - NO knowledge of workspace/org/auth
- * - Internal subscribe is acceptable for dialog result handling (framework boundary)
+ * - MatDialog.afterClosed() is framework boundary - uses toSignal for reactive handling
  */
 
-import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, output } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import { WorkspaceCreateDialogComponent } from '@presentation/workspace/dialogs/workspace-create-dialog.component';
 import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
+import { isWorkspaceCreateResult } from '@application/models/workspace-create-result.validator';
+import { Subject } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-workspace-create-trigger',
@@ -34,8 +38,39 @@ export class WorkspaceCreateTriggerComponent {
   readonly dialogResult = output<WorkspaceCreateResult>();
 
   /**
+   * Subject for dialog results (reactive stream from framework boundary)
+   */
+  private readonly _dialogResult$ = new Subject<unknown>();
+
+  /**
+   * Convert dialog result stream to signal with validation filter
+   * Pure reactive: Observable -> Signal conversion via toSignal
+   * Uses extracted type guard utility for validation
+   */
+  private readonly _validatedResult = toSignal(
+    this._dialogResult$.pipe(
+      filter(isWorkspaceCreateResult)
+    ),
+    { requireSync: false }
+  );
+
+  /**
+   * Constructor with effect to emit validated results via output
+   * Effect pattern for signal -> output emission
+   * Effect only emits when signal changes to non-null value
+   */
+  constructor() {
+    effect(() => {
+      const result = this._validatedResult();
+      if (result) {
+        this.dialogResult.emit(result);
+      }
+    }, { allowSignalWrites: false });
+  }
+
+  /**
    * Open workspace creation dialog
-   * Emits result via dialogResult output signal
+   * MatDialog afterClosed() is framework boundary - push to Subject for reactive handling
    */
   openDialog(): void {
     const dialogRef = this.dialog.open(WorkspaceCreateDialogComponent, {
@@ -44,25 +79,10 @@ export class WorkspaceCreateTriggerComponent {
       autoFocus: true,
     });
 
-    // Internal subscribe is acceptable at framework boundary (MatDialog)
-    // Emits only validated WorkspaceCreateResult via signal output
+    // Framework boundary: MatDialog Observable -> Subject (reactive stream)
     dialogRef.afterClosed().subscribe({
-      next: (result: unknown) => {
-        // Type guard and validation
-        if (
-          result !== null &&
-          result !== undefined &&
-          typeof result === 'object' &&
-          'workspaceName' in result &&
-          typeof (result as WorkspaceCreateResult).workspaceName === 'string' &&
-          (result as WorkspaceCreateResult).workspaceName.trim().length > 0
-        ) {
-          this.dialogResult.emit(result as WorkspaceCreateResult);
-        }
-      },
-      error: (error) => {
-        console.error('[WorkspaceCreateTriggerComponent] Dialog error:', error);
-      }
+      next: (result) => this._dialogResult$.next(result),
+      error: (error) => console.error('[WorkspaceCreateTriggerComponent] Dialog error:', error)
     });
   }
 }
