@@ -4,13 +4,13 @@
  */
 
 // Entities
-export * from './entities/workspace.entity';
+export { WorkspaceEntity, createWorkspace as createWorkspaceEntity, addModuleToWorkspace, removeModuleFromWorkspace } from './entities/workspace.entity';
 
 // Value Objects
 export * from './value-objects/workspace-id.vo';
 
 // Aggregates
-export * from './aggregates/workspace.aggregate';
+export { WorkspaceAggregate, createWorkspace, renameWorkspace, deactivateWorkspace, reactivateWorkspace, transferWorkspaceOwnership } from './aggregates/workspace.aggregate';
 
 // Services
 export * from './services/workspace-domain.service';

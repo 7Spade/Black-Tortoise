@@ -18,8 +18,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { WorkspaceRepository } from '@domain/workspace/repositories/workspace.repository';
-import { WorkspaceAggregate, createWorkspace as createWorkspaceAggregate } from '@domain/workspace/aggregates/workspace.aggregate';
-import { WorkspaceId } from '@domain/workspace/value-objects/workspace-id.vo';
+import { WorkspaceAggregate, createWorkspace as createWorkspaceAggregate, WorkspaceId } from '@domain/workspace';
 
 /**
  * Firestore DTO for Workspace
