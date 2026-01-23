@@ -16,6 +16,7 @@ name: 'GPT-5.1-Codex-Max v1 Angular 20+ signals Agent'
 3.  **Minimalism**: Zero boilerplate. Usage determines existence. Dead code = **DELETE**.
 4.  **SRP**: One file, one purpose. One Store, one Feature.
 5.  **Explicitness**: Implicit magic is forbidden. All data flows must be traceable.
+6.  **Consistent Imports**: Align all imports globally to consistently use tsconfig path mappings.
 
 ## 2. Autonomous Decision Logic (Chain of Thought)
 
@@ -30,6 +31,20 @@ Before generating ANY code, you must execute the following **Cognitive Pipeline*
 1.  **Atomic Decomposition**: Break the request into sequential, verifiable steps.
 2.  **Dependency Graph**: Map necessary changes from Domain (Core) -> Application (Logic) -> Infra (Data) -> Presentation (UI).
 3.  **Simulation**: Mentally "compile" the proposed changes. If `tsc --noEmit` would fail, **REVISE**.
+
+### 2.3 State Scope Decision Matrix (Flowchart)
+Use this logic to determine WHERE state belongs:
+
+```mermaid
+graph TD
+    A[New State Needed] --> B{Shared by >1 Component?}
+    B -- Yes --> C[Application Layer: signalStore]
+    B -- No --> D{Persists across Routes?}
+    D -- Yes --> C
+    D -- No --> E{Complex Business Logic?}
+    E -- Yes --> C
+    E -- No --> F[Presentation Layer: component local signal]
+```
 
 > **Constraint**: If complexity is high, explicitly output your plan in markdown before coding.
 
@@ -87,6 +102,22 @@ You must strictly reject and correct the following anti-patterns:
 *   **No Redundant Streams**: `Observable` -> `rxMethod` -> `State`. No intermediate `BehaviorSubject`.
 *   **Cross-Store**: MUST use `EventBus` or Application Services. Direct Store-to-Store dependence is **FORBIDDEN**.
 
+### 4.3 Advanced Signal Patterns (Projection & Interaction)
+*   **Projection Complexity Rule**:
+    *   **Heavy Computation**: MUST use `computed()` inside `signalStore` (Memoized).
+    *   **Light Formatting**: Use Pipe or Component `computed()` for UI-specific formatting.
+    *   **Async Derivation**: NEVER use `startWith` / `asyncPipe` for state. Use `rxMethod` to sync async data into signals.
+*   **Cross-Store Interaction Rule**:
+    *   **Forbidden**: `Store A` injecting `Store B`.
+    *   **Approved**: `Application Service` orchestrates `Store A` and `Store B`.
+    *   **Approved**: `Presentation Layer` subscribes to `Store A` and `Store B` independently.
+
+### 4.4 Error Handling & Resilience
+*   **Local Catch**: Errors inside `rxMethod` MUST use `tapResponse`'s `error:` callback.
+*   **State Reflection**: Store MUST expect errors: `patchState({ error: err, loading: false })`.
+*   **Global Catch**: Use `HttpInterceptor` for auth/network failures; do not handle 401/403 in components.
+*   **UI Feedback**: Components react to `store.error()` signal; NEVER subscribe to error observables directly.
+
 ## 5. Technology Stack Specs
 
 | capability | Approved (Strict) | Forbidden (Strict) |
@@ -97,7 +128,18 @@ You must strictly reject and correct the following anti-patterns:
 | **Data** | `@angular/fire` (Stream based), Repository Pattern | Raw SDK calls in components, `HttpClient` in components |
 | **Build** | `tsc --noEmit` (Zero Errors) | `any`, `// @ts-ignore`, `as unknown as Type` |
 
-## 6. Development Checklist (Definition of Done)
+## 6. Testing Strategy & Quality Assurance
+
+**Rule**: Test behavior at the appropriate abstraction level.
+
+| Layer | Strategy | Tools | Coverage Goal |
+| :--- | :--- | :--- | :--- |
+| **Domain** | **Pure Unit Tests**. Zero Mocks. Test logical invariants. | `Jest`/`Vitest` | 100% Logic |
+| **Application** | **State Integration Tests**. Test `patchState` results. Mock Infra. | `TestBed` (Light) | Key Flows |
+| **Infrastructure** | **Integration Tests**. Test Mapped DTOs. Mock SDKs. | `Jest` + Mocks | Edge Cases |
+| **Presentation** | **Component Harness Tests**. Test rendering & inputs. | `ComponentHarness` | Happy Path |
+
+## 7. Development Checklist (Definition of Done)
 
 Before marking a task as complete, you must verify:
 
@@ -105,9 +147,10 @@ Before marking a task as complete, you must verify:
 2.  [ ] **Architecture**: Is the file in the correct DDD folder?
 3.  [ ] **Purity**: Is the `domain/` folder free of framework imports?
 4.  [ ] **Reactivity**: Are all async flows handled via `rxMethod` + Signals?
-5.  [ ] **Clean Up**: Did you remove unused imports and dead code?
+5.  [ ] **Tests**: Did you update the relevant tests according to Section 6?
+6.  [ ] **Clean Up**: Did you remove unused imports and dead code?
 
-## 7. Global Rules (The 11 Commandments)
+## 8. Global Rules (The 11 Commandments)
 
 1.  **TypeScript Purity**: No `any`. No `as`. Types must be sound.
 2.  **No Zone.js**: Everything must work without Zone.js.
