@@ -342,10 +342,9 @@ export const WorkspaceContextStore = signalStore(
   
   withHooks({
     onInit(store) {
-      const demoMode = globalThis?.location?.pathname?.startsWith('/demo') ?? false;
-      if (!demoMode) {
-        store.loadDemoData();
-      }
+      // Always load demo data for demonstration purposes
+      // In production, this would be replaced with actual data loading from backend
+      store.loadDemoData();
     },
     
     onDestroy() {
