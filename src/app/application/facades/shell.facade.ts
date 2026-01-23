@@ -38,10 +38,7 @@ export class ShellFacade {
   );
 
   // Computed signals for shell UI
-  readonly showWorkspaceControls = computed(() => {
-    const url = this.urlSignal();
-    return !url.startsWith('/demo') && this._showWorkspaceControls();
-  });
+  readonly showWorkspaceControls = computed(() => this._showWorkspaceControls());
 
   readonly isDemoMode = computed(() => {
     const url = this.urlSignal();
