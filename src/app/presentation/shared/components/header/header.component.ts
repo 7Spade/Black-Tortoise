@@ -10,6 +10,8 @@
  * - Composes child components for workspace controls, identity controls, search, notifications, theme, user avatar
  * - Manages header layout and positioning
  * - Single responsibility: header layout composition
+ * - NO facade injection - pure layout composition
+ * - NO business logic - delegates all actions to child components
  */
 
 import { CommonModule } from '@angular/common';
@@ -18,14 +20,15 @@ import { NotificationComponent } from '@presentation/shared/components/notificat
 import { SearchComponent } from '@presentation/shared/components/search';
 import { ThemeToggleComponent } from '@presentation/shared/components/theme-toggle';
 import { UserAvatarComponent } from '@presentation/shared/components/user-avatar/user-avatar.component';
-import { IdentitySwitcherComponent, WorkspaceSwitcherComponent } from '@presentation/workspace';
+import { IdentitySwitcherComponent } from '@presentation/workspace';
+import { WorkspaceSwitcherContainerComponent } from '@presentation/shared/components/workspace-switcher';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [
     CommonModule,
-    WorkspaceSwitcherComponent,
+    WorkspaceSwitcherContainerComponent,
     IdentitySwitcherComponent,
     SearchComponent,
     NotificationComponent,

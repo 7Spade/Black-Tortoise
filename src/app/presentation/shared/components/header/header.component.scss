@@ -13,7 +13,15 @@
 .header-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 50%;
+}
+
+.workspace-controls {
+  display: flex;
+  align-items: center;
 }
 
 .logo {
@@ -35,10 +43,9 @@
 .header-center {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  flex: 1;
   justify-content: center;
-  max-width: 600px;
+  flex: 0 1 auto;
+  max-width: 500px;
 }
 
 .header-right {
@@ -57,9 +64,8 @@
     display: none;
   }
 
-  .header-center {
-    flex: none;
-    max-width: none;
+  .header-left {
+    gap: 1rem;
   }
 
   .header-right {
@@ -69,6 +75,10 @@
 
 @media (max-width: 480px) {
   .header-center {
+    display: none;
+  }
+
+  .workspace-controls {
     display: none;
   }
 }

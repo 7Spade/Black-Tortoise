@@ -8,22 +8,20 @@
  * Responsibilities:
  * - Manages workspace UI state coordination
  * - Provides reactive signals for workspace components
- * - Coordinates between workspace components and application/presentation layers
+ * - Delegates workspace operations directly to WorkspaceContextStore
+ * - Handles navigation via Router
  * - No business logic - pure presentation orchestration
  */
 
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { HeaderFacade } from '@application/facades/header.facade';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
-import { PresentationStore } from '@application/stores/presentation.store';
+import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
 
 @Injectable({ providedIn: 'root' })
 export class WorkspaceFacade {
   private readonly router = inject(Router);
-  private readonly presentation = inject(PresentationStore);
   private readonly workspaceContext = inject(WorkspaceContextStore);
-  private readonly headerFacade = inject(HeaderFacade);
 
   // Local workspace UI state
   private readonly _showWorkspaceMenu = signal(false);
@@ -80,25 +78,36 @@ export class WorkspaceFacade {
 
   /**
    * Handle workspace selection
+   * Delegates to WorkspaceContextStore and handles navigation
    */
   selectWorkspace(workspaceId: string): void {
     this.closeAllMenus();
-    this.headerFacade.switchWorkspace(workspaceId);
+    this.workspaceContext.switchWorkspace(workspaceId);
+    
+    // Navigate to workspace route
+    this.router.navigate(['/workspace']).catch(() => {
+      this.workspaceContext.setError('Failed to navigate to workspace');
+    });
   }
 
   /**
    * Handle workspace creation
+   * Delegates to WorkspaceContextStore and handles navigation
    */
-  createWorkspace(result: any): void {
+  createWorkspace(result: WorkspaceCreateResult): void {
     this.closeAllMenus();
-    this.headerFacade.createWorkspace(result);
-  }
-
-  /**
-   * Handle error in workspace operations
-   */
-  handleError(message: string): void {
-    this.workspaceContext.setError(message);
+    
+    try {
+      this.workspaceContext.createWorkspace(result.workspaceName);
+      
+      // Navigate to workspace route
+      this.router.navigate(['/workspace']).catch(() => {
+        this.workspaceContext.setError('Failed to navigate to workspace');
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to create workspace';
+      this.workspaceContext.setError(message);
+    }
   }
 
   /**
