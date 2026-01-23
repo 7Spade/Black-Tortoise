@@ -99,4 +99,148 @@ graph TD
     Playwright --> UpdateMem
     UpdateMem --> Done[Commit & Done]
 ```
+### 2.8 State Scope Decision Matrix (Flowchart)
+Use this logic to determine WHERE state belongs:
 
+```mermaid
+graph TD
+    A[New State Needed] --> B{Shared by >1 Component?}
+    B -- Yes --> C[Application Layer: signalStore]
+    B -- No --> D{Persists across Routes?}
+    D -- Yes --> C
+    D -- No --> E{Complex Business Logic?}
+    E -- Yes --> C
+    E -- No --> F[Presentation Layer: component local signal]
+```
+
+### 2.9 Copilot Memory Integration Strategy (Knowledge Persistence)
+- **Objective**: Ensure architectural continuity and prevent regression.
+- **Retrieval Trigger (Read)**:
+    - **Start of Task**: Always check for existing patterns in `memory-bank/` or project context.
+    - **Decision Point**: Before introducing a new pattern, check if a similar one exists.
+- **Storage Trigger (Write)**:
+    - **Post-Task**: Record "What worked" and "What failed" to allow future inference.
+    - **Architecture Change**: Document any deviation from standard patterns.
+    - **Refactoring**: Note why a specific refactor was necessary (Context).
+- **Smart Usage Rules**:
+    - *Do not* memorize trivial code.
+    - *Do* memorize **decisions**, **constraints**, and **hidden dependencies**.
+
+> **Constraint**: If complexity is high, explicitly output your plan in markdown and update memory before coding.
+
+## 3. Architecture & Strict Project Structure
+
+**Enforcement:** Files MUST reside in their semantic layers. **NO BARREL EXPORTS across layers.**
+
+```text
+src/app/
+├── domain/ (PURE TS, NO FRAMEWORK IMPORTS)
+│   ├── entities/           # Core Logic (No UI fields, No DTOs)
+│   ├── value-objects/      # Immutable, Validated upon creation
+│   ├── aggregates/         # Consistency Roots
+│   ├── events/             # Domain Event Definitions
+│   ├── repositories/       # Interfaces ONLY (return Promises/Entities)
+│   ├── specifications/     # Reusable Business Rules
+│   └── types/              # Pure Domain Types
+│
+├── application/ (STATE & ORCHESTRATION)
+│   ├── stores/             # signalStore (The Single Source of Truth)
+│   ├── commands/           # Write Use Cases
+│   ├── queries/            # Read Models
+│   ├── facades/            # UI -> App Boundary (Optional, prefer Stores directly if simple)
+│   ├── handlers/           # Command/Event Handlers
+│   └── mappers/            # DTO <-> Entity Transformations
+│
+├── infrastructure/ (IMPURE, FRAMEWORK DEPENDENT)
+│   ├── persistence/        # Repo Implementations (@angular/fire, Firestore)
+│   ├── firebase/           # SDK Wrappers (Auth, Functions)
+│   ├── adapters/           # External API Cliens
+│   └── dto/                # Wire Formats (JSON shapes)
+│
+└── presentation/ (UI, SIGNAL CONSUMERS)
+    ├── containers/         # Smart Components (Inject Stores)
+    ├── components/         # Dumb Components (Inputs/Outputs/Models ONLY)
+    ├── pages/              # Route Entries
+    └── theme/              # Styles (Material 3)
+```
+
+## 4. Boundary Enforcement Protocols (Active Correction)
+
+You must strictly reject and correct the following anti-patterns:
+
+### 4.1 Layer Violations
+- **Anti-Pattern**: UI binding to a Domain Entity field that doesn't exist (e.g., `user.displayName` when Entity has `firstName`).
+    - **Action**: Create a **ViewModel** in Application layer. Map Entity -> ViewModel.
+- **Anti-Pattern**: Store holding raw HTTP Observables.
+    - **Action**: Use `rxMethod` to unwrap Observable -> verify success -> `patchState`.
+- **Anti-Pattern**: Domain importing `@angular/*`, `rxjs`, or `firebase`.
+    - **Action**: **DELETE** import. Abstract behavior to a Domain Interface. Move implementation to Infrastructure.
+
+### 4.2 State Governance (Signal Law)
+- **Single Truth**: State exists ONLY in `signalStore`.
+- **Zoneless Law**: No `zone.js`. No `Promise`-based UI updates. All updates via `signal`.
+- **No Redundant Streams**: `Observable` -> `rxMethod` -> `State`. No intermediate `BehaviorSubject`.
+- **Cross-Store**: MUST use `EventBus` or Application Services. Direct Store-to-Store dependence is **FORBIDDEN**.
+
+### 4.3 Advanced Signal Patterns (Projection & Interaction)
+- **Projection Complexity Rule**:
+    - **Heavy Computation**: MUST use `computed()` inside `signalStore` (Memoized).
+    - **Light Formatting**: Use Pipe or Component `computed()` for UI-specific formatting.
+    - **Async Derivation**: NEVER use `startWith` / `asyncPipe` for state. Use `rxMethod` to sync async data into signals.
+- **Cross-Store Interaction Rule**:
+    - **Forbidden**: `Store A` injecting `Store B`.
+    - **Approved**: `Application Service` orchestrates `Store A` and `Store B`.
+    - **Approved**: `Presentation Layer` subscribes to `Store A` and `Store B` independently.
+
+### 4.4 Error Handling & Resilience
+- **Local Catch**: Errors inside `rxMethod` MUST use `tapResponse`'s `error:` callback.
+- **State Reflection**: Store MUST expect errors: `patchState({ error: err, loading: false })`.
+- **Global Catch**: Use `HttpInterceptor` for auth/network failures; do not handle 401/403 in components.
+- **UI Feedback**: Components react to `store.error()` signal; NEVER subscribe to error observables directly.
+
+## 5. Technology Stack Specs
+
+| capability | Approved (Strict) | Forbidden (Strict) |
+| :--- | :--- | :--- |
+| **State** | `@ngrx/signals`, `signalStore`, `patchState` | `@ngrx/store`, `module`, `reducers`, `effects`, `BehaviorSubject` |
+| **Async** | `rxMethod`, `tapResponse`, `lastValueFrom` | `async/await` in template, manually managed promises in state |
+| **View** | Logic-less `@if`, `@for`, `Signal<T>` reading | `*ngIf`, `*ngFor`, Complex pipes in template, `zone.js` |
+| **Data** | `@angular/fire` (Stream based), Repository Pattern | Raw SDK calls in components, `HttpClient` in components |
+| **Build** | `tsc --noEmit` (Zero Errors) | `any`, `// @ts-ignore`, `as unknown as Type` |
+
+## 6. Testing Strategy & Quality Assurance
+
+**Rule**: Test behavior at the appropriate abstraction level.
+
+| Layer | Strategy | Tools | Coverage Goal |
+| :--- | :--- | :--- | :--- |
+| **Domain** | **Pure Unit Tests**. Zero Mocks. Test logical invariants. | `Jest`/`Vitest` | 100% Logic |
+| **Application** | **State Integration Tests**. Test `patchState` results. Mock Infra. | `TestBed` (Light) | Key Flows |
+| **Infrastructure** | **Integration Tests**. Test Mapped DTOs. Mock SDKs. | `Jest` + Mocks | Edge Cases |
+| **Presentation** | **Component Harness Tests**. Test rendering & inputs. | `ComponentHarness` | Happy Path |
+
+## 7. Development Checklist (Definition of Done)
+
+Before marking a task as complete, you must verify:
+
+1. [ ] **Compilation**: Does `pnpm build --strict` pass with 0 errors?
+2. [ ] **Architecture**: Is the file in the correct DDD folder?
+3. [ ] **Purity**: Is the `domain/` folder free of framework imports?
+4. [ ] **Reactivity**: Are all async flows handled via `rxMethod` + Signals?
+5. [ ] **Tests**: Did you update the relevant tests according to Section 6?
+6. [ ] **Clean Up**: Did you remove unused imports and dead code?
+7. [ ] **Memory**: Did you update Copilot Memory with new learnings or patterns?
+
+## 8. Global Rules (The 11 Commandments)
+
+1. **TypeScript Purity**: No `any`. No `as`. Types must be sound.
+2. **No Zone.js**: Everything must work without Zone.js.
+3. **Signals First**: Signals are the default for binding and state.
+4. **Observable for Events**: Observables are **only** for Streams/Events (HTTP, WebSocket, User Input). Not for State.
+5. **Domain Isolation**: Domain is pure TS/JS. It knows nothing of the web, db, or framework.
+6. **Application Orchestration**: Application layer owns the "What happens next".
+7. **Infrastructure Implementation**: Infrastructure layer owns the "How it changes".
+8. **Presentation Reflection**: Presentation layer reflects state. It does not calculate it.
+9. **Static Analysis**: Code must be statically analyzable (AOT friendly).
+10. **Semantic Naming**: Files must be named after what they *are* (e.g., `.store.ts`, `.entity.ts`), not just where they live.
+11. **Refusal to Hallucinate**: If you lack context (e.g., missing file), **stop and ask** or use `read_file`. Do not guess APIs.
