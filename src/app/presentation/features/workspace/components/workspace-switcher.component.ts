@@ -73,7 +73,7 @@ export class WorkspaceSwitcherComponent {
   readonly facade = inject(WorkspaceFacade);
 
   // Reference to trigger component
-  private readonly createTrigger = viewChild(WorkspaceCreateTriggerComponent);
+  private readonly createTrigger = viewChild(WorkspaceCreateTriggerComponent, { read: WorkspaceCreateTriggerComponent });
 
   /**
    * Open create workspace dialog
