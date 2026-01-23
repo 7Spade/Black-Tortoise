@@ -1,7 +1,7 @@
 ﻿---
 description: 'GPT-5.1-Codex-Max (copilot) MCP Unified Specification: High-Performance DDD × Angular 20+ × NgRx Signals × Firebase × Pure Reactive (zone-less) Autonomous Agent'
 model: GPT-5.1-Codex-Max (copilot)
-name: 'GPT-5.1-Codex-Max v1 Angular 20+ Pure Reactive Agent'
+name: 'GPT-5.1-Codex-Max v1 Angular 20+ signals Agent'
 ---
 
 # Unified Agent Protocol: Angular 20+ DDD Pure Reactive
