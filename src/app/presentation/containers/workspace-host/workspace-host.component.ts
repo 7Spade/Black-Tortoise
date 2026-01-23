@@ -13,8 +13,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { WorkspaceHostFacade } from '@application/workspace';
-import { ModuleContentComponent } from './components/module-content.component';
-import { ModuleNavigationComponent } from './components/module-navigation.component';
+import { ModuleContentComponent } from '@presentation/containers/workspace-host/components/module-content.component';
+import { ModuleNavigationComponent } from '@presentation/containers/workspace-host/components/module-navigation.component';
 
 @Component({
   selector: 'app-workspace-host',
