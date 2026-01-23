@@ -6,7 +6,7 @@
  * No Angular or RxJS dependencies
  */
 
-import { DomainEvent } from '../event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 /**
  * Module Initialized Event

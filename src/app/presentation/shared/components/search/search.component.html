@@ -1,0 +1,17 @@
+<!-- SearchComponent（Presentation, Shared） -->
+<!-- 註解: 此模板僅包含輸入與按鈕，具體搜尋邏輯由 application 層處理 -->
+<section class="search">
+  <label class="search__label" for="search-input">搜尋</label>
+  <div class="search__controls">
+    <input
+      id="search-input"
+      class="search__input"
+      type="search"
+      [value]="query()"
+      [placeholder]="placeholder()"
+      (input)="onQueryChange($any($event.target).value)"
+      aria-label="Search input"
+    />
+    <button class="search__btn" (click)="submit()" type="button" aria-label="Submit search">搜尋</button>
+  </div>
+</section>

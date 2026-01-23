@@ -1,0 +1,56 @@
+/**
+ * Workspace Create Dialog Styles
+ * Using Material 3 Design Tokens Only (--mat-sys-*)
+ */
+
+.workspace-create-dialog {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+  max-width: 500px;
+}
+
+.dialog-title {
+  color: var(--mat-sys-on-surface, #1d1b20);
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0;
+  padding: 1.5rem 1.5rem 1rem;
+}
+
+.dialog-content {
+  padding: 0 1.5rem 1rem;
+  color: var(--mat-sys-on-surface-variant, #49454f);
+}
+
+.dialog-description {
+  margin: 0 0 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--mat-sys-on-surface-variant, #49454f);
+}
+
+.workspace-name-field {
+  width: 100%;
+}
+
+.dialog-actions {
+  padding: 1rem 1.5rem 1.5rem;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Material form field M3 token overrides (if needed) */
+::ng-deep .workspace-create-dialog {
+  .mat-mdc-form-field {
+    --mdc-outlined-text-field-container-shape: 8px;
+  }
+  
+  .mat-mdc-form-field-focus-overlay {
+    background-color: var(--mat-sys-on-surface, #1d1b20);
+  }
+  
+  .mat-mdc-text-field-wrapper {
+    background-color: var(--mat-sys-surface, #fef7ff);
+  }
+}

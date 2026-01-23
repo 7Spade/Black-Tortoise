@@ -9,6 +9,12 @@
  * and integrates with the DDD domain layer and use cases.
  */
 
+import { computed, inject } from '@angular/core';
+import { CreateWorkspaceUseCase } from '@application/workspace/create-workspace.use-case';
+import { SwitchWorkspaceUseCase } from '@application/workspace/switch-workspace.use-case';
+import { WORKSPACE_RUNTIME_FACTORY } from '@application/tokens/workspace-runtime.token';
+import { OrganizationEntity } from '@domain/organization/organization.entity';
+import { WorkspaceEntity } from '@domain/workspace/workspace.entity';
 import {
   patchState,
   signalStore,
@@ -17,12 +23,6 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { computed, inject } from '@angular/core';
-import { WorkspaceEntity } from '../../domain/workspace/workspace.entity';
-import { ModuleType } from '../../domain/module/module.interface';
-import { CreateWorkspaceUseCase } from '../workspace/create-workspace.use-case';
-import { SwitchWorkspaceUseCase } from '../workspace/switch-workspace.use-case';
-import { WorkspaceRuntimeFactory } from '../../infrastructure/runtime/workspace-runtime.factory';
 
 /**
  * Workspace Context State
@@ -30,6 +30,8 @@ import { WorkspaceRuntimeFactory } from '../../infrastructure/runtime/workspace-
 export interface WorkspaceContextState {
   readonly currentIdentityId: string | null;
   readonly currentIdentityType: 'user' | 'organization' | null;
+  readonly currentOrganizationId: string | null;
+  readonly currentOrganizationDisplayName: string | null;
   readonly currentWorkspace: WorkspaceEntity | null;
   readonly availableWorkspaces: ReadonlyArray<WorkspaceEntity>;
   readonly activeModuleId: string | null;
@@ -43,6 +45,8 @@ export interface WorkspaceContextState {
 const initialState: WorkspaceContextState = {
   currentIdentityId: null,
   currentIdentityType: null,
+  currentOrganizationId: null,
+  currentOrganizationDisplayName: null,
   currentWorkspace: null,
   availableWorkspaces: [],
   activeModuleId: null,
@@ -108,12 +112,22 @@ export const WorkspaceContextStore = signalStore(
     currentWorkspaceName: computed(() => 
       state.currentWorkspace()?.name ?? 'No Workspace'
     ),
+    
+    /**
+     * Current organization display name
+     */
+    currentOrganizationName: computed(() =>
+      state.currentOrganizationDisplayName() ??
+      state.currentWorkspace()?.organizationDisplayName ??
+      'Organization'
+    ),
   })),
   
   withMethods((store) => {
     const createWorkspaceUseCase = inject(CreateWorkspaceUseCase);
     const switchWorkspaceUseCase = inject(SwitchWorkspaceUseCase);
-    const runtimeFactory = inject(WorkspaceRuntimeFactory);
+    const runtimeFactory = inject(WORKSPACE_RUNTIME_FACTORY);
+    let demoRuntimeInitialized = false;
     
     return {
       /**
@@ -126,6 +140,17 @@ export const WorkspaceContextStore = signalStore(
           error: null,
         });
       },
+
+      /**
+       * Set current organization (display only)
+       */
+      setOrganization(organizationId: string, organizationDisplayName: string): void {
+        patchState(store, {
+          currentOrganizationId: organizationId,
+          currentOrganizationDisplayName: organizationDisplayName,
+          error: null,
+        });
+      },
       
       /**
        * Create new workspace
@@ -133,6 +158,8 @@ export const WorkspaceContextStore = signalStore(
       createWorkspace(name: string, moduleIds?: string[]): WorkspaceEntity {
         const identityId = store.currentIdentityId();
         const identityType = store.currentIdentityType();
+        const organizationId = store.currentOrganizationId() ?? 'org-demo-001';
+        const organizationDisplayName = store.currentOrganizationDisplayName() ?? 'Demo Organization';
         
         if (!identityId || !identityType) {
           patchState(store, { error: 'No identity selected' });
@@ -142,6 +169,8 @@ export const WorkspaceContextStore = signalStore(
         // Execute use case with all modules if not specified
         const workspace = createWorkspaceUseCase.execute({
           name,
+          organizationId,
+          organizationDisplayName,
           ownerId: identityId,
           ownerType: identityType,
           moduleIds: moduleIds ?? ALL_MODULE_IDS,
@@ -185,6 +214,8 @@ export const WorkspaceContextStore = signalStore(
         patchState(store, {
           currentWorkspace: workspace,
           activeModuleId: null,
+          currentOrganizationId: workspace.organizationId,
+          currentOrganizationDisplayName: workspace.organizationDisplayName,
           error: null,
         });
       },
@@ -250,17 +281,31 @@ export const WorkspaceContextStore = signalStore(
        * Updated to include all 11 modules
        */
       loadDemoData(): void {
+        if (demoRuntimeInitialized) {
+          return;
+        }
+
         // Demo identity
         const demoUserId = 'user-demo-001';
+        const demoOrganizationId = 'org-demo-001';
+        const demoOrganizationName = 'Demo Organization';
+        const demoOrganization: OrganizationEntity = {
+          id: demoOrganizationId,
+          displayName: demoOrganizationName,
+        };
         
         patchState(store, {
           currentIdentityId: demoUserId,
           currentIdentityType: 'user',
+          currentOrganizationId: demoOrganization.id,
+          currentOrganizationDisplayName: demoOrganization.displayName,
         });
         
         // Create demo workspaces with all 11 modules
         const workspace1 = createWorkspaceUseCase.execute({
           name: 'Personal Projects',
+          organizationId: demoOrganizationId,
+          organizationDisplayName: demoOrganizationName,
           ownerId: demoUserId,
           ownerType: 'user',
           moduleIds: ALL_MODULE_IDS,
@@ -268,6 +313,8 @@ export const WorkspaceContextStore = signalStore(
         
         const workspace2 = createWorkspaceUseCase.execute({
           name: 'Team Collaboration',
+          organizationId: demoOrganizationId,
+          organizationDisplayName: demoOrganizationName,
           ownerId: demoUserId,
           ownerType: 'user',
           moduleIds: ALL_MODULE_IDS,
@@ -282,16 +329,23 @@ export const WorkspaceContextStore = signalStore(
           availableWorkspaces: [workspace1, workspace2],
           currentWorkspace: workspace1,
           activeModuleId: 'overview',
+          currentOrganizationId: demoOrganizationId,
+          currentOrganizationDisplayName: demoOrganizationName,
           isLoading: false,
           error: null,
         });
+
+        demoRuntimeInitialized = true;
       },
     };
   }),
   
   withHooks({
     onInit(store) {
-      console.log('[WorkspaceContextStore] Initialized (zone-less mode)');
+      const demoMode = globalThis?.location?.pathname?.startsWith('/demo') ?? false;
+      if (!demoMode) {
+        store.loadDemoData();
+      }
     },
     
     onDestroy() {

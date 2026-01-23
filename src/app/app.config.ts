@@ -31,6 +31,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
+import { WORKSPACE_RUNTIME_FACTORY } from '@application/tokens/workspace-runtime.token';
+import { WorkspaceRuntimeFactory } from '@infrastructure/runtime/workspace-runtime.factory';
 
 /**
  * Application Configuration with Zone-less Change Detection
@@ -45,9 +47,14 @@ import { environment } from '../environments/environment';
  *
  * DDD Architecture:
  * - Domain layer: Pure TypeScript (no Angular/RxJS)
- * - Application layer: Use cases, signal stores
+ * - Application layer: Use cases, signal stores, abstractions
  * - Infrastructure layer: Event bus implementation with RxJS
  * - Presentation layer: Zone-less components with OnPush
+ * 
+ * Clean Architecture Compliance:
+ * - Infrastructure implementations registered via DI tokens
+ * - Application/Presentation depend on abstractions
+ * - Dependency Inversion Principle enforced
  */
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -57,6 +64,13 @@ export const appConfig: ApplicationConfig = {
     // Router configuration with lazy-loaded routes
     provideRouter(routes),
     provideAnimations(),
+    
+    // DDD/Clean Architecture: Infrastructure Providers
+    // Register infrastructure implementations for application abstractions
+    {
+      provide: WORKSPACE_RUNTIME_FACTORY,
+      useClass: WorkspaceRuntimeFactory
+    },
 
     // Firebase App Initialization
     provideFirebaseApp(() => initializeApp(environment.firebase)),

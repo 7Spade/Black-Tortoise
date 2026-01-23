@@ -5,9 +5,8 @@
  * Architecture: Zone-less, Standalone Component
  */
 
-import { Component, ChangeDetectionStrategy, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { WorkspaceContextStore } from '../application/stores/workspace-context.store';
 
 @Component({
   selector: 'app-root',
@@ -22,11 +21,4 @@ import { WorkspaceContextStore } from '../application/stores/workspace-context.s
     }
   `]
 })
-export class AppComponent implements OnInit {
-  private readonly workspaceContext = inject(WorkspaceContextStore);
-  
-  ngOnInit(): void {
-    // Load demo data on app initialization
-    this.workspaceContext.loadDemoData();
-  }
-}
+export class AppComponent {}
