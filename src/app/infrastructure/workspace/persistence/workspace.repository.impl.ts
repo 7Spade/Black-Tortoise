@@ -167,7 +167,7 @@ export class WorkspaceRepositoryImpl implements WorkspaceRepository {
    */
   private mapDTOToAggregate(dto: WorkspaceDTO): WorkspaceAggregate {
     return {
-      id: new WorkspaceId(dto.id),
+      id: WorkspaceId.create(dto.id),
       name: dto.name,
       ownerId: dto.ownerId,
       ownerType: dto.ownerType,
