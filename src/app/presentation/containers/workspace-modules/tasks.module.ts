@@ -340,7 +340,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
   newTaskDescription = '';
   newTaskPriority: TaskPriority = 'medium';
 
-  private currentUserId = 'user-demo-001'; // In real app, inject from auth
+  private readonly currentUserId = signal<string>('user-demo-001');
   private unsubscribers: Array<() => void> = [];
 
   ngOnInit(): void {
@@ -392,7 +392,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       workspaceId: this.workspaceId(),
       title: this.newTaskTitle,
       description: this.newTaskDescription,
-      createdById: this.currentUserId,
+      createdById: this.currentUserId(),
       priority: this.newTaskPriority,
     });
 
@@ -430,7 +430,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       task.id,
       this.workspaceId(),
       task.title,
-      this.currentUserId
+      this.currentUserId()
     );
 
     this.eventBus.publish(event);
@@ -450,7 +450,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       this.workspaceId(),
       task.title,
       'Quality standards not met (stub)',
-      this.currentUserId
+        this.currentUserId()
     );
 
     this.eventBus.publish(qcFailedEvent);
@@ -465,7 +465,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
         this.workspaceId(),
         `QC Failed: ${task.title}`,
         'Quality standards not met (stub)',
-        this.currentUserId,
+        this.currentUserId(),
         qcFailedEvent.correlationId,
         qcFailedEvent.eventId
       );
@@ -483,15 +483,18 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
     if (!this.eventBus || task.blockedByIssueIds.length === 0) return;
 
     const issueId = task.blockedByIssueIds[0];
+    if (!issueId) {
+      return;
+    }
 
     // Publish IssueResolved event
-    const event = createIssueResolvedEvent(
-      issueId,
-      task.id,
-      this.workspaceId(),
-      this.currentUserId,
-      'Fixed (stub)'
-    );
+      const event = createIssueResolvedEvent(
+        issueId,
+        task.id,
+        this.workspaceId(),
+        this.currentUserId(),
+        'Fixed (stub)'
+      );
 
     this.eventBus.publish(event);
     this.addEventToLog(event);
