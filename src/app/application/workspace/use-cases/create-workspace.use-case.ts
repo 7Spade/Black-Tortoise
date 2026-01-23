@@ -44,14 +44,16 @@ export class CreateWorkspaceUseCase {
     
     // Create domain event
     const now = new Date();
+    const eventId = `evt-${Date.now()}`;
+    const correlationId = eventId;
     const event: WorkspaceCreated = {
-      eventId: `evt-${Date.now()}`,
+      eventId,
       eventType: 'WorkspaceCreated',
       aggregateId: workspace.id,
       workspaceId: workspace.id,
       timestamp: now,
-      occurredAt: now,
-      causalityId: `cause-${Date.now()}`,
+      correlationId,
+      causationId: null,
       payload: {
         name: workspace.name,
         ownerId: workspace.ownerId,
