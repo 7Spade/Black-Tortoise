@@ -22,6 +22,7 @@ export interface DomainEvent<TPayload = Record<string, unknown>> {
   readonly aggregateId: string;
   readonly workspaceId: string;
   readonly timestamp: Date;
+  readonly occurredAt: Date;
   readonly causalityId: string;
   readonly payload: TPayload;
   readonly metadata: EventMetadata;

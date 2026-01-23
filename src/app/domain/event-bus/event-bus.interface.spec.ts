@@ -13,12 +13,14 @@ import { createEventMetadata } from '../event/event-metadata';
  * Test helper: Create test event
  */
 function createTestEvent(eventType: string, aggregateId: string = 'test-aggregate'): DomainEvent {
+  const now = new Date();
   return {
     eventId: `event-${Date.now()}`,
     eventType,
     aggregateId,
     workspaceId: 'test-workspace',
-    timestamp: new Date(),
+    timestamp: now,
+    occurredAt: now,
     causalityId: 'test-causality',
     payload: { test: 'data' },
     metadata: createEventMetadata(1, 'test-user'),
