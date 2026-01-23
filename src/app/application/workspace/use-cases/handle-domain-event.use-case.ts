@@ -65,7 +65,7 @@ export class HandleDomainEventUseCase {
     console.log('[Event Log]', {
       eventId: event.eventId,
       eventType: event.eventType,
-      occurredAt: event.occurredAt,
+      occurredAt: event.timestamp,
       causationId: event.causationId,
       correlationId: event.correlationId,
     });

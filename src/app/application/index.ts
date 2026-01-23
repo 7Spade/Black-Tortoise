@@ -21,6 +21,8 @@ export * from './facades/module.facade';
 export * from './facades/header.facade';
 export * from './facades/shell.facade';
 export * from './facades/workspace-host.facade';
+export * from './facades/search.facade';
+export * from './facades/notification.facade';
 
 // Stores
 export * from './stores/workspace-context.store';

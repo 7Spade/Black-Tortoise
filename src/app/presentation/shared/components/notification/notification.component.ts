@@ -1,20 +1,27 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, signal, output, input } from '@angular/core';
-
-export interface NotificationItem {
-  readonly id: string;
-  readonly message: string;
-  readonly type?: 'info' | 'warning' | 'error';
-  readonly ts: number;
-}
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { NotificationFacade } from '@application/facades/notification.facade';
+import { PresentationStore, NotificationItem } from '@application/stores/presentation.store';
 
 /**
  * NotificationComponent
- * - Presentation layer shared notification list component (for displaying toast / list)
- * - Component manages UI level notification display; notification source (add/remove) should be provided by application layer or service.
- * - Design points:
- *   1) Keep notifications in a simple pure data array (id, message, type, timestamp).
- *   2) Do not directly call backend in the component. Add/remove should be done through injected store/service. Only local demo API is provided here.
+ * 
+ * Layer: Presentation - Shared Component
+ * Purpose: Pure UI component for notification list - no state ownership, no business logic
+ * Architecture: Zone-less, Pure Reactive, Signals as single source of truth
+ * 
+ * DDD Compliance:
+ * - Presentation consumes state from Application layer (PresentationStore)
+ * - Forwards all user events to Application facade (NotificationFacade)
+ * - No local state ownership (removed notifications signal)
+ * - No business logic (no filtering, no mutation)
+ * 
+ * Control Flow:
+ * 1. User clicks dismiss → facade.dismissNotification()
+ * 2. User clicks notification → facade.handleNotificationClick()
+ * 3. Facade updates PresentationStore
+ * 4. Component reads notifications() signal from store
+ * 5. Template binds to store signals (single source of truth)
  */
 @Component({
   selector: 'app-notification',
@@ -25,31 +32,28 @@ export interface NotificationItem {
   styleUrls: ['./notification.component.scss']
 })
 export class NotificationComponent {
-  // Inputs
-  readonly initialNotifications = input<ReadonlyArray<NotificationItem>>([]);
-  
-  // Outputs - component events
-  readonly notificationDismissed = output<string>();
-  readonly notificationClicked = output<NotificationItem>();
-  
-  // Local state
-  notifications = signal<NotificationItem[]>([]);
+  // Application layer dependencies
+  private readonly facade = inject(NotificationFacade);
+  protected readonly store = inject(PresentationStore);
 
-  constructor() {
-    // Initialize with default empty array
-    this.notifications.set([]);
-  }
-
+  /**
+   * Handle notification dismissal - forward to facade
+   */
   dismiss(id: string): void {
-    this.notifications.update(arr => arr.filter(n => n.id !== id));
-    this.notificationDismissed.emit(id);
+    this.facade.dismissNotification(id);
   }
 
+  /**
+   * Handle notification click - forward to facade
+   */
   onClick(notification: NotificationItem): void {
-    this.notificationClicked.emit(notification);
+    this.facade.handleNotificationClick(notification);
   }
 
-  getCount(): number {
-    return this.notifications().length;
+  /**
+   * Mark notification as read - forward to facade
+   */
+  markAsRead(id: string): void {
+    this.facade.markAsRead(id);
   }
 }

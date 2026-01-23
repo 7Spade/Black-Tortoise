@@ -10,10 +10,12 @@
  * - Typography scale
  * - Spacing system
  * - Elevation levels
+ * - Light and Dark theme support via [data-theme] attribute
  */
 
-:root {
-  /* ========== Color Tokens ========== */
+:root,
+:root[data-theme="light"] {
+  /* ========== Color Tokens (Light Theme) ========== */
   
   /* Primary Color */
   --md-sys-color-primary: #1976d2;
@@ -52,7 +54,50 @@
   /* Outline */
   --md-sys-color-outline: #e0e0e0;
   --md-sys-color-outline-variant: #f5f5f5;
+}
+
+/* ========== Dark Theme ========== */
+:root[data-theme="dark"] {
+  /* Primary Color */
+  --md-sys-color-primary: #90caf9;
+  --md-sys-color-on-primary: #0d47a1;
+  --md-sys-color-primary-container: #1565c0;
+  --md-sys-color-on-primary-container: #e3f2fd;
   
+  /* Secondary Color */
+  --md-sys-color-secondary: #81d4fa;
+  --md-sys-color-on-secondary: #01579b;
+  --md-sys-color-secondary-container: #0277bd;
+  --md-sys-color-on-secondary-container: #e1f5fe;
+  
+  /* Tertiary Color */
+  --md-sys-color-tertiary: #80deea;
+  --md-sys-color-on-tertiary: #006064;
+  --md-sys-color-tertiary-container: #00838f;
+  --md-sys-color-on-tertiary-container: #e0f7fa;
+  
+  /* Error Color */
+  --md-sys-color-error: #ef5350;
+  --md-sys-color-on-error: #b71c1c;
+  --md-sys-color-error-container: #c62828;
+  --md-sys-color-on-error-container: #ffebee;
+  
+  /* Surface Colors */
+  --md-sys-color-surface: #1e1e1e;
+  --md-sys-color-on-surface: #e0e0e0;
+  --md-sys-color-surface-variant: #2d2d2d;
+  --md-sys-color-on-surface-variant: #bdbdbd;
+  
+  /* Background */
+  --md-sys-color-background: #121212;
+  --md-sys-color-on-background: #e0e0e0;
+  
+  /* Outline */
+  --md-sys-color-outline: #424242;
+  --md-sys-color-outline-variant: #333333;
+}
+
+:root {
   /* ========== Typography Tokens ========== */
   
   /* Display */

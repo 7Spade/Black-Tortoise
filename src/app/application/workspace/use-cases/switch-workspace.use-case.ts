@@ -6,7 +6,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { WorkspaceSwitched } from '@domain/event/domain-event';
+import { createWorkspaceSwitchedEvent } from '@domain/events/domain-events/workspace-switched.event';
 
 /**
  * Switch Workspace Command
@@ -14,6 +14,8 @@ import { WorkspaceSwitched } from '@domain/event/domain-event';
 export interface SwitchWorkspaceCommand {
   readonly previousWorkspaceId: string | null;
   readonly targetWorkspaceId: string;
+  readonly userId?: string;
+  readonly correlationId?: string;
 }
 
 /**
@@ -23,20 +25,19 @@ export interface SwitchWorkspaceCommand {
 export class SwitchWorkspaceUseCase {
   
   execute(command: SwitchWorkspaceCommand): void {
-    // Create domain event
-    const event: WorkspaceSwitched = {
-      eventId: `evt-${Date.now()}`,
-      eventType: 'WorkspaceSwitched',
-      occurredAt: new Date(),
-      previousWorkspaceId: command.previousWorkspaceId,
-      currentWorkspaceId: command.targetWorkspaceId,
-    };
+    // Create domain event using factory function
+    const event = createWorkspaceSwitchedEvent(
+      command.previousWorkspaceId,
+      command.targetWorkspaceId,
+      command.userId,
+      command.correlationId
+    );
     
     // In real implementation:
     // 1. Validate target workspace exists and user has access
     // 2. Cleanup previous workspace context
     // 3. Load new workspace context
-    // 4. Publish event to global event bus
+    // 4. Publish event to workspace-scoped event bus
     // 5. Update application state
     
     console.log('[SwitchWorkspaceUseCase] Workspace switched:', event);

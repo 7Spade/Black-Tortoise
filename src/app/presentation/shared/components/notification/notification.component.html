@@ -1,14 +1,31 @@
 <!-- NotificationComponent（Presentation, Shared） -->
-<!-- 註解: 顯示通知清單；新增/移除應由 application 層發出事件或提供 API 接口 -->
+<!-- Pure UI: Consumes state from PresentationStore, forwards events to NotificationFacade -->
+<!-- No local state, no business logic - fully reactive control flow -->
 <!-- Architecture: Angular 20 control flow (@for instead of *ngFor) -->
 <ul class="notification">
-  @for (n of notifications(); track n.id) {
-    <li class="notification__item" (click)="onClick(n)">
+  @for (n of store.notifications(); track n.id) {
+    <li 
+      class="notification__item" 
+      [class.notification__item--unread]="!n.read"
+      [attr.data-type]="n.type"
+      (click)="onClick(n)"
+    >
       <div class="notification__content">
         <strong class="notification__type">{{ n.type }}</strong>
-        <span class="notification__message">{{ n.message }}</span>
+        <div class="notification__text">
+          <span class="notification__title">{{ n.title }}</span>
+          <span class="notification__message">{{ n.message }}</span>
+        </div>
+        <span class="notification__timestamp">{{ n.timestamp | date:'short' }}</span>
       </div>
-      <button class="notification__dismiss" (click)="dismiss(n.id); $event.stopPropagation()" type="button">關閉</button>
+      <button 
+        class="notification__dismiss" 
+        (click)="dismiss(n.id); $event.stopPropagation()" 
+        type="button"
+        aria-label="Dismiss notification"
+      >
+        ✕
+      </button>
     </li>
   } @empty {
     <li class="notification__empty">
@@ -16,3 +33,11 @@
     </li>
   }
 </ul>
+
+@if (store.hasNotifications()) {
+  <div class="notification__footer">
+    <span class="notification__count">
+      {{ store.unreadNotificationsCount() }} unread
+    </span>
+  </div>
+}
