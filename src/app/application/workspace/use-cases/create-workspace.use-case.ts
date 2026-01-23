@@ -43,7 +43,6 @@ export class CreateWorkspaceUseCase {
     );
     
     // Create domain event
-    const now = new Date();
     const eventId = `evt-${Date.now()}`;
     const correlationId = eventId;
     const event: WorkspaceCreated = {
@@ -51,7 +50,7 @@ export class CreateWorkspaceUseCase {
       eventType: 'WorkspaceCreated',
       aggregateId: workspace.id,
       workspaceId: workspace.id,
-      timestamp: now,
+      timestamp: new Date(),
       correlationId,
       causationId: null,
       payload: {
