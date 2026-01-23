@@ -12,7 +12,7 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { WorkspaceHostFacade } from '@application/facades/workspace-host.facade';
+import { WorkspaceHostFacade } from '@application/workspace';
 import { ModuleContentComponent } from './components/module-content.component';
 import { ModuleNavigationComponent } from './components/module-navigation.component';
 

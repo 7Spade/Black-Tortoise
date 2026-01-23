@@ -13,7 +13,7 @@
  */
 
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
+import { WorkspaceContextStore } from '@application/workspace/stores/workspace-context.store';
 
 @Injectable({ providedIn: 'root' })
 export class IdentityFacade {

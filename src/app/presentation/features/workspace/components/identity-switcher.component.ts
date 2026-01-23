@@ -14,7 +14,7 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { IdentityFacade } from '@application/workspace/identity.facade';
+import { IdentityFacade } from '@application/workspace';
 
 @Component({
   selector: 'app-identity-switcher',

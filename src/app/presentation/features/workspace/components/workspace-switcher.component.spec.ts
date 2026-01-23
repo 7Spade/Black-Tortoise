@@ -2,7 +2,7 @@ import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { WorkspaceSwitcherComponent } from './workspace-switcher.component';
-import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
+import { WorkspaceCreateResult } from '@application/workspace/models/workspace-create-result.model';
 
 describe('WorkspaceSwitcherComponent', () => {
   let component: WorkspaceSwitcherComponent;

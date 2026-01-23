@@ -7,7 +7,7 @@
 
 import { Injectable } from '@angular/core';
 import { WorkspaceCreated } from '@domain/event/domain-event';
-import { createWorkspace, WorkspaceEntity } from '@domain/workspace/workspace.entity';
+import { createWorkspace, WorkspaceEntity } from '@domain/workspace';
 
 /**
  * Create Workspace Command

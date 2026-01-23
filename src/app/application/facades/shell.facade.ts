@@ -15,7 +15,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
+import { WorkspaceContextStore } from '@application/workspace';
 import { filter, map, startWith } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })

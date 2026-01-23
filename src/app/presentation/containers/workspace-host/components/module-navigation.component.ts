@@ -13,7 +13,7 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { WorkspaceHostFacade } from '@application/facades/workspace-host.facade';
+import { WorkspaceHostFacade } from '@application/workspace';
 
 @Component({
   selector: 'app-module-navigation',

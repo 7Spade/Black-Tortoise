@@ -8,7 +8,7 @@
  */
 
 import { DomainEvent } from '@domain/event/domain-event';
-import { EventHandler, WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
+import { EventHandler, WorkspaceEventBus } from '@domain/workspace';
 import { Subject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 

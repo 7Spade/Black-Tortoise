@@ -15,8 +15,8 @@
 
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
-import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
+import { WorkspaceContextStore } from '@application/workspace/stores/workspace-context.store';
+import { WorkspaceCreateResult } from '@application/workspace/models/workspace-create-result.model';
 
 @Injectable({ providedIn: 'root' })
 export class WorkspaceFacade {

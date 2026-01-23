@@ -11,7 +11,7 @@
  * Pattern: Adapter Pattern
  */
 
-import { WorkspaceEventBus } from '@domain/workspace/workspace-event-bus';
+import { WorkspaceEventBus } from '@domain/workspace';
 import { 
   EventHandler, 
   IModuleEventBus 

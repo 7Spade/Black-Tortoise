@@ -16,12 +16,12 @@
 
 import { ChangeDetectionStrategy, Component, computed, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { WorkspaceFacade } from '@application/workspace/workspace.facade';
+import { WorkspaceFacade } from '@application/workspace';
 import { WorkspaceTriggerComponent } from './workspace-trigger.component';
 import { WorkspaceMenuComponent } from './workspace-menu.component';
 import { WorkspaceItem } from './types';
-import { WorkspaceCreateTriggerComponent } from '@presentation/workspace/components/workspace-create-trigger.component';
-import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
+import { WorkspaceCreateTriggerComponent } from '@presentation/features/workspace/components/workspace-create-trigger.component';
+import { WorkspaceCreateResult } from '@application/workspace/models/workspace-create-result.model';
 
 @Component({
   selector: 'app-workspace-switcher',

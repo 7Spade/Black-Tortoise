@@ -10,11 +10,11 @@
  */
 
 import { computed, inject } from '@angular/core';
-import { CreateWorkspaceUseCase } from '@application/workspace/create-workspace.use-case';
-import { SwitchWorkspaceUseCase } from '@application/workspace/switch-workspace.use-case';
-import { WORKSPACE_RUNTIME_FACTORY } from '@application/tokens/workspace-runtime.token';
+import { CreateWorkspaceUseCase } from '@application/workspace/use-cases/create-workspace.use-case';
+import { SwitchWorkspaceUseCase } from '@application/workspace/use-cases/switch-workspace.use-case';
+import { WORKSPACE_RUNTIME_FACTORY } from '@application/workspace/tokens/workspace-runtime.token';
 import { OrganizationEntity } from '@domain/organization/organization.entity';
-import { WorkspaceEntity } from '@domain/workspace/workspace.entity';
+import { WorkspaceEntity } from '@domain/workspace';
 import {
   patchState,
   signalStore,
