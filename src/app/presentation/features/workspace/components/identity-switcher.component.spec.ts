@@ -28,5 +28,4 @@ describe('IdentitySwitcherComponent', () => {
   it('should inject IdentityFacade', () => {
     expect(component.facade).toBeDefined();
   });
-});</content>
-<parameter name="filePath">d:\GitHub\7s\Black-Tortoise\src\app\presentation\features\workspace\components\identity-switcher.component.spec.ts
+});

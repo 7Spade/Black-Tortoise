@@ -22,8 +22,8 @@ export interface DomainEvent<TPayload = Record<string, unknown>> {
   readonly aggregateId: string;
   readonly workspaceId: string;
   readonly timestamp: Date;
-  readonly occurredAt: Date;
-  readonly causalityId: string;
+  readonly correlationId: string;
+  readonly causationId: string | null;
   readonly payload: TPayload;
   readonly metadata: EventMetadata;
 }
@@ -34,8 +34,6 @@ export interface DomainEvent<TPayload = Record<string, unknown>> {
 export interface EventMetadata {
   readonly version: number;
   readonly userId?: string;
-  readonly correlationId?: string;
-  readonly causationId?: string;
 }
 
 /**

@@ -30,6 +30,16 @@ export const EventType = {
   TASK_UPDATED: 'TaskUpdated',
   TASK_COMPLETED: 'TaskCompleted',
   TASK_DELETED: 'TaskDeleted',
+  TASK_SUBMITTED_FOR_QC: 'TaskSubmittedForQC',
+  
+  // Quality Control Events
+  QC_PASSED: 'QCPassed',
+  QC_FAILED: 'QCFailed',
+  
+  // Issue Events
+  ISSUE_CREATED: 'IssueCreated',
+  ISSUE_RESOLVED: 'IssueResolved',
+  ISSUE_UPDATED: 'IssueUpdated',
   
   // Document Events
   DOCUMENT_UPLOADED: 'DocumentUploaded',
