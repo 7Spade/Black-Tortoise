@@ -3,12 +3,12 @@
  *
  * Layer: Presentation
  * Purpose: Workspace switcher controls for global header
- * Architecture: Zone-less, OnPush, Angular 20 control flow, Pure Reactive
+ * Architecture: Zone-less, OnPush, Angular 20 control flow, Pure Reactive, Signal-based
  *
  * Responsibilities:
  * - UI controls only - emits user intent events for workspace switching
- * - Must NOT open dialog or interpret dialog result
- * - Must only call facade for app actions (switch/create workspace)
+ * - Uses signal output binding for dialog results (no manual subscribe)
+ * - Delegates all workspace actions to facade
  * - Single responsibility: workspace management UI
  */
 
@@ -16,7 +16,6 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core';
 import { WorkspaceFacade } from '@application/workspace/workspace.facade';
 import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
-import { filter, tap } from 'rxjs/operators';
 import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
 
 @Component({
@@ -56,7 +55,7 @@ import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.comp
             <div class="workspace-menu-divider"></div>
             <button
               class="workspace-menu-item"
-              (click)="createNewWorkspace()"
+              (click)="openCreateDialog()"
               type="button">
               <span class="material-icons">add</span>
               <span>Create Workspace</span>
@@ -66,8 +65,8 @@ import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.comp
       </div>
     }
 
-    <!-- WorkspaceCreateTriggerComponent - hidden, used programmatically -->
-    <app-workspace-create-trigger />
+    <!-- WorkspaceCreateTriggerComponent - signal-based dialog trigger -->
+    <app-workspace-create-trigger (dialogResult)="onWorkspaceCreated($event)" />
   `,
 })
 export class WorkspaceSwitcherComponent {
@@ -76,49 +75,24 @@ export class WorkspaceSwitcherComponent {
   // Reference to trigger component
   private readonly createTrigger = viewChild(WorkspaceCreateTriggerComponent);
 
-  toggleWorkspaceMenu(): void {
-    this.facade.toggleWorkspaceMenu();
-  }
-
   /**
-   * Emit user intent: switch workspace
-   * Delegates to facade for app action
+   * Open create workspace dialog
+   * Triggers dialog via WorkspaceCreateTriggerComponent
+   * Result handled via signal output binding in template
    */
-  selectWorkspace(workspaceId: string): void {
-    this.facade.selectWorkspace(workspaceId);
-  }
-
-  /**
-   * Emit user intent: create new workspace
-   * Uses WorkspaceCreateTriggerComponent to open dialog
-   * Processes result via facade - NO business logic here
-   */
-  createNewWorkspace(): void {
+  openCreateDialog(): void {
     const trigger = this.createTrigger();
-    if (!trigger) {
-      return;
+    if (trigger) {
+      trigger.openDialog();
     }
+  }
 
-    // Trigger opens dialog and returns Observable<unknown>
-    trigger.openDialog().pipe(
-      // Filter and type-narrow to WorkspaceCreateResult
-      filter((result): result is WorkspaceCreateResult =>
-        result !== null &&
-        result !== undefined &&
-        typeof result === 'object' &&
-        'workspaceName' in result &&
-        typeof (result as WorkspaceCreateResult).workspaceName === 'string' &&
-        !!(result as WorkspaceCreateResult).workspaceName
-      ),
-      // Delegate to facade for app action
-      tap((result) => {
-        this.facade.createWorkspace(result);
-      })
-    ).subscribe({
-      error: () => {
-        // Use facade to set error
-        this.facade.handleError('Failed to process dialog result');
-      }
-    });
+  /**
+   * Handle workspace creation result from dialog
+   * Called via signal output binding (dialogResult) in template
+   * Pure reactive - no manual subscribe, no RxJS operators
+   */
+  onWorkspaceCreated(result: WorkspaceCreateResult): void {
+    this.facade.createWorkspace(result);
   }
 }

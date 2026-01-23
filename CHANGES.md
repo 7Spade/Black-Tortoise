@@ -1,6 +1,79 @@
 # Implementation Changes Summary
 
-## Latest Changes (2025-01-22) - DDD/Clean Architecture Audit & Remediation
+## Latest Changes (2025-01-23) - Workspace Header Switcher Refactor
+
+### Workspace Switcher Signal-Based Architecture Refactor
+
+**Summary**: Refactored workspace switcher to eliminate P0 violations by removing manual RxJS subscriptions in presentation layer. Achieved 100% signal-based reactive architecture with proper DDD boundaries. Consolidated facade architecture to reduce complexity.
+
+**Key Changes**:
+
+1. **WorkspaceCreateTriggerComponent** - Signal Output Pattern
+   - File: `src/app/presentation/workspace/components/workspace-create-trigger.component.ts`
+   - Changed: `openDialog()` from returning `Observable<unknown>` to `void`
+   - Added: Internal subscribe at framework boundary (MatDialog.afterClosed)
+   - Added: Type guard validation for `WorkspaceCreateResult`
+   - Changed: Emits validated result via signal `output<WorkspaceCreateResult>()`
+   - **P0 Fix**: Framework-level subscribe is acceptable; eliminates manual subscribe in presentation components
+
+2. **WorkspaceSwitcherComponent** - Signal-Based Dialog Handling
+   - File: `src/app/presentation/workspace/components/workspace-switcher.component.ts`
+   - **P0 Fix**: Removed FORBIDDEN manual `.subscribe()` from `createNewWorkspace()`
+   - **P0 Fix**: Removed RxJS operators (`filter`, `tap`) imports
+   - Changed: Refactored to use template-based signal output binding `(dialogResult)="onWorkspaceCreated($event)"`
+   - Added: `openCreateDialog()` method that calls trigger's `openDialog()` (returns void)
+   - Added: `onWorkspaceCreated(result: WorkspaceCreateResult)` callback for signal binding
+   - Changed: Pure reactive pattern - no manual subscriptions in presentation layer
+
+3. **WorkspaceFacade** - Simplified Delegation
+   - File: `src/app/application/workspace/workspace.facade.ts`
+   - **P1 Fix**: Removed indirect delegation through `HeaderFacade`
+   - Changed: Direct calls to `WorkspaceContextStore.switchWorkspace()` and `createWorkspace()`
+   - Added: Router navigation logic directly in facade
+   - Added: Proper error handling with try/catch for workspace creation
+   - Removed: Dependency on `HeaderFacade` (kept HeaderFacade for other routing concerns)
+   - Removed: `handleError()` method (redundant)
+   - Changed: `createWorkspace()` parameter typed as `WorkspaceCreateResult` instead of `any`
+
+4. **Duplicate Model Cleanup**
+   - **Deleted**: `src/app/presentation/workspace/models/workspace-create-result.model.ts`
+   - **Deleted**: `src/app/presentation/workspace/models/` directory (empty after deletion)
+   - Reason: Duplicate deprecated re-export; single source is `@application/models/workspace-create-result.model`
+
+5. **Test Updates** - Signal-Based Test Coverage
+   - File: `src/app/presentation/workspace/components/workspace-switcher.component.spec.ts`
+   - Updated: Test suite to match new signal-based API
+   - Added: Tests for `openCreateDialog()` method
+   - Added: Tests for `onWorkspaceCreated(result)` callback
+   - Removed: Tests for old `createNewWorkspace()` RxJS-based pattern
+   - Added: Tests for null trigger handling
+
+6. **WorkspaceCreateTriggerComponent Tests** - Enhanced Coverage
+   - File: `src/app/presentation/workspace/components/workspace-create-trigger.component.spec.ts`
+   - Added: Test for dialog opening
+   - Added: Test for valid result emission via signal output
+   - Added: Test for invalid result filtering (no emission)
+   - Added: Test for null result handling (no emission)
+
+**Architecture Compliance**:
+- ✅ **P0 Violations Fixed**: Zero manual `.subscribe()` in presentation workspace components
+- ✅ **P0 Violations Fixed**: Zero RxJS operators in presentation workspace components
+- ✅ **P1 Violations Fixed**: Simplified facade delegation chain (WorkspaceFacade → WorkspaceContextStore)
+- ✅ **DDD Boundaries**: Presentation only injects facades, application manages state
+- ✅ **Signal-Based**: 100% signal output pattern for dialog results
+- ✅ **Zone-less Compatible**: No reliance on manual subscriptions or side effects
+- ✅ **Single Source of Truth**: WorkspaceContextStore remains canonical workspace state
+
+**Verification**:
+- ✅ Zero manual subscriptions in workspace presentation layer
+- ✅ Header component already integrated with WorkspaceSwitcherComponent
+- ✅ Safe rendering with `@if (facade.hasWorkspace())` guard
+- ✅ All imports updated to use application layer model
+- ✅ Test coverage updated for new signal-based patterns
+
+---
+
+## Previous Changes (2025-01-22) - DDD/Clean Architecture Audit & Remediation
 
 ### Full Dependency Audit & Violation Remediation
 

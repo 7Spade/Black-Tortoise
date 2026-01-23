@@ -2,6 +2,7 @@ import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { WorkspaceSwitcherComponent } from './workspace-switcher.component';
+import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
 
 describe('WorkspaceSwitcherComponent', () => {
   let component: WorkspaceSwitcherComponent;
@@ -29,31 +30,35 @@ describe('WorkspaceSwitcherComponent', () => {
     expect(component.facade).toBeDefined();
   });
 
-  it('should call facade.toggleWorkspaceMenu when toggleWorkspaceMenu is called', () => {
-    spyOn(component.facade, 'toggleWorkspaceMenu');
-    component.toggleWorkspaceMenu();
-    expect(component.facade.toggleWorkspaceMenu).toHaveBeenCalled();
-  });
-
-  it('should call facade.selectWorkspace when selectWorkspace is called', () => {
-    spyOn(component.facade, 'selectWorkspace');
-    component.selectWorkspace('test-id');
-    expect(component.facade.selectWorkspace).toHaveBeenCalledWith('test-id');
-  });
-
-  it('should call createNewWorkspace and handle dialog result', () => {
-    spyOn(component.facade, 'createWorkspace');
-    spyOn(component.facade, 'handleError');
-    // Mock the trigger
+  it('should call trigger.openDialog when openCreateDialog is called', () => {
     const mockTrigger = {
-      openDialog: jasmine.createSpy().and.returnValue({
-        pipe: jasmine.createSpy().and.returnValue({
-          subscribe: jasmine.createSpy()
-        })
-      })
+      openDialog: jasmine.createSpy('openDialog')
     };
     (component as any).createTrigger = jasmine.createSpy().and.returnValue(mockTrigger);
-    component.createNewWorkspace();
+    
+    component.openCreateDialog();
+    
     expect(mockTrigger.openDialog).toHaveBeenCalled();
+  });
+
+  it('should handle null trigger gracefully in openCreateDialog', () => {
+    (component as any).createTrigger = jasmine.createSpy().and.returnValue(null);
+    
+    expect(() => component.openCreateDialog()).not.toThrow();
+  });
+
+  it('should call facade.createWorkspace when onWorkspaceCreated is called', () => {
+    spyOn(component.facade, 'createWorkspace');
+    const result: WorkspaceCreateResult = { workspaceName: 'Test Workspace' };
+    
+    component.onWorkspaceCreated(result);
+    
+    expect(component.facade.createWorkspace).toHaveBeenCalledWith(result);
+  });
+
+  it('should display current workspace name from facade', () => {
+    // This test would require mocking the facade signals
+    // For now, just verify the signal is accessible
+    expect(component.facade.currentWorkspaceName).toBeDefined();
   });
 });

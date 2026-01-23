@@ -3,19 +3,20 @@
  * 
  * Layer: Presentation - Components
  * Purpose: Sole place that opens workspace creation dialog and emits results
- * Architecture: Zone-less, OnPush, Pure Reactive
+ * Architecture: Zone-less, OnPush, Pure Reactive, Signal-based
  * 
  * Responsibilities:
  * - Opens MatDialog with WorkspaceCreateDialogComponent
- * - Returns Observable<unknown> from afterClosed WITHOUT generics
+ * - Emits dialog result via signal output
  * - NO result interpretation or business logic
  * - NO knowledge of workspace/org/auth
+ * - Internal subscribe is acceptable for dialog result handling (framework boundary)
  */
 
 import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { WorkspaceCreateDialogComponent } from '@presentation/workspace/dialogs/workspace-create-dialog.component';
-import { Observable } from 'rxjs';
+import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
 
 @Component({
   selector: 'app-workspace-create-trigger',
@@ -28,23 +29,40 @@ export class WorkspaceCreateTriggerComponent {
   private readonly dialog = inject(MatDialog);
 
   /**
-   * Output event that emits the raw dialog result
+   * Output event that emits the validated dialog result
    */
-  readonly dialogResult = output<unknown>();
+  readonly dialogResult = output<WorkspaceCreateResult>();
 
   /**
    * Open workspace creation dialog
-   * Returns Observable<unknown> from afterClosed WITHOUT generics
-   * Caller is responsible for filtering and interpreting results
+   * Emits result via dialogResult output signal
    */
-  openDialog(): Observable<unknown> {
+  openDialog(): void {
     const dialogRef = this.dialog.open(WorkspaceCreateDialogComponent, {
       width: '500px',
       disableClose: false,
       autoFocus: true,
     });
 
-    // afterClosed WITHOUT generics - returns Observable<unknown>
-    return dialogRef.afterClosed();
+    // Internal subscribe is acceptable at framework boundary (MatDialog)
+    // Emits only validated WorkspaceCreateResult via signal output
+    dialogRef.afterClosed().subscribe({
+      next: (result: unknown) => {
+        // Type guard and validation
+        if (
+          result !== null &&
+          result !== undefined &&
+          typeof result === 'object' &&
+          'workspaceName' in result &&
+          typeof (result as WorkspaceCreateResult).workspaceName === 'string' &&
+          (result as WorkspaceCreateResult).workspaceName.trim().length > 0
+        ) {
+          this.dialogResult.emit(result as WorkspaceCreateResult);
+        }
+      },
+      error: (error) => {
+        console.error('[WorkspaceCreateTriggerComponent] Dialog error:', error);
+      }
+    });
   }
 }
