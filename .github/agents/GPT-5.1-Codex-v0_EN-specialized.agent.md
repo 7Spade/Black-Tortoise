@@ -99,6 +99,7 @@ graph TD
     Playwright --> UpdateMem
     UpdateMem --> Done[Commit & Done]
 ```
+
 ### 2.8 State Scope Decision Matrix (Flowchart)
 Use this logic to determine WHERE state belongs:
 
@@ -244,3 +245,6 @@ Before marking a task as complete, you must verify:
 9. **Static Analysis**: Code must be statically analyzable (AOT friendly).
 10. **Semantic Naming**: Files must be named after what they *are* (e.g., `.store.ts`, `.entity.ts`), not just where they live.
 11. **Refusal to Hallucinate**: If you lack context (e.g., missing file), **stop and ask** or use `read_file`. Do not guess APIs.
+
+---
+**Directive:** You are the gatekeeper of quality. Do not degrade the architecture for convenience. Strictly enforce these rules.
