@@ -1,171 +1,145 @@
 /**
- * Daily Module
- * 
+ * Daily Module - Work Log & Timesheet
  * Layer: Presentation
- * Purpose: Daily standup and activity log
- * 
- * Architecture:
- * - Communicates ONLY via WorkspaceEventBus (no store/use-case injection)
- * - Event bus passed via @Input() from parent component
- * - Uses shared ModuleEventHelper for common patterns
+ * Events: Publishes DailyEntryCreated
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, Input, signal, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
+import { DailyStore } from '@application/daily/stores/daily.store';
+import { createDailyEntryCreatedEvent } from '@domain/events/domain-events';
 import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
 
 @Component({
   selector: 'app-daily-module',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="daily-module">
       <div class="module-header">
-        <span class="material-icons">today</span>
-        <div>
-          <h2>Daily</h2>
-          <p>Daily standup and activity log</p>
-        </div>
+        <h2>📅 Daily Log</h2>
+        <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
       
-      <div class="module-content">
-        <div class="info-card">
-          <h4>Module Information</h4>
-          <p>Workspace ID: {{ workspaceId() }}</p>
-          <p>Module: Daily</p>
-          <p>Communication: Event-driven via WorkspaceEventBus</p>
+      <div class="daily-form">
+        <h3>Log Work Entry</h3>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" [(ngModel)]="entryDate" class="input-field" />
         </div>
-        
-        <div class="placeholder-content">
-          <p>Module content will be implemented here.</p>
-          <p>All interactions happen via event bus - no direct store access.</p>
+        <div class="form-group">
+          <label>Hours Logged</label>
+          <input type="number" [(ngModel)]="hoursLogged" min="0" max="24" step="0.5" class="input-field" />
         </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea [(ngModel)]="notes" class="input-field"></textarea>
+        </div>
+        <button (click)="logEntry()" class="btn-primary">Log Entry</button>
+      </div>
+
+      <div class="entries-section">
+        <h3>Recent Entries ({{ dailyStore.entries().length }})</h3>
+        @for (entry of dailyStore.entries(); track entry.id) {
+          <div class="entry-card">
+            <div class="entry-header">
+              <h4>{{ entry.date }}</h4>
+              <span class="hours">{{ entry.hoursLogged }}h</span>
+            </div>
+            @if (entry.notes) {
+              <p>{{ entry.notes }}</p>
+            }
+          </div>
+        }
       </div>
     </div>
   `,
   styles: [`
-    .daily-module {
-      padding: 1.5rem;
-    }
-    
-    .module-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    
-    .module-header .material-icons {
-      font-size: 2.5rem;
-      color: #1976d2;
-    }
-    
-    .module-header h2 {
-      margin: 0;
-      color: #333;
-    }
-    
-    .module-header p {
-      margin: 0;
-      color: #666;
-      font-size: 0.875rem;
-    }
-    
-    .module-content {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    
-    .info-card,
-    .placeholder-content {
-      padding: 1.5rem;
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-    }
-    
-    .info-card h4 {
-      margin: 0 0 1rem 0;
-      color: #333;
-    }
-    
-    .info-card p,
-    .placeholder-content p {
-      margin: 0.5rem 0;
-      color: #666;
-    }
+    .daily-module { padding: 1.5rem; max-width: 800px; }
+    .module-header h2 { margin: 0 0 0.5rem 0; color: #1976d2; }
+    .daily-form, .entries-section { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin-top: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+    .input-field { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
+    textarea.input-field { min-height: 80px; resize: vertical; }
+    .btn-primary { padding: 0.5rem 1rem; border: none; border-radius: 4px; background: #1976d2; color: white; cursor: pointer; }
+    .entry-card { border: 1px solid #e0e0e0; border-radius: 4px; padding: 1rem; margin-bottom: 0.5rem; }
+    .entry-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+    .hours { font-weight: bold; color: #1976d2; }
   `]
 })
-export class DailyModule implements IAppModule, OnDestroy {
+export class DailyModule implements IAppModule, OnInit, OnDestroy {
   readonly id = 'daily';
   readonly name = 'Daily';
   readonly type: ModuleType = 'daily';
   
-  /**
-   * Event bus MUST be passed from parent - no injection
-   */
-  @Input() 
-  set eventBus(value: IModuleEventBus | undefined) {
-    this._eventBus.set(value);
-  }
-  get eventBus(): IModuleEventBus | undefined {
-    return this._eventBus();
-  }
-  private _eventBus = signal<IModuleEventBus | undefined>(undefined);
+  @Input() eventBus?: IModuleEventBus;
+  readonly dailyStore = inject(DailyStore);
   
-  /**
-   * Module state (using signals for zone-less)
-   */
-  workspaceId = signal<string>('');
-  
-  /**
-   * Subscription manager
-   */
+  entryDate = new Date().toISOString().split('T')[0];
+  hoursLogged = 0;
+  notes = '';
+  private readonly currentUserId = 'user-demo';
   private subscriptions = ModuleEventHelper.createSubscriptionManager();
   
-  constructor() {
-    // Initialize when eventBus is set
-    effect(() => {
-      const eventBus = this._eventBus();
-      if (eventBus) {
-        this.initialize(eventBus);
-      }
-    });
+  ngOnInit(): void {
+    if (this.eventBus) {
+      this.initialize(this.eventBus);
+    }
   }
   
   initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
-    this.workspaceId.set(eventBus.workspaceId);
     
-    // Subscribe to workspace events
     this.subscriptions.add(
-      ModuleEventHelper.onWorkspaceSwitched(eventBus, (event) => {
-        console.log(`[DailyModule] Workspace switched:`, event);
+      ModuleEventHelper.onWorkspaceSwitched(eventBus, () => {
+        this.dailyStore.clearEntries();
       })
     );
     
-    // Publish initialization event
     ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
-    console.log(`[DailyModule] Initialized`);
   }
   
-  activate(): void {
-    console.log(`[DailyModule] Activated`);
+  logEntry(): void {
+    if (!this.eventBus || this.hoursLogged <= 0) return;
+    
+    const entry = {
+      date: this.entryDate,
+      userId: this.currentUserId,
+      taskIds: [],
+      hoursLogged: this.hoursLogged,
+      notes: this.notes || undefined,
+    };
+    
+    this.dailyStore.createEntry(entry);
+    
+    const newEntry = this.dailyStore.entries()[this.dailyStore.entries().length - 1];
+    if (newEntry) {
+      const event = createDailyEntryCreatedEvent(
+        newEntry.id,
+        this.eventBus.workspaceId,
+        newEntry.date,
+        newEntry.userId,
+        newEntry.taskIds,
+        newEntry.hoursLogged,
+        newEntry.notes
+      );
+      this.eventBus.publish(event);
+    }
+    
+    this.hoursLogged = 0;
+    this.notes = '';
   }
   
-  deactivate(): void {
-    console.log(`[DailyModule] Deactivated`);
-  }
-  
+  activate(): void {}
+  deactivate(): void {}
   destroy(): void {
     this.subscriptions.unsubscribeAll();
-    console.log(`[DailyModule] Destroyed`);
   }
-  
   ngOnDestroy(): void {
     this.destroy();
   }

@@ -15,10 +15,11 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
+import { TasksStore } from '@application/tasks/stores/tasks.store';
 import { createTask, TaskEntity, TaskPriority, TaskStatus, updateTaskStatus } from '@domain/task/task.entity';
 import { createTaskCreatedEvent } from '@domain/events/domain-events/task-created.event';
 import { createTaskSubmittedForQCEvent } from '@domain/events/domain-events/task-submitted-for-qc.event';
@@ -74,11 +75,11 @@ import { createIssueResolvedEvent } from '@domain/events/domain-events/issue-res
 
       <!-- Tasks List -->
       <div class="tasks-list">
-        <h3>Tasks ({{ tasks().length }})</h3>
-        @if (tasks().length === 0) {
+        <h3>Tasks ({{ tasksStore.tasks().length }})</h3>
+        @if (tasksStore.tasks().length === 0) {
           <div class="empty-state">No tasks yet. Create one above!</div>
         }
-        @for (task of tasks(); track task.id) {
+        @for (task of tasksStore.tasks(); track task.id) {
           <div class="task-card" [class.blocked]="task.status === 'blocked'">
             <div class="task-header">
               <h4>{{ task.title }}</h4>
@@ -336,9 +337,11 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
 
   @Input() eventBus?: IModuleEventBus;
 
+  // Inject Tasks store
+  readonly tasksStore = inject(TasksStore);
+
   // Local state (workspace-scoped)
   workspaceId = signal<string>('');
-  tasks = signal<TaskEntity[]>([]);
   eventLog = signal<any[]>([]);
 
   // Form state
@@ -392,6 +395,14 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       })
     );
 
+    // Subscribe to workspace switched to clear state
+    this.unsubscribers.push(
+      eventBus.subscribe('WorkspaceSwitched', () => {
+        this.tasksStore.clearTasks();
+        this.eventLog.set([]);
+      })
+    );
+
     console.log('[TasksModule] Initialized with workspace:', this.workspaceId());
   }
 
@@ -406,8 +417,8 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       priority: this.newTaskPriority,
     });
 
-    // Add to local state
-    this.tasks.update(tasks => [...tasks, task]);
+    // Add to store
+    this.tasksStore.addTask(task);
 
     // Publish event (append→publish→react pattern)
     const event = createTaskCreatedEvent(
@@ -519,9 +530,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
   }
 
   private updateTaskInList(updatedTask: TaskEntity): void {
-    this.tasks.update(tasks =>
-      tasks.map(t => t.id === updatedTask.id ? updatedTask : t)
-    );
+    this.tasksStore.updateTask(updatedTask.id, updatedTask);
   }
 
   private addEventToLog(event: any): void {

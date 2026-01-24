@@ -141,7 +141,7 @@ export const EventStoreSignal = signalStore(
           recentEvents: events,
           eventCount: events.length,
           lastEventTimestamp: events.length > 0 && events[events.length - 1] 
-            ? events[events.length - 1].timestamp 
+            ? events[events.length - 1]!.timestamp 
             : null,
         });
       } catch (error: any) {

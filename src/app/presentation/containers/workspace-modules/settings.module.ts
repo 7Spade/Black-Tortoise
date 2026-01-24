@@ -1,103 +1,68 @@
 /**
- * Settings Module
- * 
+ * Settings Module - Workspace Configuration
  * Layer: Presentation
- * Purpose: Workspace settings
- * 
- * Architecture:
- * - Communicates ONLY via WorkspaceEventBus (no store/use-case injection)
- * - Event bus passed via @Input() from parent component
- * - Uses shared ModuleEventHelper for common patterns
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
+import { SettingsStore } from '@application/settings/stores/settings.store';
 import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
 
 @Component({
   selector: 'app-settings-module',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="settings-module">
       <div class="module-header">
-        <span class="material-icons">settings</span>
-        <div>
-          <h2>Settings</h2>
-          <p>Workspace settings</p>
-        </div>
+        <h2>⚙️ Settings</h2>
+        <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
       
-      <div class="module-content">
-        <div class="info-card">
-          <h4>Module Information</h4>
-          <p>Workspace ID: {{ workspaceId() }}</p>
-          <p>Module: Settings</p>
-          <p>Communication: Event-driven via WorkspaceEventBus</p>
-        </div>
-        
-        <div class="placeholder-content">
-          <p>Module content will be implemented here.</p>
-          <p>All interactions happen via event bus - no direct store access.</p>
-        </div>
+      <div class="settings-section">
+        <h3>Workspace Settings</h3>
+        @if (settingsStore.hasWorkspaceSettings()) {
+          <div class="setting-item">
+            <label>Timezone: {{ settingsStore.workspaceSettings()?.timezone }}</label>
+          </div>
+          <div class="setting-item">
+            <label>Notifications: {{ settingsStore.notificationsEnabled() ? 'Enabled' : 'Disabled' }}</label>
+          </div>
+        } @else {
+          <div class="empty-state">No workspace settings</div>
+        }
+      </div>
+
+      <div class="preferences-section">
+        <h3>User Preferences</h3>
+        @if (settingsStore.hasUserPreferences()) {
+          <div class="setting-item">
+            <label>Theme</label>
+            <select [(ngModel)]="theme" (change)="updateTheme()" class="input-field">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="system">System</option>
+            </select>
+          </div>
+        } @else {
+          <button (click)="initializePreferences()" class="btn-primary">Initialize Preferences</button>
+        }
       </div>
     </div>
   `,
   styles: [`
-    .settings-module {
-      padding: 1.5rem;
-    }
-    
-    .module-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    
-    .module-header .material-icons {
-      font-size: 2.5rem;
-      color: #1976d2;
-    }
-    
-    .module-header h2 {
-      margin: 0;
-      color: #333;
-    }
-    
-    .module-header p {
-      margin: 0;
-      color: #666;
-      font-size: 0.875rem;
-    }
-    
-    .module-content {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    
-    .info-card,
-    .placeholder-content {
-      padding: 1.5rem;
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-    }
-    
-    .info-card h4 {
-      margin: 0 0 1rem 0;
-      color: #333;
-    }
-    
-    .info-card p,
-    .placeholder-content p {
-      margin: 0.5rem 0;
-      color: #666;
-    }
+    .settings-module { padding: 1.5rem; max-width: 800px; }
+    .module-header h2 { margin: 0 0 0.5rem 0; color: #1976d2; }
+    .settings-section, .preferences-section { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin-top: 1rem; }
+    .setting-item { margin-bottom: 1rem; }
+    .setting-item label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+    .input-field { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
+    .btn-primary { padding: 0.5rem 1rem; border: none; border-radius: 4px; background: #1976d2; color: white; cursor: pointer; }
+    .empty-state { text-align: center; color: #999; padding: 1rem; }
   `]
 })
 export class SettingsModule implements IAppModule, OnInit, OnDestroy {
@@ -105,19 +70,10 @@ export class SettingsModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Settings';
   readonly type: ModuleType = 'settings';
   
-  /**
-   * Event bus MUST be passed from parent - no injection
-   */
   @Input() eventBus?: IModuleEventBus;
+  readonly settingsStore = inject(SettingsStore);
   
-  /**
-   * Module state (using signals for zone-less)
-   */
-  workspaceId = signal<string>('');
-  
-  /**
-   * Subscription manager
-   */
+  theme = 'system';
   private subscriptions = ModuleEventHelper.createSubscriptionManager();
   
   ngOnInit(): void {
@@ -128,33 +84,43 @@ export class SettingsModule implements IAppModule, OnInit, OnDestroy {
   
   initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
-    this.workspaceId.set(eventBus.workspaceId);
     
-    // Subscribe to workspace events
+    // Initialize demo settings
+    this.settingsStore.setWorkspaceSettings({
+      workingHours: { start: '09:00', end: '17:00' },
+      timezone: 'UTC',
+      defaultTaskPriority: 'medium',
+      enableNotifications: true,
+      enableAutoAssignment: false,
+    });
+    
     this.subscriptions.add(
-      ModuleEventHelper.onWorkspaceSwitched(eventBus, (event) => {
-        console.log(`[SettingsModule] Workspace switched:`, event);
+      ModuleEventHelper.onWorkspaceSwitched(eventBus, () => {
+        this.settingsStore.clearSettings();
       })
     );
     
-    // Publish initialization event
     ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
-    console.log(`[SettingsModule] Initialized`);
   }
   
-  activate(): void {
-    console.log(`[SettingsModule] Activated`);
+  initializePreferences(): void {
+    this.settingsStore.setUserPreferences({
+      theme: 'system',
+      language: 'en',
+      compactMode: false,
+      showCompletedTasks: true,
+    });
   }
   
-  deactivate(): void {
-    console.log(`[SettingsModule] Deactivated`);
+  updateTheme(): void {
+    this.settingsStore.updateUserPreferences({ theme: this.theme as any });
   }
   
+  activate(): void {}
+  deactivate(): void {}
   destroy(): void {
     this.subscriptions.unsubscribeAll();
-    console.log(`[SettingsModule] Destroyed`);
   }
-  
   ngOnDestroy(): void {
     this.destroy();
   }

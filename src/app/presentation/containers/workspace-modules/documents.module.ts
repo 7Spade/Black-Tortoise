@@ -1,19 +1,14 @@
 /**
- * Documents Module
- * 
+ * Documents Module - File Management
  * Layer: Presentation
- * Purpose: Document and folder management
- * 
- * Architecture:
- * - Communicates ONLY via WorkspaceEventBus (no store/use-case injection)
- * - Event bus passed via @Input() from parent component
- * - Uses shared ModuleEventHelper for common patterns
+ * Events: Publishes DocumentUploaded
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
+import { DocumentsStore } from '@application/documents/stores/documents.store';
 import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
 
 @Component({
@@ -24,80 +19,62 @@ import { ModuleEventHelper } from '@presentation/containers/workspace-modules/ba
   template: `
     <div class="documents-module">
       <div class="module-header">
-        <span class="material-icons">folder</span>
-        <div>
-          <h2>Documents</h2>
-          <p>Document and folder management</p>
-        </div>
+        <h2>📄 Documents</h2>
+        <p>Workspace: {{ eventBus?.workspaceId }} | Total: {{ documentsStore.totalStorageSize() | number }} bytes</p>
       </div>
       
-      <div class="module-content">
-        <div class="info-card">
-          <h4>Module Information</h4>
-          <p>Workspace ID: {{ workspaceId() }}</p>
-          <p>Module: Documents</p>
-          <p>Communication: Event-driven via WorkspaceEventBus</p>
+      <div class="upload-section">
+        <h3>Upload Document</h3>
+        <input type="file" #fileInput (change)="onFileSelected($event)" class="file-input" />
+        <button (click)="fileInput.click()" class="btn-primary">Choose File</button>
+      </div>
+
+      @if (documentsStore.hasActiveUploads()) {
+        <div class="upload-progress">
+          <h3>Uploading...</h3>
+          @for (upload of documentsStore.activeUploads(); track upload.fileId) {
+            <div class="progress-item">
+              <span>{{ upload.fileName }}</span>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="upload.progress"></div>
+              </div>
+              <span>{{ upload.progress }}%</span>
+            </div>
+          }
         </div>
-        
-        <div class="placeholder-content">
-          <p>Module content will be implemented here.</p>
-          <p>All interactions happen via event bus - no direct store access.</p>
-        </div>
+      }
+
+      <div class="documents-list">
+        <h3>Documents ({{ documentsStore.documents().length }})</h3>
+        @if (documentsStore.documents().length === 0) {
+          <div class="empty-state">No documents uploaded</div>
+        }
+        @for (doc of documentsStore.documents(); track doc.id) {
+          <div class="document-card">
+            <div class="doc-icon">📄</div>
+            <div class="doc-info">
+              <h4>{{ doc.name }}</h4>
+              <p>{{ doc.size | number }} bytes | {{ doc.uploadedAt.toLocaleString() }}</p>
+            </div>
+          </div>
+        }
       </div>
     </div>
   `,
   styles: [`
-    .documents-module {
-      padding: 1.5rem;
-    }
-    
-    .module-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    
-    .module-header .material-icons {
-      font-size: 2.5rem;
-      color: #1976d2;
-    }
-    
-    .module-header h2 {
-      margin: 0;
-      color: #333;
-    }
-    
-    .module-header p {
-      margin: 0;
-      color: #666;
-      font-size: 0.875rem;
-    }
-    
-    .module-content {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    
-    .info-card,
-    .placeholder-content {
-      padding: 1.5rem;
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-    }
-    
-    .info-card h4 {
-      margin: 0 0 1rem 0;
-      color: #333;
-    }
-    
-    .info-card p,
-    .placeholder-content p {
-      margin: 0.5rem 0;
-      color: #666;
-    }
+    .documents-module { padding: 1.5rem; max-width: 1000px; }
+    .module-header h2 { margin: 0 0 0.5rem 0; color: #1976d2; }
+    .upload-section, .upload-progress, .documents-list { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin-top: 1rem; }
+    .file-input { display: none; }
+    .btn-primary { padding: 0.5rem 1rem; border: none; border-radius: 4px; background: #1976d2; color: white; cursor: pointer; }
+    .progress-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .progress-bar { flex: 1; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #1976d2; transition: width 0.3s; }
+    .document-card { display: flex; gap: 1rem; align-items: center; border: 1px solid #e0e0e0; border-radius: 4px; padding: 1rem; margin-bottom: 0.5rem; }
+    .doc-icon { font-size: 2rem; }
+    .doc-info h4 { margin: 0; }
+    .doc-info p { margin: 0.25rem 0 0 0; font-size: 0.75rem; color: #666; }
+    .empty-state { text-align: center; color: #999; padding: 2rem; }
   `]
 })
 export class DocumentsModule implements IAppModule, OnInit, OnDestroy {
@@ -105,19 +82,10 @@ export class DocumentsModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Documents';
   readonly type: ModuleType = 'documents';
   
-  /**
-   * Event bus MUST be passed from parent - no injection
-   */
   @Input() eventBus?: IModuleEventBus;
+  readonly documentsStore = inject(DocumentsStore);
   
-  /**
-   * Module state (using signals for zone-less)
-   */
-  workspaceId = signal<string>('');
-  
-  /**
-   * Subscription manager
-   */
+  private readonly currentUserId = 'user-demo';
   private subscriptions = ModuleEventHelper.createSubscriptionManager();
   
   ngOnInit(): void {
@@ -128,33 +96,53 @@ export class DocumentsModule implements IAppModule, OnInit, OnDestroy {
   
   initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
-    this.workspaceId.set(eventBus.workspaceId);
     
-    // Subscribe to workspace events
     this.subscriptions.add(
-      ModuleEventHelper.onWorkspaceSwitched(eventBus, (event) => {
-        console.log(`[DocumentsModule] Workspace switched:`, event);
+      ModuleEventHelper.onWorkspaceSwitched(eventBus, () => {
+        this.documentsStore.clearDocuments();
       })
     );
     
-    // Publish initialization event
     ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
-    console.log(`[DocumentsModule] Initialized`);
   }
   
-  activate(): void {
-    console.log(`[DocumentsModule] Activated`);
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    
+    const file = input.files[0];
+    const fileId = crypto.randomUUID();
+    
+    // Start upload
+    this.documentsStore.startUpload(fileId, file.name);
+    
+    // Simulate upload progress
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      this.documentsStore.updateUploadProgress(fileId, progress);
+      
+      if (progress >= 100) {
+        clearInterval(interval);
+        this.documentsStore.completeUpload(fileId);
+        
+        // Add document
+        this.documentsStore.addDocument({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          url: URL.createObjectURL(file),
+          uploadedBy: this.currentUserId,
+        });
+      }
+    }, 200);
   }
   
-  deactivate(): void {
-    console.log(`[DocumentsModule] Deactivated`);
-  }
-  
+  activate(): void {}
+  deactivate(): void {}
   destroy(): void {
     this.subscriptions.unsubscribeAll();
-    console.log(`[DocumentsModule] Destroyed`);
   }
-  
   ngOnDestroy(): void {
     this.destroy();
   }
