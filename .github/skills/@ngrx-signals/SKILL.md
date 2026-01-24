@@ -6,13 +6,35 @@ license: MIT
 
 # @ngrx/signals (v20) Skill
 
-## 🎯 Summary
-**@ngrx/signals** provides signal-based reactive state management for Angular 20+, enabling predictable, testable, and scalable reactive stores.  
-Designed for the NgRx 20 ecosystem with first-class Signal support.
+## Rules
+
+### Store Definition
+- Use `signalStore(...)` to define stores
+- Use `withState` to define readable/writable state
+- Use `withMethods` for encapsulating logic
+- Use `rxMethod` for async operations
+
+### State Updates
+- Use `patchState` to update partial state
+
+### Derived State
+- Use `computed` to create derived state
+
+### Entity Management
+- Use `@ngrx/signals/entities` plugin for entity operations
+
+### Testing
+- Use `@ngrx/signals/testing` for testing utilities
 
 ---
 
-## 🛠️ Installation
+## Context
+
+### Summary
+**@ngrx/signals** provides signal-based reactive state management for Angular 20+, enabling predictable, testable, and scalable reactive stores.  
+Designed for the NgRx 20 ecosystem with first-class Signal support.
+
+### Installation
 ```bash
 pnpm install @ngrx/signals@latest
 # or
@@ -21,18 +43,9 @@ ng add @ngrx/signals
 
 Ensure your project is upgraded to Angular v20 & NgRx v20.
 
----
+### Basic Usage Example
 
-## 🚀 Basic Usage
-
-### 1️⃣ Create a SignalStore
-
-Use `signalStore(...)` to define a store:
-- Include `withState` to manage initial state
-- Use `withMethods` / `rxMethod` to encapsulate logic
-- Signals automatically track dependencies and update UI
-
-**Example:**
+**Create a SignalStore:**
 
 ```typescript
 const CounterStore = signalStore(
@@ -45,53 +58,35 @@ const CounterStore = signalStore(
 );
 ```
 
----
-
-## 🔄 Core Concepts
-
-### 🧠 Signals & Reactivity
+### Signals & Reactivity
 - Signals are callable getter functions
 - Automatically track dependencies and trigger updates (OnPush friendly)
+- Include `withState` to manage initial state
+- Use `withMethods` / `rxMethod` to encapsulate logic
+- Signals automatically track dependencies and update UI
 
-### 📦 State Management
-- Use `signalStore` + `withState` to define readable/writable state
-- `patchState` updates partial state
-- Derived signals (`computed`) create derived state
-
----
-
-## 🚦 Advanced Skills
-
-### 🔹 Entity Management
-- Use `@ngrx/signals/entities` plugin
+### Entity Management Details
 - Methods: `addEntity`, `updateEntity`, `removeEntity`, etc.
 - Enhanced collection management
 
-### 🔹 Computed State
+### Computed State Details
 - Create derived signals when source signal changes
 - Avoid manual effects/subscriptions
 
----
-
-## 🧪 Testing Skills
-- Use `@ngrx/signals/testing` for testing utilities
+### Testing Details
 - Makes stores easier to test with helper functions
 
----
+### Advanced Patterns
 
-## ⭐ Advanced Patterns
-
-### 👩‍💻 Event-Driven Architecture
+**Event-Driven Architecture:**
 - Experimental Events plugin for Flux-style design
 - Use with caution in production
 
-### 📜 Interop with RxJS
+**Interop with RxJS:**
 - Optional RxJS interoperability
 - Use `rxMethod` for async operations
 
----
-
-## 📁 Recommended Project Structure
+### Recommended Project Structure
 
 ```
 src/
@@ -110,20 +105,16 @@ src/
 │       └── api.service.ts
 ```
 
----
+### Learning Path
 
-## 📚 Learning Path
+1. Learn Angular Signals fundamentals
+2. Install & initialize @ngrx/signals
+3. Build simple feature store
+4. Add entity management
+5. Use advanced patterns (Events, RxJS interop)
+6. Write tests using @ngrx/signals/testing
 
-1. ➤ Learn Angular Signals fundamentals
-2. ➤ Install & initialize @ngrx/signals
-3. ➤ Build simple feature store
-4. ➤ Add entity management
-5. ➤ Use advanced patterns (Events, RxJS interop)
-6. ➤ Write tests using @ngrx/signals/testing
-
----
-
-## 📝 Notes
+### Notes
 
 - @ngrx/signals is evolving rapidly
 - Events/Flux plugin is experimental

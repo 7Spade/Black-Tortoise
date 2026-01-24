@@ -4,11 +4,66 @@ description: Angular Google Maps (@angular/google-maps) integration for interact
 license: Complete terms in LICENSE.txt
 ---
 
-# Angular Google Maps
+# Angular Google Maps Skill
 
-Expert guidance for integrating Google Maps into Angular applications using the official @angular/google-maps package.
+## Rules
 
-## When to Use This Skill
+### Setup and Configuration
+- Import `GoogleMapsModule` from `@angular/google-maps`
+- Load Google Maps script in `index.html` with API key
+- Use `@types/google.maps` for TypeScript types
+- Restrict API key by domain/IP for security
+
+### Map Component
+- Use `<google-map>` component with `[center]`, `[zoom]`, `[options]` bindings
+- Set explicit height on `google-map` element (required for display)
+- Use `google.maps.LatLngLiteral` type for positions: `{ lat: number, lng: number }`
+- Handle map events: `(mapClick)`, `(mapDrag)`, `(zoomChanged)`
+
+### Markers
+- Use `<map-marker>` component inside `<google-map>`
+- Set marker properties: `[position]`, `[label]`, `[title]`, `[options]`
+- Handle marker events: `(mapClick)`, `(mapDragend)`
+- Use marker clustering for more than 100 markers
+
+### Info Windows
+- Use `<map-info-window>` component for marker popups
+- Reference info window using `@ViewChild(MapInfoWindow)`
+- Call `infoWindow.open()` to display, `infoWindow.close()` to hide
+- Show info window content conditionally based on selected marker
+
+### Drawing Tools
+- Use `<map-polygon>` for polygon shapes with `[paths]` and `[options]`
+- Use `<map-polyline>` for lines with `[path]` and `[options]`
+- Use `<map-circle>` for circles with `[center]`, `[radius]`, `[options]`
+- Configure styles: `fillColor`, `strokeColor`, `opacity`, `strokeWeight`
+
+### Geocoding
+- Use `google.maps.Geocoder` for address/coordinate conversion
+- Cache geocoding results to avoid repeated API calls
+- Debounce geocoding requests (300-500ms) for user input
+- Handle geocoding errors gracefully
+
+### Performance
+- Lazy load Google Maps script only when needed
+- Use marker clustering for large datasets (>100 markers)
+- Filter markers by viewport bounds
+- NEVER load all markers at once for large datasets
+- NEVER geocode on every keystroke without debouncing
+
+### Security
+- NEVER expose API key in client code without restrictions
+- Store API key in environment configuration
+- Enable Google Cloud Console API restrictions (HTTP referrers, API scope)
+
+---
+
+## Context
+
+### Summary
+Angular Google Maps provides official Angular bindings for Google Maps JavaScript API, enabling declarative map integration with markers, polygons, info windows, and geocoding services.
+
+### When to Use This Skill
 
 Activate this skill when you need to:
 - Embed Google Maps in Angular components
@@ -22,7 +77,7 @@ Activate this skill when you need to:
 - Geocode addresses and reverse geocode coordinates
 - Optimize map performance for large datasets
 
-## Installation
+### Installation
 
 ```bash
 npm install @angular/google-maps
@@ -31,9 +86,9 @@ npm install @angular/google-maps
 npm install @types/google.maps
 ```
 
-## Setup
+### Setup Steps
 
-### Get API Key
+#### Get API Key
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create or select a project
@@ -41,14 +96,14 @@ npm install @types/google.maps
 4. Create API key credentials
 5. Restrict API key (recommended)
 
-### Load Google Maps Script
+#### Load Google Maps Script
 
 ```html
 <!-- index.html -->
 <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
 ```
 
-### Component Setup
+### Basic Map Component Example
 
 ```typescript
 import { Component } from '@angular/core';
@@ -119,9 +174,7 @@ interface Marker {
 }
 ```
 
-## Common Patterns
-
-### Map with Info Window
+### Map with Info Window Example
 
 ```typescript
 @Component({
@@ -153,7 +206,7 @@ export class MapWithInfoComponent {
 }
 ```
 
-### Marker Clustering
+### Marker Clustering Example
 
 ```typescript
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
@@ -189,7 +242,7 @@ export class ClusteredMapComponent implements AfterViewInit {
 }
 ```
 
-### Drawing Tools
+### Drawing Tools Example
 
 ```typescript
 @Component({
@@ -252,7 +305,7 @@ export class DrawingMapComponent {
 }
 ```
 
-### Geocoding Service
+### Geocoding Service Example
 
 ```typescript
 import { Injectable } from '@angular/core';
@@ -292,18 +345,7 @@ export class GeocodingService {
 }
 ```
 
-## Best Practices
-
-- ✅ Lazy load Google Maps script when needed
-- ✅ Use marker clustering for many markers (>100)
-- ✅ Restrict API key by domain/IP
-- ✅ Cache geocoding results
-- ✅ Use viewport bounds for data filtering
-- ❌ Don't load all markers at once
-- ❌ Don't geocode on every keystroke
-- ❌ Don't expose API key in client code
-
-## References
+### References
 
 - [Angular Google Maps Documentation](https://github.com/angular/components/tree/main/src/google-maps)
 - [Google Maps JavaScript API](https://developers.google.com/maps/documentation/javascript)

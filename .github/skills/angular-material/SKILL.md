@@ -6,22 +6,70 @@ license: MIT
 
 # Angular Material Component Library Skill
 
-## 🎯 Purpose
-This skill provides comprehensive guidance on **Angular Material**, the official Material Design component library for Angular applications, including component usage, theming, customization, and best practices.
+## Rules
 
-## 📦 What is Angular Material?
+### Setup and Configuration
+- Must install `@angular/material`, `@angular/cdk`, `@angular/animations`
+- Must configure `provideAnimations()` in `app.config.ts`
+- Must import specific Material modules (e.g., `MatButtonModule`, `MatIconModule`)
+- Must NOT import all Material modules with wildcard (`import * as Material`)
 
-Angular Material is Angular's official UI component library that implements Material Design:
-- **50+ Production-ready Components**: Buttons, forms, navigation, data tables, dialogs, and more
-- **Accessibility Built-in**: ARIA support and keyboard navigation
-- **Responsive Design**: Mobile-first, responsive layouts
-- **Theming System**: Powerful SCSS-based theming
-- **TypeScript Support**: Full type safety
-- **Angular Integration**: Seamless integration with Angular features
+### Form Controls
+- Must wrap all `matInput` in `<mat-form-field>` with `<mat-label>`
+- Must use `appearance="outline"` or `appearance="fill"` for form fields
+- Must use Reactive Forms with Material form controls
+- Must provide validation error messages with `<mat-error>`
+- Must use `MatDatepickerModule` with `MatNativeDateModule` for date pickers
 
-## 🎨 When to Use This Skill
+### Navigation Components
+- Must set explicit height on `<mat-sidenav-container>`
+- Must use `mat-nav-list` for navigation lists with `@for` and `track`
+- Must use `color` attribute for semantic styling (`primary`, `accent`, `warn`)
 
-Use Angular Material guidance when:
+### Buttons and Icons
+- Must use appropriate button variant: `mat-button`, `mat-raised-button`, `mat-flat-button`, `mat-stroked-button`, `mat-icon-button`, `mat-fab`, `mat-mini-fab`
+- Must provide `aria-label` for icon-only buttons
+- Must import Material Icons font in `index.html`
+
+### Data Tables
+- Must define `displayedColumns` for table columns
+- Must use `matColumnDef`, `mat-header-cell`, `mat-cell` for column definition
+- Must use `MatSort` directive with `mat-sort-header` for sorting
+- Must set `dataSource.sort` and `dataSource.paginator` in `ngAfterViewInit()`
+- Must use `MatPaginator` with `[pageSize]` and `[pageSizeOptions]`
+
+### Dialogs and Popups
+- Must inject `MatDialog` service to open dialogs
+- Must use `<h2 mat-dialog-title>`, `<mat-dialog-content>`, `<mat-dialog-actions>` structure
+- Must use `[mat-dialog-close]` for dialog action buttons
+- Must configure dialog width in open options
+- Must subscribe to `afterClosed()` for dialog results
+
+### Theming
+- Must use `@use '@angular/material' as mat` in SCSS
+- Must define custom palettes with `mat.define-palette()`
+- Must create theme with `mat.define-light-theme()` or `mat.define-dark-theme()`
+- Must include `@include mat.all-component-themes($theme)`
+
+### Accessibility
+- Must provide labels for all form fields
+- Must add ARIA attributes for icon-only buttons
+- Must ensure keyboard navigation support
+- Must use semantic color attributes (`primary`, `accent`, `warn`)
+
+### Performance
+- Must import only needed Material modules
+- Must use `@defer` for lazy loading heavy components
+- Must use virtual scrolling for large lists
+
+---
+
+## Context
+
+### Summary
+Angular Material is the official Material Design component library for Angular, providing 50+ production-ready components with built-in accessibility, theming, and TypeScript support.
+
+### When to Use This Skill
 - Building Angular applications with Material Design
 - Implementing forms with Material form controls
 - Creating data tables with sorting, pagination, and filtering
@@ -31,9 +79,7 @@ Use Angular Material guidance when:
 - Creating custom themes
 - Ensuring accessibility compliance
 
-## 🛠️ Installation & Setup
-
-### Install Angular Material
+### Installation
 
 ```bash
 # Using Angular CLI (recommended)
@@ -43,7 +89,7 @@ ng add @angular/material
 pnpm install @angular/material @angular/cdk @angular/animations
 ```
 
-### Configure in Application
+### Application Setup
 
 ```typescript
 // app.config.ts (Angular 20+ standalone)
@@ -57,7 +103,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-### Import Components
+### Component Import Example
 
 ```typescript
 // In standalone component
