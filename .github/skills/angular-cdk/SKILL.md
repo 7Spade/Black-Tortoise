@@ -6,10 +6,75 @@ license: MIT
 
 # Angular CDK (Component Dev Kit) Skill
 
-## 🎯 Purpose
+## Rules
+
+### Installation
+- **MUST** install Angular CDK via `pnpm install @angular/cdk`
+- **MAY** use `ng add @angular/material` which includes CDK
+
+### Accessibility (A11y)
+- **MUST** create `FocusTrap` in `ngOnInit()` using `focusTrapFactory.create()`
+- **MUST** call `focusTrap.focusInitialElement()` after creating focus trap
+- **MUST** destroy `FocusTrap` in `ngOnDestroy()` using `focusTrap.destroy()`
+- **MUST** stop monitoring focus in `ngOnDestroy()` using `focusMonitor.stopMonitoring()`
+- **MUST** use `LiveAnnouncer` for screen reader announcements of dynamic content
+- **MUST** use `FocusKeyManager` for keyboard navigation in lists
+- **MUST** destroy `keyManager` in `ngOnDestroy()` using `keyManager.destroy()`
+
+### Overlay
+- **MUST** use `flexibleConnectedTo()` with at least two fallback position strategies
+- **MUST** configure explicit `scrollStrategy` for overlay
+- **MUST** configure explicit `hasBackdrop` property for overlay
+- **MUST** dispose `overlayRef` in cleanup using `overlayRef.dispose()`
+- **MUST** use `OverlayConfig` to configure overlay behavior
+- **MUST** attach portal to overlay using `overlayRef.attach(portal)`
+
+### Portal
+- **MUST** use `ComponentPortal` for dynamic component rendering
+- **MUST** use `TemplatePortal` for template content projection
+- **MUST** detach portal when no longer needed to prevent memory leaks
+
+### Drag & Drop
+- **MUST** use `cdkDropList` container with `(cdkDropListDropped)` event handler
+- **MUST** use `cdkDrag` directive on draggable items
+- **MUST** use `track` expressions in `@for` loops with drag items
+- **MUST** use `moveItemInArray()` for single-list reordering
+- **MUST** use `transferArrayItem()` for cross-list transfers
+- **MUST** connect drop lists using `[cdkDropListConnectedTo]` for cross-list drag
+
+### Virtual Scrolling
+- **MUST** use `CdkVirtualScrollViewport` only for lists with more than 100 items
+- **MUST** set explicit `itemSize` property
+- **MUST** configure `minBufferPx` and `maxBufferPx` for smooth scrolling
+- **MUST** set fixed height on viewport container
+- **SHALL NOT** use auto-height virtual scroll viewports
+
+### Layout & Breakpoints
+- **MUST** use `BreakpointObserver` for responsive layout detection
+- **MUST** use `toSignal()` when converting breakpoint observables to signals
+- **MUST** provide `initialValue` when using `toSignal()` with breakpoints
+- **SHALL NOT** use direct `window.innerWidth` or manual resize listeners
+- **SHALL NOT** use direct `window.matchMedia()` calls
+
+### Resource Cleanup
+- **MUST** explicitly release all CDK resources in `ngOnDestroy()`
+- **MUST** clean up: `focusTrap`, `overlayRef`, `focusMonitor`, `keyManager`
+- **SHALL NOT** leave CDK resources without cleanup (causes memory leaks)
+
+### Best Practices
+- **MUST** use CDK for building accessible custom components
+- **MUST** provide multiple fallback positions for overlays
+- **SHOULD** configure appropriate buffer sizes for virtual scrolling
+- **SHOULD** use drag constraints and custom previews where appropriate
+
+---
+
+## Context
+
+### 🎯 Purpose
 This skill provides comprehensive guidance on the **Angular Component Dev Kit (CDK)**, a set of behavior primitives for building accessible, high-quality Angular components without Material Design styling.
 
-## 📦 What is Angular CDK?
+### 📦 What is Angular CDK?
 
 The Angular CDK is a library of unstyled UI component behaviors:
 - **Accessibility (A11y)**: Screen reader support, keyboard navigation, focus management
@@ -21,7 +86,7 @@ The Angular CDK is a library of unstyled UI component behaviors:
 - **Table**: Data table functionality without styling
 - **Tree**: Hierarchical tree structures
 
-## 🎨 When to Use This Skill
+### 🎨 When to Use This Skill
 
 Use Angular CDK guidance when:
 - Building custom UI components from scratch
@@ -33,19 +98,9 @@ Use Angular CDK guidance when:
 - Creating custom data tables or tree views
 - Managing focus trapping and keyboard navigation
 
-## 🛠️ Installation
+### 📚 Core CDK Modules
 
-```bash
-# Install Angular CDK
-pnpm install @angular/cdk
-
-# CDK is typically installed automatically with Angular Material
-ng add @angular/material
-```
-
-## 📚 Core CDK Modules
-
-### 1. Accessibility (A11y)
+#### 1. Accessibility (A11y)
 
 **Focus Management:**
 ```typescript
@@ -119,7 +174,7 @@ export class MenuComponent implements AfterViewInit {
 }
 ```
 
-### 2. Overlay
+#### 2. Overlay
 
 **Creating Overlays:**
 ```typescript
@@ -181,7 +236,7 @@ const config = new OverlayConfig({
 });
 ```
 
-### 3. Portal
+#### 3. Portal
 
 **Template Portals:**
 ```typescript
@@ -229,7 +284,7 @@ createComponentPortal() {
 }
 ```
 
-### 4. Drag & Drop
+#### 4. Drag & Drop
 
 **Sortable List:**
 ```typescript
@@ -302,7 +357,7 @@ export class TaskBoardComponent {
 }
 ```
 
-### 5. Virtual Scrolling
+#### 5. Virtual Scrolling
 
 **Virtual Scroll for Large Lists:**
 ```typescript
@@ -359,7 +414,7 @@ export class DynamicVirtualScrollComponent {
 }
 ```
 
-### 6. Layout & Breakpoints
+#### 6. Layout & Breakpoints
 
 **Breakpoint Observer:**
 ```typescript
@@ -404,7 +459,7 @@ this.breakpointObserver.observe([customBreakpoints.mobile])
   });
 ```
 
-### 7. Table
+#### 7. Table
 
 **CDK Table (Unstyled):**
 ```typescript
@@ -434,7 +489,7 @@ export class TableComponent {
 }
 ```
 
-### 8. Tree
+#### 8. Tree
 
 **Nested Tree:**
 ```typescript
@@ -474,9 +529,9 @@ export class TreeComponent {
 }
 ```
 
-## 🎯 Best Practices
+### 🎯 Best Practices
 
-### 1. Accessibility First
+#### 1. Accessibility First
 ```typescript
 // Always use CDK a11y utilities for custom components
 import { FocusTrap, LiveAnnouncer } from '@angular/cdk/a11y';
@@ -486,7 +541,7 @@ import { FocusTrap, LiveAnnouncer } from '@angular/cdk/a11y';
 // Implement keyboard navigation
 ```
 
-### 2. Overlay Positioning
+#### 2. Overlay Positioning
 ```typescript
 // Use flexible positioning for better UX
 const positionStrategy = this.overlay.position()
@@ -500,7 +555,7 @@ const positionStrategy = this.overlay.position()
   ]);
 ```
 
-### 3. Virtual Scrolling Performance
+#### 3. Virtual Scrolling Performance
 ```typescript
 // Configure buffer sizes for smooth scrolling
 <cdk-virtual-scroll-viewport 
@@ -509,7 +564,7 @@ const positionStrategy = this.overlay.position()
   maxBufferPx="800">  // Render extra items below
 ```
 
-### 4. Drag & Drop Constraints
+#### 4. Drag & Drop Constraints
 ```typescript
 // Constrain drag movement
 <div cdkDrag [cdkDragBoundary]="'.boundary-element'">
@@ -524,7 +579,7 @@ const positionStrategy = this.overlay.position()
 </div>
 ```
 
-## 🐛 Troubleshooting
+### 🐛 Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -535,14 +590,14 @@ const positionStrategy = this.overlay.position()
 | Breakpoint observer not triggering | Check for correct breakpoint strings |
 | Tree not expanding | Implement `hasChild` function and tree control |
 
-## 📖 References
+### 📖 References
 
 - [Angular CDK Official Docs](https://material.angular.io/cdk/categories)
 - [CDK API Reference](https://material.angular.io/cdk/api)
 - [Accessibility Guide](https://www.w3.org/WAI/ARIA/apg/)
 - [CDK GitHub Repository](https://github.com/angular/components)
 
-## 💡 Common Use Cases
+### 💡 Common Use Cases
 
 1. **Custom Dropdown**: Use Overlay + Portal
 2. **Accessible Dialog**: Use Overlay + Focus Trap + Live Announcer
@@ -552,9 +607,7 @@ const positionStrategy = this.overlay.position()
 6. **File Tree**: Use CDK Tree
 7. **Custom Tooltip**: Use Overlay + Positioning Strategy
 
----
-
-## 📂 Recommended Placement
+### 📂 Recommended Placement
 
 **Project-level skill:**
 ```
