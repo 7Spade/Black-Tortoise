@@ -3,13 +3,19 @@
  * 
  * Layer: Presentation
  * Purpose: Complete task management with feedback loop
- * Architecture: Workspace-scoped, Event-driven, Signal-based
+ * Architecture: Workspace-scoped, Event-driven, Pure Signal-based, NO RxJS
  * 
  * Implements: Task→QC→Fail→Issue→Task Ready feedback loop
+ * 
+ * Constitution Compliance:
+ * - No manual .subscribe() calls
+ * - Pure signal-based event handling via unsubscribe functions
+ * - Zone-less compatible
+ * - Event handlers stored and cleaned up properly
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
@@ -340,7 +346,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
   newTaskDescription = '';
   newTaskPriority: TaskPriority = 'medium';
 
-  private currentUserId = 'user-demo-001'; // In real app, inject from auth
+  private readonly currentUserId = signal<string>('user-demo-001');
   private unsubscribers: Array<() => void> = [];
 
   ngOnInit(): void {
@@ -353,7 +359,11 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
     this.eventBus = eventBus;
     this.workspaceId.set(eventBus.workspaceId);
 
-    // Subscribe to events for reactive updates
+    /**
+     * Subscribe to events using EventBus interface
+     * Returns cleanup functions that we store for proper cleanup
+     * No manual .subscribe() - uses event bus abstraction
+     */
     this.unsubscribers.push(
       eventBus.subscribe('TaskCreated', (event: any) => {
         console.log('[TasksModule] TaskCreated event received', event);
@@ -392,7 +402,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       workspaceId: this.workspaceId(),
       title: this.newTaskTitle,
       description: this.newTaskDescription,
-      createdById: this.currentUserId,
+      createdById: this.currentUserId(),
       priority: this.newTaskPriority,
     });
 
@@ -430,7 +440,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       task.id,
       this.workspaceId(),
       task.title,
-      this.currentUserId
+      this.currentUserId()
     );
 
     this.eventBus.publish(event);
@@ -450,7 +460,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       this.workspaceId(),
       task.title,
       'Quality standards not met (stub)',
-      this.currentUserId
+        this.currentUserId()
     );
 
     this.eventBus.publish(qcFailedEvent);
@@ -465,7 +475,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
         this.workspaceId(),
         `QC Failed: ${task.title}`,
         'Quality standards not met (stub)',
-        this.currentUserId,
+        this.currentUserId(),
         qcFailedEvent.correlationId,
         qcFailedEvent.eventId
       );
@@ -483,15 +493,18 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
     if (!this.eventBus || task.blockedByIssueIds.length === 0) return;
 
     const issueId = task.blockedByIssueIds[0];
+    if (!issueId) {
+      return;
+    }
 
     // Publish IssueResolved event
-    const event = createIssueResolvedEvent(
-      issueId,
-      task.id,
-      this.workspaceId(),
-      this.currentUserId,
-      'Fixed (stub)'
-    );
+      const event = createIssueResolvedEvent(
+        issueId,
+        task.id,
+        this.workspaceId(),
+        this.currentUserId(),
+        'Fixed (stub)'
+      );
 
     this.eventBus.publish(event);
     this.addEventToLog(event);

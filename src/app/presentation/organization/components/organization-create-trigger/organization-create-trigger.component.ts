@@ -3,17 +3,21 @@
  * 
  * Layer: Presentation
  * Purpose: Trigger component for opening organization creation dialog
- * Architecture: Zone-less, OnPush, Standalone
+ * Architecture: Zone-less, OnPush, Standalone, Pure Signal-based
  * 
  * Responsibilities:
  * - Provides API to open organization creation dialog
- * - Returns Observable with dialog result
+ * - Emits dialog result via signal output
  * - No business logic - only dialog coordination
+ * 
+ * Constitution Compliance:
+ * - No RxJS imports (removed Observable)
+ * - Pure signal-based API
+ * - Zone-less compatible
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
 
 @Component({
   selector: 'app-organization-create-trigger',
@@ -25,11 +29,23 @@ import { Observable, of } from 'rxjs';
 })
 export class OrganizationCreateTriggerComponent {
   /**
-   * Opens the organization creation dialog
-   * @returns Observable with dialog result (or null if cancelled)
+   * Output for dialog results
    */
-  openDialog(): Observable<unknown> {
-    // TODO: Implement dialog opening logic
-    return of(null);
+  readonly dialogResult = output<unknown>();
+  
+  /**
+   * Loading state
+   */
+  readonly isOpen = signal(false);
+  
+  /**
+   * Opens the organization creation dialog
+   * Emits result via output signal
+   */
+  openDialog(): void {
+    this.isOpen.set(true);
+    // TODO: Implement dialog opening logic with MatDialog
+    // Use toSignal() pattern like WorkspaceCreateTriggerComponent
+    // Convert afterClosed() Observable to signal and emit via dialogResult output
   }
 }

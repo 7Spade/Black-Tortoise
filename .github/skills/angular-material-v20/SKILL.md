@@ -6,68 +6,115 @@ license: MIT
 
 # Angular Material v20 Skill
 
-## 🎯 Purpose
-This skill provides guidance for working with **Angular Material v20** (`@angular/material: "~20.0.0"`), the official Material Design component library for Angular 20+ applications.
+## Rules
 
-## 🛠️ Installation
+### Installation
+- Use `ng add @angular/material` for automatic setup
+- Must install `@angular/material@~20.0.0` and `@angular/cdk@~20.0.0` together
 
-```bash
-ng add @angular/material
-```
+### Component Imports
+- Import specific component modules (e.g., `MatDialogModule`, `MatFormFieldModule`)
+- Use standalone components with explicit imports array
+- NEVER import entire Material library
 
-Or manually:
-```bash
-pnpm install @angular/material@~20.0.0 @angular/cdk@~20.0.0
-```
+### Theming
+- Use `@use '@angular/material' as mat;` syntax
+- Include `mat.core()` before theme definitions
+- Define theme with `mat.define-light-theme()` or `mat.define-dark-theme()`
+- Include `mat.all-component-themes($theme)` to apply theme
 
-## 📚 Core Components
+### Form Fields
+- Wrap `matInput` elements in `<mat-form-field>`
+- Use `appearance` attribute: `outline`, `fill`, or `standard`
+- Include `<mat-label>` for accessibility
+- Show errors with `<mat-error>` when field is invalid and touched
 
-### Form Controls
-- MatInput
-- MatSelect
-- MatCheckbox
-- MatRadioButton
-- MatSlideToggle
-- MatSlider
-- MatDatepicker
+### Dialog Usage
+- Inject `MatDialog` service
+- Use `dialog.open(Component, config)` to open dialogs
+- Configure dialog with `width`, `data`, and other options
+- Access dialog data via `MAT_DIALOG_DATA` injection token
 
-### Navigation
-- MatToolbar
-- MatSidenav
-- MatMenu
-- MatTabs
+### Accessibility
+- Follow ARIA guidelines for all components
+- Include aria-labels where text content is not visible
+- Ensure keyboard navigation works for all interactive elements
 
-### Layout
-- MatCard
-- MatDivider
-- MatExpansionPanel
-- MatGridList
-- MatList
-- MatStepper
+### Change Detection
+- Use `OnPush` change detection strategy
+- Leverage signals for reactive state management
 
-### Buttons & Indicators
-- MatButton
-- MatButtonToggle
-- MatBadge
-- MatChip
-- MatIcon
-- MatProgressBar
-- MatProgressSpinner
+### Performance
+- Lazy load Material modules when possible
+- Import only required component modules
+- Use virtual scrolling for large lists with `cdk-virtual-scroll-viewport`
 
-### Popups & Modals
-- MatDialog
-- MatSnackBar
-- MatTooltip
-- MatBottomSheet
+---
 
-### Data Tables
-- MatTable
-- MatSort
-- MatPaginator
+## Context
 
-## 🎨 Theming
+### Summary
+Angular Material v20 is the official Material Design component library for Angular 20+ applications, providing pre-built UI components with theming support and accessibility features.
 
-### Basic Theme Setup
+### When to Use This Skill
+
+Activate this skill when you need to:
+- Implement Material Design components in Angular applications
+- Set up or customize Material theming
+- Work with form controls (inputs, selects, checkboxes, datepickers)
+- Create navigation components (toolbar, sidenav, menu, tabs)
+- Build layouts with cards, expansion panels, steppers
+- Display data in tables with sorting and pagination
+- Show dialogs, snackbars, tooltips, or bottom sheets
+- Ensure WCAG accessibility compliance
+- Optimize Material component performance
+
+### Core Components
+
+#### Form Controls
+- MatInput - Text input fields
+- MatSelect - Dropdown selection
+- MatCheckbox - Checkbox inputs
+- MatRadioButton - Radio button groups
+- MatSlideToggle - Toggle switches
+- MatSlider - Slider inputs
+- MatDatepicker - Date selection
+
+#### Navigation
+- MatToolbar - Top navigation bar
+- MatSidenav - Side navigation drawer
+- MatMenu - Dropdown menus
+- MatTabs - Tabbed navigation
+
+#### Layout
+- MatCard - Card containers
+- MatDivider - Visual separators
+- MatExpansionPanel - Collapsible panels
+- MatGridList - Grid layouts
+- MatList - List displays
+- MatStepper - Step-by-step workflows
+
+#### Buttons & Indicators
+- MatButton - Button variants
+- MatButtonToggle - Toggle button groups
+- MatBadge - Notification badges
+- MatChip - Chip elements
+- MatIcon - Icon display
+- MatProgressBar - Linear progress
+- MatProgressSpinner - Circular progress
+
+#### Popups & Modals
+- MatDialog - Modal dialogs
+- MatSnackBar - Toast notifications
+- MatTooltip - Hover tooltips
+- MatBottomSheet - Bottom sheet modals
+
+#### Data Tables
+- MatTable - Data table display
+- MatSort - Column sorting
+- MatPaginator - Table pagination
+
+### Theming Example
 
 ```typescript
 // styles.scss
@@ -89,8 +136,6 @@ $my-theme: mat.define-light-theme((
 
 @include mat.all-component-themes($my-theme);
 ```
-
-## 💡 Common Patterns
 
 ### Dialog Example
 
@@ -147,20 +192,16 @@ export class FormComponent {
 }
 ```
 
-## 🚀 Best Practices
+### Best Practices
 
-1. **Import modules** - Import specific component modules
-2. **Use theming** - Leverage Material's theming system
-3. **Accessibility** - Follow ARIA guidelines
-4. **OnPush** - Use OnPush change detection
-5. **Lazy loading** - Lazy load Material modules where possible
+1. **Import modules** - Import specific component modules for better tree-shaking
+2. **Use theming** - Leverage Material's theming system for consistent styling
+3. **Accessibility** - Follow ARIA guidelines and ensure keyboard navigation
+4. **OnPush** - Use OnPush change detection with signals for better performance
+5. **Lazy loading** - Lazy load Material modules where possible to reduce initial bundle size
 
-## 📖 Resources
+### References
 
 - [Material Design Guidelines](https://material.io/design)
 - [Angular Material Docs](https://material.angular.io)
 - [Component API](https://material.angular.io/components/categories)
-
----
-
-💡 This skill automatically loads when working with Angular Material v20 components.

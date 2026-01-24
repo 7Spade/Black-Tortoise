@@ -1,0 +1,29 @@
+[
+  {
+    "file": "application/workspace/adapters/workspace-event-bus.adapter.ts",
+    "layer": "application",
+    "violations": [
+      {
+        "rule": "No-Manual-Subscribe",
+        "clause": "Rule 131, Zone-less requirement",
+        "detail": "Manual subscribe detected - must use signals/rxMethod"
+      }
+    ]
+  },
+  {
+    "file": "domain/event-bus/workspace-event-bus.ts",
+    "layer": "domain",
+    "violations": [
+      {
+        "rule": "Domain-Async-Violation",
+        "clause": "Rule 11",
+        "detail": "Domain contains async/await"
+      }
+    ]
+  }
+]
+
+=== SUMMARY ===
+Total files scanned: 152
+Files with violations: 2
+Total violation count: 2

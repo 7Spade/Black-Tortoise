@@ -3,7 +3,7 @@
  *
  * Layer: Application - Store
  * Purpose: Manages event state using NgRx Signals
- * Architecture: Zone-less, Pure Reactive, Angular 20+
+ * Architecture: Zone-less, Pure Reactive, Angular 20+, NO RxJS
  *
  * Responsibilities:
  * - Event publishing and subscription coordination
@@ -21,12 +21,11 @@
  * - Depends on Domain interfaces (EventBus, EventStore)
  * - Implements Application layer orchestration
  * - No direct Infrastructure dependencies (injected)
+ * - Pure signal-based, no RxJS operators
  */
 
-import { computed, inject } from '@angular/core';
+import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, tap, catchError, of } from 'rxjs';
 
 import { DomainEvent } from '@domain/event/domain-event';
 import { EventBus } from '@domain/event-bus/event-bus.interface';
@@ -96,61 +95,61 @@ export const EventStoreSignal = signalStore(
      * 1. Publish to EventBus (real-time notification)
      * 2. Append to EventStore (persistence)
      * 3. Update local cache
+     * 
+     * Pure signal-based implementation - no RxJS
      */
-    publishEvent: rxMethod<{ event: DomainEvent; eventBus: EventBus; eventStore: EventStore }>(
-      pipe(
-        tap(() => patchState(store, { isPublishing: true, error: null })),
-        switchMap(({ event, eventBus, eventStore }) =>
-          Promise.all([
-            eventBus.publish(event),
-            eventStore.append(event)
-          ]).then(() => {
-            // Update local cache
-            patchState(store, {
-              recentEvents: [...store.recentEvents(), event],
-              eventCount: store.eventCount() + 1,
-              lastEventTimestamp: event.timestamp,
-              isPublishing: false,
-            });
-          })
-        ),
-        catchError((error) => {
-          patchState(store, {
-            error: error.message || 'Failed to publish event',
-            isPublishing: false,
-          });
-          return of(null);
-        })
-      )
-    ),
+    async publishEvent(params: { event: DomainEvent; eventBus: EventBus; eventStore: EventStore }): Promise<void> {
+      const { event, eventBus, eventStore } = params;
+      
+      try {
+        patchState(store, { isPublishing: true, error: null });
+        
+        // Publish and persist in parallel
+        await Promise.all([
+          eventBus.publish(event),
+          eventStore.append(event)
+        ]);
+        
+        // Update local cache
+        patchState(store, {
+          recentEvents: [...store.recentEvents(), event],
+          eventCount: store.eventCount() + 1,
+          lastEventTimestamp: event.timestamp,
+          isPublishing: false,
+        });
+      } catch (error: any) {
+        patchState(store, {
+          error: error?.message || 'Failed to publish event',
+          isPublishing: false,
+        });
+      }
+    },
 
     /**
      * Load events from store
+     * Pure signal-based implementation - no RxJS
      */
-    loadEvents: rxMethod<{ eventStore: EventStore; workspaceId?: string }>(
-      pipe(
-        switchMap(({ eventStore, workspaceId }) =>
-          workspaceId
-            ? eventStore.getEventsForWorkspace(workspaceId)
-            : Promise.resolve([])
-        ),
-        tap((events) => {
-          patchState(store, {
-            recentEvents: events,
-            eventCount: events.length,
-            lastEventTimestamp: events.length > 0 
-              ? events[events.length - 1].timestamp 
-              : null,
-          });
-        }),
-        catchError((error) => {
-          patchState(store, {
-            error: error.message || 'Failed to load events',
-          });
-          return of([]);
-        })
-      )
-    ),
+    async loadEvents(params: { eventStore: EventStore; workspaceId?: string }): Promise<void> {
+      const { eventStore, workspaceId } = params;
+      
+      try {
+        const events = workspaceId
+          ? await eventStore.getEventsForWorkspace(workspaceId)
+          : [];
+        
+        patchState(store, {
+          recentEvents: events,
+          eventCount: events.length,
+          lastEventTimestamp: events.length > 0 && events[events.length - 1] 
+            ? events[events.length - 1].timestamp 
+            : null,
+        });
+      } catch (error: any) {
+        patchState(store, {
+          error: error?.message || 'Failed to load events',
+        });
+      }
+    },
 
     /**
      * Clear recent events cache

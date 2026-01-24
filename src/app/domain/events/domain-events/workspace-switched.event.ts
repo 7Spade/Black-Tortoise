@@ -31,6 +31,9 @@ export function createWorkspaceSwitchedEvent(
 ): WorkspaceSwitchedEvent {
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
+  const metadata: EventMetadata = userId
+    ? { version: 1, userId }
+    : { version: 1 };
   
   return {
     eventId,
@@ -44,9 +47,6 @@ export function createWorkspaceSwitchedEvent(
       previousWorkspaceId,
       currentWorkspaceId,
     },
-    metadata: {
-      version: 1,
-      userId,
-    },
+    metadata,
   };
 }

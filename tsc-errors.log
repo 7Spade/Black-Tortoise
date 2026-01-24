@@ -1,0 +1,107 @@
+src/app/app.config.ts(4,8): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/app.config.ts(10,8): error TS2307: Cannot find module '@angular/fire/analytics' or its corresponding type declarations.
+src/app/app.config.ts(11,51): error TS2307: Cannot find module '@angular/fire/app' or its corresponding type declarations.
+src/app/app.config.ts(16,8): error TS2307: Cannot find module '@angular/fire/app-check' or its corresponding type declarations.
+src/app/app.config.ts(17,38): error TS2307: Cannot find module '@angular/fire/auth' or its corresponding type declarations.
+src/app/app.config.ts(18,52): error TS2307: Cannot find module '@angular/fire/data-connect' or its corresponding type declarations.
+src/app/app.config.ts(19,46): error TS2307: Cannot find module '@angular/fire/database' or its corresponding type declarations.
+src/app/app.config.ts(20,48): error TS2307: Cannot find module '@angular/fire/firestore' or its corresponding type declarations.
+src/app/app.config.ts(21,48): error TS2307: Cannot find module '@angular/fire/functions' or its corresponding type declarations.
+src/app/app.config.ts(22,48): error TS2307: Cannot find module '@angular/fire/messaging' or its corresponding type declarations.
+src/app/app.config.ts(23,52): error TS2307: Cannot find module '@angular/fire/performance' or its corresponding type declarations.
+src/app/app.config.ts(27,8): error TS2307: Cannot find module '@angular/fire/remote-config' or its corresponding type declarations.
+src/app/app.config.ts(28,44): error TS2307: Cannot find module '@angular/fire/storage' or its corresponding type declarations.
+src/app/app.config.ts(29,46): error TS2307: Cannot find module '@angular/fire/vertexai' or its corresponding type declarations.
+src/app/app.config.ts(30,35): error TS2307: Cannot find module '@angular/platform-browser/animations' or its corresponding type declarations.
+src/app/app.config.ts(31,31): error TS2307: Cannot find module '@angular/router' or its corresponding type declarations.
+src/app/app.routes.ts(13,24): error TS2307: Cannot find module '@angular/router' or its corresponding type declarations.
+src/app/application/events/use-cases/publish-event.use-case.ts(17,36): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/events/use-cases/publish-event.use-case.ts(31,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/application/events/use-cases/publish-event.use-case.ts(33,38): error TS2693: 'EventBus' only refers to a type, but is being used as a value here.
+src/app/application/events/use-cases/publish-event.use-case.ts(34,40): error TS2693: 'EventStore' only refers to a type, but is being used as a value here.
+src/app/application/events/use-cases/publish-event.use-case.ts(80,16): error TS2339: Property 'causalityId' does not exist on type 'DomainEvent<Record<string, unknown>>'.
+src/app/application/events/use-cases/query-events.use-case.ts(16,36): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/events/use-cases/query-events.use-case.ts(34,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/application/events/use-cases/query-events.use-case.ts(36,40): error TS2693: 'EventStore' only refers to a type, but is being used as a value here.
+src/app/application/facades/header.facade.ts(21,36): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/facades/header.facade.ts(22,24): error TS2307: Cannot find module '@angular/router' or its corresponding type declarations.
+src/app/application/facades/header.facade.ts(26,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/application/facades/module.facade.ts(21,54): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/facades/module.facade.ts(22,42): error TS2307: Cannot find module '../adapters/workspace-event-bus.adapter' or its corresponding type declarations.
+src/app/application/facades/module.facade.ts(25,43): error TS2307: Cannot find module '../tokens/workspace-runtime.token' or its corresponding type declarations.
+src/app/application/facades/module.facade.ts(27,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/application/facades/module.facade.ts(75,32): error TS7006: Parameter 'modules' implicitly has an 'any' type.
+src/app/application/facades/notification.facade.ts(21,36): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/facades/notification.facade.ts(24,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/application/facades/search.facade.ts(21,36): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/facades/search.facade.ts(24,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/application/facades/shell.facade.ts(15,54): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/facades/shell.facade.ts(16,26): error TS2307: Cannot find module '@angular/core/rxjs-interop' or its corresponding type declarations.
+src/app/application/facades/shell.facade.ts(17,39): error TS2307: Cannot find module '@angular/router' or its corresponding type declarations.
+src/app/application/facades/shell.facade.ts(19,40): error TS2307: Cannot find module 'rxjs' or its corresponding type declarations.
+src/app/application/facades/shell.facade.ts(21,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/application/facades/shell.facade.ts(33,15): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/app/application/facades/shell.facade.ts(60,40): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/app/application/index.ts(9,15): error TS2307: Cannot find module './interfaces/workspace-runtime-factory.interface' or its corresponding type declarations.
+src/app/application/index.ts(14,15): error TS2307: Cannot find module './tokens/workspace-runtime.token' or its corresponding type declarations.
+src/app/application/index.ts(17,15): error TS2307: Cannot find module './adapters/workspace-event-bus.adapter' or its corresponding type declarations.
+src/app/application/index.ts(23,15): error TS2307: Cannot find module './facades/workspace-host.facade' or its corresponding type declarations.
+src/app/application/index.ts(28,15): error TS2307: Cannot find module './stores/workspace-context.store' or its corresponding type declarations.
+src/app/application/index.ts(32,15): error TS2307: Cannot find module './models/workspace-create-result.model' or its corresponding type declarations.
+src/app/application/index.ts(38,15): error TS2307: Cannot find module './workspace/identity.facade' or its corresponding type declarations.
+src/app/application/index.ts(39,15): error TS2307: Cannot find module './workspace/workspace.facade' or its corresponding type declarations.
+src/app/application/stores/event.store.ts(27,26): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/stores/event.store.ts(28,79): error TS2307: Cannot find module '@ngrx/signals' or its corresponding type declarations.
+src/app/application/stores/event.store.ts(61,17): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/app/application/stores/event.store.ts(71,35): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/app/application/stores/event.store.ts(78,35): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/app/application/stores/event.store.ts(90,16): error TS7006: Parameter 'store' implicitly has an 'any' type.
+src/app/application/stores/event.store.ts(144,15): error TS2532: Object is possibly 'undefined'.
+src/app/application/stores/presentation.store.ts(20,26): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/stores/presentation.store.ts(21,79): error TS2307: Cannot find module '@ngrx/signals' or its corresponding type declarations.
+src/app/application/stores/presentation.store.ts(62,17): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/app/application/stores/presentation.store.ts(67,36): error TS7006: Parameter 'n' implicitly has an 'any' type.
+src/app/application/stores/presentation.store.ts(81,36): error TS7006: Parameter 'n' implicitly has an 'any' type.
+src/app/application/stores/presentation.store.ts(106,16): error TS7006: Parameter 'store' implicitly has an 'any' type.
+src/app/application/stores/presentation.store.ts(128,53): error TS7006: Parameter 'n' implicitly has an 'any' type.
+src/app/application/stores/presentation.store.ts(137,50): error TS7006: Parameter 'n' implicitly has an 'any' type.
+src/app/application/stores/presentation.store.ts(148,50): error TS7006: Parameter 'n' implicitly has an 'any' type.
+src/app/application/tasks/stores/tasks.store.ts(12,26): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/tasks/stores/tasks.store.ts(13,79): error TS2307: Cannot find module '@ngrx/signals' or its corresponding type declarations.
+src/app/application/tasks/stores/tasks.store.ts(43,19): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/app/application/tasks/stores/tasks.store.ts(53,56): error TS18046: 't' is of type 'unknown'.
+src/app/application/tasks/stores/tasks.store.ts(60,56): error TS18046: 't' is of type 'unknown'.
+src/app/application/tasks/stores/tasks.store.ts(67,56): error TS18046: 't' is of type 'unknown'.
+src/app/application/tasks/stores/tasks.store.ts(74,56): error TS18046: 't' is of type 'unknown'.
+src/app/application/tasks/stores/tasks.store.ts(83,18): error TS7006: Parameter 'store' implicitly has an 'any' type.
+src/app/application/workspace/facades/identity.facade.ts(15,54): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/workspace/facades/identity.facade.ts(18,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/application/workspace/facades/identity.facade.ts(41,35): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/app/application/workspace/facades/workspace-host.facade.ts(15,54): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/workspace/facades/workspace-host.facade.ts(16,24): error TS2307: Cannot find module '@angular/router' or its corresponding type declarations.
+src/app/application/workspace/facades/workspace-host.facade.ts(20,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/application/workspace/facades/workspace-host.facade.ts(41,37): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/app/application/workspace/facades/workspace.facade.ts(16,54): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/workspace/facades/workspace.facade.ts(17,24): error TS2307: Cannot find module '@angular/router' or its corresponding type declarations.
+src/app/application/workspace/facades/workspace.facade.ts(21,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/application/workspace/facades/workspace.facade.ts(59,36): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/app/application/workspace/facades/workspace.facade.ts(67,35): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/app/application/workspace/stores/workspace-context.store.ts(12,34): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/workspace/stores/workspace-context.store.ts(25,8): error TS2307: Cannot find module '@ngrx/signals' or its corresponding type declarations.
+src/app/application/workspace/stores/workspace-context.store.ts(86,17): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/app/application/workspace/stores/workspace-context.store.ts(126,16): error TS7006: Parameter 'store' implicitly has an 'any' type.
+src/app/application/workspace/stores/workspace-context.store.ts(195,60): error TS7006: Parameter 'w' implicitly has an 'any' type.
+src/app/application/workspace/stores/workspace-context.store.ts(344,12): error TS7006: Parameter 'store' implicitly has an 'any' type.
+src/app/application/workspace/tokens/workspace-runtime.token.ts(11,32): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/workspace/use-cases/create-workspace.use-case.ts(8,28): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/workspace/use-cases/create-workspace.use-case.ts(27,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/application/workspace/use-cases/handle-domain-event.use-case.ts(8,28): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/workspace/use-cases/handle-domain-event.use-case.ts(17,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/application/workspace/use-cases/switch-workspace.use-case.ts(8,28): error TS2307: Cannot find module '@angular/core' or its corresponding type declarations.
+src/app/application/workspace/use-cases/switch-workspace.use-case.ts(24,1): error TS2354: This syntax requires an imported helper but module 'tslib' cannot be found.
+src/app/domain/aggregates/document.aggregate.ts(12,29): error TS2307: Cannot find module '../value-objects/workspace-id.vo' or its corresponding type declarations.
+src/app/domain/aggregates/issue.aggregate.ts(11,29): error TS2307: Cannot find module '../value-objects/workspace-id.vo' or its corresponding type declarations.
+src/app/domain/aggregates/issue.aggregate.ts(55,3): error TS2375: Type '{ id: string; workspaceId: WorkspaceId; title: string; description: string; type: IssueType; status: "open"; priority: IssuePriority; assigneeId: string | undefined; reportedBy: string; createdAt: Date; updatedAt: Date; version: number; }' is not assignable to type 'IssueAggregate' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'assigneeId' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.

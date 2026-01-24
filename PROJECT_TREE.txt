@@ -1,0 +1,221 @@
+src/app
+├── app.config.ts
+├── app.routes.ts
+├── application
+│   ├── events
+│   │   ├── index.ts
+│   │   ├── module-events.ts
+│   │   └── use-cases
+│   │       ├── publish-event.use-case.ts
+│   │       └── query-events.use-case.ts
+│   ├── facades
+│   │   ├── header.facade.ts
+│   │   ├── module.facade.ts
+│   │   ├── notification.facade.ts
+│   │   ├── search.facade.ts
+│   │   └── shell.facade.ts
+│   ├── index.ts
+│   ├── interfaces
+│   │   ├── module-event-bus.interface.ts
+│   │   └── module.interface.ts
+│   ├── stores
+│   │   ├── event.store.ts
+│   │   └── presentation.store.ts
+│   ├── tasks
+│   │   └── stores
+│   │       └── tasks.store.ts
+│   └── workspace
+│       ├── adapters
+│       │   └── workspace-event-bus.adapter.ts
+│       ├── facades
+│       │   ├── identity.facade.ts
+│       │   ├── workspace-host.facade.ts
+│       │   └── workspace.facade.ts
+│       ├── index.ts
+│       ├── interfaces
+│       │   └── workspace-runtime-factory.interface.ts
+│       ├── models
+│       │   ├── workspace-create-result.model.ts
+│       │   └── workspace-create-result.validator.ts
+│       ├── stores
+│       │   └── workspace-context.store.ts
+│       ├── tokens
+│       │   └── workspace-runtime.token.ts
+│       └── use-cases
+│           ├── create-workspace.use-case.ts
+│           ├── handle-domain-event.use-case.ts
+│           └── switch-workspace.use-case.ts
+├── domain
+│   ├── aggregates
+│   │   ├── document.aggregate.ts
+│   │   ├── issue.aggregate.ts
+│   │   ├── member.aggregate.ts
+│   │   └── task.aggregate.ts
+│   ├── causality
+│   │   └── causality-tracker.ts
+│   ├── entities
+│   │   ├── bot.entity.ts
+│   │   ├── role.entity.ts
+│   │   ├── team.entity.ts
+│   │   └── user.entity.ts
+│   ├── event
+│   │   ├── domain-event.ts
+│   │   ├── event-metadata.ts
+│   │   ├── event-type.ts
+│   │   └── index.ts
+│   ├── event-bus
+│   │   ├── event-bus.interface.spec.ts
+│   │   └── event-bus.interface.ts
+│   ├── event-store
+│   │   ├── event-store.interface.spec.ts
+│   │   └── event-store.interface.ts
+│   ├── events
+│   │   └── domain-events
+│   │       ├── document-uploaded.event.ts
+│   │       ├── index.ts
+│   │       ├── issue-created.event.ts
+│   │       ├── issue-resolved.event.ts
+│   │       ├── qc-failed.event.ts
+│   │       ├── task-completed.event.ts
+│   │       ├── task-created.event.ts
+│   │       ├── task-submitted-for-qc.event.ts
+│   │       ├── workspace-created.event.ts
+│   │       └── workspace-switched.event.ts
+│   ├── module
+│   │   ├── module-event.ts
+│   │   └── module.interface.ts
+│   ├── organization
+│   │   └── organization.entity.ts
+│   ├── repositories
+│   │   ├── document.repository.ts
+│   │   └── task.repository.ts
+│   ├── services
+│   │   └── task-domain.service.ts
+│   ├── task
+│   │   └── task.entity.ts
+│   ├── value-objects
+│   │   ├── document-id.vo.ts
+│   │   ├── event-id.vo.ts
+│   │   └── task-id.vo.ts
+│   └── workspace
+│       ├── aggregates
+│       │   └── workspace.aggregate.ts
+│       ├── entities
+│       │   └── workspace.entity.ts
+│       ├── index.ts
+│       ├── interfaces
+│       │   ├── workspace-context.ts
+│       │   └── workspace-event-bus.interface.ts
+│       ├── repositories
+│       │   └── workspace.repository.ts
+│       ├── services
+│       │   └── workspace-domain.service.ts
+│       └── value-objects
+│           └── workspace-id.vo.ts
+├── infrastructure
+│   ├── events
+│   │   ├── in-memory-event-bus.impl.spec.ts
+│   │   ├── in-memory-event-bus.impl.ts
+│   │   ├── in-memory-event-store.impl.spec.ts
+│   │   ├── in-memory-event-store.impl.ts
+│   │   └── index.ts
+│   ├── firebase
+│   │   └── angularfire-signal-demo.service.ts
+│   └── workspace
+│       ├── factories
+│       │   ├── in-memory-event-bus.ts
+│       │   └── workspace-runtime.factory.ts
+│       ├── index.ts
+│       └── persistence
+│           └── workspace.repository.impl.ts
+└── presentation
+    ├── app.component.ts
+    ├── containers
+    │   ├── context-switcher
+    │   │   ├── context-switcher.component.html
+    │   │   ├── context-switcher.component.scss
+    │   │   ├── context-switcher.component.spec.ts
+    │   │   ├── context-switcher.component.ts
+    │   │   └── index.ts
+    │   ├── index.ts
+    │   ├── organization-switcher
+    │   ├── team-switcher
+    │   ├── workspace-host
+    │   │   ├── components
+    │   │   ├── index.ts
+    │   │   ├── module-host-container.component.ts
+    │   │   └── workspace-host.component.ts
+    │   └── workspace-modules
+    │       ├── acceptance.module.ts
+    │       ├── audit.module.ts
+    │       ├── basic
+    │       ├── calendar.module.ts
+    │       ├── daily.module.ts
+    │       ├── documents.module.ts
+    │       ├── issues.module.ts
+    │       ├── members.module.ts
+    │       ├── overview.module.ts
+    │       ├── permissions.module.ts
+    │       ├── quality-control.module.ts
+    │       ├── settings.module.ts
+    │       └── tasks.module.ts
+    ├── features
+    │   └── workspace
+    │       ├── components
+    │       ├── dialogs
+    │       └── index.ts
+    ├── index.ts
+    ├── organization
+    │   ├── components
+    │   │   ├── dialogs
+    │   │   └── organization-create-trigger
+    │   └── index.ts
+    ├── pages
+    │   ├── dashboard
+    │   │   ├── demo-dashboard.component.html
+    │   │   ├── demo-dashboard.component.scss
+    │   │   ├── demo-dashboard.component.spec.ts
+    │   │   ├── demo-dashboard.component.ts
+    │   │   └── index.ts
+    │   ├── index.ts
+    │   ├── profile
+    │   │   ├── index.ts
+    │   │   ├── profile.component.html
+    │   │   ├── profile.component.scss
+    │   │   └── profile.component.ts
+    │   └── settings
+    │       ├── index.ts
+    │       ├── settings.component.html
+    │       ├── settings.component.scss
+    │       ├── settings.component.spec.ts
+    │       └── settings.component.ts
+    ├── shared
+    │   ├── components
+    │   │   ├── header
+    │   │   ├── notification
+    │   │   ├── search
+    │   │   ├── theme-toggle
+    │   │   ├── user-avatar
+    │   │   └── workspace-switcher
+    │   ├── directives
+    │   │   └── index.ts
+    │   ├── index.ts
+    │   ├── pipes
+    │   │   └── index.ts
+    │   └── stores
+    │       └── presentation.store.ts
+    ├── shell
+    │   ├── global-shell.component.ts
+    │   └── index.ts
+    ├── team
+    │   ├── components
+    │   │   ├── index.ts
+    │   │   ├── team-create-trigger
+    │   │   └── team-placeholder.component.ts
+    │   ├── dialogs
+    │   │   └── team-create-dialog
+    │   └── index.ts
+    └── theme
+        └── index.ts
+
+84 directories, 135 files

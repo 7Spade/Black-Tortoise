@@ -4,11 +4,43 @@ description: Angular Router for navigation, routing configuration, route guards,
 license: Complete terms in LICENSE.txt
 ---
 
-# Angular Router
+# Angular Router Skill
 
-Expert guidance for implementing navigation and routing in Angular applications using the Angular Router module.
+## Rules
 
-## When to Use This Skill
+### Router Configuration
+- Use `provideRouter(routes)` in `app.config.ts` for standalone applications
+- Define routes in a separate `routes.ts` file
+- Use `pathMatch: 'full'` for empty path redirects
+- Include wildcard route (`**`) as the LAST route for 404 handling
+
+### Lazy Loading
+- Use `loadChildren` for lazy loading feature routes
+- Use `loadComponent` for lazy loading standalone components
+- Do NOT eagerly import feature modules in route configuration
+
+### Route Guards
+- Use functional guards with `inject()` for dependency injection
+- Return `boolean` or `UrlTree` from guards
+- Use `router.createUrlTree(['/path'])` for guard redirects
+- Do NOT use class-based guards (CanActivate, CanDeactivate interfaces)
+
+### Route Parameters
+- Use `toSignal(route.params, { initialValue })` to access route parameters
+- Use `toSignal(route.queryParams, { initialValue })` to access query parameters
+- Provide `initialValue` when converting route observables to signals
+- Do NOT manually subscribe to `route.params` or `route.queryParams`
+
+### Navigation
+- Use `router.navigate(['/path'])` for programmatic navigation
+- Use `[routerLink]="['/path']"` for template navigation
+- Do NOT manipulate URLs directly via `window.location`
+
+---
+
+## Context
+
+### When to Use This Skill
 
 Activate this skill when you need to:
 - Configure application routes
@@ -21,7 +53,7 @@ Activate this skill when you need to:
 - Implement route redirects and wildcards
 - Work with router events and navigation lifecycle
 
-## Basic Setup
+### Basic Setup
 
 ```typescript
 // app.routes.ts
@@ -46,7 +78,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-## Lazy Loading
+### Lazy Loading
 
 ```typescript
 // Feature module lazy loading
@@ -64,7 +96,7 @@ export const routes: Routes = [
 ];
 ```
 
-## Route Guards
+### Route Guards
 
 ```typescript
 // Auth guard
@@ -91,7 +123,7 @@ export const authGuard = () => {
 }
 ```
 
-## Route Parameters
+### Route Parameters
 
 ```typescript
 // Route with parameter
@@ -108,7 +140,7 @@ export class UserDetailComponent {
 }
 ```
 
-## References
+### References
 
 - [Angular Router Documentation](https://angular.dev/guide/routing)
 - [Router API Reference](https://angular.dev/api/router)

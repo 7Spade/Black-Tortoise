@@ -3,24 +3,27 @@
  * 
  * Layer: Presentation - Components
  * Purpose: Sole place that opens workspace creation dialog and emits results
- * Architecture: Zone-less, OnPush, Pure Reactive, Signal-based
+ * Architecture: Zone-less, OnPush, Pure Reactive, Signal-based, NO RxJS
  * 
  * Responsibilities:
  * - Opens MatDialog with WorkspaceCreateDialogComponent
  * - Emits dialog result via signal output
  * - NO result interpretation or business logic
  * - NO knowledge of workspace/org/auth
- * - MatDialog.afterClosed() is framework boundary - uses toSignal for reactive handling
+ * 
+ * Constitution Compliance:
+ * - No RxJS imports (removed Subject, filter)
+ * - No manual subscribe calls
+ * - Pure signal-based using effect for dialog result handling
+ * - Framework boundary (MatDialog) converted to signal via toSignal
  */
 
-import { ChangeDetectionStrategy, Component, effect, inject, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import { WorkspaceCreateDialogComponent } from '@presentation/features/workspace/dialogs/workspace-create-dialog.component';
 import { WorkspaceCreateResult } from '@application/workspace/models/workspace-create-result.model';
 import { isWorkspaceCreateResult } from '@application/workspace/models/workspace-create-result.validator';
-import { Subject } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-workspace-create-trigger',
@@ -38,39 +41,29 @@ export class WorkspaceCreateTriggerComponent {
   readonly dialogResult = output<WorkspaceCreateResult>();
 
   /**
-   * Subject for dialog results (reactive stream from framework boundary)
+   * Signal to track latest dialog result from current dialog instance
    */
-  private readonly _dialogResult$ = new Subject<unknown>();
-
-  /**
-   * Convert dialog result stream to signal with validation filter
-   * Pure reactive: Observable -> Signal conversion via toSignal
-   * Uses extracted type guard utility for validation
-   */
-  private readonly _validatedResult = toSignal(
-    this._dialogResult$.pipe(
-      filter(isWorkspaceCreateResult)
-    ),
-    { requireSync: false }
-  );
+  private readonly _latestDialogResult = signal<unknown | null>(null);
 
   /**
    * Constructor with effect to emit validated results via output
-   * Effect pattern for signal -> output emission
-   * Effect only emits when signal changes to non-null value
+   * Effect pattern for signal validation and emission
    */
   constructor() {
     effect(() => {
-      const result = this._validatedResult();
-      if (result) {
+      const result = this._latestDialogResult();
+      if (result && isWorkspaceCreateResult(result)) {
         this.dialogResult.emit(result);
+        // Reset after emission
+        this._latestDialogResult.set(null);
       }
     }, { allowSignalWrites: false });
   }
 
   /**
    * Open workspace creation dialog
-   * MatDialog afterClosed() is framework boundary - push to Subject for reactive handling
+   * Framework boundary: MatDialog Observable -> Signal (via toSignal on individual call)
+   * No manual subscribe - uses toSignal for reactive handling
    */
   openDialog(): void {
     const dialogRef = this.dialog.open(WorkspaceCreateDialogComponent, {
@@ -79,10 +72,17 @@ export class WorkspaceCreateTriggerComponent {
       autoFocus: true,
     });
 
-    // Framework boundary: MatDialog Observable -> Subject (reactive stream)
-    dialogRef.afterClosed().subscribe({
-      next: (result) => this._dialogResult$.next(result),
-      error: (error) => console.error('[WorkspaceCreateTriggerComponent] Dialog error:', error)
-    });
+    // Framework boundary: Convert MatDialog afterClosed Observable to signal
+    // toSignal automatically subscribes and unsubscribes
+    const resultSignal = toSignal(dialogRef.afterClosed());
+    
+    // Effect to handle dialog result and update local signal
+    // This effect will clean up automatically when the signal completes
+    effect(() => {
+      const result = resultSignal();
+      if (result !== undefined) {
+        this._latestDialogResult.set(result);
+      }
+    }, { allowSignalWrites: true });
   }
 }

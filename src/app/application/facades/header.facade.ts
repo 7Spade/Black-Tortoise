@@ -4,20 +4,24 @@
  * Layer: Application - Facade
  * Purpose: Application entry point for header feature - receives intent events,
  *          coordinates with WorkspaceContextStore for app actions (switch/create workspace, navigate)
- * Architecture: Zone-less, Pure Reactive, uses Router for navigation
+ * Architecture: Zone-less, Pure Reactive, Signal-based only
  * 
  * Responsibilities:
  * - Receives user intent events from UI controls
  * - Delegates workspace operations to WorkspaceContextStore (application layer)
  * - Handles navigation via Router (presentation-layer framework concern)
  * - No new stores, no business logic - pure orchestration
+ * 
+ * Constitution Compliance:
+ * - No RxJS imports (removed Observable)
+ * - Pure signal-based coordination
+ * - Zone-less compatible
  */
 
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { WorkspaceContextStore } from '@application/workspace';
 import { WorkspaceCreateResult } from '@application/workspace/models/workspace-create-result.model';
-import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class HeaderFacade {
@@ -44,14 +48,5 @@ export class HeaderFacade {
     this.router.navigate(['/workspace']).catch(() => {
       this.workspaceContext.setError('Failed to navigate to workspace');
     });
-  }
-
-  /**
-   * Handle dialog result stream for workspace creation
-   * Used by WorkspaceCreateTriggerComponent to process dialog results
-   * @param result$ - Observable stream of dialog results
-   */
-  handleCreateWorkspaceResult(result$: Observable<WorkspaceCreateResult>): Observable<WorkspaceCreateResult> {
-    return result$;
   }
 }
