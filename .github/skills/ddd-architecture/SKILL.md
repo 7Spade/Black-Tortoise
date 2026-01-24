@@ -6,9 +6,77 @@ license: Complete terms in LICENSE.txt
 
 # Domain-Driven Design (DDD) Architecture
 
-Expert guidance for implementing Domain-Driven Design patterns in Angular applications with strict layer boundaries and clean architecture principles.
+## Rules
 
-## When to Use This Skill
+### Layered Architecture
+- Use four-layer architecture: Presentation → Application → Domain ← Infrastructure
+- Domain layer MUST be pure TypeScript with NO framework dependencies
+- ALL dependencies point inward toward the Domain layer
+- Do NOT allow Domain layer to depend on Application, Infrastructure, or Presentation
+
+### Dependency Direction
+- Presentation MAY depend on Application and Shared layers
+- Application MAY depend on Domain and Shared layers
+- Infrastructure MUST depend ONLY on Domain layer interfaces
+- Domain MUST NOT depend on any other layer
+
+### Domain Layer - Entities
+- Use entities for objects with identity and lifecycle
+- Encapsulate business logic in entity methods
+- Use private fields with getters (NO public setters)
+- Implement factory methods (e.g., `static create()`) for entity creation
+- Raise domain events when state changes occur
+- Do NOT expose internal state through public setters
+
+### Domain Layer - Value Objects
+- Use value objects for concepts without identity
+- Make value objects IMMUTABLE (readonly fields, private constructor)
+- Implement validation in static factory method (e.g., `static create()`)
+- Implement `equals()` method for value-based equality comparison
+- Do NOT create value objects without validation
+
+### Domain Layer - Aggregates
+- Use aggregates as consistency boundaries for related entities
+- Enforce business invariants across all entities in the aggregate
+- Access entities ONLY through the aggregate root
+- Do NOT allow direct access to entities within an aggregate
+
+### Domain Layer - Domain Events
+- Raise domain events for business-significant occurrences
+- Store events in entity's internal `_domainEvents` array
+- Include `eventId`, `occurredOn`, and `eventType` in all events
+- Clear events after publishing via `clearDomainEvents()`
+
+### Domain Layer - Repository Interfaces
+- Define repository interfaces in the Domain layer
+- Use Observable return types for async operations
+- Use domain entities and value objects in method signatures
+- Do NOT implement repositories in the Domain layer
+
+### Application Layer
+- Orchestrate domain objects and infrastructure in application services
+- Use command/query pattern for use case operations
+- Publish domain events after persisting entities
+- Do NOT put business logic in application services (belongs in Domain)
+
+### Infrastructure Layer - Repository Implementation
+- Implement domain repository interfaces in Infrastructure layer
+- Convert between domain entities and persistence models
+- Use `toDomain()` method to map persistence data to domain entities
+- Use `toFirestore()` (or similar) method to map domain entities to persistence
+- Do NOT expose persistence details to Domain or Application layers
+
+### Testing
+- Test domain entities and value objects independently (unit tests)
+- Test invariants and business rules in domain layer
+- Mock repository interfaces when testing application services
+- Test domain event generation and clearing
+
+---
+
+## Context
+
+### When to Use This Skill
 
 Activate this skill when you need to:
 - Design domain models with aggregates and entities
