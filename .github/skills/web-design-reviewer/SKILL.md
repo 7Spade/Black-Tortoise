@@ -1,28 +1,27 @@
 ---
-name: web-design-reviewer
-description: 'This skill enables visual inspection of websites running locally or remotely to identify and fix design issues. Triggers on requests like "review website design", "check the UI", "fix the layout", "find design problems". Detects issues with responsive design, accessibility, visual consistency, and layout breakage, then performs fixes at the source code level.'
+name: black-tortoise-ui-reviewer
+description: 'Black-Tortoise UI review and fixes. Use when asked to review UI, layout, or design in this repo. Focus on Angular 20 + standalone components, Material Design 3 tokens, @ngrx/signals state, and DDD layer boundaries. Checks responsiveness, a11y, spacing, and M3 token usage; applies minimal fixes in presentation styles/templates.'
+license: MIT
 ---
 
-# Web Design Reviewer
+# Black-Tortoise UI Reviewer
 
-This skill enables visual inspection and validation of website design quality, identifying and fixing issues at the source code level.
+This skill focuses on the Black-Tortoise Angular 20 + Material Design 3 UI stack, identifying and fixing presentation-layer issues at the source code level.
 
 ## Scope of Application
 
-- Static sites (HTML/CSS/JS)
-- SPA frameworks such as React / Vue / Angular / Svelte
-- Full-stack frameworks such as Next.js / Nuxt / SvelteKit
-- CMS platforms such as WordPress / Drupal
-- Any other web application
+- Black-Tortoise Angular 20 presentation layer
+- Material Design 3 component styles and tokens
+- Standalone component templates and SCSS files
 
 ## Prerequisites
 
 ### Required
 
-1. **Target website must be running**
-   - Local development server (e.g., `http://localhost:3000`)
+1. **Target UI must be reachable**
+   - Local dev server (e.g., `http://localhost:4200`, configurable)
    - Staging environment
-   - Production environment (for read-only reviews)
+   - Production environment (read-only reviews)
 
 2. **Browser automation must be available**
    - Screenshot capture
@@ -31,6 +30,7 @@ This skill enables visual inspection and validation of website design quality, i
 
 3. **Access to source code (when making fixes)**
    - Project must exist within the workspace
+   - Edits must be limited to presentation-layer files
 
 ## Workflow Overview
 
@@ -60,10 +60,10 @@ When making fixes, gather the following information:
 
 | Item | Example Question |
 |------|------------------|
-| Framework | Are you using React / Vue / Next.js, etc.? |
-| Styling Method | CSS / SCSS / Tailwind / CSS-in-JS, etc. |
-| Source Location | Where are style files and components located? |
-| Review Scope | Specific pages only or entire site? |
+| Framework | Confirm Angular 20 standalone components? |
+| Styling Method | SCSS with Material Design 3 tokens? |
+| Source Location | Which presentation components or styles? |
+| Review Scope | Specific pages only or entire UI? |
 
 ### 1.3 Automatic Project Detection
 
@@ -71,26 +71,20 @@ Attempt automatic detection from files in the workspace:
 
 ```
 Detection targets:
-├── package.json     → Framework and dependencies
-├── tsconfig.json    → TypeScript usage
-├── tailwind.config  → Tailwind CSS
-├── next.config      → Next.js
-├── vite.config      → Vite
-├── nuxt.config      → Nuxt
-└── src/ or app/     → Source directory
+├── package.json     → Angular 20 + Material + @ngrx/signals
+├── angular.json     → Angular CLI configuration
+├── src/**/*.scss    → component styles (prefer presentation layer)
+├── src/styles/**    → style configuration (M3 tokens if present)
+└── src/app/presentation/** → UI source (if present)
 ```
 
 ### 1.4 Identifying Styling Method
 
 | Method | Detection | Edit Target |
 |--------|-----------|-------------|
-| Pure CSS | `*.css` files | Global CSS or component CSS |
-| SCSS/Sass | `*.scss`, `*.sass` | SCSS files |
-| CSS Modules | `*.module.css` | Module CSS files |
-| Tailwind CSS | `tailwind.config.*` | className in components |
-| styled-components | `styled.` in code | JS/TS files |
-| Emotion | `@emotion/` imports | JS/TS files |
-| CSS-in-JS (other) | Inline styles | JS/TS files |
+| SCSS (primary) | `src/**/*.scss` (presentation first) | Component SCSS files |
+| Global styles | `src/global_styles.scss` (if present) | Global SCSS |
+| M3 tokens | `src/styles/**` (if present) | Token definitions |
 
 ---
 
@@ -180,9 +174,9 @@ Identify source files from problematic elements:
 
 3. **File Pattern Filtering**
    ```
-   Style files: src/**/*.css, styles/**/*
-   Components: src/components/**/*
-   Pages: src/pages/**, app/**
+    Style files: src/**/*.scss, src/styles/**
+    Components: src/app/presentation/** (if present)
+    Pages: src/app/presentation/pages/** (if present)
    ```
 
 ### 3.3 Applying Fixes
@@ -194,9 +188,9 @@ See [references/framework-fixes.md](references/framework-fixes.md) for details.
 #### Fix Principles
 
 1. **Minimal Changes**: Only make the minimum changes necessary to resolve the issue
-2. **Respect Existing Patterns**: Follow existing code style in the project
+2. **Respect Existing Patterns**: Follow Angular + M3 token usage and existing structure
 3. **Avoid Breaking Changes**: Be careful not to affect other areas
-4. **Add Comments**: Add comments to explain the reason for fixes where appropriate
+4. **Layer Safety**: Edit presentation styles/templates only; do not touch domain/application
 
 ---
 
@@ -238,8 +232,8 @@ flowchart TD
 | Item | Value |
 |------|-------|
 | Target URL | {URL} |
-| Framework | {Detected framework} |
-| Styling | {CSS / Tailwind / etc.} |
+| Framework | Angular 20 + Standalone |
+| Styling | SCSS + Material Design 3 tokens |
 | Tested Viewports | Desktop, Mobile |
 | Issues Detected | {N} |
 | Issues Fixed | {M} |
@@ -331,8 +325,8 @@ The same workflow can be implemented with these tools. As long as they provide t
 
 - ✅ Always save screenshots before making fixes
 - ✅ Fix one issue at a time and verify each
-- ✅ Follow the project's existing code style
-- ✅ Confirm with user before major changes
+- ✅ Use Material Design 3 tokens for styling updates
+- ✅ Respect Angular 20 control-flow syntax in templates
 - ✅ Document fix details thoroughly
 
 ### DON'T (Not Recommended)
