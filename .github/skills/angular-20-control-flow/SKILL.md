@@ -6,10 +6,65 @@ license: MIT
 
 # Angular 20 Control Flow Skill
 
-## 🎯 Purpose
+## Rules
+
+### Syntax Requirements
+
+**MUST use built-in control flow syntax:**
+- Use `@if` / `@else` / `@else if` for conditional rendering
+- Use `@for` with `track` expression for list iteration
+- Use `@switch` / `@case` / `@default` for multi-branch conditionals
+- Use `@defer` for lazy loading and code splitting
+
+**MUST NOT use structural directives:**
+- `*ngIf` is forbidden in new code
+- `*ngFor` is forbidden in new code
+- `*ngSwitch` is forbidden in new code
+
+### @for Track Expression
+
+**MUST include track in all @for loops:**
+- Every `@for` loop MUST have a `track` expression
+- Track by unique ID: `track item.id`
+- Track by index for static lists: `track $index`
+- MUST NOT track by object reference: `track item` is forbidden
+
+### @defer Triggers
+
+**Use appropriate trigger for lazy loading:**
+- `on viewport` - Load when visible
+- `on interaction` - Load on user interaction
+- `on idle` - Load when browser is idle
+- `on immediate` - Load immediately
+- `on timer(Xs)` - Load after X seconds
+- `on hover` - Load on mouse hover
+
+**MUST specify minimum loading time:**
+- Use `@loading (minimum Xms)` to prevent UI flashing
+- Use `@placeholder (minimum Xms)` for minimum display time
+
+### Signal Integration
+
+**MUST use signals with control flow:**
+- Control flow conditions MUST use signal invocation: `@if (signal())`
+- MUST NOT use plain properties without signal invocation
+
+### Context Variables (@for)
+
+**Available context variables:**
+- `$index` - Current index (0-based)
+- `$first` - True if first item
+- `$last` - True if last item
+- `$even` - True if even index
+- `$odd` - True if odd index
+- `$count` - Total number of items
+
+## Context
+
+### Purpose
 This skill provides comprehensive guidance on **Angular 20's built-in control flow syntax**, which introduces new template syntax (@if, @for, @switch, @defer) that replaces structural directives with better performance, type safety, and developer experience.
 
-## 📦 What is Angular Control Flow?
+### What is Angular Control Flow?
 
 Angular 20 introduces new built-in control flow syntax:
 - **@if / @else**: Conditional rendering (replaces *ngIf)
@@ -19,7 +74,7 @@ Angular 20 introduces new built-in control flow syntax:
 - **@empty**: Fallback for empty collections
 - **@placeholder / @loading / @error**: Defer states
 
-## 🎨 When to Use This Skill
+### When to Use This Skill
 
 Use Angular 20 Control Flow when:
 - Writing templates with conditional rendering
@@ -30,9 +85,9 @@ Use Angular 20 Control Flow when:
 - Optimizing bundle size with deferred loading
 - Migrating from *ngIf, *ngFor, *ngSwitch to modern syntax
 
-## 🛠️ Core Control Flow Blocks
+### Core Control Flow Blocks
 
-### 1. @if - Conditional Rendering
+#### 1. @if - Conditional Rendering
 
 **Basic Usage:**
 ```typescript
@@ -103,7 +158,7 @@ export class ItemComponent {
 }
 ```
 
-### 2. @for - List Iteration
+#### 2. @for - List Iteration
 
 **Basic @for Loop:**
 ```typescript
@@ -191,7 +246,7 @@ export class ProductListComponent {
 }
 ```
 
-### 3. @switch - Multi-branch Conditionals
+#### 3. @switch - Multi-branch Conditionals
 
 **Basic @switch:**
 ```typescript
@@ -258,7 +313,7 @@ export class ConnectionStatusComponent {
 }
 ```
 
-### 4. @defer - Lazy Loading and Code Splitting
+#### 4. @defer - Lazy Loading and Code Splitting
 
 **Basic Deferred Loading:**
 ```typescript
@@ -374,9 +429,9 @@ export class ChartComponent {
 }
 ```
 
-## 🎯 Migration from Old Syntax
+### Migration from Old Syntax
 
-### ngIf → @if
+#### ngIf → @if
 ```typescript
 // Before (Angular 19 and earlier)
 <div *ngIf="isVisible">Content</div>
@@ -394,7 +449,7 @@ export class ChartComponent {
 }
 ```
 
-### ngFor → @for
+#### ngFor → @for
 ```typescript
 // Before
 <li *ngFor="let item of items; trackBy: trackById">{{ item.name }}</li>
@@ -405,7 +460,7 @@ export class ChartComponent {
 }
 ```
 
-### ngSwitch → @switch
+#### ngSwitch → @switch
 ```typescript
 // Before
 <div [ngSwitch]="status">
@@ -428,9 +483,9 @@ export class ChartComponent {
 }
 ```
 
-## 🎯 Best Practices
+### Best Practices
 
-### 1. Use Signals with Control Flow
+#### 1. Use Signals with Control Flow
 ```typescript
 // ✅ Good - Reactive with signals
 export class Component {
@@ -451,7 +506,7 @@ export class Component {
 })
 ```
 
-### 2. Always Use track in @for
+#### 2. Always Use track in @for
 ```typescript
 // ✅ Good - Proper tracking
 @for (user of users(); track user.id) {
