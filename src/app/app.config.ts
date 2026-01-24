@@ -33,44 +33,31 @@ import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/workspace/tokens/workspace-runtime.token';
 import { WorkspaceRuntimeFactory } from '@infrastructure/workspace';
+import { WorkspaceEventEffects } from '@application/events/workspace-event.effects';
 
 /**
  * Application Configuration with Zone-less Change Detection
  *
- * This configuration enables Angular's zone-less mode, which provides:
- *
- * Benefits:
- * - Improved performance: No Zone.js overhead for change detection
- * - Smaller bundle size: Zone.js (~40KB) is not included
- * - Better debugging: Explicit change detection through signals
- * - Modern architecture: Fully reactive with @ngrx/signals
- *
- * DDD Architecture:
+ * DDD Architecture + Workspace Event Effects:
  * - Domain layer: Pure TypeScript (no Angular/RxJS)
- * - Application layer: Use cases, signal stores, abstractions
+ * - Application layer: Use cases, signal stores, event effects
  * - Infrastructure layer: Event bus implementation with RxJS
  * - Presentation layer: Zone-less components with OnPush
- * 
- * Clean Architecture Compliance:
- * - Infrastructure implementations registered via DI tokens
- * - Application/Presentation depend on abstractions
- * - Dependency Inversion Principle enforced
  */
 export const appConfig: ApplicationConfig = {
   providers: [
-    // Zone-less change detection (stable in Angular 20)
     provideZonelessChangeDetection(),
-
-    // Router configuration with lazy-loaded routes
     provideRouter(routes),
     provideAnimations(),
     
     // DDD/Clean Architecture: Infrastructure Providers
-    // Register infrastructure implementations for application abstractions
     {
       provide: WORKSPACE_RUNTIME_FACTORY,
       useClass: WorkspaceRuntimeFactory
     },
+    
+    // Workspace Event Effects
+    WorkspaceEventEffects,
 
     // Firebase App Initialization
     provideFirebaseApp(() => initializeApp(environment.firebase)),
