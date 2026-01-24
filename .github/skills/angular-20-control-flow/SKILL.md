@@ -8,56 +8,32 @@ license: MIT
 
 ## Rules
 
-### Syntax Requirements
-
-**MUST use built-in control flow syntax:**
+### Control Flow Syntax
 - Use `@if` / `@else` / `@else if` for conditional rendering
-- Use `@for` with `track` expression for list iteration
+- Use `@for` with mandatory `track` expression for list iteration
 - Use `@switch` / `@case` / `@default` for multi-branch conditionals
 - Use `@defer` for lazy loading and code splitting
-
-**MUST NOT use structural directives:**
-- `*ngIf` is forbidden in new code
-- `*ngFor` is forbidden in new code
-- `*ngSwitch` is forbidden in new code
+- MUST NOT use structural directives: `*ngIf`, `*ngFor`, `*ngSwitch`
 
 ### @for Track Expression
-
-**MUST include track in all @for loops:**
-- Every `@for` loop MUST have a `track` expression
+- Every `@for` loop MUST include a `track` expression
 - Track by unique ID: `track item.id`
 - Track by index for static lists: `track $index`
-- MUST NOT track by object reference: `track item` is forbidden
+- MUST NOT track by object reference
 
-### @defer Triggers
-
-**Use appropriate trigger for lazy loading:**
-- `on viewport` - Load when visible
-- `on interaction` - Load on user interaction
-- `on idle` - Load when browser is idle
-- `on immediate` - Load immediately
-- `on timer(Xs)` - Load after X seconds
-- `on hover` - Load on mouse hover
-
-**MUST specify minimum loading time:**
+### @defer Loading States
+- Use appropriate trigger: `on viewport`, `on interaction`, `on idle`, `on immediate`, `on timer(Xs)`, `on hover`
 - Use `@loading (minimum Xms)` to prevent UI flashing
 - Use `@placeholder (minimum Xms)` for minimum display time
 
 ### Signal Integration
-
-**MUST use signals with control flow:**
 - Control flow conditions MUST use signal invocation: `@if (signal())`
 - MUST NOT use plain properties without signal invocation
 
-### Context Variables (@for)
+### Context Variables
+- Available in `@for`: `$index`, `$first`, `$last`, `$even`, `$odd`, `$count`
 
-**Available context variables:**
-- `$index` - Current index (0-based)
-- `$first` - True if first item
-- `$last` - True if last item
-- `$even` - True if even index
-- `$odd` - True if odd index
-- `$count` - Total number of items
+---
 
 ## Context
 
