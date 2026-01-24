@@ -158,11 +158,35 @@ src/app/
 │   ├── adapters/           # External API Cliens
 │   └── dto/                # Wire Formats (JSON shapes)
 │
-└── presentation/ (UI, SIGNAL CONSUMERS)
-    ├── containers/         # Smart Components (Inject Stores)
-    ├── components/         # Dumb Components (Inputs/Outputs/Models ONLY)
-    ├── pages/              # Route Entries
-    └── theme/              # Styles (Material 3)
+└── presentation/                          # UI layer, signal consumers only
+    ├── shell/                             # Global shell: app chrome, top-level layout, no domain logic
+    │
+    ├── workspaces/                        # Workspace UI domain (first-class, feature-scoped)
+    │                                     # Contains workspace containers, views, and internal UI structure
+    │
+    ├── organizations/                     # Organization UI domain
+    │   └── teams/                         # Team UI is always scoped under an organization
+    │                                     # No standalone team UI is allowed
+    │
+    ├── pages/                             # Route entry components only
+    │                                     # No reuse, no shared UI, no business logic
+    │
+    ├── layout/                            # Global UI composition layer
+    │                                     # Cross-domain visual composition only
+    │   └── widgets/                       # Reusable visual widgets (pure UI)
+    │       ├── search/                    # Search input / trigger UI (stateless)
+    │       ├── notification/              # Toasts, alerts, visual feedback only
+    │       ├── theme-toggle/              # Theme switch UI (light/dark, M3)
+    │       ├── user-avatar/               # Avatar, user icon, visual identity only
+    │       └── workspace-ui/               # Workspace-related visuals without state or logic
+    │
+    ├── shared/                            # Non-visual shared layer
+    │                                     # Must NOT contain components
+    │   ├── directives/                    # Structural / attribute directives
+    │   ├── pipes/                         # Pure transformation pipes
+    │   └── stores/                        # Presentation-level signal stores (no domain logic)
+    │
+    └── theme/                             # Styling system (Material 3, tokens, theming)
 ```
 
 ## 4. Boundary Enforcement Protocols (Active Correction)
