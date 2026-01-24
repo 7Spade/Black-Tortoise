@@ -4,44 +4,41 @@ description: Angular Router for navigation, routing configuration, route guards,
 license: Complete terms in LICENSE.txt
 ---
 
-# Angular Router Rules
+# Angular Router Skill
 
-## Router Configuration
+## Rules
 
-- MUST use `provideRouter(routes)` in `app.config.ts` for standalone applications
-- MUST define routes in a separate `routes.ts` file
-- MUST use `pathMatch: 'full'` for empty path redirects
-- MUST include wildcard route (`**`) as the LAST route for 404 handling
+### Router Configuration
+- Use `provideRouter(routes)` in `app.config.ts` for standalone applications
+- Define routes in a separate `routes.ts` file
+- Use `pathMatch: 'full'` for empty path redirects
+- Include wildcard route (`**`) as the LAST route for 404 handling
 
-## Lazy Loading
+### Lazy Loading
+- Use `loadChildren` for lazy loading feature routes
+- Use `loadComponent` for lazy loading standalone components
+- Do NOT eagerly import feature modules in route configuration
 
-- MUST use `loadChildren` for lazy loading feature routes
-- MUST use `loadComponent` for lazy loading standalone components
-- MUST NOT eagerly import feature modules in route configuration
+### Route Guards
+- Use functional guards with `inject()` for dependency injection
+- Return `boolean` or `UrlTree` from guards
+- Use `router.createUrlTree(['/path'])` for guard redirects
+- Do NOT use class-based guards (CanActivate, CanDeactivate interfaces)
 
-## Route Guards
+### Route Parameters
+- Use `toSignal(route.params, { initialValue })` to access route parameters
+- Use `toSignal(route.queryParams, { initialValue })` to access query parameters
+- Provide `initialValue` when converting route observables to signals
+- Do NOT manually subscribe to `route.params` or `route.queryParams`
 
-- MUST use functional guards with `inject()` for dependency injection
-- MUST return `boolean` or `UrlTree` from guards
-- MUST use `router.createUrlTree(['/path'])` for guard redirects
-- MUST NOT use class-based guards (CanActivate, CanDeactivate interfaces)
-
-## Route Parameters
-
-- MUST use `toSignal(route.params, { initialValue })` to access route parameters
-- MUST use `toSignal(route.queryParams, { initialValue })` to access query parameters
-- MUST provide `initialValue` when converting route observables to signals
-- MUST NOT manually subscribe to `route.params` or `route.queryParams`
-
-## Navigation
-
-- MUST use `router.navigate(['/path'])` for programmatic navigation
-- MUST use `[routerLink]="['/path']"` for template navigation
-- MUST NOT manipulate URLs directly via `window.location`
+### Navigation
+- Use `router.navigate(['/path'])` for programmatic navigation
+- Use `[routerLink]="['/path']"` for template navigation
+- Do NOT manipulate URLs directly via `window.location`
 
 ---
 
-## Context: Angular Router Implementation Guide
+## Context
 
 ### When to Use This Skill
 

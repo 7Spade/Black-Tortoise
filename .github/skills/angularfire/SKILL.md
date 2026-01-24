@@ -6,10 +6,80 @@ license: MIT
 
 # AngularFire Integration Skill
 
-## 🎯 Purpose
-This skill provides comprehensive guidance on **AngularFire**, the official Angular library for Firebase, including authentication, Firestore database, Cloud Storage, Cloud Functions, and Firebase Analytics integration.
+Master Firebase integration with Angular 20+ using AngularFire v20+. This skill covers authentication, Firestore database, cloud storage, cloud functions, and best practices for reactive state management with Signals.
 
-## 📦 What is AngularFire?
+## 📋 Rules
+
+### Core Integration
+- **MUST** use `provideFirebaseApp()` + `initializeApp()` in `app.config.ts` providers
+- **MUST** use modular API imports: `provideAuth(() => getAuth())`, `provideFirestore(() => getFirestore())`
+- **MUST NOT** use compatibility API (`@angular/fire/compat/*`)
+- **MUST** store Firebase config in environment files
+- **MUST NOT** hardcode API keys or secrets in version control
+
+### Authentication
+- **MUST** use `inject(Auth)` for authentication service
+- **MUST** use `toSignal()` to convert `authState()` observable to Signal
+- **MUST** provide `initialValue: null` when converting auth state
+- **MUST** manage auth state in NgRx Signals store
+- **MUST NOT** use manual subscriptions for auth state
+
+### Firestore Database
+- **MUST** use `inject(Firestore)` for database service
+- **MUST** convert Firestore observables (`collectionData()`, `docData()`) to Signals using `toSignal()`
+- **MUST** use query constraints (`where()`, `orderBy()`, `limit()`) for filtered reads
+- **MUST** validate user input BEFORE database operations
+- **MUST NOT** fetch entire collections without constraints
+- **MUST** use `rxMethod()` with `tapResponse()` for async operations in stores
+- **MUST** define security rules in `firestore.rules`
+- **MUST NOT** use `allow read, write: if true` in production
+
+### Cloud Storage
+- **MUST** use `inject(Storage)` for storage service
+- **MUST** validate file size and type BEFORE upload
+- **MUST** define security rules in `storage.rules`
+- **MUST** handle upload errors with user feedback
+- **MUST NOT** expose file URLs without validation
+
+### Cloud Functions
+- **MUST** use `inject(Functions)` for functions service
+- **MUST** use `httpsCallable()` with proper TypeScript typing
+- **MUST** configure timeout for functions
+- **MUST** handle function errors explicitly
+
+### Error Handling
+- **MUST** handle specific Firebase error codes (`auth/*`, `storage/*`, `functions/*`)
+- **MUST** provide user-friendly error messages
+- **MUST NOT** expose internal error details to users
+- **MUST NOT** silently swallow errors
+
+### Repository Pattern
+- **MUST** encapsulate Firebase operations in repository layer (infrastructure)
+- **MUST** convert Firestore documents to domain entities in repository
+- **MUST NOT** expose Firestore types in domain layer
+- **MUST NOT** place Firebase operations in components or application layer
+
+### Security Rules
+- **MUST** implement authentication checks in Firestore rules (`request.auth != null`)
+- **MUST** implement user-specific access control (`resource.data.userId == request.auth.uid`)
+- **MUST** test security rules with Firebase emulator
+- **MUST NOT** deploy rules without testing
+
+## 📖 Context
+
+### When to Use This Skill
+
+Activate this skill when:
+- Setting up Firebase in Angular applications
+- Implementing authentication flows (email/password, OAuth providers)
+- Working with Firestore real-time database
+- Handling file uploads to Firebase Storage
+- Calling Firebase Cloud Functions
+- Managing offline persistence
+- Configuring security rules
+- Integrating Firebase with NgRx Signals stores
+
+### What is AngularFire?
 
 AngularFire is the official Angular library for Firebase:
 - **Firebase Authentication**: User authentication and authorization
@@ -21,22 +91,15 @@ AngularFire is the official Angular library for Firebase:
 - **RxJS Integration**: Observable-based APIs
 - **Angular Standalone Support**: Full support for standalone components
 
-## 🎨 When to Use This Skill
+### Prerequisites
 
-Use AngularFire guidance when:
-- Building Angular applications with Firebase backend
-- Implementing user authentication (email, Google, social login)
-- Working with Firestore real-time database
-- Uploading and managing files in Cloud Storage
-- Calling Firebase Cloud Functions from Angular
-- Tracking analytics events in Angular apps
-- Managing Firebase collections with RxJS observables
-- Migrating to standalone components with Firebase
+**Required:**
+- Angular 20+ project with standalone components
+- Firebase project (create at https://console.firebase.google.com)
+- AngularFire v20+ installed
+- @ngrx/signals for state management
 
-## 🛠️ Installation & Setup
-
-### Install AngularFire
-
+**Installation:**
 ```bash
 # Install AngularFire and Firebase SDK
 pnpm install @angular/fire firebase
@@ -45,8 +108,11 @@ pnpm install @angular/fire firebase
 ng add @angular/fire
 ```
 
-### Firebase Configuration
+### Step-by-Step Workflows
 
+#### 1. Initial Setup
+
+**Firebase Configuration:**
 ```typescript
 // src/environments/environment.ts
 export const environment = {
@@ -63,8 +129,7 @@ export const environment = {
 };
 ```
 
-### App Configuration (Standalone)
-
+**App Configuration (Standalone):**
 ```typescript
 // app.config.ts
 import { ApplicationConfig } from '@angular/core';
@@ -88,459 +153,217 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-## 📚 Core AngularFire Features
-
-### 1. Authentication
+#### 2. Authentication Implementation
 
 **Auth Service:**
 ```typescript
 import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
          signOut, user, User } from '@angular/fire/auth';
 import { inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private auth = inject(Auth);
   
   // Observable of current user
   user$ = user(this.auth);
   
-  // Email/Password Sign In
   async signIn(email: string, password: string) {
-    try {
-      const credential = await signInWithEmailAndPassword(
-        this.auth, 
-        email, 
-        password
-      );
-      return credential.user;
-    } catch (error) {
-      console.error('Sign in error:', error);
-      throw error;
-    }
+    return signInWithEmailAndPassword(this.auth, email, password);
   }
   
-  // Create New User
   async signUp(email: string, password: string) {
-    try {
-      const credential = await createUserWithEmailAndPassword(
-        this.auth,
-        email,
-        password
-      );
-      return credential.user;
-    } catch (error) {
-      console.error('Sign up error:', error);
-      throw error;
-    }
+    return createUserWithEmailAndPassword(this.auth, email, password);
   }
   
-  // Sign Out
   async signOut() {
-    await signOut(this.auth);
+    return signOut(this.auth);
   }
 }
 ```
 
-**Google Sign-In:**
+**Auth Store with Signals:**
 ```typescript
-import { GoogleAuthProvider, signInWithPopup } from '@angular/fire/auth';
+import { signalStore, withState, withMethods } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { inject } from '@angular/core';
+import { Auth, user, User } from '@angular/fire/auth';
+import { pipe, switchMap, tap } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
-export class AuthService {
-  private auth = inject(Auth);
-  
-  async signInWithGoogle() {
-    const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(this.auth, provider);
-      return result.user;
-    } catch (error) {
-      console.error('Google sign in error:', error);
-      throw error;
-    }
-  }
+interface AuthState {
+  user: User | null;
+  loading: boolean;
 }
+
+export const AuthStore = signalStore(
+  { providedIn: 'root' },
+  withState<AuthState>({ user: null, loading: false }),
+  withMethods((store, auth = inject(Auth)) => {
+    const user$ = user(auth);
+    const userSignal = toSignal(user$, { initialValue: null });
+    
+    return {
+      user: userSignal,
+      // Additional methods for sign in, sign out, etc.
+    };
+  })
+);
 ```
 
-**Auth Guard:**
+#### 3. Firestore Database Operations
+
+**Firestore Repository (Infrastructure):**
 ```typescript
-import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { Auth, user } from '@angular/fire/auth';
-import { map } from 'rxjs/operators';
-
-export const authGuard = () => {
-  const auth = inject(Auth);
-  const router = inject(Router);
-  
-  return user(auth).pipe(
-    map(user => {
-      if (user) {
-        return true;
-      } else {
-        router.navigate(['/login']);
-        return false;
-      }
-    })
-  );
-};
-
-// Usage in routes
-const routes: Routes = [
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-    canActivate: [authGuard]
-  }
-];
-```
-
-### 2. Cloud Firestore
-
-**Firestore Service:**
-```typescript
-import { Firestore, collection, collectionData, doc, docData,
-         addDoc, setDoc, updateDoc, deleteDoc, query, where } from '@angular/fire/firestore';
-import { inject } from '@angular/core';
+import { Firestore, collection, collectionData, doc, docData, 
+         addDoc, updateDoc, deleteDoc, query, where } from '@angular/fire/firestore';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface Task {
   id?: string;
   title: string;
   completed: boolean;
-  createdAt: Date;
   userId: string;
 }
 
-export class TasksService {
+@Injectable({ providedIn: 'root' })
+export class TaskRepository {
   private firestore = inject(Firestore);
   private tasksCollection = collection(this.firestore, 'tasks');
   
-  // Get all tasks as observable
-  getTasks(): Observable<Task[]> {
-    return collectionData(this.tasksCollection, { idField: 'id' }) as Observable<Task[]>;
-  }
-  
-  // Get tasks by user
+  // Get all tasks for a user
   getUserTasks(userId: string): Observable<Task[]> {
-    const userTasksQuery = query(
-      this.tasksCollection,
-      where('userId', '==', userId)
-    );
-    return collectionData(userTasksQuery, { idField: 'id' }) as Observable<Task[]>;
+    const q = query(this.tasksCollection, where('userId', '==', userId));
+    return collectionData(q, { idField: 'id' });
   }
   
   // Get single task
   getTask(id: string): Observable<Task> {
     const taskDoc = doc(this.firestore, `tasks/${id}`);
-    return docData(taskDoc, { idField: 'id' }) as Observable<Task>;
+    return docData(taskDoc, { idField: 'id' });
   }
   
-  // Add new task
-  async addTask(task: Omit<Task, 'id'>) {
-    return await addDoc(this.tasksCollection, {
-      ...task,
-      createdAt: new Date()
-    });
+  // Create task
+  async createTask(task: Omit<Task, 'id'>): Promise<string> {
+    const docRef = await addDoc(this.tasksCollection, task);
+    return docRef.id;
   }
   
   // Update task
-  async updateTask(id: string, data: Partial<Task>) {
+  async updateTask(id: string, changes: Partial<Task>): Promise<void> {
     const taskDoc = doc(this.firestore, `tasks/${id}`);
-    await updateDoc(taskDoc, data);
+    return updateDoc(taskDoc, changes);
   }
   
   // Delete task
-  async deleteTask(id: string) {
+  async deleteTask(id: string): Promise<void> {
     const taskDoc = doc(this.firestore, `tasks/${id}`);
-    await deleteDoc(taskDoc);
+    return deleteDoc(taskDoc);
   }
 }
 ```
 
-**Advanced Queries:**
+**Firestore Store Integration:**
 ```typescript
-import { query, where, orderBy, limit, startAfter, getDocs } from '@angular/fire/firestore';
+import { signalStore, withState, withMethods } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { inject } from '@angular/core';
+import { TaskRepository, Task } from './task.repository';
+import { pipe, switchMap, tap } from 'rxjs';
+import { tapResponse } from '@ngrx/operators';
 
-export class TasksService {
-  // Complex query with filters and ordering
-  async getCompletedTasks() {
-    const q = query(
-      this.tasksCollection,
-      where('completed', '==', true),
-      where('userId', '==', this.currentUserId),
-      orderBy('createdAt', 'desc'),
-      limit(20)
-    );
-    
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Task));
-  }
-  
-  // Pagination
-  async getTasksPage(lastVisible: any) {
-    const q = query(
-      this.tasksCollection,
-      orderBy('createdAt', 'desc'),
-      startAfter(lastVisible),
-      limit(10)
-    );
-    
-    const snapshot = await getDocs(q);
-    return {
-      tasks: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Task)),
-      lastDoc: snapshot.docs[snapshot.docs.length - 1]
-    };
-  }
+interface TaskState {
+  tasks: Task[];
+  loading: boolean;
+  error: string | null;
 }
+
+export const TaskStore = signalStore(
+  { providedIn: 'root' },
+  withState<TaskState>({ tasks: [], loading: false, error: null }),
+  withMethods((store, repo = inject(TaskRepository)) => ({
+    loadUserTasks: rxMethod<string>(
+      pipe(
+        tap(() => patchState(store, { loading: true })),
+        switchMap((userId) => repo.getUserTasks(userId)),
+        tapResponse({
+          next: (tasks) => patchState(store, { tasks, loading: false }),
+          error: (error) => patchState(store, { 
+            error: error.message, 
+            loading: false 
+          })
+        })
+      )
+    ),
+    
+    async addTask(task: Omit<Task, 'id'>) {
+      try {
+        await repo.createTask(task);
+      } catch (error) {
+        patchState(store, { error: error.message });
+      }
+    }
+  }))
+);
 ```
 
-**Firestore with Signals:**
-```typescript
-import { toSignal } from '@angular/core/rxjs-interop';
-
-export class TasksComponent {
-  private tasksService = inject(TasksService);
-  
-  // Convert observable to signal
-  tasks = toSignal(this.tasksService.getTasks(), { initialValue: [] });
-  
-  // Computed signal for filtered tasks
-  completedTasks = computed(() => 
-    this.tasks().filter(task => task.completed)
-  );
-}
-```
-
-### 3. Cloud Storage
+#### 4. Cloud Storage Operations
 
 **Storage Service:**
 ```typescript
-import { Storage, ref, uploadBytes, uploadBytesResumable, 
-         getDownloadURL, deleteObject, listAll } from '@angular/fire/storage';
-import { inject } from '@angular/core';
+import { Storage, ref, uploadBytesResumable, getDownloadURL, 
+         deleteObject } from '@angular/fire/storage';
+import { inject, Injectable } from '@angular/core';
 
+@Injectable({ providedIn: 'root' })
 export class StorageService {
   private storage = inject(Storage);
   
-  // Upload file
-  async uploadFile(file: File, path: string) {
+  // Upload file with progress tracking
+  uploadFile(path: string, file: File) {
     const storageRef = ref(this.storage, path);
-    const snapshot = await uploadBytes(storageRef, file);
-    return await getDownloadURL(snapshot.ref);
+    return uploadBytesResumable(storageRef, file);
   }
   
-  // Upload with progress tracking
-  uploadFileWithProgress(file: File, path: string) {
+  // Get download URL
+  async getDownloadURL(path: string): Promise<string> {
     const storageRef = ref(this.storage, path);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-    
-    return new Observable<number>(observer => {
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          observer.next(progress);
-        },
-        (error) => observer.error(error),
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          observer.complete();
-        }
-      );
-    });
+    return getDownloadURL(storageRef);
   }
   
   // Delete file
-  async deleteFile(path: string) {
+  async deleteFile(path: string): Promise<void> {
     const storageRef = ref(this.storage, path);
-    await deleteObject(storageRef);
-  }
-  
-  // List files in directory
-  async listFiles(path: string) {
-    const storageRef = ref(this.storage, path);
-    const result = await listAll(storageRef);
-    
-    return Promise.all(
-      result.items.map(async (item) => ({
-        name: item.name,
-        fullPath: item.fullPath,
-        url: await getDownloadURL(item)
-      }))
-    );
+    return deleteObject(storageRef);
   }
 }
 ```
 
-**File Upload Component:**
-```typescript
-@Component({
-  selector: 'app-file-upload',
-  template: `
-    <input type="file" (change)="onFileSelected($event)">
-    
-    @if (uploadProgress() !== null) {
-      <mat-progress-bar mode="determinate" [value]="uploadProgress()!">
-      </mat-progress-bar>
-      <p>{{ uploadProgress() }}% uploaded</p>
-    }
-    
-    @if (downloadURL()) {
-      <img [src]="downloadURL()" alt="Uploaded image">
-    }
-  `
-})
-export class FileUploadComponent {
-  private storageService = inject(StorageService);
-  uploadProgress = signal<number | null>(null);
-  downloadURL = signal<string | null>(null);
-  
-  async onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    
-    if (!file) return;
-    
-    const path = `uploads/${Date.now()}_${file.name}`;
-    
-    this.storageService.uploadFileWithProgress(file, path).subscribe({
-      next: (progress) => this.uploadProgress.set(progress),
-      error: (error) => console.error('Upload error:', error),
-      complete: async () => {
-        const url = await this.storageService.getFileURL(path);
-        this.downloadURL.set(url);
-        this.uploadProgress.set(null);
-      }
-    });
-  }
-}
-```
-
-### 4. Cloud Functions
+#### 5. Cloud Functions
 
 **Functions Service:**
 ```typescript
 import { Functions, httpsCallable } from '@angular/fire/functions';
-import { inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 
+@Injectable({ providedIn: 'root' })
 export class FunctionsService {
   private functions = inject(Functions);
   
-  // Call cloud function
-  async sendEmail(data: { to: string; subject: string; body: string }) {
-    const sendEmailFn = httpsCallable(this.functions, 'sendEmail');
-    const result = await sendEmailFn(data);
-    return result.data;
-  }
-  
-  // Call with timeout
-  async processPayment(paymentData: any) {
-    const processPaymentFn = httpsCallable(
-      this.functions, 
-      'processPayment',
-      { timeout: 60000 } // 60 seconds
-    );
-    
-    try {
-      const result = await processPaymentFn(paymentData);
-      return result.data;
-    } catch (error) {
-      console.error('Payment processing error:', error);
-      throw error;
-    }
+  // Call a cloud function
+  async sendEmail(to: string, subject: string, body: string) {
+    const callable = httpsCallable(this.functions, 'sendEmail');
+    return callable({ to, subject, body });
   }
 }
 ```
 
-### 5. Analytics
+### Security Rules Examples
 
-**Analytics Service:**
-```typescript
-import { Analytics, logEvent, setUserId, setUserProperties } from '@angular/fire/analytics';
-import { inject } from '@angular/core';
-
-export class AnalyticsService {
-  private analytics = inject(Analytics);
-  
-  // Log custom event
-  logPageView(pageName: string) {
-    logEvent(this.analytics, 'page_view', {
-      page_name: pageName,
-      page_location: window.location.href
-    });
-  }
-  
-  // Log button click
-  logButtonClick(buttonName: string) {
-    logEvent(this.analytics, 'button_click', {
-      button_name: buttonName
-    });
-  }
-  
-  // Set user ID
-  setUser(userId: string) {
-    setUserId(this.analytics, userId);
-  }
-  
-  // Set user properties
-  setUserProperties(properties: Record<string, any>) {
-    setUserProperties(this.analytics, properties);
-  }
-  
-  // Track purchase
-  trackPurchase(value: number, currency: string, items: any[]) {
-    logEvent(this.analytics, 'purchase', {
-      value,
-      currency,
-      items
-    });
-  }
-}
-```
-
-## 🎯 Best Practices
-
-### 1. Use Dependency Injection
-```typescript
-// ✅ Good - Use inject()
-export class MyService {
-  private firestore = inject(Firestore);
-  private auth = inject(Auth);
-}
-
-// ❌ Avoid - Don't import Firebase directly
-import { getFirestore } from 'firebase/firestore';
-```
-
-### 2. Handle Errors Properly
-```typescript
-async signIn(email: string, password: string) {
-  try {
-    return await signInWithEmailAndPassword(this.auth, email, password);
-  } catch (error: any) {
-    if (error.code === 'auth/user-not-found') {
-      throw new Error('User not found');
-    } else if (error.code === 'auth/wrong-password') {
-      throw new Error('Invalid password');
-    }
-    throw error;
-  }
-}
-```
-
-### 3. Use Signals with AngularFire
-```typescript
-// ✅ Good - Convert observables to signals
-import { toSignal } from '@angular/core/rxjs-interop';
-
-export class Component {
-  user = toSignal(user(this.auth));
-  tasks = toSignal(this.tasksService.getTasks(), { initialValue: [] });
-}
-```
-
-### 4. Security Rules
+**Firestore Rules:**
 ```javascript
-// firestore.rules
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -558,7 +381,21 @@ service cloud.firestore {
 }
 ```
 
-### 5. Offline Persistence
+**Storage Rules:**
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Users can only upload to their own folder
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
+
+### Offline Persistence
+
 ```typescript
 // Enable offline persistence
 import { enableIndexedDbPersistence } from '@angular/fire/firestore';
@@ -571,7 +408,45 @@ provideFirebaseApp(() => {
 });
 ```
 
-## 🐛 Troubleshooting
+### Error Handling Patterns
+
+**Auth Errors:**
+```typescript
+try {
+  await signIn(email, password);
+} catch (error: any) {
+  switch (error.code) {
+    case 'auth/user-not-found':
+      return 'User not found';
+    case 'auth/wrong-password':
+      return 'Invalid password';
+    case 'auth/too-many-requests':
+      return 'Too many attempts, try again later';
+    default:
+      return 'Authentication failed';
+  }
+}
+```
+
+**Firestore Errors:**
+```typescript
+try {
+  await updateTask(id, changes);
+} catch (error: any) {
+  switch (error.code) {
+    case 'permission-denied':
+      return 'Access denied';
+    case 'not-found':
+      return 'Task not found';
+    case 'unavailable':
+      return 'Service temporarily unavailable';
+    default:
+      return 'Operation failed';
+  }
+}
+```
+
+### 🐛 Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -582,7 +457,7 @@ provideFirebaseApp(() => {
 | Functions timeout | Increase timeout or optimize function code |
 | Analytics not tracking | Check analytics is enabled in Firebase console |
 
-## 📖 References
+### 📖 References
 
 - [AngularFire Documentation](https://github.com/angular/angularfire)
 - [Firebase Documentation](https://firebase.google.com/docs)
