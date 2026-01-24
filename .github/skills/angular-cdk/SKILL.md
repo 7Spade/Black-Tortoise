@@ -8,64 +8,53 @@ license: MIT
 
 ## Rules
 
-### Installation
-- **MUST** install Angular CDK via `pnpm install @angular/cdk`
-- **MAY** use `ng add @angular/material` which includes CDK
+### Lifecycle & Resource Management
+- **Must** create `FocusTrap` in `ngOnInit()` using `focusTrapFactory.create()`
+- **Must** call `focusTrap.focusInitialElement()` after creating focus trap
+- **Must** destroy `FocusTrap` in `ngOnDestroy()` using `focusTrap.destroy()`
+- **Must** stop monitoring focus in `ngOnDestroy()` using `focusMonitor.stopMonitoring()`
+- **Must** destroy `keyManager` in `ngOnDestroy()` using `keyManager.destroy()`
+- **Must** dispose `overlayRef` in cleanup using `overlayRef.dispose()`
+- **Must** explicitly release all CDK resources in `ngOnDestroy()`
+- **Must** clean up: `focusTrap`, `overlayRef`, `focusMonitor`, `keyManager`
+- **Shall Not** leave CDK resources without cleanup (causes memory leaks)
 
-### Accessibility (A11y)
-- **MUST** create `FocusTrap` in `ngOnInit()` using `focusTrapFactory.create()`
-- **MUST** call `focusTrap.focusInitialElement()` after creating focus trap
-- **MUST** destroy `FocusTrap` in `ngOnDestroy()` using `focusTrap.destroy()`
-- **MUST** stop monitoring focus in `ngOnDestroy()` using `focusMonitor.stopMonitoring()`
-- **MUST** use `LiveAnnouncer` for screen reader announcements of dynamic content
-- **MUST** use `FocusKeyManager` for keyboard navigation in lists
-- **MUST** destroy `keyManager` in `ngOnDestroy()` using `keyManager.destroy()`
+### Accessibility
+- **Must** use `LiveAnnouncer` for screen reader announcements of dynamic content
+- **Must** use `FocusKeyManager` for keyboard navigation in lists
 
-### Overlay
-- **MUST** use `flexibleConnectedTo()` with at least two fallback position strategies
-- **MUST** configure explicit `scrollStrategy` for overlay
-- **MUST** configure explicit `hasBackdrop` property for overlay
-- **MUST** dispose `overlayRef` in cleanup using `overlayRef.dispose()`
-- **MUST** use `OverlayConfig` to configure overlay behavior
-- **MUST** attach portal to overlay using `overlayRef.attach(portal)`
+### Overlay Positioning
+- **Must** use `flexibleConnectedTo()` with at least two fallback position strategies
+- **Must** configure explicit `scrollStrategy` for overlay
+- **Must** configure explicit `hasBackdrop` property for overlay
+- **Must** attach portal to overlay using `overlayRef.attach(portal)`
 
-### Portal
-- **MUST** use `ComponentPortal` for dynamic component rendering
-- **MUST** use `TemplatePortal` for template content projection
-- **MUST** detach portal when no longer needed to prevent memory leaks
+### Portal Usage
+- **Must** use `ComponentPortal` for dynamic component rendering
+- **Must** use `TemplatePortal` for template content projection
+- **Must** detach portal when no longer needed to prevent memory leaks
 
 ### Drag & Drop
-- **MUST** use `cdkDropList` container with `(cdkDropListDropped)` event handler
-- **MUST** use `cdkDrag` directive on draggable items
-- **MUST** use `track` expressions in `@for` loops with drag items
-- **MUST** use `moveItemInArray()` for single-list reordering
-- **MUST** use `transferArrayItem()` for cross-list transfers
-- **MUST** connect drop lists using `[cdkDropListConnectedTo]` for cross-list drag
+- **Must** use `cdkDropList` container with `(cdkDropListDropped)` event handler
+- **Must** use `cdkDrag` directive on draggable items
+- **Must** use `track` expressions in `@for` loops with drag items
+- **Must** use `moveItemInArray()` for single-list reordering
+- **Must** use `transferArrayItem()` for cross-list transfers
+- **Must** connect drop lists using `[cdkDropListConnectedTo]` for cross-list drag
 
 ### Virtual Scrolling
-- **MUST** use `CdkVirtualScrollViewport` only for lists with more than 100 items
-- **MUST** set explicit `itemSize` property
-- **MUST** configure `minBufferPx` and `maxBufferPx` for smooth scrolling
-- **MUST** set fixed height on viewport container
-- **SHALL NOT** use auto-height virtual scroll viewports
+- **Only** use `CdkVirtualScrollViewport` for lists with more than 100 items
+- **Must** set explicit `itemSize` property
+- **Must** configure `minBufferPx` and `maxBufferPx` for smooth scrolling
+- **Must** set fixed height on viewport container
+- **Must Not** use auto-height virtual scroll viewports
 
-### Layout & Breakpoints
-- **MUST** use `BreakpointObserver` for responsive layout detection
-- **MUST** use `toSignal()` when converting breakpoint observables to signals
-- **MUST** provide `initialValue` when using `toSignal()` with breakpoints
-- **SHALL NOT** use direct `window.innerWidth` or manual resize listeners
-- **SHALL NOT** use direct `window.matchMedia()` calls
-
-### Resource Cleanup
-- **MUST** explicitly release all CDK resources in `ngOnDestroy()`
-- **MUST** clean up: `focusTrap`, `overlayRef`, `focusMonitor`, `keyManager`
-- **SHALL NOT** leave CDK resources without cleanup (causes memory leaks)
-
-### Best Practices
-- **MUST** use CDK for building accessible custom components
-- **MUST** provide multiple fallback positions for overlays
-- **SHOULD** configure appropriate buffer sizes for virtual scrolling
-- **SHOULD** use drag constraints and custom previews where appropriate
+### Breakpoint Observer
+- **Must** use `BreakpointObserver` for responsive layout detection
+- **Must** use `toSignal()` when converting breakpoint observables to signals
+- **Must** provide `initialValue` when using `toSignal()` with breakpoints
+- **Must Not** use direct `window.innerWidth` or manual resize listeners
+- **Must Not** use direct `window.matchMedia()` calls
 
 ---
 
