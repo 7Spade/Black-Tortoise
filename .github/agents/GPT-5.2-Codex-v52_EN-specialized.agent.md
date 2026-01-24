@@ -1,4 +1,4 @@
-﻿---
+---
 description: 'GPT-5.2-Codex-MCP-High DDD-Angular 20 NgRx Signals Firebase Pure Reactive(zone-less) Agent'
 model: GPT-5.2-Codex (copilot)
 name: 'GPT-5.2-Codex v1 Angular 20+ signals Agent'
