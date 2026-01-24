@@ -1,0 +1,302 @@
+
+> stackblitz-starters-vxcrzm@0.0.0 build
+> ng build
+
+[1m[33mWorkspace extension with invalid name (packageManager) found.[39m[22m
+[33m❯[39m Building...
+[32m✔[39m Building...
+Application bundle generation failed. [9.761 seconds]
+
+[1m[31m[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2375: Type '{ taskId: string; taskTitle: string; approverId: string; approvalNotes: string | undefined; }' is not assignable to type 'AcceptanceApprovedPayload' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'approvalNotes' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/domain/events/domain-events/acceptance-approved.event.ts:39:4:
+[37m      39 │     [32mpayload[37m: {
+         ╵     [32m~~~~~~~[0m
+
+  The expected type comes from property 'payload' which is declared here on type 'AcceptanceApprovedEvent'
+
+    src/app/domain/event/domain-event.ts:27:11:
+[37m      27 │   readonly [32mpayload[37m: TPayload;
+         ╵            [32m~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2375: Type '{ entryId: string; date: string; userId: string; taskIds: string[]; hoursLogged: number; notes: string | undefined; }' is not assignable to type 'DailyEntryCreatedPayload' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'notes' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/domain/events/domain-events/daily-entry-created.event.ts:42:4:
+[37m      42 │     [32mpayload[37m: {
+         ╵     [32m~~~~~~~[0m
+
+  The expected type comes from property 'payload' which is declared here on type 'DailyEntryCreatedEvent'
+
+    src/app/domain/event/domain-event.ts:27:11:
+[37m      27 │   readonly [32mpayload[37m: TPayload;
+         ╵            [32m~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2375: Type '{ version: number; userId: string | undefined; correlationId: string | undefined; }' is not assignable to type '{ readonly version: number; readonly userId?: string; readonly correlationId?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'userId' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/domain/events/domain-events/document-uploaded.event.ts:67:4:
+[37m      67 │     [32mmetadata[37m: {
+         ╵     [32m~~~~~~~~[0m
+
+  The expected type comes from property 'metadata' which is declared here on type 'DocumentUploadedEvent'
+
+    src/app/domain/events/domain-events/document-uploaded.event.ts:30:11:
+[37m      30 │   readonly [32mmetadata[37m: {
+         ╵            [32m~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2375: Type '{ userId: string; removedBy: string; reason: string | undefined; }' is not assignable to type 'MemberRemovedPayload' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'reason' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/domain/events/domain-events/member-removed.event.ts:36:4:
+[37m      36 │     [32mpayload[37m: {
+         ╵     [32m~~~~~~~[0m
+
+  The expected type comes from property 'payload' which is declared here on type 'MemberRemovedEvent'
+
+    src/app/domain/event/domain-event.ts:27:11:
+[37m      27 │   readonly [32mpayload[37m: TPayload;
+         ╵            [32m~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2375: Type '{ taskId: string; taskTitle: string; reviewerId: string; reviewNotes: string | undefined; }' is not assignable to type 'QCPassedPayload' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'reviewNotes' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/domain/events/domain-events/qc-passed.event.ts:39:4:
+[37m      39 │     [32mpayload[37m: {
+         ╵     [32m~~~~~~~[0m
+
+  The expected type comes from property 'payload' which is declared here on type 'QCPassedEvent'
+
+    src/app/domain/event/domain-event.ts:27:11:
+[37m      27 │   readonly [32mpayload[37m: TPayload;
+         ╵            [32m~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2375: Type '{ taskId: string; taskName: string; completedBy: string; completionNotes: string | undefined; }' is not assignable to type '{ readonly taskId: string; readonly taskName: string; readonly completedBy: string; readonly completionNotes?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'completionNotes' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/domain/events/domain-events/task-completed.event.ts:55:4:
+[37m      55 │     [32mpayload[37m: {
+         ╵     [32m~~~~~~~[0m
+
+  The expected type comes from property 'payload' which is declared here on type 'TaskCompletedEvent'
+
+    src/app/domain/events/domain-events/task-completed.event.ts:20:11:
+[37m      20 │   readonly [32mpayload[37m: {
+         ╵            [32m~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2375: Type '{ version: number; userId: string | undefined; correlationId: string | undefined; }' is not assignable to type '{ readonly version: number; readonly userId?: string; readonly correlationId?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'userId' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/domain/events/domain-events/task-completed.event.ts:61:4:
+[37m      61 │     [32mmetadata[37m: {
+         ╵     [32m~~~~~~~~[0m
+
+  The expected type comes from property 'metadata' which is declared here on type 'TaskCompletedEvent'
+
+    src/app/domain/events/domain-events/task-completed.event.ts:28:11:
+[37m      28 │   readonly [32mmetadata[37m: {
+         ╵            [32m~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2375: Type '{ version: number; userId: string | undefined; correlationId: string | undefined; }' is not assignable to type '{ readonly version: number; readonly userId?: string; readonly correlationId?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'userId' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/domain/events/domain-events/workspace-created.event.ts:61:4:
+[37m      61 │     [32mmetadata[37m: {
+         ╵     [32m~~~~~~~~[0m
+
+  The expected type comes from property 'metadata' which is declared here on type 'WorkspaceCreatedEvent'
+
+    src/app/domain/events/domain-events/workspace-created.event.ts:28:11:
+[37m      28 │   readonly [32mmetadata[37m: {
+         ╵            [32m~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG5002: Parser Error: Unexpected token . at column 2 in [[...acceptanceStore.approvedTasks(), ...acceptanceStore.rejectedTasks()]] in /home/runner/work/Black-Tortoise/Black-Tortoise/src/app/presentation/containers/workspace-modules/acceptance.module.ts@79:14[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:80:14:
+[37m      80 │ ...    @for ([32mtask of [...acceptanceStore.approvedTasks(), ...accep[37m...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG5002: Parser Error: Unexpected token . at column 2 in [[...acceptanceStore.approvedTasks(), ...acceptanceStore.rejectedTasks()]] in /home/runner/work/Black-Tortoise/Black-Tortoise/src/app/presentation/containers/workspace-modules/acceptance.module.ts@79:14[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:80:96:
+[37m      80 │ ...ovedTasks(), ...acceptanceStore.rejectedTasks()]; [32mtrack task.id[37m) {
+         ╵                                                      [32m~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2532: Object is possibly 'undefined'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:80:107:
+[37m      80 │ ...ovedTasks(), ...acceptanceStore.rejectedTasks()]; track task.[32mid[37m) {
+         ╵                                                                 [32m~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG5002: Parser Error: Unexpected token . at column 2 in [[...acceptanceStore.approvedTasks(), ...acceptanceStore.rejectedTasks()]] in /home/runner/work/Black-Tortoise/Black-Tortoise/src/app/presentation/containers/workspace-modules/acceptance.module.ts@79:14[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:81:53:
+[37m      81 │ ...ult-card" [class.approved]="[32mtask.acceptanceStatus === 'approved'[37m">
+         ╵                                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2532: Object is possibly 'undefined'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:81:58:
+[37m      81 │ ...ult-card" [class.approved]="task.[32macceptanceStatus[37m === 'approved'">
+         ╵                                     [32m~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG5002: Parser Error: Unexpected token . at column 2 in [[...acceptanceStore.approvedTasks(), ...acceptanceStore.rejectedTasks()]] in /home/runner/work/Black-Tortoise/Black-Tortoise/src/app/presentation/containers/workspace-modules/acceptance.module.ts@79:14[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:82:16:
+[37m      82 │             <h4>[32m{{ task.taskTitle }}[37m</h4>
+         ╵                 [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2532: Object is possibly 'undefined'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:82:24:
+[37m      82 │             <h4>{{ task.[32mtaskTitle[37m }}</h4>
+         ╵                         [32m~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG5002: Parser Error: Unexpected token . at column 2 in [[...acceptanceStore.approvedTasks(), ...acceptanceStore.rejectedTasks()]] in /home/runner/work/Black-Tortoise/Black-Tortoise/src/app/presentation/containers/workspace-modules/acceptance.module.ts@79:14[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:84:35:
+[37m      84 │               <span class="status">[32m{{ task.acceptanceStatus }}[37m</span>
+         ╵                                    [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2532: Object is possibly 'undefined'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:84:43:
+[37m      84 │               <span class="status">{{ task.[32macceptanceStatus[37m }}</span>
+         ╵                                            [32m~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG5002: Parser Error: Unexpected token . at column 2 in [[...acceptanceStore.approvedTasks(), ...acceptanceStore.rejectedTasks()]] in /home/runner/work/Black-Tortoise/Black-Tortoise/src/app/presentation/containers/workspace-modules/acceptance.module.ts@79:14[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:85:20:
+[37m      85 │               <span>[32m{{ task.decidedAt?.toLocaleString() }}[37m</span>
+         ╵                     [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2532: Object is possibly 'undefined'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:85:28:
+[37m      85 │               <span>{{ task.[32mdecidedAt[37m?.toLocaleString() }}</span>
+         ╵                             [32m~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG5002: Parser Error: Unexpected token . at column 2 in [[...acceptanceStore.approvedTasks(), ...acceptanceStore.rejectedTasks()]] in /home/runner/work/Black-Tortoise/Black-Tortoise/src/app/presentation/containers/workspace-modules/acceptance.module.ts@79:14[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:86:20:
+[37m      86 │               <span>[32mBy: {{ task.decidedBy }}[37m</span>
+         ╵                     [32m~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2532: Object is possibly 'undefined'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:86:32:
+[37m      86 │               <span>By: {{ task.[32mdecidedBy[37m }}</span>
+         ╵                                 [32m~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG5002: Parser Error: Unexpected token . at column 2 in [[...acceptanceStore.approvedTasks(), ...acceptanceStore.rejectedTasks()]] in /home/runner/work/Black-Tortoise/Black-Tortoise/src/app/presentation/containers/workspace-modules/acceptance.module.ts@79:14[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:88:17:
+[37m      88 │             @if ([32mtask.notes[37m) {
+         ╵                  [32m~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2532: Object is possibly 'undefined'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:88:22:
+[37m      88 │             @if (task.[32mnotes[37m) {
+         ╵                       [32m~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG5002: Parser Error: Unexpected token . at column 2 in [[...acceptanceStore.approvedTasks(), ...acceptanceStore.rejectedTasks()]] in /home/runner/work/Black-Tortoise/Black-Tortoise/src/app/presentation/containers/workspace-modules/acceptance.module.ts@79:14[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:89:31:
+[37m      89 │               <p class="notes">[32m{{ task.notes }}[37m</p>
+         ╵                                [32m~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2532: Object is possibly 'undefined'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/acceptance.module.ts:89:39:
+[37m      89 │               <p class="notes">{{ task.[32mnotes[37m }}</p>
+         ╵                                        [32m~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2379: Argument of type '{ date: string | undefined; userId: string; taskIds: never[]; hoursLogged: number; notes: string | undefined; }' is not assignable to parameter of type 'Omit<DailyEntry, "id" | "createdAt">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'notes' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/daily.module.ts:118:32:
+[37m      118 │     this.dailyStore.createEntry([32mentry[37m);
+          ╵                                 [32m~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS18048: 'file' is possibly 'undefined'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/documents.module.ts:117:44:
+[37m      117 │     this.documentsStore.startUpload(fileId, [32mfile[37m.name);
+          ╵                                             [32m~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS18048: 'file' is possibly 'undefined'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/documents.module.ts:131:16:
+[37m      131 │           name: [32mfile[37m.name,
+          ╵                 [32m~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS18048: 'file' is possibly 'undefined'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/documents.module.ts:132:16:
+[37m      132 │           type: [32mfile[37m.type,
+          ╵                 [32m~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS18048: 'file' is possibly 'undefined'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/documents.module.ts:133:16:
+[37m      133 │           size: [32mfile[37m.size,
+          ╵                 [32m~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2345: Argument of type 'File | undefined' is not assignable to parameter of type 'Blob | MediaSource'.
+  Type 'undefined' is not assignable to type 'Blob | MediaSource'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/presentation/containers/workspace-modules/documents.module.ts:134:35:
+[37m      134 │           url: URL.createObjectURL([32mfile[37m),
+          ╵                                    [32m~~~~[0m
+
+[39m[22m

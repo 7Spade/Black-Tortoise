@@ -56,12 +56,12 @@ export function createTaskCompletedEvent(
       taskId,
       taskName,
       completedBy,
-      completionNotes,
+      ...(completionNotes !== undefined && { completionNotes }),
     },
     metadata: {
       version: 1,
-      userId,
-      correlationId,
+      ...(userId !== undefined && { userId }),
+      ...(correlationId !== undefined && { correlationId }),
     },
   };
 }

@@ -45,7 +45,7 @@ export function createDailyEntryCreatedEvent(
       userId,
       taskIds,
       hoursLogged,
-      notes,
+      ...(notes !== undefined && { notes }),
     },
     metadata: {
       version: 1,

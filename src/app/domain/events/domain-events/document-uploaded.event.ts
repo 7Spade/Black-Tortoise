@@ -66,8 +66,8 @@ export function createDocumentUploadedEvent(
     },
     metadata: {
       version: 1,
-      userId,
-      correlationId,
+      ...(userId !== undefined && { userId }),
+      ...(correlationId !== undefined && { correlationId }),
     },
   };
 }

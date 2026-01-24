@@ -16,7 +16,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
@@ -76,8 +76,8 @@ import { ModuleEventHelper } from '@presentation/containers/workspace-modules/ba
 
       <!-- Completed -->
       <div class="completed-section">
-        <h3>Completed ({{ acceptanceStore.approvedTasks().length + acceptanceStore.rejectedTasks().length }})</h3>
-        @for (task of [...acceptanceStore.approvedTasks(), ...acceptanceStore.rejectedTasks()]; track task.id) {
+        <h3>Completed ({{ completedTasksCount() }})</h3>
+        @for (task of completedTasks(); track task.id) {
           <div class="result-card" [class.approved]="task.acceptanceStatus === 'approved'">
             <h4>{{ task.taskTitle }}</h4>
             <div class="result-meta">
@@ -167,6 +167,16 @@ export class AcceptanceModule implements IAppModule, OnInit, OnDestroy {
   @Input() eventBus?: IModuleEventBus;
   
   readonly acceptanceStore = inject(AcceptanceStore);
+  
+  // Computed signal for completed tasks (approved + rejected)
+  readonly completedTasks = computed(() => [
+    ...this.acceptanceStore.approvedTasks(),
+    ...this.acceptanceStore.rejectedTasks()
+  ]);
+  
+  readonly completedTasksCount = computed(() => 
+    this.acceptanceStore.approvedTasks().length + this.acceptanceStore.rejectedTasks().length
+  );
   
   notes = '';
   private readonly currentUserId = 'user-demo-acceptance';

@@ -80,11 +80,15 @@ export class DailyModule implements IAppModule, OnInit, OnDestroy {
   @Input() eventBus?: IModuleEventBus;
   readonly dailyStore = inject(DailyStore);
   
-  entryDate = new Date().toISOString().split('T')[0];
+  entryDate: string = this.getTodayDate();
   hoursLogged = 0;
   notes = '';
   private readonly currentUserId = 'user-demo';
   private subscriptions = ModuleEventHelper.createSubscriptionManager();
+  
+  private getTodayDate(): string {
+    return new Date().toISOString().split('T')[0] ?? '';
+  }
   
   ngOnInit(): void {
     if (this.eventBus) {
@@ -112,7 +116,7 @@ export class DailyModule implements IAppModule, OnInit, OnDestroy {
       userId: this.currentUserId,
       taskIds: [],
       hoursLogged: this.hoursLogged,
-      notes: this.notes || undefined,
+      ...(this.notes && { notes: this.notes }),
     };
     
     this.dailyStore.createEntry(entry);

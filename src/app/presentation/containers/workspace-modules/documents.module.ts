@@ -111,6 +111,8 @@ export class DocumentsModule implements IAppModule, OnInit, OnDestroy {
     if (!input.files?.length) return;
     
     const file = input.files[0];
+    if (!file) return; // Guard against undefined
+    
     const fileId = crypto.randomUUID();
     
     // Start upload
@@ -126,7 +128,7 @@ export class DocumentsModule implements IAppModule, OnInit, OnDestroy {
         clearInterval(interval);
         this.documentsStore.completeUpload(fileId);
         
-        // Add document
+        // Add document (file is guaranteed to exist here due to guard)
         this.documentsStore.addDocument({
           name: file.name,
           type: file.type,

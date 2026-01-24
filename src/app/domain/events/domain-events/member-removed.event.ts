@@ -36,7 +36,7 @@ export function createMemberRemovedEvent(
     payload: {
       userId,
       removedBy,
-      reason,
+      ...(reason !== undefined && { reason }),
     },
     metadata: {
       version: 1,

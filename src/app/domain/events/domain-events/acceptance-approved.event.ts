@@ -40,7 +40,7 @@ export function createAcceptanceApprovedEvent(
       taskId,
       taskTitle,
       approverId,
-      approvalNotes,
+      ...(approvalNotes !== undefined && { approvalNotes }),
     },
     metadata: {
       version: 1,

@@ -40,7 +40,7 @@ export function createQCPassedEvent(
       taskId,
       taskTitle,
       reviewerId,
-      reviewNotes,
+      ...(reviewNotes !== undefined && { reviewNotes }),
     },
     metadata: {
       version: 1,
