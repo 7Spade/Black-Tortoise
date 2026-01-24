@@ -2,6 +2,7 @@
 
 本文件作為 Black-Tortoise 專案的最高指導原則 (The Constitution)，定義 Workspace 與各業務模組的互動介面、狀態管理、UI 設計規範與工程標準。
 Copilot 在生成代碼時必須嚴格遵守此文件，優先於其他通用規則。
+**層級總則**：.github/skills/ddd/SKILL.md 為最上位規範，本文件在其之下提供 Workspace 及模組化的具體落地細則；若有衝突，以 DDD SKILL 為準。
 
 ---
 
@@ -14,12 +15,15 @@ Copilot 在生成代碼時必須嚴格遵守此文件，優先於其他通用規
   - 切換 Workspace 時，必須完整銷毀並重建其下所有模組狀態。
 - **DDD 層級**：Workspace 對應 Application Context；Module 對應 Application 內的子 Use Case 群組。
 - **Domain 隔離**：Domain Layer 不感知 Workspace 或 Module 的存在。
+- **依賴方向**：遵循 Domain → Application → Infrastructure → Presentation 單向依賴，禁止任何反向引用、barrel export 或間接耦合破壞層級。
+- **介面歸屬**：Module 所需的 interface 必須定義在 Application/Domain，Infrastructure 只能實作，Presentation 只能透過 Application Store/Facade 進入。
 
 ### 2. 純響應式通訊 (Pure Reactive Communication)
 - **模組間互動**：一律透過 **Workspace-scoped Event Bus**。
 - **禁止直接呼叫**：模組間不得直接呼叫 Service 或 Facade。
 - **狀態隔離**：模組間不得直接共享 Signal State。
 - **事件驅動**：所有跨模組影響必須以 Event 表達 (e.g., `TaskStatusChanged`, `RoleCreated`)。
+- **事件鏈順序**：事件必須遵循 Append -> Publish -> React 三段式，禁止先 Publish 後 Append。
 
 ---
 
@@ -44,9 +48,10 @@ Copilot 在生成代碼時必須嚴格遵守此文件，優先於其他通用規
 ### 3. 任務模組 (TasksModule)
 - **職責**：核心任務與專案管理。
 - **視圖設計 (View Design)**：
-  - **Single Source of Truth**：所有視圖 (List, Gantt, Calendar) **必須** 投影自同一個 Entity Map。
-  - **零重新獲取 (Zero Refetch)**：切換視圖時 **禁止** 重新打 API，僅改變 `viewMode` signal 與 `computed` filter。
+- **Single Source of Truth**：所有視圖 (List, Gantt, Calendar) **必須** 投影自同一個 Entity Map。
+- **零重新獲取 (Zero Refetch)**：切換視圖時 **禁止** 重新打 API，僅改變 `viewMode` signal 與 `computed` filter。
 - **狀態流轉**：作為工作流發起點，必須響應 QC/Acceptance 的回饋。
+- **事件責任**：TasksModule 只發布/處理 Task 類事件，不得跨界修改 Permissions/Issues 狀態，跨模組效果必須透過 Event Bus。
 
 ### 4. 每日紀錄模組 (DailyModule)
 - **職責**：個人工作日誌 (Timesheet/Worklog)。
@@ -239,3 +244,13 @@ export interface DomainEvent<TPayload = Record<string, unknown>> {
 - **Schema Evolution**：Event Schema 變更時，必須實作 Upcaster 以相容舊事件。
 - **ADR (Architecture Decision Records)**：任何偏離本文件的架構決策，必須即時更新本文件或記錄 ADR，禁止「隱形架構」。
 
+---
+
+## 十一、落地檢查清單 (Enforcement Checklist)
+
+- 層級邊界符合 Domain → Application → Infrastructure → Presentation，且介面定義歸於需求方。
+- Workspace 切換時，所有 Module 的 store/state 會被銷毀並重建，不可殘留跨 Workspace 資料。
+- 模組間僅透過 Workspace Event Bus 互動，事件遵循 Append -> Publish -> React 並攜帶 correlationId。
+- 所有狀態以 signalStore 管理，禁止 BehaviorSubject、手動 subscribe 或跨模組共享 Signal。
+- Presentation 僅經由 Application Store/Facade 取得資料，不直接呼叫 Infrastructure 或 Domain。
+- 實作若偏離本憲章或 DDD SKILL，必須立即補充 ADR 或修訂本文件。

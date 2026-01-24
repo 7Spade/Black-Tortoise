@@ -175,15 +175,6 @@ export const PresentationStore = signalStore(
      */
     setTheme(theme: 'light' | 'dark' | 'auto'): void {
       patchState(store, { theme });
-
-      // Apply theme to document
-      const root = document.documentElement;
-      if (theme === 'auto') {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
-      } else {
-        root.setAttribute('data-theme', theme);
-      }
     },
 
     /**

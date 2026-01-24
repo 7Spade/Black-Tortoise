@@ -3,13 +3,19 @@
  * 
  * Layer: Presentation
  * Purpose: Complete task management with feedback loop
- * Architecture: Workspace-scoped, Event-driven, Signal-based
+ * Architecture: Workspace-scoped, Event-driven, Pure Signal-based, NO RxJS
  * 
  * Implements: Task→QC→Fail→Issue→Task Ready feedback loop
+ * 
+ * Constitution Compliance:
+ * - No manual .subscribe() calls
+ * - Pure signal-based event handling via unsubscribe functions
+ * - Zone-less compatible
+ * - Event handlers stored and cleaned up properly
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
@@ -353,7 +359,11 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
     this.eventBus = eventBus;
     this.workspaceId.set(eventBus.workspaceId);
 
-    // Subscribe to events for reactive updates
+    /**
+     * Subscribe to events using EventBus interface
+     * Returns cleanup functions that we store for proper cleanup
+     * No manual .subscribe() - uses event bus abstraction
+     */
     this.unsubscribers.push(
       eventBus.subscribe('TaskCreated', (event: any) => {
         console.log('[TasksModule] TaskCreated event received', event);

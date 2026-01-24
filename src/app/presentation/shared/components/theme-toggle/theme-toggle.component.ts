@@ -1,5 +1,5 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 
 /**
  * ThemeToggleComponent
@@ -63,6 +63,7 @@ export class ThemeToggleComponent {
   
   // Local UI state: dark mode enabled
   isDark = signal(false);
+  private readonly themeClass = signal<'light' | 'dark'>('light');
 
   toggle(): void {
     const nextMode = !this.isDark();
@@ -70,10 +71,7 @@ export class ThemeToggleComponent {
     
     // Persist to localStorage
     localStorage.setItem(this.themeStorageKey, nextMode ? 'dark' : 'light');
-    
-    // Apply global theme via body class
-    this.document.body.classList.remove('light', 'dark');
-    this.document.body.classList.add(nextMode ? 'dark' : 'light');
+    this.themeClass.set(nextMode ? 'dark' : 'light');
   }
 
   constructor() {
@@ -82,8 +80,15 @@ export class ThemeToggleComponent {
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     const initialDark = storedTheme === 'dark' || (!storedTheme && prefersDark);
     
+    const initialTheme: 'light' | 'dark' = initialDark ? 'dark' : 'light';
     this.isDark.set(initialDark);
-    this.document.body.classList.remove('light', 'dark');
-    this.document.body.classList.add(initialDark ? 'dark' : 'light');
+    this.themeClass.set(initialTheme);
+
+    // Apply global theme via body class reactively
+    effect(() => {
+      const theme = this.themeClass();
+      this.document.body.classList.remove('light', 'dark');
+      this.document.body.classList.add(theme);
+    });
   }
 }
