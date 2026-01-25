@@ -122,7 +122,7 @@ Skills are automatically loaded by Copilot based on context. They are located in
 
 | Skill | Description | Triggers |
 |-------|-------------|----------|
-| [Web Design Reviewer](.github/skills/web-design-reviewer/) | UI review and fixes | Design issues |
+| [Black-Tortoise UI Reviewer](.github/skills/web-design-reviewer/) | Black-Tortoise UI review and fixes | UI/layout/design review |
 | [Webapp Testing](.github/skills/webapp-testing/) | Playwright testing | E2E testing |
 | [VS Code Extensions](.github/skills/vscode-ext-commands/) | Extension development | VS Code work |
 
