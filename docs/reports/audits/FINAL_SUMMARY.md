@@ -9,7 +9,7 @@
 ## ✅ MISSION ACCOMPLISHED
 
 Full code audit completed across `src/app` recursively per:
-- `docs/workspace-modular-architecture.constitution.md`
+- `docs/workspace-modular-architecture-constitution.md`
 - `.github/skills/ddd/SKILL.md`
 
 **All violations have been fixed. The codebase is now 100% constitution compliant.**
@@ -298,6 +298,6 @@ Use this hash when replying to comment #3793913153 for quick reference.
 ---
 
 **Auditor**: GPT-5.1-Codex-Max (Tier-1 Autonomous Software Architect)  
-**Constitution**: docs/workspace-modular-architecture.constitution.md  
+**Constitution**: docs/workspace-modular-architecture-constitution.md  
 **DDD Skill**: .github/skills/ddd/SKILL.md  
 **Date**: 2025-01-24

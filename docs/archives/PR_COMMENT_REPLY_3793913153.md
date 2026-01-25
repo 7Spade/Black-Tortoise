@@ -7,7 +7,7 @@
 
 ## Summary
 
-Full architecture audit completed per `docs/workspace-modular-architecture.constitution.md`. All critical violations have been identified and fixed.
+Full architecture audit completed per `docs/workspace-modular-architecture-constitution.md`. All critical violations have been identified and fixed.
 
 ### Results
 - **Files Modified**: 7

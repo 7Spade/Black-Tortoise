@@ -190,7 +190,7 @@ npm run build
 ## Related Documents
 - TYPESCRIPT_ERRORS_FIX_SUMMARY.md (comprehensive analysis)
 - QUICK_REFERENCE_FIXES.md (pattern quick reference)
-- docs/workspace-modular-architecture.constitution.md (architecture rules)
+- docs/workspace-modular-architecture-constitution.md (architecture rules)
 - .github/skills/ddd/SKILL.md (DDD enforcement)
 
 ---

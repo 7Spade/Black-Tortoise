@@ -292,9 +292,9 @@ $ grep -r "\*ngIf\|\*ngFor" src/app/presentation --include="*.ts" | wc -l
 1. **DDD_ENFORCEMENT_COMPLETE.md** - Full implementation details
 2. **QUICK_START_DDD.md** - Developer quick reference
 3. **IMPLEMENTATION_SUMMARY.md** - This file
-4. **ARCHITECTURE_VIOLATIONS_REPORT.md** - Detailed violation analysis
-5. **DDD_BOUNDARY_QUICK_REFERENCE.md** - Rules reference
-6. **Black-Tortoise_Architecture.md** - Complete architecture guide
+4. **../architecture/ARCHITECTURE_VIOLATIONS_REPORT.md** - Detailed violation analysis
+5. **../architecture/DDD_BOUNDARY_QUICK_REFERENCE.md** - Rules reference
+6. **../architecture/Black-Tortoise_Architecture.md** - Complete architecture guide
 
 ---
 

@@ -5,7 +5,7 @@
 fix: enforce constitution compliance - remove RxJS from app/presentation layers
 
 Ref: Comment #3793913153
-Constitution: docs/workspace-modular-architecture.constitution.md
+Constitution: docs/workspace-modular-architecture-constitution.md
 
 BREAKING: Removed deprecated WorkspaceEventBus concrete class from Domain layer
 

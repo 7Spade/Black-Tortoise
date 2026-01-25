@@ -23,7 +23,7 @@ After applying fixes:
 
 ## Documentation
 - 📄 `WORKSPACE_SWITCHER_FIX_SUMMARY.md` - Detailed technical analysis
-- ✅ `VERIFICATION_CHECKLIST.md` - Complete testing guide
+- ✅ `../quick-reference/verification-checklist.md` - Complete testing guide
 
 ## Commit Command
 ```bash
@@ -31,7 +31,7 @@ git add src/app/application/workspace/stores/workspace-context.store.ts \
         src/app/infrastructure/workspace/persistence/workspace.repository.impl.ts \
         src/index.html \
         WORKSPACE_SWITCHER_FIX_SUMMARY.md \
-        VERIFICATION_CHECKLIST.md \
+        ../quick-reference/verification-checklist.md \
         README_WORKSPACE_SWITCHER_FIX.md
 
 git commit -m "fix(workspace): resolve workspace switcher button visibility issues

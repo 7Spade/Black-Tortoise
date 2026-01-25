@@ -213,7 +213,7 @@ AUDIT RESULT: ✅ 100% COMPLIANT
 
 See: ARCHITECTURE_AUDIT_FINAL_REPORT.md
 
-Constitution: docs/workspace-modular-architecture.constitution.md
+Constitution: docs/workspace-modular-architecture-constitution.md
 ```
 
 ---

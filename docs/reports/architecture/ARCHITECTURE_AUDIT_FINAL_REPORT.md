@@ -1,6 +1,6 @@
 # Black-Tortoise Architecture Audit - Final Report
 **Date:** 2026-01-24  
-**Constitution:** docs/workspace-modular-architecture.constitution.md  
+**Constitution:** docs/workspace-modular-architecture-constitution.md  
 **Scope:** Full recursive audit of src/app
 
 ---
@@ -343,4 +343,4 @@ The single violation found (deprecated domain implementation) has been remediate
 
 **Auditor:** AI Code Agent  
 **Date:** 2026-01-24  
-**Constitution Version:** workspace-modular-architecture.constitution.md (Current)
+**Constitution Version:** workspace-modular-architecture-constitution.md (Current)

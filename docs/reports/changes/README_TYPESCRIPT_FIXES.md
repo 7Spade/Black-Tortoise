@@ -242,7 +242,7 @@ npm run build
 
 ## 🔗 Related Documents
 
-- **Architecture:** `docs/workspace-modular-architecture.constitution.md`
+- **Architecture:** `docs/workspace-modular-architecture-constitution.md`
 - **DDD Rules:** `.github/skills/ddd/SKILL.md`
 - **Build Log:** `build-errors.log` (before fix)
 
@@ -252,7 +252,7 @@ npm run build
 
 For questions about:
 - **Patterns:** See QUICK_REFERENCE_FIXES.md
-- **Architecture:** See workspace-modular-architecture.constitution.md
+- **Architecture:** See workspace-modular-architecture-constitution.md
 - **DDD Rules:** See .github/skills/ddd/SKILL.md
 - **Specific Errors:** See TYPESCRIPT_ERRORS_FIX_SUMMARY.md
 

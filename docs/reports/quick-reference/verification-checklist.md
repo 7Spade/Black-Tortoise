@@ -108,7 +108,7 @@
 - [x] QUICK_REFERENCE_FIXES.md (patterns)
 - [x] VISUAL_BEFORE_AFTER.md (examples)
 - [x] COMMIT_MESSAGE.md (git commit)
-- [x] VERIFICATION_CHECKLIST.md (this file)
+- [x] verification-checklist.md (this file)
 
 ### ✅ Testing Recommendations
 

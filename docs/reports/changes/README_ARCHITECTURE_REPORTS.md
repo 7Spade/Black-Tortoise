@@ -10,26 +10,26 @@
 
 | Document | Size | Purpose | Audience |
 |----------|------|---------|----------|
-| [**INDEX**](ARCHITECTURE_ANALYSIS_INDEX.md) | 9 KB | Master index with overview | Everyone (Start Here) |
-| [**SUMMARY**](DEPENDENCY_MAP_SUMMARY.md) | 7 KB | Quick reference guide | Developers (Daily Use) |
-| [**VIOLATIONS**](ARCHITECTURE_VIOLATIONS_REPORT.md) | 11 KB | Detailed violations list | Code Reviewers |
-| [**ARCHITECTURE**](Black-Tortoise_Architecture.md) | 32 KB | Complete architectural documentation | Architects, Tech Leads |
+| [**INDEX**](../architecture/ARCHITECTURE_ANALYSIS_INDEX.md) | 9 KB | Master index with overview | Everyone (Start Here) |
+| [**SUMMARY**](../architecture/DEPENDENCY_MAP_SUMMARY.md) | 7 KB | Quick reference guide | Developers (Daily Use) |
+| [**VIOLATIONS**](../architecture/ARCHITECTURE_VIOLATIONS_REPORT.md) | 11 KB | Detailed violations list | Code Reviewers |
+| [**ARCHITECTURE**](../architecture/Black-Tortoise_Architecture.md) | 32 KB | Complete architectural documentation | Architects, Tech Leads |
 
 ---
 
 ## 🎯 Start Here
 
 ### New to the Project?
-→ Start with [ARCHITECTURE_ANALYSIS_INDEX.md](ARCHITECTURE_ANALYSIS_INDEX.md)
+→ Start with [ARCHITECTURE_ANALYSIS_INDEX.md](../architecture/ARCHITECTURE_ANALYSIS_INDEX.md)
 
 ### Daily Development?
-→ Keep [DEPENDENCY_MAP_SUMMARY.md](DEPENDENCY_MAP_SUMMARY.md) open for reference
+→ Keep [DEPENDENCY_MAP_SUMMARY.md](../architecture/DEPENDENCY_MAP_SUMMARY.md) open for reference
 
 ### Fixing Violations?
-→ Follow [ARCHITECTURE_VIOLATIONS_REPORT.md](ARCHITECTURE_VIOLATIONS_REPORT.md)
+→ Follow [ARCHITECTURE_VIOLATIONS_REPORT.md](../architecture/ARCHITECTURE_VIOLATIONS_REPORT.md)
 
 ### Architectural Decisions?
-→ Review [Black-Tortoise_Architecture.md](Black-Tortoise_Architecture.md)
+→ Review [Black-Tortoise_Architecture.md](../architecture/Black-Tortoise_Architecture.md)
 
 ---
 
@@ -139,22 +139,22 @@
 ## 🔍 How to Use These Reports
 
 ### For Architects & Tech Leads
-1. Read: `Black-Tortoise_Architecture.md` (full architecture)
+1. Read: `../architecture/Black-Tortoise_Architecture.md` (full architecture)
 2. Review: NFR sections for quality attributes
 3. Plan: Use "Next Steps" for roadmap
 
 ### For Developers
-1. Daily: Keep `DEPENDENCY_MAP_SUMMARY.md` open
+1. Daily: Keep `../architecture/DEPENDENCY_MAP_SUMMARY.md` open
 2. Before coding: Check layer rules
 3. Code review: Verify no new violations
 
 ### For Code Reviewers
-1. Check: `ARCHITECTURE_VIOLATIONS_REPORT.md`
+1. Check: `../architecture/ARCHITECTURE_VIOLATIONS_REPORT.md`
 2. Verify: No Application → Presentation imports
 3. Enforce: 100% compliance before merge
 
 ### For New Team Members
-1. Overview: `ARCHITECTURE_ANALYSIS_INDEX.md`
+1. Overview: `../architecture/ARCHITECTURE_ANALYSIS_INDEX.md`
 2. Understand: System Context and Component diagrams
 3. Learn: Sequence diagrams for key workflows
 
@@ -165,13 +165,13 @@
 ### View Analysis Results
 ```bash
 # View main architecture document
-cat Black-Tortoise_Architecture.md
+cat ../architecture/Black-Tortoise_Architecture.md
 
 # View quick summary
-cat DEPENDENCY_MAP_SUMMARY.md
+cat ../architecture/DEPENDENCY_MAP_SUMMARY.md
 
 # View violations
-cat ARCHITECTURE_VIOLATIONS_REPORT.md
+cat ../architecture/ARCHITECTURE_VIOLATIONS_REPORT.md
 ```
 
 ### Fix Violations
@@ -242,10 +242,10 @@ python3 /tmp/full_dependency_analysis.py
 ## 📞 Questions?
 
 If you have questions about:
-- **Violations**: See `ARCHITECTURE_VIOLATIONS_REPORT.md`
-- **Layer Rules**: See `DEPENDENCY_MAP_SUMMARY.md`
-- **System Design**: See `Black-Tortoise_Architecture.md`
-- **Getting Started**: See `ARCHITECTURE_ANALYSIS_INDEX.md`
+- **Violations**: See `../architecture/ARCHITECTURE_VIOLATIONS_REPORT.md`
+- **Layer Rules**: See `../architecture/DEPENDENCY_MAP_SUMMARY.md`
+- **System Design**: See `../architecture/Black-Tortoise_Architecture.md`
+- **Getting Started**: See `../architecture/ARCHITECTURE_ANALYSIS_INDEX.md`
 
 ---
 

@@ -154,7 +154,7 @@ Should all return empty (0 violations).
 ## Need Help?
 
 - See `DDD_ENFORCEMENT_COMPLETE.md` for full details
-- See `Black-Tortoise_Architecture.md` for architecture overview
+- See `../architecture/Black-Tortoise_Architecture.md` for architecture overview
 - See `DDD_BOUNDARY_QUICK_REFERENCE.md` for rules reference
 
 ## Key Principles

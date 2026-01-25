@@ -28,7 +28,7 @@
 - Metrics
 
 ### 3. Verification Checklist
-**File:** [`VERIFICATION_CHECKLIST.md`](VERIFICATION_CHECKLIST.md)  
+**File:** [`verification-checklist.md`](../quick-reference/verification-checklist.md)  
 **Purpose:** Complete testing and verification guide  
 **Audience:** QA, Developers  
 **Contents:**
@@ -179,7 +179,7 @@ describe('WorkspaceRepositoryImpl', () => {
 4. Verify DDD compliance section
 
 ### For Testing
-1. Read `VERIFICATION_CHECKLIST.md`
+1. Read `verification-checklist.md`
 2. Follow each test scenario
 3. Check off items as you verify
 4. Report any failures
@@ -227,7 +227,7 @@ describe('WorkspaceRepositoryImpl', () => {
 **A:** No, changes are isolated to workspace initialization and imports.
 
 ### Q: Do I need to run tests?
-**A:** Yes, follow `VERIFICATION_CHECKLIST.md` before deploying.
+**A:** Yes, follow `verification-checklist.md` before deploying.
 
 ### Q: What about the demo route?
 **A:** By design, workspace controls are hidden on `/demo`. This is intentional.

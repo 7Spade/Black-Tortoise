@@ -1,6 +1,6 @@
 # Full Code Audit - Final Report
 **Comment Reference**: #3793913153  
-**Constitution**: docs/workspace-modular-architecture.constitution.md  
+**Constitution**: docs/workspace-modular-architecture-constitution.md  
 **Reply Hash**: `a7f9c2e1`
 
 ## Executive Summary
@@ -372,5 +372,5 @@ effect(() => this._latestDialogResult.set(resultSignal()));
 
 **Audit Completed**: 2025-01-24  
 **Auditor**: GPT-5.1-Codex-Max (Tier-1 Autonomous Software Architect)  
-**Constitution**: docs/workspace-modular-architecture.constitution.md  
+**Constitution**: docs/workspace-modular-architecture-constitution.md  
 **DDD Skill**: .github/skills/ddd/SKILL.md
