@@ -7,11 +7,11 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
+import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { SettingsStore } from '@application/settings/stores/settings.store';
-import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
 import { TaskPriority } from '@domain/task/task.entity';
+import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module-event-helper';
 
 @Component({
   selector: 'app-settings-module',

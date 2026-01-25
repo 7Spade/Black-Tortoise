@@ -18,7 +18,7 @@ export * from './organization/team';
 export * from './pages/settings';
 
 // Containers
-export * from './containers';
+export * from './workspaces';
 
 // Shared
 export * from './shared';

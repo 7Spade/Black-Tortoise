@@ -6,13 +6,13 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
-import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { DailyStore } from '@application/daily/stores/daily.store';
 import { CreateDailyEntryUseCase } from '@application/daily/use-cases/create-daily-entry.use-case';
-import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
+import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
+import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
+import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module-event-helper';
 
 @Component({
   selector: 'app-daily-module',

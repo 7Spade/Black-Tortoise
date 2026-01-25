@@ -18,12 +18,12 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
+import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { QualityControlStore } from '@application/quality-control/stores/quality-control.store';
-import { PassQCUseCase } from '@application/quality-control/use-cases/pass-qc.use-case';
 import { FailQCUseCase } from '@application/quality-control/use-cases/fail-qc.use-case';
-import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
+import { PassQCUseCase } from '@application/quality-control/use-cases/pass-qc.use-case';
+import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module-event-helper';
 
 @Component({
   selector: 'app-quality-control-module',

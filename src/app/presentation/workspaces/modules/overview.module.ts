@@ -6,14 +6,14 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
-import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
-import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
-import { OverviewStore } from '@application/overview/stores/overview.store';
-import { TasksStore } from '@application/tasks/stores/tasks.store';
-import { QualityControlStore } from '@application/quality-control/stores/quality-control.store';
 import { AcceptanceStore } from '@application/acceptance/stores/acceptance.store';
+import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
+import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IssuesStore } from '@application/issues/stores/issues.store';
-import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
+import { OverviewStore } from '@application/overview/stores/overview.store';
+import { QualityControlStore } from '@application/quality-control/stores/quality-control.store';
+import { TasksStore } from '@application/tasks/stores/tasks.store';
+import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module-event-helper';
 
 @Component({
   selector: 'app-overview-module',

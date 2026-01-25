@@ -16,9 +16,9 @@
  */
 
 import { Input, OnDestroy } from '@angular/core';
-import { IAppModule } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
-import { ModuleEventHelper, ModuleEventSubscriptions } from '@presentation/containers/workspace-modules/basic/module-event-helper';
+import { IAppModule } from '@application/interfaces/module.interface';
+import { ModuleEventHelper, ModuleEventSubscriptions } from '@presentation/workspaces/modules/basic/module-event-helper';
 
 /**
  * Base implementation pattern for modules

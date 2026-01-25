@@ -24,12 +24,12 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
-import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { AcceptanceStore } from '@application/acceptance/stores/acceptance.store';
 import { ApproveTaskUseCase } from '@application/acceptance/use-cases/approve-task.use-case';
 import { RejectTaskUseCase } from '@application/acceptance/use-cases/reject-task.use-case';
-import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
+import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
+import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
+import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module-event-helper';
 
 @Component({
   selector: 'app-acceptance-module',
