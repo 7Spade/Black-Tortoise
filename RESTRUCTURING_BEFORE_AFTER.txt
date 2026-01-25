@@ -1,0 +1,99 @@
+═══════════════════════════════════════════════════════════════════════════════
+                  PRESENTATION LAYER RESTRUCTURING
+                         BEFORE vs AFTER
+═══════════════════════════════════════════════════════════════════════════════
+
+BEFORE                                    AFTER
+───────────────────────────────────────────────────────────────────────────────
+src/app/                                  src/app/
+├── app.routes.ts ❌                     ├── app.config.ts ✅
+│   (Routes at root level)                │   (Uses @presentation/app.routes)
+│   (Loads shell via routes)              │
+├── app.config.ts                         └── presentation/
+│   (Uses ./app.routes)                       ├── app.component.ts ✅
+│                                             │   (Renders <app-shell>)
+└── presentation/                             │   (NO router-outlet)
+    ├── app.component.ts ❌                  │
+    │   (Has <router-outlet>)                 ├── app.routes.ts ✅ (MOVED)
+    │                                         │   (Routes point to pages)
+    ├── shell/                                │   (Shell NOT in routes)
+    │   └── global-shell.component.ts ❌     │
+    │       (inject ShellFacade)              ├── shell/
+    │       (inject WorkspaceContextStore)    │   └── global-shell.component.ts ✅
+    │       (implements OnInit)               │       (NO facades)
+    │       (Error banner logic)              │       (NO stores)
+    │                                         │       (NO OnInit)
+    ├── pages/                                │       (Pure layout)
+    │   ├── dashboard/                        │
+    │   ├── settings/                         ├── pages/
+    │   ├── profile/                          │   ├── dashboard/
+    │   └── index.ts                          │   ├── settings/
+    │                                         │   ├── profile/
+    └── workspaces/                           │   ├── workspace/ ✨ (NEW)
+        └── host/                             │   │   ├── workspace.page.ts
+            └── workspace-host.component.ts   │   │   └── index.ts
+                                              │   └── index.ts ✅
+                                              │       (Exports workspace)
+                                              │
+                                              └── workspaces/
+                                                  └── host/
+                                                      └── workspace-host.component.ts
+
+═══════════════════════════════════════════════════════════════════════════════
+                           COMPONENT HIERARCHY
+═══════════════════════════════════════════════════════════════════════════════
+
+BEFORE                                    AFTER
+───────────────────────────────────────────────────────────────────────────────
+AppComponent                              AppComponent
+  <router-outlet> ❌                       <app-shell> ✅
+    ↓ (via routes)                           ↓ (static)
+    GlobalShellComponent ❌                  GlobalShellComponent ✅
+    (SMART: has facades)                    (DUMB: pure layout)
+      <router-outlet>                         <router-outlet> (THE ONLY ONE)
+        ↓                                       ↓ (via routes)
+        Pages                                   Pages
+          ↓                                       ↓
+          WorkspaceHostComponent                  WorkspacePage ✨
+                                                    ↓
+                                                    WorkspaceHostComponent
+
+═══════════════════════════════════════════════════════════════════════════════
+                              ROUTE FLOW
+═══════════════════════════════════════════════════════════════════════════════
+
+BEFORE: /workspace                        AFTER: /workspace
+───────────────────────────────────────────────────────────────────────────────
+app.routes.ts (root)                      presentation/app.routes.ts ✅
+  ↓                                         ↓
+Route: '' → GlobalShellComponent ❌       Route: 'workspace' → WorkspacePage ✅
+  children:                                 children:
+    ↓                                         ↓
+    'workspace' → WorkspaceHost               'overview' → OverviewModule
+                                              'tasks' → TasksModule
+                                              ...
+
+═══════════════════════════════════════════════════════════════════════════════
+                           KEY DIFFERENCES
+═══════════════════════════════════════════════════════════════════════════════
+
+Aspect              BEFORE                           AFTER
+───────────────────────────────────────────────────────────────────────────────
+Routes location     src/app/app.routes.ts            src/app/presentation/app.routes.ts ✅
+App template        <router-outlet>                  <app-shell> ✅
+Shell in routes     YES ❌                          NO ✅
+Shell complexity    SMART (facades/stores) ❌        DUMB (layout only) ✅
+Router outlets      3 levels ❌                      2 levels ✅
+Page wrapper        Direct to WorkspaceHost ❌       Via WorkspacePage ✅
+Import paths        Relative ❌                      @presentation/* ✅
+Shell lifecycle     implements OnInit ❌             No lifecycle ✅
+State management    In shell ❌                      In pages/components ✅
+
+═══════════════════════════════════════════════════════════════════════════════
+                              LEGEND
+═══════════════════════════════════════════════════════════════════════════════
+✅ = Compliant with architecture requirements
+❌ = Violates architecture requirements
+✨ = New file/component created
+(MOVED) = File relocated
+───────────────────────────────────────────────────────────────────────────────

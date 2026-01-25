@@ -1,47 +1,38 @@
 /**
  * Global Shell Component
  * 
- * Layer: Presentation
+ * Layer: Presentation - Shell
  * Architecture: Angular 20 Standalone, Zone-less, OnPush
  * 
  * The global shell is the top-level layout containing:
  * - Global header (identity/workspace switchers, search, notifications)
- * - Main content area (router-outlet for modules)
- * - Error notifications
+ * - Main content area (router-outlet for pages)
+ * 
+ * Responsibilities:
+ * - Pure layout composition (header + content area)
+ * - Contains the single stable router-outlet
+ * - NO state management, NO facades, NO routing logic, NO guards
  */
 
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ShellFacade } from '@application/facades/shell.facade';
-import { WorkspaceContextStore } from '@application/workspace';
 import { HeaderComponent } from '@presentation/layout/header';
 
 @Component({
-  selector: 'app-global-shell',
+  selector: 'app-shell',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, HeaderComponent],
+  imports: [RouterOutlet, HeaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="global-shell">
-      <!-- Global Header Component -->
-      <app-header [showWorkspaceControls]="shell.showWorkspaceControls()" />
-
-      <!-- Main content area -->
+    <div class="shell">
+      <app-header [showWorkspaceControls]="true" />
       <main class="shell-content">
         <router-outlet />
       </main>
-
-      @if (shell.hasWorkspaceError()) {
-        <div class="error-banner">
-          {{ shell.workspaceError() }}
-          <button (click)="shell.clearWorkspaceError()" type="button">✕</button>
-        </div>
-      }
     </div>
   `,
   styles: [`
-    .global-shell {
+    .shell {
       display: flex;
       flex-direction: column;
       height: 100vh;
@@ -52,39 +43,6 @@ import { HeaderComponent } from '@presentation/layout/header';
       flex: 1;
       overflow: auto;
     }
-
-    .error-banner {
-      position: fixed;
-      bottom: 1rem;
-      right: 1rem;
-      padding: 1rem 1.5rem;
-      background: var(--mat-sys-error, #ba1a1a);
-      color: var(--mat-sys-on-error, #ffffff);
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      z-index: 2000;
-    }
-    
-    .error-banner button {
-      background: none;
-      border: none;
-      color: var(--mat-sys-on-error, #ffffff);
-      font-size: 1.25rem;
-      cursor: pointer;
-      padding: 0;
-    }
   `]
 })
-export class GlobalShellComponent implements OnInit {
-  readonly shell = inject(ShellFacade);
-  private readonly workspaceStore = inject(WorkspaceContextStore);
-
-  ngOnInit(): void {
-    // Ensure workspace store is initialized
-    // The injection above triggers the store's onInit hook
-    console.log('[GlobalShell] Workspace store initialized');
-  }
-}
+export class GlobalShellComponent {}
