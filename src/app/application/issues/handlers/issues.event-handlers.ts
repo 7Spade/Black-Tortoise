@@ -1,20 +1,9 @@
-/**
- * Issues Event Handlers
- * 
- * Layer: Application - Event Handlers
- * Purpose: Register event handlers for Issue domain events
- * 
- * Responsibilities:
- * - Subscribe to IssueCreated, IssueResolved events
- * - Delegate to IssuesStore for state mutations
- * - Event-driven state management (react pattern)
- */
-
 import { inject } from '@angular/core';
 import { EVENT_BUS } from '@application/events';
 import { EventBus } from '@domain/event-bus/event-bus.interface';
 import { IssueCreatedEvent, IssueResolvedEvent } from '@domain/events/domain-events';
 import { IssuesStore } from '../stores/issues.store';
+import { IssuePriority } from '@domain/aggregates/issue.aggregate';
 
 export function registerIssuesEventHandlers(eventBus: EventBus): void {
   const issuesStore = inject(IssuesStore);
@@ -27,7 +16,7 @@ export function registerIssuesEventHandlers(eventBus: EventBus): void {
         taskId: event.payload.taskId,
         title: event.payload.title,
         description: event.payload.description,
-        priority: 'high',
+        priority: IssuePriority.HIGH,
         createdBy: event.payload.createdById,
       });
     }

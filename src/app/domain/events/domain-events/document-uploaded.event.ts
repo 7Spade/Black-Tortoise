@@ -43,6 +43,20 @@ export function createDocumentUploadedEvent(
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
   
+  const payload: DocumentUploadedPayload = {
+    workspaceId,
+    documentId,
+    documentName,
+    documentType,
+    fileSize,
+    uploadedBy,
+    storagePath,
+  };
+  
+  if (userId !== undefined) {
+    (payload as { userId?: string }).userId = userId;
+  }
+  
   return {
     eventId,
     type: 'DocumentUploaded',
@@ -50,15 +64,6 @@ export function createDocumentUploadedEvent(
     correlationId: newCorrelationId,
     causationId: causationId ?? null,
     timestamp: Date.now(),
-    payload: {
-      workspaceId,
-      documentId,
-      documentName,
-      documentType,
-      fileSize,
-      uploadedBy,
-      storagePath,
-      userId,
-    },
+    payload,
   };
 }

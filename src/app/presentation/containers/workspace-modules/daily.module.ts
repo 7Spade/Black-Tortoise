@@ -381,15 +381,20 @@ export class DailyModule implements IAppModule, OnInit, OnDestroy {
     
     const entryId = crypto.randomUUID();
     
-    await this.createDailyEntryUseCase.execute({
+    const request: Parameters<typeof this.createDailyEntryUseCase.execute>[0] = {
       entryId,
       workspaceId: this.eventBus.workspaceId,
       date: this.entryDate,
       userId: this.currentUserId,
       taskIds: [],
       hoursLogged: this.hoursLogged,
-      notes: this.notes || undefined,
-    });
+    };
+    
+    if (this.notes) {
+      (request as { notes?: string }).notes = this.notes;
+    }
+    
+    await this.createDailyEntryUseCase.execute(request);
     
     this.hoursLogged = 0;
     this.notes = '';

@@ -11,6 +11,7 @@ import { IAppModule, ModuleType } from '@application/interfaces/module.interface
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { SettingsStore } from '@application/settings/stores/settings.store';
 import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
+import { TaskPriority } from '@domain/task/task.entity';
 
 @Component({
   selector: 'app-settings-module',
@@ -390,7 +391,7 @@ export class SettingsModule implements IAppModule, OnInit, OnDestroy {
     this.settingsStore.setWorkspaceSettings({
       workingHours: { start: '09:00', end: '17:00' },
       timezone: 'UTC',
-      defaultTaskPriority: 'medium',
+      defaultTaskPriority: TaskPriority.MEDIUM,
       enableNotifications: true,
       enableAutoAssignment: false,
     });

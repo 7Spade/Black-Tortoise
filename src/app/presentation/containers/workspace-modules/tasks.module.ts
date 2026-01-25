@@ -595,7 +595,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
 
   newTaskTitle = '';
   newTaskDescription = '';
-  newTaskPriority: TaskPriority = 'medium';
+  newTaskPriority: TaskPriority = TaskPriority.MEDIUM;
 
   readonly kanbanStatuses = ['draft', 'ready', 'in-qc', 'qc-failed', 'blocked', 'completed'];
   readonly ganttDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -674,7 +674,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
     if (result.success) {
       this.newTaskTitle = '';
       this.newTaskDescription = '';
-      this.newTaskPriority = 'medium';
+      this.newTaskPriority = TaskPriority.MEDIUM;
     }
   }
 

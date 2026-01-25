@@ -39,6 +39,18 @@ export function createWorkspaceCreatedEvent(
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
   
+  const payload: WorkspaceCreatedPayload = {
+    workspaceId,
+    name,
+    ownerId,
+    ownerType,
+    organizationId,
+  };
+  
+  if (userId !== undefined) {
+    (payload as { userId?: string }).userId = userId;
+  }
+  
   return {
     eventId,
     type: 'WorkspaceCreated',
@@ -46,13 +58,6 @@ export function createWorkspaceCreatedEvent(
     correlationId: newCorrelationId,
     causationId: causationId ?? null,
     timestamp: Date.now(),
-    payload: {
-      workspaceId,
-      name,
-      ownerId,
-      ownerType,
-      organizationId,
-      userId,
-    },
+    payload,
   };
 }

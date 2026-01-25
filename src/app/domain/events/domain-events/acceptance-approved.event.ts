@@ -32,6 +32,17 @@ export function createAcceptanceApprovedEvent(
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
   
+  const payload: AcceptanceApprovedPayload = {
+    workspaceId,
+    taskId,
+    taskTitle,
+    approverId,
+  };
+  
+  if (approvalNotes !== undefined) {
+    (payload as { approvalNotes?: string }).approvalNotes = approvalNotes;
+  }
+  
   return {
     eventId,
     type: 'AcceptanceApproved',
@@ -39,12 +50,6 @@ export function createAcceptanceApprovedEvent(
     correlationId: newCorrelationId,
     causationId: causationId ?? null,
     timestamp: Date.now(),
-    payload: {
-      workspaceId,
-      taskId,
-      taskTitle,
-      approverId,
-      approvalNotes,
-    },
+    payload,
   };
 }

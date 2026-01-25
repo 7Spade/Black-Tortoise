@@ -33,6 +33,15 @@ export function createWorkspaceSwitchedEvent(
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
   
+  const payload: WorkspaceSwitchedPayload = {
+    previousWorkspaceId,
+    currentWorkspaceId,
+  };
+  
+  if (userId !== undefined) {
+    (payload as { userId?: string }).userId = userId;
+  }
+  
   return {
     eventId,
     type: 'WorkspaceSwitched',
@@ -40,10 +49,6 @@ export function createWorkspaceSwitchedEvent(
     correlationId: newCorrelationId,
     causationId: causationId ?? null,
     timestamp: Date.now(),
-    payload: {
-      previousWorkspaceId,
-      currentWorkspaceId,
-      userId,
-    },
+    payload,
   };
 }

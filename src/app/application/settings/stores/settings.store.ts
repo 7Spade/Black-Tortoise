@@ -23,6 +23,7 @@
 
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { TaskPriority } from '@domain/task/task.entity';
 
 export interface WorkspaceSettings {
   readonly workingHours: {
@@ -30,7 +31,7 @@ export interface WorkspaceSettings {
     readonly end: string; // HH:MM
   };
   readonly timezone: string;
-  readonly defaultTaskPriority: 'low' | 'medium' | 'high' | 'critical';
+  readonly defaultTaskPriority: TaskPriority;
   readonly enableNotifications: boolean;
   readonly enableAutoAssignment: boolean;
 }

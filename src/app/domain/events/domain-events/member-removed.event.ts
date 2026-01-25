@@ -30,6 +30,16 @@ export function createMemberRemovedEvent(
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
   
+  const payload: MemberRemovedPayload = {
+    workspaceId,
+    userId,
+    removedBy,
+  };
+  
+  if (reason !== undefined) {
+    (payload as { reason?: string }).reason = reason;
+  }
+  
   return {
     eventId,
     type: 'MemberRemoved',
@@ -37,11 +47,6 @@ export function createMemberRemovedEvent(
     correlationId: newCorrelationId,
     causationId: causationId ?? null,
     timestamp: Date.now(),
-    payload: {
-      workspaceId,
-      userId,
-      removedBy,
-      reason,
-    },
+    payload,
   };
 }

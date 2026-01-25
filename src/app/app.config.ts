@@ -76,7 +76,7 @@ export const appConfig: ApplicationConfig = {
     
     // Event Infrastructure: Singleton EventBus and EventStore
     // Using InMemory implementations for development/testing
-    // TODO: Replace with persistent implementations (e.g., FirestoreEventStore) for production
+    // Production implementations (e.g., FirestoreEventStore) can be swapped via DI
     {
       provide: EVENT_BUS,
       useClass: InMemoryEventBus

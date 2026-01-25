@@ -36,6 +36,19 @@ export function createDailyEntryCreatedEvent(
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
   
+  const payload: DailyEntryCreatedPayload = {
+    workspaceId,
+    entryId,
+    date,
+    userId,
+    taskIds,
+    hoursLogged,
+  };
+  
+  if (notes !== undefined) {
+    (payload as { notes?: string }).notes = notes;
+  }
+  
   return {
     eventId,
     type: 'DailyEntryCreated',
@@ -43,14 +56,6 @@ export function createDailyEntryCreatedEvent(
     correlationId: newCorrelationId,
     causationId: causationId ?? null,
     timestamp: Date.now(),
-    payload: {
-      workspaceId,
-      entryId,
-      date,
-      userId,
-      taskIds,
-      hoursLogged,
-      notes,
-    },
+    payload,
   };
 }

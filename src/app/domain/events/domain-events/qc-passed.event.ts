@@ -32,6 +32,17 @@ export function createQCPassedEvent(
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
   
+  const payload: QCPassedPayload = {
+    workspaceId,
+    taskId,
+    taskTitle,
+    reviewerId,
+  };
+  
+  if (reviewNotes !== undefined) {
+    (payload as { reviewNotes?: string }).reviewNotes = reviewNotes;
+  }
+  
   return {
     eventId,
     type: 'QCPassed',
@@ -39,12 +50,6 @@ export function createQCPassedEvent(
     correlationId: newCorrelationId,
     causationId: causationId ?? null,
     timestamp: Date.now(),
-    payload: {
-      workspaceId,
-      taskId,
-      taskTitle,
-      reviewerId,
-      reviewNotes,
-    },
+    payload,
   };
 }

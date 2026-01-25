@@ -23,17 +23,18 @@
 
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { IssueStatus, IssuePriority } from '@domain/aggregates/issue.aggregate';
 
 export interface Issue {
   readonly id: string;
   readonly taskId: string;
   readonly title: string;
   readonly description: string;
-  readonly status: 'open' | 'in-progress' | 'resolved' | 'closed';
-  readonly priority: 'low' | 'medium' | 'high' | 'critical';
-  readonly createdAt: Date;
+  readonly status: IssueStatus;
+  readonly priority: IssuePriority;
+  readonly createdAt: number;
   readonly createdBy: string;
-  readonly resolvedAt?: Date;
+  readonly resolvedAt?: number;
   readonly resolvedBy?: string;
   readonly resolution?: string;
 }
@@ -106,8 +107,8 @@ export const IssuesStore = signalStore(
       const newIssue: Issue = {
         ...issue,
         id: crypto.randomUUID(),
-        status: 'open',
-        createdAt: new Date(),
+        status: IssueStatus.OPEN,
+        createdAt: Date.now(),
       };
 
       patchState(store, {
@@ -122,7 +123,7 @@ export const IssuesStore = signalStore(
       patchState(store, {
         issues: store.issues().map(i =>
           i.id === issueId
-            ? { ...i, status: 'resolved' as const, resolvedAt: new Date(), resolvedBy, resolution }
+            ? { ...i, status: IssueStatus.RESOLVED, resolvedAt: Date.now(), resolvedBy, resolution }
             : i
         ),
         isProcessing: false,

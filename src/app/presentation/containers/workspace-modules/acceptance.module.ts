@@ -221,13 +221,18 @@ export class AcceptanceModule implements IAppModule, OnInit, OnDestroy {
     if (!task) return;
     
     // Delegate to Use Case - creates event, appends to store, publishes to bus
-    this.approveTaskUseCase.execute({
+    const request: Parameters<typeof this.approveTaskUseCase.execute>[0] = {
       taskId,
       workspaceId: this.eventBus.workspaceId,
       taskTitle: task.taskTitle,
       approverId: this.currentUserId,
-      approvalNotes: this.notes || undefined,
-    }).then(result => {
+    };
+    
+    if (this.notes) {
+      (request as { approvalNotes?: string }).approvalNotes = this.notes;
+    }
+    
+    this.approveTaskUseCase.execute(request).then(result => {
       if (!result.success) {
         console.error('[AcceptanceModule] Approve failed:', result.error);
       }

@@ -39,6 +39,21 @@ export function createTaskCompletedEvent(
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
   
+  const payload: TaskCompletedPayload = {
+    workspaceId,
+    taskId,
+    taskName,
+    completedBy,
+  };
+  
+  if (completionNotes !== undefined) {
+    (payload as { completionNotes?: string }).completionNotes = completionNotes;
+  }
+  
+  if (userId !== undefined) {
+    (payload as { userId?: string }).userId = userId;
+  }
+  
   return {
     eventId,
     type: 'TaskCompleted',
@@ -46,13 +61,6 @@ export function createTaskCompletedEvent(
     correlationId: newCorrelationId,
     causationId: causationId ?? null,
     timestamp: Date.now(),
-    payload: {
-      workspaceId,
-      taskId,
-      taskName,
-      completedBy,
-      completionNotes,
-      userId,
-    },
+    payload,
   };
 }
