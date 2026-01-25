@@ -6,8 +6,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { WorkspaceCreated } from '@domain/event/domain-event';
 import { WorkspaceEntity, WorkspaceId, createWorkspaceEntity } from '@domain/workspace';
+import { createWorkspaceCreatedEvent } from '@domain/events/domain-events/workspace-created.event';
 
 /**
  * Create Workspace Command
@@ -42,27 +42,15 @@ export class CreateWorkspaceUseCase {
       command.moduleIds
     );
     
-    // Create domain event
-    const eventId = `evt-${Date.now()}`;
-    const correlationId = eventId;
-    const event: WorkspaceCreated = {
-      eventId,
-      eventType: 'WorkspaceCreated',
-      aggregateId: workspace.id,
-      workspaceId: workspace.id,
-      timestamp: new Date(),
-      correlationId,
-      causationId: null,
-      payload: {
-        name: workspace.name,
-        ownerId: workspace.ownerId,
-        ownerType: workspace.ownerType,
-      },
-      metadata: {
-        version: 1,
-        userId: command.ownerId,
-      },
-    };
+    // Create domain event using the factory function
+    const event = createWorkspaceCreatedEvent(
+      workspace.id,
+      workspace.name,
+      workspace.ownerId,
+      workspace.ownerType,
+      command.organizationId,
+      command.ownerId
+    );
     
     // In real implementation, this would:
     // 1. Persist to repository

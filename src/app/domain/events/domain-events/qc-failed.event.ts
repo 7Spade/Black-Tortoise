@@ -10,6 +10,7 @@
 import { DomainEvent } from '@domain/event/domain-event';
 
 export interface QCFailedPayload {
+  readonly workspaceId: string;
   readonly taskId: string;
   readonly taskTitle: string;
   readonly failureReason: string;
@@ -17,7 +18,7 @@ export interface QCFailedPayload {
 }
 
 export interface QCFailedEvent extends DomainEvent<QCFailedPayload> {
-  readonly eventType: 'QCFailed';
+  readonly type: 'QCFailed';
 }
 
 export function createQCFailedEvent(
@@ -34,21 +35,17 @@ export function createQCFailedEvent(
   
   return {
     eventId,
-    eventType: 'QCFailed',
+    type: 'QCFailed',
     aggregateId: taskId,
-    workspaceId,
-    timestamp: new Date(),
     correlationId: newCorrelationId,
     causationId: causationId ?? null,
+    timestamp: Date.now(),
     payload: {
+      workspaceId,
       taskId,
       taskTitle,
       failureReason,
       reviewedById,
-    },
-    metadata: {
-      version: 1,
-      userId: reviewedById,
     },
   };
 }

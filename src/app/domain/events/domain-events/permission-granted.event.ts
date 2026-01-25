@@ -6,9 +6,10 @@
  * Emitted by: Permissions module
  */
 
-import { DomainEvent, EventMetadata } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 export interface PermissionGrantedPayload {
+  readonly workspaceId: string;
   readonly roleId: string;
   readonly resource: string;
   readonly action: string;
@@ -16,7 +17,7 @@ export interface PermissionGrantedPayload {
 }
 
 export interface PermissionGrantedEvent extends DomainEvent<PermissionGrantedPayload> {
-  readonly eventType: 'PermissionGranted';
+  readonly type: 'PermissionGranted';
 }
 
 export function createPermissionGrantedEvent(
@@ -25,25 +26,25 @@ export function createPermissionGrantedEvent(
   resource: string,
   action: string,
   grantedBy: string,
-  correlationId?: string
+  correlationId?: string,
+  causationId?: string | null
 ): PermissionGrantedEvent {
+  const eventId = crypto.randomUUID();
+  const newCorrelationId = correlationId ?? eventId;
+  
   return {
-    eventId: crypto.randomUUID(),
-    eventType: 'PermissionGranted',
+    eventId,
+    type: 'PermissionGranted',
     aggregateId: roleId,
-    workspaceId,
-    timestamp: new Date(),
-    correlationId: correlationId || crypto.randomUUID(),
-    causationId: null,
+    correlationId: newCorrelationId,
+    causationId: causationId ?? null,
+    timestamp: Date.now(),
     payload: {
+      workspaceId,
       roleId,
       resource,
       action,
       grantedBy,
-    },
-    metadata: {
-      version: 1,
-      userId: grantedBy,
     },
   };
 }

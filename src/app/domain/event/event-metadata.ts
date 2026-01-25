@@ -1,42 +1,12 @@
 /**
- * Event Metadata Value Object
+ * Event Metadata Module
  * 
  * Layer: Domain
- * Purpose: Immutable value object for event tracking and correlation
+ * Purpose: This file is deprecated. Event metadata is now embedded in event payloads.
  * 
- * Causality Tracking:
- * - version: Event schema version for evolution
- * - userId: User who triggered the event
- * - correlationId: Groups related events across aggregates
- * - causationId: Links cause-effect relationships between events
+ * The DomainEvent interface no longer has a separate metadata field.
+ * Event-specific metadata should be part of the payload type.
  */
 
-export interface EventMetadata {
-  readonly version: number;
-  readonly userId?: string;
-  readonly correlationId?: string;
-  readonly causationId?: string;
-}
-
-/**
- * Create Event Metadata (Factory Function)
- * 
- * @param version - Event schema version (default: 1)
- * @param userId - User who triggered the event
- * @param correlationId - Correlation ID for grouping related events
- * @param causationId - Causation ID for tracking event chains
- * @returns Immutable EventMetadata value object
- */
-export function createEventMetadata(
-  version: number = 1,
-  userId?: string,
-  correlationId?: string,
-  causationId?: string
-): EventMetadata {
-  return {
-    version,
-    userId,
-    correlationId,
-    causationId,
-  };
-}
+// This file is kept for backward compatibility during migration
+// but all exports are deprecated and will be removed

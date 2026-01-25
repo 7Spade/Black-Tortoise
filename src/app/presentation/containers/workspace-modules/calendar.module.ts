@@ -378,7 +378,6 @@ export class CalendarModule implements IAppModule, OnInit, OnDestroy {
       })
     );
     
-    ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
   }
   
   previousMonth(): void {

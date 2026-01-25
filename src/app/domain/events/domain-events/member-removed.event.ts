@@ -6,16 +6,17 @@
  * Emitted by: Members module
  */
 
-import { DomainEvent, EventMetadata } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 export interface MemberRemovedPayload {
+  readonly workspaceId: string;
   readonly userId: string;
   readonly removedBy: string;
   readonly reason?: string;
 }
 
 export interface MemberRemovedEvent extends DomainEvent<MemberRemovedPayload> {
-  readonly eventType: 'MemberRemoved';
+  readonly type: 'MemberRemoved';
 }
 
 export function createMemberRemovedEvent(
@@ -23,24 +24,26 @@ export function createMemberRemovedEvent(
   workspaceId: string,
   removedBy: string,
   reason?: string,
-  correlationId?: string
+  correlationId?: string,
+  causationId?: string | null
 ): MemberRemovedEvent {
-  return {
-    eventId: crypto.randomUUID(),
-    eventType: 'MemberRemoved',
-    aggregateId: userId,
+  const eventId = crypto.randomUUID();
+  const newCorrelationId = correlationId ?? eventId;
+  
+  const payload: MemberRemovedPayload = {
     workspaceId,
-    timestamp: new Date(),
-    correlationId: correlationId || crypto.randomUUID(),
-    causationId: null,
-    payload: {
-      userId,
-      removedBy,
-      ...(reason !== undefined && { reason }),
-    },
-    metadata: {
-      version: 1,
-      userId: removedBy,
-    },
+    userId,
+    removedBy,
+    ...(reason !== undefined ? { reason } : {}),
+  };
+  
+  return {
+    eventId,
+    type: 'MemberRemoved',
+    aggregateId: userId,
+    correlationId: newCorrelationId,
+    causationId: causationId ?? null,
+    timestamp: Date.now(),
+    payload,
   };
 }

@@ -6,12 +6,12 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { DailyStore } from '@application/daily/stores/daily.store';
-import { createDailyEntryCreatedEvent } from '@domain/events/domain-events';
+import { CreateDailyEntryUseCase } from '@application/daily/use-cases/create-daily-entry.use-case';
 import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
 
 @Component({
@@ -341,6 +341,7 @@ export class DailyModule implements IAppModule, OnInit, OnDestroy {
   
   @Input() eventBus?: IModuleEventBus;
   readonly dailyStore = inject(DailyStore);
+  private readonly createDailyEntryUseCase = inject(CreateDailyEntryUseCase);
   
   entryDate: string = this.getTodayDate();
   hoursLogged = 0;
@@ -373,35 +374,24 @@ export class DailyModule implements IAppModule, OnInit, OnDestroy {
       })
     );
     
-    ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
   }
   
-  logEntry(): void {
+  async logEntry(): Promise<void> {
     if (!this.eventBus || this.hoursLogged <= 0) return;
     
-    const entry = {
+    const entryId = crypto.randomUUID();
+    
+    const request: Parameters<typeof this.createDailyEntryUseCase.execute>[0] = {
+      entryId,
+      workspaceId: this.eventBus.workspaceId,
       date: this.entryDate,
       userId: this.currentUserId,
       taskIds: [],
       hoursLogged: this.hoursLogged,
-      ...(this.notes && { notes: this.notes }),
+      ...(this.notes ? { notes: this.notes } : {}),
     };
     
-    this.dailyStore.createEntry(entry);
-    
-    const newEntry = this.dailyStore.entries()[this.dailyStore.entries().length - 1];
-    if (newEntry) {
-      const event = createDailyEntryCreatedEvent(
-        newEntry.id,
-        this.eventBus.workspaceId,
-        newEntry.date,
-        newEntry.userId,
-        newEntry.taskIds,
-        newEntry.hoursLogged,
-        newEntry.notes
-      );
-      this.eventBus.publish(event);
-    }
+    await this.createDailyEntryUseCase.execute(request);
     
     this.hoursLogged = 0;
     this.notes = '';

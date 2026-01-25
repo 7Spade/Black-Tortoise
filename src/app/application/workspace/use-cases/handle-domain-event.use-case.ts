@@ -17,9 +17,9 @@ import { DomainEvent } from '@domain/event/domain-event';
 @Injectable({ providedIn: 'root' })
 export class HandleDomainEventUseCase {
   
-  execute(event: DomainEvent): void {
+  execute<TPayload>(event: DomainEvent<TPayload>): void {
     // Handle different event types
-    switch (event.eventType) {
+    switch (event.type) {
       case 'WorkspaceCreated':
         this.handleWorkspaceCreated(event);
         break;
@@ -41,37 +41,37 @@ export class HandleDomainEventUseCase {
     this.trackCausation(event);
   }
   
-  private handleWorkspaceCreated(event: DomainEvent): void {
+  private handleWorkspaceCreated<TPayload>(event: DomainEvent<TPayload>): void {
     console.log('[HandleDomainEventUseCase] Workspace created event:', event);
     // Could trigger: welcome notification, analytics, etc.
   }
   
-  private handleWorkspaceSwitched(event: DomainEvent): void {
+  private handleWorkspaceSwitched<TPayload>(event: DomainEvent<TPayload>): void {
     console.log('[HandleDomainEventUseCase] Workspace switched event:', event);
     // Could trigger: context cleanup, state reset, etc.
   }
   
-  private handleModuleActivated(event: DomainEvent): void {
+  private handleModuleActivated<TPayload>(event: DomainEvent<TPayload>): void {
     console.log('[HandleDomainEventUseCase] Module activated event:', event);
     // Could trigger: module analytics, lazy loading, etc.
   }
   
-  private handleModuleDeactivated(event: DomainEvent): void {
+  private handleModuleDeactivated<TPayload>(event: DomainEvent<TPayload>): void {
     console.log('[HandleDomainEventUseCase] Module deactivated event:', event);
     // Could trigger: state persistence, cleanup, etc.
   }
   
-  private logEvent(event: DomainEvent): void {
+  private logEvent<TPayload>(event: DomainEvent<TPayload>): void {
     console.log('[Event Log]', {
       eventId: event.eventId,
-      eventType: event.eventType,
-      occurredAt: event.timestamp,
+      eventType: event.type,
+      timestamp: event.timestamp,
       causationId: event.causationId,
       correlationId: event.correlationId,
     });
   }
   
-  private trackCausation(event: DomainEvent): void {
+  private trackCausation<TPayload>(event: DomainEvent<TPayload>): void {
     if (event.causationId) {
       console.log('[Causation Tracking]', {
         current: event.eventId,

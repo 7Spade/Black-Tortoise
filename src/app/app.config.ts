@@ -33,6 +33,8 @@ import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/workspace/tokens/workspace-runtime.token';
 import { WorkspaceRuntimeFactory } from '@infrastructure/workspace';
+import { EVENT_BUS, EVENT_STORE } from '@application/events';
+import { InMemoryEventBus, InMemoryEventStore } from '@infrastructure/events';
 
 /**
  * Application Configuration with Zone-less Change Detection
@@ -70,6 +72,18 @@ export const appConfig: ApplicationConfig = {
     {
       provide: WORKSPACE_RUNTIME_FACTORY,
       useClass: WorkspaceRuntimeFactory
+    },
+    
+    // Event Infrastructure: Singleton EventBus and EventStore
+    // Using InMemory implementations for development/testing
+    // Production implementations (e.g., FirestoreEventStore) can be swapped via DI
+    {
+      provide: EVENT_BUS,
+      useClass: InMemoryEventBus
+    },
+    {
+      provide: EVENT_STORE,
+      useClass: InMemoryEventStore
     },
 
     // Firebase App Initialization

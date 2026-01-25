@@ -17,7 +17,7 @@ import { filter } from 'rxjs/operators';
  * Uses RxJS Subject for event streaming
  */
 export class InMemoryEventBus implements WorkspaceEventBus {
-  private readonly events$ = new Subject<DomainEvent>();
+  private readonly events$ = new Subject<DomainEvent<unknown>>();
   private readonly workspaceId: string;
   private readonly subscriptions = new Map<string, Subscription[]>();
   
@@ -25,18 +25,18 @@ export class InMemoryEventBus implements WorkspaceEventBus {
     this.workspaceId = workspaceId;
   }
   
-  publish(event: DomainEvent): void {
-    console.log(`[EventBus:${this.workspaceId}] Publishing:`, event.eventType);
-    this.events$.next(event);
+  publish<TPayload>(event: DomainEvent<TPayload>): void {
+    console.log(`[EventBus:${this.workspaceId}] Publishing:`, event.type);
+    this.events$.next(event as DomainEvent<unknown>);
   }
   
-  subscribe<T extends DomainEvent>(
+  subscribe<T extends DomainEvent<TPayload>, TPayload = unknown>(
     eventType: string,
-    handler: EventHandler<T>
+    handler: EventHandler<T, TPayload>
   ): () => void {
     const subscription = this.events$
       .pipe(
-        filter(event => event.eventType === eventType)
+        filter(event => event.type === eventType)
       )
       .subscribe(event => handler(event as T));
     

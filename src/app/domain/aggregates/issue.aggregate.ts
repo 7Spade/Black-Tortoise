@@ -10,9 +10,28 @@
 
 import { WorkspaceId } from '../value-objects/workspace-id.vo';
 
-export type IssueStatus = 'open' | 'in-progress' | 'resolved' | 'closed' | 'wont-fix';
-export type IssuePriority = 'low' | 'medium' | 'high' | 'critical';
-export type IssueType = 'bug' | 'feature' | 'enhancement' | 'question' | 'documentation';
+export enum IssueStatus {
+  OPEN = 'open',
+  IN_PROGRESS = 'in-progress',
+  RESOLVED = 'resolved',
+  CLOSED = 'closed',
+  WONT_FIX = 'wont-fix',
+}
+
+export enum IssuePriority {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical',
+}
+
+export enum IssueType {
+  BUG = 'bug',
+  FEATURE = 'feature',
+  ENHANCEMENT = 'enhancement',
+  QUESTION = 'question',
+  DOCUMENTATION = 'documentation',
+}
 
 export interface IssueAggregate {
   readonly id: string;
@@ -24,10 +43,10 @@ export interface IssueAggregate {
   readonly priority: IssuePriority;
   readonly assigneeId?: string;
   readonly reportedBy: string;
-  readonly createdAt: Date;
-  readonly updatedAt: Date;
-  readonly resolvedAt?: Date;
-  readonly closedAt?: Date;
+  readonly createdAt: number;
+  readonly updatedAt: number;
+  readonly resolvedAt?: number;
+  readonly closedAt?: number;
   readonly version: number;
 }
 
@@ -52,20 +71,25 @@ export function createIssue(
     throw new Error('Issue reporter ID cannot be empty');
   }
 
-  return {
+  const result: IssueAggregate = {
     id,
     workspaceId,
     title: title.trim(),
     description: description.trim(),
     type,
-    status: 'open',
+    status: IssueStatus.OPEN,
     priority,
-    assigneeId,
     reportedBy,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
     version: 1,
   };
+  
+  if (assigneeId !== undefined) {
+    (result as { assigneeId?: string }).assigneeId = assigneeId;
+  }
+  
+  return result;
 }
 
 /**
@@ -88,7 +112,7 @@ export function updateIssue(
     description: description !== undefined ? description.trim() : issue.description,
     type: type ?? issue.type,
     priority: priority ?? issue.priority,
-    updatedAt: new Date(),
+    updatedAt: Date.now(),
     version: issue.version + 1,
   };
 }
@@ -107,7 +131,7 @@ export function assignIssue(
   return {
     ...issue,
     assigneeId,
-    updatedAt: new Date(),
+    updatedAt: Date.now(),
     version: issue.version + 1,
   };
 }
@@ -116,14 +140,14 @@ export function assignIssue(
  * Start working on issue
  */
 export function startIssue(issue: IssueAggregate): IssueAggregate {
-  if (issue.status !== 'open') {
+  if (issue.status !== IssueStatus.OPEN) {
     throw new Error(`Cannot start issue in ${issue.status} status`);
   }
 
   return {
     ...issue,
-    status: 'in-progress',
-    updatedAt: new Date(),
+    status: IssueStatus.IN_PROGRESS,
+    updatedAt: Date.now(),
     version: issue.version + 1,
   };
 }
@@ -132,15 +156,15 @@ export function startIssue(issue: IssueAggregate): IssueAggregate {
  * Resolve issue
  */
 export function resolveIssue(issue: IssueAggregate): IssueAggregate {
-  if (issue.status === 'resolved' || issue.status === 'closed') {
+  if (issue.status === IssueStatus.RESOLVED || issue.status === IssueStatus.CLOSED) {
     throw new Error(`Cannot resolve issue in ${issue.status} status`);
   }
 
   return {
     ...issue,
-    status: 'resolved',
-    resolvedAt: new Date(),
-    updatedAt: new Date(),
+    status: IssueStatus.RESOLVED,
+    resolvedAt: Date.now(),
+    updatedAt: Date.now(),
     version: issue.version + 1,
   };
 }
@@ -149,15 +173,15 @@ export function resolveIssue(issue: IssueAggregate): IssueAggregate {
  * Close issue
  */
 export function closeIssue(issue: IssueAggregate): IssueAggregate {
-  if (issue.status === 'closed') {
+  if (issue.status === IssueStatus.CLOSED) {
     throw new Error('Issue is already closed');
   }
 
   return {
     ...issue,
-    status: 'closed',
-    closedAt: new Date(),
-    updatedAt: new Date(),
+    status: IssueStatus.CLOSED,
+    closedAt: Date.now(),
+    updatedAt: Date.now(),
     version: issue.version + 1,
   };
 }
@@ -166,15 +190,15 @@ export function closeIssue(issue: IssueAggregate): IssueAggregate {
  * Mark issue as won't fix
  */
 export function wontFixIssue(issue: IssueAggregate): IssueAggregate {
-  if (issue.status === 'closed' || issue.status === 'wont-fix') {
+  if (issue.status === IssueStatus.CLOSED || issue.status === IssueStatus.WONT_FIX) {
     throw new Error(`Cannot mark issue as won't fix in ${issue.status} status`);
   }
 
   return {
     ...issue,
-    status: 'wont-fix',
-    closedAt: new Date(),
-    updatedAt: new Date(),
+    status: IssueStatus.WONT_FIX,
+    closedAt: Date.now(),
+    updatedAt: Date.now(),
     version: issue.version + 1,
   };
 }
@@ -183,16 +207,18 @@ export function wontFixIssue(issue: IssueAggregate): IssueAggregate {
  * Reopen issue
  */
 export function reopenIssue(issue: IssueAggregate): IssueAggregate {
-  if (issue.status !== 'resolved' && issue.status !== 'closed') {
+  if (issue.status !== IssueStatus.RESOLVED && issue.status !== IssueStatus.CLOSED) {
     throw new Error(`Cannot reopen issue in ${issue.status} status`);
   }
 
-  return {
+  const result: IssueAggregate = {
     ...issue,
-    status: 'open',
-    resolvedAt: undefined,
-    closedAt: undefined,
-    updatedAt: new Date(),
+    status: IssueStatus.OPEN,
+    updatedAt: Date.now(),
     version: issue.version + 1,
   };
+  
+  // Remove optional fields by creating a new object without them
+  const { resolvedAt, closedAt, ...rest } = result;
+  return rest as IssueAggregate;
 }

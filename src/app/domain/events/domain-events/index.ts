@@ -9,6 +9,10 @@
 export * from './workspace-created.event';
 export * from './workspace-switched.event';
 
+// Module Events
+export * from './module-activated.event';
+export * from './module-deactivated.event';
+
 // Task Events
 export * from './task-created.event';
 export * from './task-completed.event';

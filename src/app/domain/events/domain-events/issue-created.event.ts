@@ -10,6 +10,7 @@
 import { DomainEvent } from '@domain/event/domain-event';
 
 export interface IssueCreatedPayload {
+  readonly workspaceId: string;
   readonly issueId: string;
   readonly taskId: string;
   readonly title: string;
@@ -18,7 +19,7 @@ export interface IssueCreatedPayload {
 }
 
 export interface IssueCreatedEvent extends DomainEvent<IssueCreatedPayload> {
-  readonly eventType: 'IssueCreated';
+  readonly type: 'IssueCreated';
 }
 
 export function createIssueCreatedEvent(
@@ -36,22 +37,18 @@ export function createIssueCreatedEvent(
   
   return {
     eventId,
-    eventType: 'IssueCreated',
+    type: 'IssueCreated',
     aggregateId: issueId,
-    workspaceId,
-    timestamp: new Date(),
     correlationId: newCorrelationId,
     causationId: causationId ?? null,
+    timestamp: Date.now(),
     payload: {
+      workspaceId,
       issueId,
       taskId,
       title,
       description,
       createdById,
-    },
-    metadata: {
-      version: 1,
-      userId: createdById,
     },
   };
 }

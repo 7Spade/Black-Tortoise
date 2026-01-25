@@ -103,7 +103,6 @@ export class DocumentsModule implements IAppModule, OnInit, OnDestroy {
       })
     );
     
-    ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
   }
   
   onFileSelected(event: Event): void {

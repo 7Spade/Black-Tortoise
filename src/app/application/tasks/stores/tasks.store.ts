@@ -94,7 +94,7 @@ export const TasksStore = signalStore(
         return;
       }
 
-      const updatedTask = { ...task, ...updates, updatedAt: new Date() };
+      const updatedTask = { ...task, ...updates, updatedAt: Date.now() };
       
       patchState(store, {
         tasks: store.tasks().map(t => t.id === taskId ? updatedTask : t),

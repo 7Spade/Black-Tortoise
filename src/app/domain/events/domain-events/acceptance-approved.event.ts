@@ -6,9 +6,10 @@
  * Emitted by: Acceptance module
  */
 
-import { DomainEvent, EventMetadata } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 export interface AcceptanceApprovedPayload {
+  readonly workspaceId: string;
   readonly taskId: string;
   readonly taskTitle: string;
   readonly approverId: string;
@@ -16,7 +17,7 @@ export interface AcceptanceApprovedPayload {
 }
 
 export interface AcceptanceApprovedEvent extends DomainEvent<AcceptanceApprovedPayload> {
-  readonly eventType: 'AcceptanceApproved';
+  readonly type: 'AcceptanceApproved';
 }
 
 export function createAcceptanceApprovedEvent(
@@ -28,23 +29,24 @@ export function createAcceptanceApprovedEvent(
   correlationId?: string,
   causationId?: string | null
 ): AcceptanceApprovedEvent {
-  return {
-    eventId: crypto.randomUUID(),
-    eventType: 'AcceptanceApproved',
-    aggregateId: taskId,
+  const eventId = crypto.randomUUID();
+  const newCorrelationId = correlationId ?? eventId;
+  
+  const payload: AcceptanceApprovedPayload = {
     workspaceId,
-    timestamp: new Date(),
-    correlationId: correlationId || crypto.randomUUID(),
-    causationId: causationId || null,
-    payload: {
-      taskId,
-      taskTitle,
-      approverId,
-      ...(approvalNotes !== undefined && { approvalNotes }),
-    },
-    metadata: {
-      version: 1,
-      userId: approverId,
-    },
+    taskId,
+    taskTitle,
+    approverId,
+    ...(approvalNotes !== undefined ? { approvalNotes } : {}),
+  };
+  
+  return {
+    eventId,
+    type: 'AcceptanceApproved',
+    aggregateId: taskId,
+    correlationId: newCorrelationId,
+    causationId: causationId ?? null,
+    timestamp: Date.now(),
+    payload,
   };
 }

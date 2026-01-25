@@ -7,27 +7,23 @@
 
 import { EventStore } from './event-store.interface';
 import { DomainEvent } from '../event/domain-event';
-import { createEventMetadata } from '../event/event-metadata';
 
 /**
  * Test helper: Create test event
  */
 function createTestEvent(
   eventType: string,
-  aggregateId: string = 'test-aggregate',
-  workspaceId: string = 'test-workspace'
-): DomainEvent {
-  const now = new Date();
+  aggregateId: string = 'test-aggregate'
+): DomainEvent<{ test: string }> {
+  const now = Date.now();
   return {
     eventId: `event-${Date.now()}-${Math.random()}`,
-    eventType,
+    type: eventType,
     aggregateId,
-    workspaceId,
+    correlationId: 'test-correlation',
+    causationId: null,
     timestamp: now,
-    occurredAt: now,
-    causalityId: 'test-causality',
     payload: { test: 'data' },
-    metadata: createEventMetadata(1, 'test-user'),
   };
 }
 
@@ -73,16 +69,7 @@ export function testEventStoreContract(createEventStore: () => EventStore): void
       await eventStore.append(event2);
 
       const events = await eventStore.getEventsForAggregate('agg-1');
-      expect(events[0].timestamp.getTime()).toBeLessThan(events[1].timestamp.getTime());
-    });
-
-    it('should retrieve events for workspace', async () => {
-      await eventStore.append(createTestEvent('Event1', 'agg-1', 'workspace-1'));
-      await eventStore.append(createTestEvent('Event2', 'agg-2', 'workspace-1'));
-      await eventStore.append(createTestEvent('Event3', 'agg-3', 'workspace-2'));
-
-      const events = await eventStore.getEventsForWorkspace('workspace-1');
-      expect(events).toHaveLength(2);
+      expect(events[0].timestamp).toBeLessThan(events[1].timestamp);
     });
 
     it('should retrieve events by type', async () => {
@@ -95,54 +82,54 @@ export function testEventStoreContract(createEventStore: () => EventStore): void
     });
 
     it('should retrieve events since timestamp', async () => {
-      const now = new Date();
+      const now = Date.now();
       const event1 = createTestEvent('Event1', 'agg-1');
-      event1.timestamp = new Date(now.getTime() - 10000); // 10s ago
+      event1.timestamp = now - 10000; // 10s ago
       
       const event2 = createTestEvent('Event2', 'agg-2');
-      event2.timestamp = new Date(now.getTime() + 10000); // 10s future
+      event2.timestamp = now + 10000; // 10s future
 
       await eventStore.append(event1);
       await eventStore.append(event2);
 
       const events = await eventStore.getEventsSince(now);
       expect(events).toHaveLength(1);
-      expect(events[0].eventType).toBe('Event2');
+      expect(events[0].type).toBe('Event2');
     });
 
     it('should retrieve events in time range', async () => {
-      const start = new Date('2024-01-01');
-      const end = new Date('2024-01-31');
+      const start = new Date('2024-01-01').getTime();
+      const end = new Date('2024-01-31').getTime();
 
       const event1 = createTestEvent('Event1', 'agg-1');
-      event1.timestamp = new Date('2024-01-15');
+      event1.timestamp = new Date('2024-01-15').getTime();
 
       const event2 = createTestEvent('Event2', 'agg-2');
-      event2.timestamp = new Date('2024-02-15');
+      event2.timestamp = new Date('2024-02-15').getTime();
 
       await eventStore.append(event1);
       await eventStore.append(event2);
 
       const events = await eventStore.getEventsInRange(start, end);
       expect(events).toHaveLength(1);
-      expect(events[0].eventType).toBe('Event1');
+      expect(events[0].type).toBe('Event1');
     });
 
     it('should retrieve events by causality', async () => {
       const event1 = createTestEvent('Event1', 'agg-1');
-      event1.causalityId = 'causality-1';
+      event1.correlationId = 'correlation-1';
 
       const event2 = createTestEvent('Event2', 'agg-2');
-      event2.causalityId = 'causality-1';
+      event2.correlationId = 'correlation-1';
 
       const event3 = createTestEvent('Event3', 'agg-3');
-      event3.causalityId = 'causality-2';
+      event3.correlationId = 'correlation-2';
 
       await eventStore.append(event1);
       await eventStore.append(event2);
       await eventStore.append(event3);
 
-      const events = await eventStore.getEventsByCausality('causality-1');
+      const events = await eventStore.getEventsByCausality('correlation-1');
       expect(events).toHaveLength(2);
     });
   });

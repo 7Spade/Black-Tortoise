@@ -53,7 +53,7 @@ export abstract class BaseModule implements IAppModule, OnDestroy {
   initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
     this.setupEventSubscriptions(eventBus);
-    ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
+    console.log(`[${this.id}] Module initialized for workspace: ${eventBus.workspaceId}`);
   }
   
   /**

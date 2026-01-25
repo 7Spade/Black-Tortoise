@@ -103,7 +103,6 @@ export class AuditModule implements IAppModule, OnInit, OnDestroy {
       })
     );
     
-    ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
   }
   
   activate(): void {}

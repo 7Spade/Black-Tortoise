@@ -7,23 +7,20 @@
 
 import { EventBus, EventHandler } from './event-bus.interface';
 import { DomainEvent } from '../event/domain-event';
-import { createEventMetadata } from '../event/event-metadata';
 
 /**
  * Test helper: Create test event
  */
-function createTestEvent(eventType: string, aggregateId: string = 'test-aggregate'): DomainEvent {
-  const now = new Date();
+function createTestEvent(eventType: string, aggregateId: string = 'test-aggregate'): DomainEvent<{ test: string }> {
+  const now = Date.now();
   return {
     eventId: `event-${Date.now()}`,
-    eventType,
+    type: eventType,
     aggregateId,
-    workspaceId: 'test-workspace',
+    correlationId: 'test-correlation',
+    causationId: null,
     timestamp: now,
-    occurredAt: now,
-    causalityId: 'test-causality',
     payload: { test: 'data' },
-    metadata: createEventMetadata(1, 'test-user'),
   };
 }
 
