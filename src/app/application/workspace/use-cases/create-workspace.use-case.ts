@@ -29,7 +29,7 @@ export interface CreateWorkspaceCommand {
 export class CreateWorkspaceUseCase {
   private readonly publishEvent = inject(PublishEventUseCase);
 
-  async execute(command: CreateWorkspaceCommand): Promise<WorkspaceEntity> {
+  execute(command: CreateWorkspaceCommand): WorkspaceEntity {
     // Generate unique workspace ID
     const workspaceId = WorkspaceId.generate().getValue();
     
@@ -54,7 +54,7 @@ export class CreateWorkspaceUseCase {
       command.ownerId
     );
 
-    await this.publishEvent.execute({ event });
+    void this.publishEvent.execute({ event });
     
     return workspace;
   }
