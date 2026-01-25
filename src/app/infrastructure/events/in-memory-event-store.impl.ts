@@ -19,11 +19,17 @@
  * - Append-only (no delete/update methods)
  * - Immutable events (Object.freeze on append)
  * - Replay-safe (returns defensive copies)
+ * 
+ * DI Configuration:
+ * - Provided via EVENT_STORE token in app.config.ts
+ * - Singleton instance managed by Angular DI
  */
 
+import { Injectable } from '@angular/core';
 import { EventStore } from '@domain/event-store/event-store.interface';
 import { DomainEvent } from '@domain/event/domain-event';
 
+@Injectable()
 export class InMemoryEventStore implements EventStore {
   private readonly events: DomainEvent<unknown>[] = [];
 

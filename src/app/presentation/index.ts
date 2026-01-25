@@ -15,7 +15,7 @@ export * from './pages';
 export * from './organization';
 export * from './pages/settings';
 export * from './team';
-export * from './workspace';
+export * from './features/workspace';
 
 // Containers
 export * from './containers';

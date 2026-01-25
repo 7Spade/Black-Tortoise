@@ -11,9 +11,10 @@
  */
 
 import { inject } from '@angular/core';
+import { EVENT_BUS } from '@application/events';
 import { EventBus } from '@domain/event-bus/event-bus.interface';
 import { DailyEntryCreatedEvent } from '@domain/events/domain-events';
-import { DailyStore } from '../stores/daily.store';
+import { DailyStore, DailyEntry } from '../stores/daily.store';
 
 export function registerDailyEventHandlers(eventBus: EventBus): void {
   const dailyStore = inject(DailyStore);
@@ -22,13 +23,14 @@ export function registerDailyEventHandlers(eventBus: EventBus): void {
     'DailyEntryCreated',
     (event) => {
       console.log('[DailyEventHandlers] DailyEntryCreatedEvent:', event);
-      dailyStore.createEntry({
+      const entry: Omit<DailyEntry, 'id' | 'createdAt'> = {
         date: event.payload.date,
         userId: event.payload.userId,
         taskIds: event.payload.taskIds,
         hoursLogged: event.payload.hoursLogged,
-        notes: event.payload.notes,
-      });
+        ...(event.payload.notes !== undefined && { notes: event.payload.notes }),
+      };
+      dailyStore.createEntry(entry);
     }
   );
   

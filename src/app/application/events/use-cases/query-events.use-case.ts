@@ -15,7 +15,7 @@
 
 import { inject, Injectable } from '@angular/core';
 import { DomainEvent } from '@domain/event/domain-event';
-import { EventStore } from '@domain/event-store/event-store.interface';
+import { EVENT_STORE } from '../tokens/event-infrastructure.tokens';
 
 export interface QueryEventsRequest {
   readonly aggregateId?: string;
@@ -32,7 +32,7 @@ export interface QueryEventsResponse<TPayload> {
 
 @Injectable({ providedIn: 'root' })
 export class QueryEventsUseCase {
-  private readonly eventStore = inject(EventStore);
+  private readonly eventStore = inject(EVENT_STORE);
 
   /**
    * Execute use case: Query events

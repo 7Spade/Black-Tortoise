@@ -11,6 +11,7 @@
  */
 
 import { inject } from '@angular/core';
+import { EVENT_BUS } from '@application/events';
 import { EventBus } from '@domain/event-bus/event-bus.interface';
 import { IssueCreatedEvent, IssueResolvedEvent } from '@domain/events/domain-events';
 import { IssuesStore } from '../stores/issues.store';

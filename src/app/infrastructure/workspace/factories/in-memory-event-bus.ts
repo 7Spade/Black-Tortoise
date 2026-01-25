@@ -30,15 +30,15 @@ export class InMemoryEventBus implements WorkspaceEventBus {
     this.events$.next(event as DomainEvent<unknown>);
   }
   
-  subscribe<TPayload>(
+  subscribe<T extends DomainEvent<TPayload>, TPayload = unknown>(
     eventType: string,
-    handler: EventHandler<DomainEvent<TPayload>, TPayload>
+    handler: EventHandler<T, TPayload>
   ): () => void {
     const subscription = this.events$
       .pipe(
         filter(event => event.type === eventType)
       )
-      .subscribe(event => handler(event as DomainEvent<TPayload>));
+      .subscribe(event => handler(event as T));
     
     // Store subscription for cleanup
     if (!this.subscriptions.has(eventType)) {

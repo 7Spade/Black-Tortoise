@@ -12,12 +12,18 @@
  * - Type-based and global subscriptions
  * - Automatic cleanup on unsubscribe
  * 
+ * DI Configuration:
+ * - Provided via EVENT_BUS token in app.config.ts
+ * - Singleton instance managed by Angular DI
+ * 
  * Note: For RxJS-based implementation, see in-memory-event-bus-rxjs.impl.ts
  */
 
+import { Injectable } from '@angular/core';
 import { EventBus, EventHandler } from '@domain/event-bus/event-bus.interface';
 import { DomainEvent } from '@domain/event/domain-event';
 
+@Injectable()
 export class InMemoryEventBus implements EventBus {
   private subscribers: Map<string, Set<EventHandler<DomainEvent<unknown>, unknown>>> = new Map();
   private globalSubscribers: Set<EventHandler<DomainEvent<unknown>, unknown>> = new Set();

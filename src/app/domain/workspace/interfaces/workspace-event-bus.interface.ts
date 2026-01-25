@@ -17,7 +17,7 @@ import { DomainEvent } from '@domain/event/domain-event';
 /**
  * Event handler function type
  */
-export type EventHandler<T extends DomainEvent = DomainEvent> = (event: T) => void;
+export type EventHandler<T extends DomainEvent<TPayload>, TPayload = unknown> = (event: T) => void;
 
 /**
  * Event Bus Interface (Pure Domain)
@@ -26,15 +26,15 @@ export interface WorkspaceEventBus {
   /**
    * Publish an event to the bus
    */
-  publish(event: DomainEvent): void;
+  publish<TPayload>(event: DomainEvent<TPayload>): void;
   
   /**
    * Subscribe to events of a specific type
    * Returns unsubscribe function
    */
-  subscribe<T extends DomainEvent>(
+  subscribe<T extends DomainEvent<TPayload>, TPayload = unknown>(
     eventType: string,
-    handler: EventHandler<T>
+    handler: EventHandler<T, TPayload>
   ): () => void;
   
   /**

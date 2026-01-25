@@ -8,13 +8,14 @@
  */
 
 import { DomainEvent } from '@domain/event/domain-event';
+import { TaskPriority } from '@domain/task/task.entity';
 
 export interface TaskCreatedPayload {
   readonly workspaceId: string;
   readonly taskId: string;
   readonly title: string;
   readonly description: string;
-  readonly priority: string;
+  readonly priority: TaskPriority;
   readonly createdById: string;
 }
 
@@ -27,7 +28,7 @@ export function createTaskCreatedEvent(
   workspaceId: string,
   title: string,
   description: string,
-  priority: string,
+  priority: TaskPriority,
   createdById: string,
   correlationId?: string,
   causationId?: string | null

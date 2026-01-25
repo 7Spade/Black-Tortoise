@@ -17,6 +17,7 @@
  */
 
 import { inject } from '@angular/core';
+import { EVENT_BUS } from '@application/events';
 import { EventBus } from '@domain/event-bus/event-bus.interface';
 import { TaskSubmittedForQCEvent, QCPassedEvent, QCFailedEvent } from '@domain/events/domain-events';
 import { QualityControlStore } from '../stores/quality-control.store';

@@ -21,6 +21,7 @@
  */
 
 import { inject } from '@angular/core';
+import { EVENT_BUS } from '@application/events';
 import { EventBus } from '@domain/event-bus/event-bus.interface';
 import { AcceptanceApprovedEvent, AcceptanceRejectedEvent, QCPassedEvent } from '@domain/events/domain-events';
 import { AcceptanceStore } from '../stores/acceptance.store';
@@ -46,7 +47,7 @@ export function registerAcceptanceEventHandlers(eventBus: EventBus): void {
     'AcceptanceApproved',
     (event) => {
       console.log('[AcceptanceEventHandlers] AcceptanceApproved:', event);
-      acceptanceStore.handleAcceptanceApproved(event);
+      acceptanceStore.handleAcceptanceApproved(event as AcceptanceApprovedEvent);
     }
   );
   
@@ -54,7 +55,7 @@ export function registerAcceptanceEventHandlers(eventBus: EventBus): void {
     'AcceptanceRejected',
     (event) => {
       console.log('[AcceptanceEventHandlers] AcceptanceRejected:', event);
-      acceptanceStore.handleAcceptanceRejected(event);
+      acceptanceStore.handleAcceptanceRejected(event as AcceptanceRejectedEvent);
     }
   );
   

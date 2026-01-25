@@ -16,8 +16,7 @@
 
 import { inject, Injectable } from '@angular/core';
 import { DomainEvent } from '@domain/event/domain-event';
-import { EventBus } from '@domain/event-bus/event-bus.interface';
-import { EventStore } from '@domain/event-store/event-store.interface';
+import { EVENT_BUS, EVENT_STORE } from '../tokens/event-infrastructure.tokens';
 
 export interface PublishEventRequest<TPayload> {
   readonly event: DomainEvent<TPayload>;
@@ -30,8 +29,8 @@ export interface PublishEventResponse {
 
 @Injectable({ providedIn: 'root' })
 export class PublishEventUseCase {
-  private readonly eventBus = inject(EventBus);
-  private readonly eventStore = inject(EventStore);
+  private readonly eventBus = inject(EVENT_BUS);
+  private readonly eventStore = inject(EVENT_STORE);
 
   /**
    * Execute use case: Publish event

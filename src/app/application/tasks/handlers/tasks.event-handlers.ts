@@ -17,6 +17,7 @@
  */
 
 import { inject } from '@angular/core';
+import { EVENT_BUS } from '@application/events';
 import { EventBus } from '@domain/event-bus/event-bus.interface';
 import { TaskCreatedEvent, TaskSubmittedForQCEvent, QCFailedEvent, IssueResolvedEvent } from '@domain/events/domain-events';
 import { TasksStore } from '../stores/tasks.store';
