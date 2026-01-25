@@ -6,21 +6,25 @@
  * 
  * Architecture:
  * - Modules should NOT inject stores or use-cases directly
- * - All communication via Application IModuleEventBus (publish/subscribe)
+ * - All communication via Application IModuleEventBus (subscribe ONLY)
  * - This helper provides common event subscription patterns
  * - Events flow through handle-domain-event.use-case (central bridge)
+ * 
+ * DDD Boundary Enforcement:
+ * - Presentation MUST NOT publish events
+ * - ALL event publishing via Application Use Cases
+ * - Modules ONLY subscribe to react to events
  * 
  * Clean Architecture Compliance:
  * - Uses Application layer interfaces (IModuleEventBus)
  * - Uses Application layer events (not Domain events)
  * - No direct Domain dependencies
+ * - READ-ONLY event bus access (subscribe only)
  */
 
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import {
   ModuleDataChanged,
-  ModuleError,
-  ModuleInitialized
 } from '@application/events/module-events';
 
 /**
@@ -105,63 +109,6 @@ export class ModuleEventHelper {
       });
     }
     return eventBus.subscribe('ModuleDataChanged', handler);
-  }
-  
-  /**
-   * Publish module initialized event
-   */
-  static publishModuleInitialized(
-    eventBus: IModuleEventBus,
-    moduleId: string
-  ): void {
-    const event: ModuleInitialized = {
-      eventId: crypto.randomUUID(),
-      eventType: 'ModuleInitialized',
-      occurredAt: new Date(),
-      moduleId,
-      workspaceId: eventBus.workspaceId,
-    };
-    eventBus.publish(event);
-  }
-  
-  /**
-   * Publish module data changed event
-   */
-  static publishModuleDataChanged(
-    eventBus: IModuleEventBus,
-    moduleId: string,
-    dataType: string,
-    data: unknown
-  ): void {
-    const event: ModuleDataChanged = {
-      eventId: crypto.randomUUID(),
-      eventType: 'ModuleDataChanged',
-      occurredAt: new Date(),
-      moduleId,
-      workspaceId: eventBus.workspaceId,
-      dataType,
-      data,
-    };
-    eventBus.publish(event);
-  }
-  
-  /**
-   * Publish module error event
-   */
-  static publishModuleError(
-    eventBus: IModuleEventBus,
-    moduleId: string,
-    error: string
-  ): void {
-    const event: ModuleError = {
-      eventId: crypto.randomUUID(),
-      eventType: 'ModuleError',
-      occurredAt: new Date(),
-      moduleId,
-      workspaceId: eventBus.workspaceId,
-      error,
-    };
-    eventBus.publish(event);
   }
   
   /**

@@ -5,14 +5,20 @@
  * Purpose: Final acceptance workflow for completed tasks
  * 
  * Architecture:
- * - Injects AcceptanceStore for state management
+ * - Injects AcceptanceStore for state management (READ-ONLY)
+ * - Delegates actions to Use Cases (event-driven)
  * - Communicates via WorkspaceEventBus for cross-module events
  * - Event bus passed via @Input() from parent component
  * - Follows Append → Publish → React pattern
  * 
  * Events Handled:
  * - Reacts to: QCPassed (only QC-passed tasks can enter acceptance)
- * - Publishes: AcceptanceApproved, AcceptanceRejected
+ * - Use Cases publish: AcceptanceApproved, AcceptanceRejected
+ * 
+ * DDD Boundary:
+ * - NO direct event publishing
+ * - NO state mutations
+ * - ALL actions via Application Use Cases
  */
 
 import { CommonModule } from '@angular/common';
@@ -21,7 +27,8 @@ import { FormsModule } from '@angular/forms';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { AcceptanceStore } from '@application/acceptance/stores/acceptance.store';
-import { createAcceptanceApprovedEvent, createAcceptanceRejectedEvent } from '@domain/events/domain-events';
+import { ApproveTaskUseCase } from '@application/acceptance/use-cases/approve-task.use-case';
+import { RejectTaskUseCase } from '@application/acceptance/use-cases/reject-task.use-case';
 import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
 
 @Component({
@@ -167,6 +174,8 @@ export class AcceptanceModule implements IAppModule, OnInit, OnDestroy {
   @Input() eventBus?: IModuleEventBus;
   
   readonly acceptanceStore = inject(AcceptanceStore);
+  private readonly approveTaskUseCase = inject(ApproveTaskUseCase);
+  private readonly rejectTaskUseCase = inject(RejectTaskUseCase);
   
   // Computed signal for completed tasks (approved + rejected)
   readonly completedTasks = computed(() => [
@@ -191,17 +200,9 @@ export class AcceptanceModule implements IAppModule, OnInit, OnDestroy {
   initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
     
-    // React to QCPassed events
     this.subscriptions.add(
       eventBus.subscribe('QCPassed', (event: any) => {
-        console.log('[AcceptanceModule] QCPassed:', event);
-        this.acceptanceStore.addTaskForAcceptance({
-          taskId: event.aggregateId,
-          taskTitle: event.payload.taskTitle,
-          taskDescription: event.payload.taskDescription || '',
-          qcPassedAt: new Date(event.timestamp),
-          qcReviewedBy: event.payload.reviewerId,
-        });
+        console.log('[AcceptanceModule] QCPassed event received:', event);
       })
     );
     
@@ -211,26 +212,27 @@ export class AcceptanceModule implements IAppModule, OnInit, OnDestroy {
       })
     );
     
-    ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
   }
   
   approveTask(taskId: string): void {
     if (!this.eventBus) return;
     
-    this.acceptanceStore.approveTask(taskId, this.currentUserId, this.notes);
-    
     const task = this.acceptanceStore.tasks().find(t => t.taskId === taskId);
     if (!task) return;
     
-    const event = createAcceptanceApprovedEvent(
+    // Delegate to Use Case - creates event, appends to store, publishes to bus
+    this.approveTaskUseCase.execute({
       taskId,
-      this.eventBus.workspaceId,
-      task.taskTitle,
-      this.currentUserId,
-      this.notes
-    );
+      workspaceId: this.eventBus.workspaceId,
+      taskTitle: task.taskTitle,
+      approverId: this.currentUserId,
+      approvalNotes: this.notes || undefined,
+    }).then(result => {
+      if (!result.success) {
+        console.error('[AcceptanceModule] Approve failed:', result.error);
+      }
+    });
     
-    this.eventBus.publish(event);
     this.notes = '';
   }
   
@@ -240,20 +242,22 @@ export class AcceptanceModule implements IAppModule, OnInit, OnDestroy {
       return;
     }
     
-    this.acceptanceStore.rejectTask(taskId, this.currentUserId, this.notes);
-    
     const task = this.acceptanceStore.tasks().find(t => t.taskId === taskId);
     if (!task) return;
     
-    const event = createAcceptanceRejectedEvent(
+    // Delegate to Use Case - creates event, appends to store, publishes to bus
+    this.rejectTaskUseCase.execute({
       taskId,
-      this.eventBus.workspaceId,
-      task.taskTitle,
-      this.currentUserId,
-      this.notes
-    );
+      workspaceId: this.eventBus.workspaceId,
+      taskTitle: task.taskTitle,
+      rejectedById: this.currentUserId,
+      rejectionReason: this.notes,
+    }).then(result => {
+      if (!result.success) {
+        console.error('[AcceptanceModule] Reject failed:', result.error);
+      }
+    });
     
-    this.eventBus.publish(event);
     this.notes = '';
   }
   

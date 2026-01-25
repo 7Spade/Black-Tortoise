@@ -11,7 +11,8 @@
  * - aggregateId: The aggregate root this event belongs to
  * - workspaceId: Workspace context for multi-tenancy
  * - timestamp: When the event occurred
- * - causalityId: Causality chain tracking (event sourcing)
+ * - correlationId: Tracks entire causal chain (first event in chain)
+ * - causationId: Direct cause of this event (null for initial events)
  * - payload: Event-specific data
  * - metadata: Additional tracking information
  */

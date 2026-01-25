@@ -21,7 +21,8 @@ import { FormsModule } from '@angular/forms';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { QualityControlStore } from '@application/quality-control/stores/quality-control.store';
-import { createQCPassedEvent, createQCFailedEvent } from '@domain/events/domain-events';
+import { PassQCUseCase } from '@application/quality-control/use-cases/pass-qc.use-case';
+import { FailQCUseCase } from '@application/quality-control/use-cases/fail-qc.use-case';
 import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
 
 @Component({
@@ -222,19 +223,12 @@ export class QualityControlModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Quality Control';
   readonly type: ModuleType = 'quality-control';
   
-  /**
-   * Event bus MUST be passed from parent - no injection
-   */
   @Input() eventBus?: IModuleEventBus;
   
-  /**
-   * Inject QualityControl store
-   */
   readonly qcStore = inject(QualityControlStore);
+  private readonly passQCUseCase = inject(PassQCUseCase);
+  private readonly failQCUseCase = inject(FailQCUseCase);
   
-  /**
-   * Form state
-   */
   reviewNotes = '';
   
   private readonly currentUserId = 'user-demo-qc';
@@ -249,78 +243,56 @@ export class QualityControlModule implements IAppModule, OnInit, OnDestroy {
   initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
     
-    // Subscribe to TaskSubmittedForQC events
     this.subscriptions.add(
       eventBus.subscribe('TaskSubmittedForQC', (event: any) => {
         console.log('[QCModule] TaskSubmittedForQC:', event);
-        this.qcStore.addTaskForReview({
-          taskId: event.aggregateId,
-          taskTitle: event.payload.taskTitle,
-          taskDescription: event.payload.taskDescription || 'No description',
-          submittedAt: new Date(event.timestamp),
-          submittedBy: event.payload.submittedBy,
-        });
       })
     );
     
-    // Subscribe to workspace switched
     this.subscriptions.add(
       ModuleEventHelper.onWorkspaceSwitched(eventBus, () => {
         this.qcStore.clearTasks();
       })
     );
     
-    ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
     console.log(`[QCModule] Initialized`);
   }
   
-  passQC(taskId: string): void {
+  async passQC(taskId: string): Promise<void> {
     if (!this.eventBus) return;
     
-    // Update store
-    this.qcStore.passTask(taskId, this.currentUserId, this.reviewNotes);
-    
-    // Find task to get title
     const task = this.qcStore.tasks().find(t => t.taskId === taskId);
     if (!task) return;
     
-    // Publish QCPassed event
-    const event = createQCPassedEvent(
+    await this.passQCUseCase.execute({
       taskId,
-      this.eventBus.workspaceId,
-      task.taskTitle,
-      this.currentUserId,
-      this.reviewNotes
-    );
+      workspaceId: this.eventBus.workspaceId,
+      taskTitle: task.taskTitle,
+      reviewedBy: this.currentUserId,
+      reviewNotes: this.reviewNotes,
+    });
     
-    this.eventBus.publish(event);
     this.reviewNotes = '';
   }
   
-  failQC(taskId: string): void {
+  async failQC(taskId: string): Promise<void> {
     if (!this.eventBus) return;
     if (!this.reviewNotes.trim()) {
       alert('Please provide review notes for failed QC');
       return;
     }
     
-    // Update store
-    this.qcStore.failTask(taskId, this.currentUserId, this.reviewNotes);
-    
-    // Find task to get title
     const task = this.qcStore.tasks().find(t => t.taskId === taskId);
     if (!task) return;
     
-    // Publish QCFailed event
-    const event = createQCFailedEvent(
+    await this.failQCUseCase.execute({
       taskId,
-      this.eventBus.workspaceId,
-      task.taskTitle,
-      this.reviewNotes,
-      this.currentUserId
-    );
+      workspaceId: this.eventBus.workspaceId,
+      taskTitle: task.taskTitle,
+      failureReason: this.reviewNotes,
+      reviewedBy: this.currentUserId,
+    });
     
-    this.eventBus.publish(event);
     this.reviewNotes = '';
   }
   

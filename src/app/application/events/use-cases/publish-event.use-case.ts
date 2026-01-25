@@ -43,11 +43,11 @@ export class PublishEventUseCase {
       // Validate event
       this.validateEvent(event);
 
-      // Publish to bus (real-time notification)
-      await this.eventBus.publish(event);
-
-      // Persist to store (history)
+      // Persist to store FIRST (append-only, history)
       await this.eventStore.append(event);
+
+      // Publish to bus AFTER (real-time notification)
+      await this.eventBus.publish(event);
 
       return { success: true };
     } catch (error) {
@@ -77,8 +77,8 @@ export class PublishEventUseCase {
     if (!event.timestamp) {
       throw new Error('Event must have timestamp');
     }
-    if (!event.causalityId) {
-      throw new Error('Event must have causalityId');
+    if (!event.correlationId) {
+      throw new Error('Event must have correlationId');
     }
   }
 }

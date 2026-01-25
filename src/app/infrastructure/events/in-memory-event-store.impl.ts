@@ -67,7 +67,7 @@ export class InMemoryEventStore implements EventStore {
    */
   async getEventsByCausality(causalityId: string): Promise<DomainEvent[]> {
     return this.events
-      .filter(e => e.causalityId === causalityId)
+      .filter(e => e.correlationId === causalityId || e.causationId === causalityId)
       .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
   }
 

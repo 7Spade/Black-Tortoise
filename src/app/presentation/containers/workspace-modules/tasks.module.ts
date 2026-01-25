@@ -20,12 +20,12 @@ import { FormsModule } from '@angular/forms';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { TasksStore } from '@application/tasks/stores/tasks.store';
-import { createTask, TaskEntity, TaskPriority, TaskStatus, updateTaskStatus } from '@domain/task/task.entity';
-import { createTaskCreatedEvent } from '@domain/events/domain-events/task-created.event';
-import { createTaskSubmittedForQCEvent } from '@domain/events/domain-events/task-submitted-for-qc.event';
-import { createQCFailedEvent } from '@domain/events/domain-events/qc-failed.event';
-import { createIssueCreatedEvent } from '@domain/events/domain-events/issue-created.event';
-import { createIssueResolvedEvent } from '@domain/events/domain-events/issue-resolved.event';
+import { createTask, TaskEntity, TaskPriority, TaskStatus } from '@domain/task/task.entity';
+import { CreateTaskUseCase } from '@application/tasks/use-cases/create-task.use-case';
+import { SubmitTaskForQCUseCase } from '@application/tasks/use-cases/submit-task-for-qc.use-case';
+import { FailQCUseCase } from '@application/quality-control/use-cases/fail-qc.use-case';
+import { CreateIssueUseCase } from '@application/issues/use-cases/create-issue.use-case';
+import { ResolveIssueUseCase } from '@application/issues/use-cases/resolve-issue.use-case';
 
 @Component({
   selector: 'app-tasks-module',
@@ -583,20 +583,21 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
 
   @Input() eventBus?: IModuleEventBus;
 
-  // Inject Tasks store
   readonly tasksStore = inject(TasksStore);
+  private readonly createTaskUseCase = inject(CreateTaskUseCase);
+  private readonly submitTaskForQCUseCase = inject(SubmitTaskForQCUseCase);
+  private readonly failQCUseCase = inject(FailQCUseCase);
+  private readonly createIssueUseCase = inject(CreateIssueUseCase);
+  private readonly resolveIssueUseCase = inject(ResolveIssueUseCase);
 
-  // Local state (workspace-scoped)
   workspaceId = signal<string>('');
   eventLog = signal<any[]>([]);
   viewMode = signal<'list' | 'kanban' | 'gantt'>('list');
 
-  // Form state
   newTaskTitle = '';
   newTaskDescription = '';
   newTaskPriority: TaskPriority = 'medium';
 
-  // View data
   readonly kanbanStatuses = ['draft', 'ready', 'in-qc', 'qc-failed', 'blocked', 'completed'];
   readonly ganttDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -613,11 +614,6 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
     this.eventBus = eventBus;
     this.workspaceId.set(eventBus.workspaceId);
 
-    /**
-     * Subscribe to events using EventBus interface
-     * Returns cleanup functions that we store for proper cleanup
-     * No manual .subscribe() - uses event bus abstraction
-     */
     this.unsubscribers.push(
       eventBus.subscribe('TaskCreated', (event: any) => {
         console.log('[TasksModule] TaskCreated event received', event);
@@ -646,7 +642,6 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       })
     );
 
-    // Subscribe to workspace switched to clear state
     this.unsubscribers.push(
       eventBus.subscribe('WorkspaceSwitched', () => {
         this.tasksStore.clearTasks();
@@ -657,7 +652,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
     console.log('[TasksModule] Initialized with workspace:', this.workspaceId());
   }
 
-  createNewTask(): void {
+  async createNewTask(): Promise<void> {
     if (!this.newTaskTitle.trim() || !this.eventBus) return;
 
     const task = createTask({
@@ -668,90 +663,61 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       priority: this.newTaskPriority,
     });
 
-    // Add to store
-    this.tasksStore.addTask(task);
+    const result = await this.createTaskUseCase.execute({
+      taskId: task.id,
+      workspaceId: task.workspaceId,
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      createdById: task.createdById,
+    });
 
-    // Publish event (append→publish→react pattern)
-    const event = createTaskCreatedEvent(
-      task.id,
-      task.workspaceId,
-      task.title,
-      task.description,
-      task.priority,
-      task.createdById
-    );
-
-    this.eventBus.publish(event);
-    this.addEventToLog(event);
-
-    // Reset form
-    this.newTaskTitle = '';
-    this.newTaskDescription = '';
-    this.newTaskPriority = 'medium';
+    if (result.success) {
+      this.newTaskTitle = '';
+      this.newTaskDescription = '';
+      this.newTaskPriority = 'medium';
+    }
   }
 
-  submitTaskForQC(task: TaskEntity): void {
+  async submitTaskForQC(task: TaskEntity): Promise<void> {
     if (!this.eventBus) return;
 
-    // Update task status
-    const updatedTask = updateTaskStatus(task, 'in-qc');
-    this.updateTaskInList(updatedTask);
-
-    // Publish event
-    const event = createTaskSubmittedForQCEvent(
-      task.id,
-      this.workspaceId(),
-      task.title,
-      this.currentUserId()
-    );
-
-    this.eventBus.publish(event);
-    this.addEventToLog(event);
+    await this.submitTaskForQCUseCase.execute({
+      taskId: task.id,
+      workspaceId: this.workspaceId(),
+      taskTitle: task.title,
+      submittedBy: this.currentUserId(),
+    });
   }
 
-  failQC(task: TaskEntity): void {
+  async failQC(task: TaskEntity): Promise<void> {
     if (!this.eventBus) return;
 
-    // Update task status to qc-failed
-    const updatedTask = updateTaskStatus(task, 'qc-failed');
-    this.updateTaskInList(updatedTask);
+    const failureReason = 'Quality standards not met (stub)';
+    const result = await this.failQCUseCase.execute({
+      taskId: task.id,
+      workspaceId: this.workspaceId(),
+      taskTitle: task.title,
+      failureReason,
+      reviewedBy: this.currentUserId(),
+    });
 
-    // Publish QCFailed event
-    const qcFailedEvent = createQCFailedEvent(
-      task.id,
-      this.workspaceId(),
-      task.title,
-      'Quality standards not met (stub)',
-        this.currentUserId()
-    );
-
-    this.eventBus.publish(qcFailedEvent);
-    this.addEventToLog(qcFailedEvent);
-
-    // Create issue automatically (feedback loop)
-    setTimeout(() => {
-      const issueId = crypto.randomUUID();
-      const issueEvent = createIssueCreatedEvent(
-        issueId,
-        task.id,
-        this.workspaceId(),
-        `QC Failed: ${task.title}`,
-        'Quality standards not met (stub)',
-        this.currentUserId(),
-        qcFailedEvent.correlationId,
-        qcFailedEvent.eventId
-      );
-
-      this.eventBus!.publish(issueEvent);
-      this.addEventToLog(issueEvent);
-
-      // Block the task
-      const blockedTask = { ...updatedTask, status: 'blocked' as TaskStatus, blockedByIssueIds: [issueId] };
-      this.updateTaskInList(blockedTask);
-    }, 100);
+    if (result.success) {
+      setTimeout(async () => {
+        const issueId = crypto.randomUUID();
+        await this.createIssueUseCase.execute({
+          issueId,
+          taskId: task.id,
+          workspaceId: this.workspaceId(),
+          title: `QC Failed: ${task.title}`,
+          description: failureReason,
+          createdBy: this.currentUserId(),
+        });
+      }, 100);
+    }
   }
 
-  resolveIssue(task: TaskEntity): void {
+  async resolveIssue(task: TaskEntity): Promise<void> {
     if (!this.eventBus || task.blockedByIssueIds.length === 0) return;
 
     const issueId = task.blockedByIssueIds[0];
@@ -759,29 +725,13 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       return;
     }
 
-    // Publish IssueResolved event
-      const event = createIssueResolvedEvent(
-        issueId,
-        task.id,
-        this.workspaceId(),
-        this.currentUserId(),
-        'Fixed (stub)'
-      );
-
-    this.eventBus.publish(event);
-    this.addEventToLog(event);
-
-    // Unblock task and set to ready
-    const unblockedTask = {
-      ...task,
-      status: 'ready' as TaskStatus,
-      blockedByIssueIds: [],
-    };
-    this.updateTaskInList(unblockedTask);
-  }
-
-  private updateTaskInList(updatedTask: TaskEntity): void {
-    this.tasksStore.updateTask(updatedTask.id, updatedTask);
+    await this.resolveIssueUseCase.execute({
+      issueId,
+      taskId: task.id,
+      workspaceId: this.workspaceId(),
+      resolvedBy: this.currentUserId(),
+      resolution: 'Fixed (stub)',
+    });
   }
 
   private addEventToLog(event: any): void {

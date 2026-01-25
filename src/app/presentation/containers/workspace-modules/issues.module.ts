@@ -10,7 +10,8 @@ import { FormsModule } from '@angular/forms';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IssuesStore } from '@application/issues/stores/issues.store';
-import { createIssueCreatedEvent, createIssueResolvedEvent } from '@domain/events/domain-events';
+import { CreateIssueUseCase } from '@application/issues/use-cases/create-issue.use-case';
+import { ResolveIssueUseCase } from '@application/issues/use-cases/resolve-issue.use-case';
 import { ModuleEventHelper } from '@presentation/containers/workspace-modules/basic/module-event-helper';
 
 @Component({
@@ -89,6 +90,8 @@ export class IssuesModule implements IAppModule, OnInit, OnDestroy {
   
   @Input() eventBus?: IModuleEventBus;
   readonly issuesStore = inject(IssuesStore);
+  private readonly createIssueUseCase = inject(CreateIssueUseCase);
+  private readonly resolveIssueUseCase = inject(ResolveIssueUseCase);
   
   resolution = '';
   private readonly currentUserId = 'user-demo-issues';
@@ -103,31 +106,19 @@ export class IssuesModule implements IAppModule, OnInit, OnDestroy {
   initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
     
-    // Auto-create issues from QC failures
     this.subscriptions.add(
-      eventBus.subscribe('QCFailed', (event: any) => {
-        this.issuesStore.createIssue({
+      eventBus.subscribe('QCFailed', async (event: any) => {
+        const issueId = crypto.randomUUID();
+        await this.createIssueUseCase.execute({
+          issueId,
           taskId: event.aggregateId,
+          workspaceId: eventBus.workspaceId,
           title: `QC Failed: ${event.payload.taskTitle}`,
           description: event.payload.failureReason,
-          priority: 'high',
           createdBy: this.currentUserId,
+          correlationId: event.correlationId,
+          causationId: event.eventId,
         });
-        
-        const newIssue = this.issuesStore.openIssues()[this.issuesStore.openIssues().length - 1];
-        if (newIssue) {
-          const issueEvent = createIssueCreatedEvent(
-            newIssue.id,
-            event.aggregateId,
-            eventBus.workspaceId,
-            newIssue.title,
-            newIssue.description,
-            this.currentUserId,
-            event.correlationId,
-            event.eventId
-          );
-          eventBus.publish(issueEvent);
-        }
       })
     );
     
@@ -137,10 +128,9 @@ export class IssuesModule implements IAppModule, OnInit, OnDestroy {
       })
     );
     
-    ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
   }
   
-  resolveIssue(issueId: string): void {
+  async resolveIssue(issueId: string): Promise<void> {
     if (!this.eventBus || !this.resolution.trim()) {
       alert('Please provide resolution notes');
       return;
@@ -149,17 +139,14 @@ export class IssuesModule implements IAppModule, OnInit, OnDestroy {
     const issue = this.issuesStore.issues().find(i => i.id === issueId);
     if (!issue) return;
     
-    this.issuesStore.resolveIssue(issueId, this.currentUserId, this.resolution);
-    
-    const event = createIssueResolvedEvent(
+    await this.resolveIssueUseCase.execute({
       issueId,
-      issue.taskId,
-      this.eventBus.workspaceId,
-      this.currentUserId,
-      this.resolution
-    );
+      taskId: issue.taskId,
+      workspaceId: this.eventBus.workspaceId,
+      resolvedBy: this.currentUserId,
+      resolution: this.resolution,
+    });
     
-    this.eventBus.publish(event);
     this.resolution = '';
   }
   

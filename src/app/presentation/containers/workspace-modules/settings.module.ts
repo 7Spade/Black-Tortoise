@@ -401,7 +401,6 @@ export class SettingsModule implements IAppModule, OnInit, OnDestroy {
       })
     );
     
-    ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
   }
   
   updateWorkingHours(field: 'start' | 'end', event: Event): void {

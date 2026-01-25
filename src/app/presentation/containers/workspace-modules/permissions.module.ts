@@ -108,7 +108,6 @@ export class PermissionsModule implements IAppModule, OnInit, OnDestroy {
       })
     );
     
-    ModuleEventHelper.publishModuleInitialized(eventBus, this.id);
   }
   
   activate(): void {}
