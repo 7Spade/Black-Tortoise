@@ -37,11 +37,8 @@ export function createAcceptanceApprovedEvent(
     taskId,
     taskTitle,
     approverId,
+    ...(approvalNotes !== undefined ? { approvalNotes } : {}),
   };
-  
-  if (approvalNotes !== undefined) {
-    (payload as { approvalNotes?: string }).approvalNotes = approvalNotes;
-  }
   
   return {
     eventId,

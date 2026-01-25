@@ -36,11 +36,8 @@ export function createWorkspaceSwitchedEvent(
   const payload: WorkspaceSwitchedPayload = {
     previousWorkspaceId,
     currentWorkspaceId,
+    ...(userId !== undefined ? { userId } : {}),
   };
-  
-  if (userId !== undefined) {
-    (payload as { userId?: string }).userId = userId;
-  }
   
   return {
     eventId,

@@ -45,11 +45,8 @@ export function createWorkspaceCreatedEvent(
     ownerId,
     ownerType,
     organizationId,
+    ...(userId !== undefined ? { userId } : {}),
   };
-  
-  if (userId !== undefined) {
-    (payload as { userId?: string }).userId = userId;
-  }
   
   return {
     eventId,

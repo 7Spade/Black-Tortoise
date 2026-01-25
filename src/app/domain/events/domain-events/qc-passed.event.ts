@@ -37,11 +37,8 @@ export function createQCPassedEvent(
     taskId,
     taskTitle,
     reviewerId,
+    ...(reviewNotes !== undefined ? { reviewNotes } : {}),
   };
-  
-  if (reviewNotes !== undefined) {
-    (payload as { reviewNotes?: string }).reviewNotes = reviewNotes;
-  }
   
   return {
     eventId,

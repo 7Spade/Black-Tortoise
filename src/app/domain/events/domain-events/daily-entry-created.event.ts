@@ -43,11 +43,8 @@ export function createDailyEntryCreatedEvent(
     userId,
     taskIds,
     hoursLogged,
+    ...(notes !== undefined ? { notes } : {}),
   };
-  
-  if (notes !== undefined) {
-    (payload as { notes?: string }).notes = notes;
-  }
   
   return {
     eventId,

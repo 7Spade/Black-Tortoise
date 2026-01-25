@@ -44,15 +44,9 @@ export function createTaskCompletedEvent(
     taskId,
     taskName,
     completedBy,
+    ...(completionNotes !== undefined ? { completionNotes } : {}),
+    ...(userId !== undefined ? { userId } : {}),
   };
-  
-  if (completionNotes !== undefined) {
-    (payload as { completionNotes?: string }).completionNotes = completionNotes;
-  }
-  
-  if (userId !== undefined) {
-    (payload as { userId?: string }).userId = userId;
-  }
   
   return {
     eventId,

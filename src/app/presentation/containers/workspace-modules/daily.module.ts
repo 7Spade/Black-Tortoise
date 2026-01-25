@@ -388,11 +388,8 @@ export class DailyModule implements IAppModule, OnInit, OnDestroy {
       userId: this.currentUserId,
       taskIds: [],
       hoursLogged: this.hoursLogged,
+      ...(this.notes ? { notes: this.notes } : {}),
     };
-    
-    if (this.notes) {
-      (request as { notes?: string }).notes = this.notes;
-    }
     
     await this.createDailyEntryUseCase.execute(request);
     

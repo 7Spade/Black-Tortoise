@@ -34,11 +34,8 @@ export function createMemberRemovedEvent(
     workspaceId,
     userId,
     removedBy,
+    ...(reason !== undefined ? { reason } : {}),
   };
-  
-  if (reason !== undefined) {
-    (payload as { reason?: string }).reason = reason;
-  }
   
   return {
     eventId,

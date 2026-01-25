@@ -220,17 +220,13 @@ export class AcceptanceModule implements IAppModule, OnInit, OnDestroy {
     const task = this.acceptanceStore.tasks().find(t => t.taskId === taskId);
     if (!task) return;
     
-    // Delegate to Use Case - creates event, appends to store, publishes to bus
     const request: Parameters<typeof this.approveTaskUseCase.execute>[0] = {
       taskId,
       workspaceId: this.eventBus.workspaceId,
       taskTitle: task.taskTitle,
       approverId: this.currentUserId,
+      ...(this.notes ? { approvalNotes: this.notes } : {}),
     };
-    
-    if (this.notes) {
-      (request as { approvalNotes?: string }).approvalNotes = this.notes;
-    }
     
     this.approveTaskUseCase.execute(request).then(result => {
       if (!result.success) {
