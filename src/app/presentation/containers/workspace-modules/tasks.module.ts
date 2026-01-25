@@ -12,6 +12,9 @@
  * - Pure signal-based event handling via unsubscribe functions
  * - Zone-less compatible
  * - Event handlers stored and cleaned up properly
+ * - No direct eventBus.publish or eventStore.append calls
+ * - Only dispatches commands to use cases
+ * - Subscribes to events for view-model projection only
  */
 
 import { CommonModule } from '@angular/common';
@@ -24,7 +27,6 @@ import { createTask, TaskEntity, TaskPriority, TaskStatus } from '@domain/task/t
 import { CreateTaskUseCase } from '@application/tasks/use-cases/create-task.use-case';
 import { SubmitTaskForQCUseCase } from '@application/tasks/use-cases/submit-task-for-qc.use-case';
 import { FailQCUseCase } from '@application/quality-control/use-cases/fail-qc.use-case';
-import { CreateIssueUseCase } from '@application/issues/use-cases/create-issue.use-case';
 import { ResolveIssueUseCase } from '@application/issues/use-cases/resolve-issue.use-case';
 
 @Component({
@@ -587,7 +589,6 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
   private readonly createTaskUseCase = inject(CreateTaskUseCase);
   private readonly submitTaskForQCUseCase = inject(SubmitTaskForQCUseCase);
   private readonly failQCUseCase = inject(FailQCUseCase);
-  private readonly createIssueUseCase = inject(CreateIssueUseCase);
   private readonly resolveIssueUseCase = inject(ResolveIssueUseCase);
 
   workspaceId = signal<string>('');
@@ -690,31 +691,29 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Fail QC for a task
+   * 
+   * Constitution Compliance:
+   * - Presentation only dispatches command to use case
+   * - Use case publishes QCFailed event via PublishEventUseCase
+   * - QC event handler creates derived IssueCreated event with causality
+   * - No direct issue creation in presentation layer
+   */
   async failQC(task: TaskEntity): Promise<void> {
     if (!this.eventBus) return;
 
     const failureReason = 'Quality standards not met (stub)';
-    const result = await this.failQCUseCase.execute({
+    await this.failQCUseCase.execute({
       taskId: task.id,
       workspaceId: this.workspaceId(),
       taskTitle: task.title,
       failureReason,
       reviewedBy: this.currentUserId(),
     });
-
-    if (result.success) {
-      setTimeout(async () => {
-        const issueId = crypto.randomUUID();
-        await this.createIssueUseCase.execute({
-          issueId,
-          taskId: task.id,
-          workspaceId: this.workspaceId(),
-          title: `QC Failed: ${task.title}`,
-          description: failureReason,
-          createdBy: this.currentUserId(),
-        });
-      }, 100);
-    }
+    
+    // Issue creation is now handled by QC event handler
+    // with proper causality (correlationId inherited, causationId = QCFailed.eventId)
   }
 
   async resolveIssue(task: TaskEntity): Promise<void> {

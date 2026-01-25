@@ -77,8 +77,14 @@ export class PublishEventUseCase {
     if (!event.timestamp) {
       throw new Error('Event must have timestamp');
     }
+    if (!(event.timestamp instanceof Date)) {
+      throw new Error('Event timestamp must be a Date instance');
+    }
     if (!event.correlationId) {
       throw new Error('Event must have correlationId');
+    }
+    if (event.causationId !== null && typeof event.causationId !== 'string') {
+      throw new Error('Event causationId must be string or null');
     }
   }
 }
