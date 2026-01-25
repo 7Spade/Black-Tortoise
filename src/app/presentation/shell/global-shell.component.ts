@@ -15,7 +15,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/cor
 import { RouterOutlet } from '@angular/router';
 import { ShellFacade } from '@application/facades/shell.facade';
 import { WorkspaceContextStore } from '@application/workspace';
-import { HeaderComponent } from '@presentation/shared/components/header';
+import { HeaderComponent } from '@presentation/layout/header';
 
 @Component({
   selector: 'app-global-shell',
