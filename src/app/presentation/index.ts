@@ -12,13 +12,13 @@ export * from './shell';
 export * from './pages';
 
 // Domain-specific presentation layers
-export * from './organization';
-export * from './pages/settings';
-export * from './team';
 export * from './features/workspace';
+export * from './organization';
+export * from './organization/team';
+export * from './pages/settings';
 
 // Containers
-export * from './containers';
+export * from './workspaces';
 
 // Shared
 export * from './shared';

@@ -5,9 +5,10 @@
  * Purpose: Orchestrates workspace creation with proper event publishing
  */
 
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { WorkspaceEntity, WorkspaceId, createWorkspaceEntity } from '@domain/workspace';
 import { createWorkspaceCreatedEvent } from '@domain/events/domain-events/workspace-created.event';
+import { PublishEventUseCase } from '@application/events/use-cases/publish-event.use-case';
 
 /**
  * Create Workspace Command
@@ -26,7 +27,8 @@ export interface CreateWorkspaceCommand {
  */
 @Injectable({ providedIn: 'root' })
 export class CreateWorkspaceUseCase {
-  
+  private readonly publishEvent = inject(PublishEventUseCase);
+
   execute(command: CreateWorkspaceCommand): WorkspaceEntity {
     // Generate unique workspace ID
     const workspaceId = WorkspaceId.generate().getValue();
@@ -51,14 +53,8 @@ export class CreateWorkspaceUseCase {
       command.organizationId,
       command.ownerId
     );
-    
-    // In real implementation, this would:
-    // 1. Persist to repository
-    // 2. Publish event to event bus
-    // 3. Return the created workspace
-    
-    console.log('[CreateWorkspaceUseCase] Workspace created:', workspace);
-    console.log('[CreateWorkspaceUseCase] Event published:', event);
+
+    void this.publishEvent.execute({ event });
     
     return workspace;
   }
