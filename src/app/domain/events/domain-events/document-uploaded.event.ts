@@ -8,30 +8,21 @@
  * Contains all information needed to track document uploads in the event store.
  */
 
-export interface DocumentUploadedEvent {
-  readonly eventId: string;
-  readonly eventType: 'DocumentUploaded';
-  readonly aggregateId: string; // documentId
+import { DomainEvent } from '@domain/event/domain-event';
+
+export interface DocumentUploadedPayload {
   readonly workspaceId: string;
-  readonly timestamp: Date;
-  readonly causalityId: string;
-  
-  // Payload
-  readonly payload: {
-    readonly documentId: string;
-    readonly documentName: string;
-    readonly documentType: string;
-    readonly fileSize: number;
-    readonly uploadedBy: string;
-    readonly storagePath: string;
-  };
-  
-  // Metadata for event sourcing
-  readonly metadata: {
-    readonly version: number;
-    readonly userId?: string;
-    readonly correlationId?: string;
-  };
+  readonly documentId: string;
+  readonly documentName: string;
+  readonly documentType: string;
+  readonly fileSize: number;
+  readonly uploadedBy: string;
+  readonly storagePath: string;
+  readonly userId?: string;
+}
+
+export interface DocumentUploadedEvent extends DomainEvent<DocumentUploadedPayload> {
+  readonly type: 'DocumentUploaded';
 }
 
 /**
@@ -46,28 +37,30 @@ export function createDocumentUploadedEvent(
   storagePath: string,
   workspaceId: string,
   userId?: string,
-  causalityId?: string,
-  correlationId?: string
+  correlationId?: string,
+  causationId?: string | null
 ): DocumentUploadedEvent {
-  return {
-    eventId: crypto.randomUUID(),
-    eventType: 'DocumentUploaded',
-    aggregateId: documentId,
+  const eventId = crypto.randomUUID();
+  const newCorrelationId = correlationId ?? eventId;
+  
+  const payload: DocumentUploadedPayload = {
     workspaceId,
-    timestamp: new Date(),
-    causalityId: causalityId ?? crypto.randomUUID(),
-    payload: {
-      documentId,
-      documentName,
-      documentType,
-      fileSize,
-      uploadedBy,
-      storagePath,
-    },
-    metadata: {
-      version: 1,
-      userId,
-      correlationId,
-    },
+    documentId,
+    documentName,
+    documentType,
+    fileSize,
+    uploadedBy,
+    storagePath,
+    ...(userId !== undefined ? { userId } : {}),
+  };
+  
+  return {
+    eventId,
+    type: 'DocumentUploaded',
+    aggregateId: documentId,
+    correlationId: newCorrelationId,
+    causationId: causationId ?? null,
+    timestamp: Date.now(),
+    payload,
   };
 }

@@ -6,7 +6,7 @@
  * Architecture: Zone-less, Signal-based, Pure Reactive
  * 
  * Single Source of Truth for all task data within a workspace.
- * Enforces workspace scope - no global access.
+ * Enforces workspace scope - cleared on workspace switch.
  */
 
 import { computed } from '@angular/core';
@@ -17,159 +17,130 @@ import { TaskEntity, TaskStatus } from '@domain/task/task.entity';
  * Tasks State
  */
 export interface TasksState {
-  readonly workspaceId: string;
-  readonly tasks: ReadonlyMap<string, TaskEntity>;
+  readonly tasks: ReadonlyArray<TaskEntity>;
   readonly isLoading: boolean;
   readonly error: string | null;
 }
 
+const initialState: TasksState = {
+  tasks: [],
+  isLoading: false,
+  error: null,
+};
+
 /**
- * Create workspace-scoped Tasks Store
+ * Tasks Store
  * 
- * IMPORTANT: This store is workspace-scoped, not global.
- * Each workspace runtime creates its own instance.
+ * Application-level store for task management using NgRx Signals.
  */
-export function createTasksStore(workspaceId: string) {
-  const initialState: TasksState = {
-    workspaceId,
-    tasks: new Map(),
-    isLoading: false,
-    error: null,
-  };
+export const TasksStore = signalStore(
+  { providedIn: 'root' },
 
-  return signalStore(
-    withState(initialState),
+  withState(initialState),
 
-    withComputed((state) => ({
-      /**
-       * All tasks as array
-       */
-      tasksList: computed(() => Array.from(state.tasks().values())),
+  withComputed((state) => ({
+    /**
+     * Tasks by status
+     */
+    tasksByStatus: computed(() => (status: TaskStatus) =>
+      state.tasks().filter(t => t.status === status)
+    ),
 
-      /**
-       * Tasks by status
-       */
-      tasksByStatus: computed(() => (status: TaskStatus) =>
-        Array.from(state.tasks().values()).filter(t => t.status === status)
-      ),
+    /**
+     * Blocked tasks
+     */
+    blockedTasks: computed(() =>
+      state.tasks().filter(t => t.status === 'blocked')
+    ),
 
-      /**
-       * Blocked tasks
-       */
-      blockedTasks: computed(() =>
-        Array.from(state.tasks().values()).filter(t => t.status === 'blocked')
-      ),
+    /**
+     * Ready tasks
+     */
+    readyTasks: computed(() =>
+      state.tasks().filter(t => t.status === 'ready')
+    ),
 
-      /**
-       * Tasks ready for work
-       */
-      readyTasks: computed(() =>
-        Array.from(state.tasks().values()).filter(t => t.status === 'ready')
-      ),
+    /**
+     * Tasks in QC
+     */
+    tasksInQC: computed(() =>
+      state.tasks().filter(t => t.status === 'in-qc')
+    ),
 
-      /**
-       * Tasks in QC
-       */
-      tasksInQC: computed(() =>
-        Array.from(state.tasks().values()).filter(t => t.status === 'in-qc')
-      ),
+    /**
+     * Task count
+     */
+    taskCount: computed(() => state.tasks().length),
+  })),
 
-      /**
-       * Task count
-       */
-      taskCount: computed(() => state.tasks().size),
-    })),
+  withMethods((store) => ({
+    /**
+     * Add task to store
+     */
+    addTask(task: TaskEntity): void {
+      patchState(store, {
+        tasks: [...store.tasks(), task],
+        error: null,
+      });
+    },
 
-    withMethods((store) => ({
-      /**
-       * Add task to store
-       */
-      addTask(task: TaskEntity): void {
-        if (task.workspaceId !== store.workspaceId()) {
-          console.error('[TasksStore] Task workspace mismatch', {
-            expected: store.workspaceId(),
-            received: task.workspaceId,
-          });
-          return;
-        }
+    /**
+     * Update task
+     */
+    updateTask(taskId: string, updates: Partial<TaskEntity>): void {
+      const task = store.tasks().find(t => t.id === taskId);
+      if (!task) {
+        patchState(store, { error: `Task ${taskId} not found` });
+        return;
+      }
 
-        const newTasks = new Map(store.tasks());
-        newTasks.set(task.id, task);
+      const updatedTask = { ...task, ...updates, updatedAt: Date.now() };
+      
+      patchState(store, {
+        tasks: store.tasks().map(t => t.id === taskId ? updatedTask : t),
+        error: null,
+      });
+    },
 
-        patchState(store, {
-          tasks: newTasks,
-          error: null,
-        });
-      },
+    /**
+     * Remove task
+     */
+    removeTask(taskId: string): void {
+      patchState(store, {
+        tasks: store.tasks().filter(t => t.id !== taskId),
+        error: null,
+      });
+    },
 
-      /**
-       * Update task
-       */
-      updateTask(taskId: string, updates: Partial<TaskEntity>): void {
-        const task = store.tasks().get(taskId);
-        if (!task) {
-          patchState(store, { error: `Task ${taskId} not found` });
-          return;
-        }
+    /**
+     * Get task by ID
+     */
+    getTask(taskId: string): TaskEntity | undefined {
+      return store.tasks().find(t => t.id === taskId);
+    },
 
-        const updatedTask = { ...task, ...updates, updatedAt: new Date() };
-        const newTasks = new Map(store.tasks());
-        newTasks.set(taskId, updatedTask);
+    /**
+     * Set loading state
+     */
+    setLoading(isLoading: boolean): void {
+      patchState(store, { isLoading });
+    },
 
-        patchState(store, {
-          tasks: newTasks,
-          error: null,
-        });
-      },
+    /**
+     * Set error
+     */
+    setError(error: string | null): void {
+      patchState(store, { error });
+    },
 
-      /**
-       * Remove task
-       */
-      removeTask(taskId: string): void {
-        const newTasks = new Map(store.tasks());
-        newTasks.delete(taskId);
-
-        patchState(store, {
-          tasks: newTasks,
-          error: null,
-        });
-      },
-
-      /**
-       * Get task by ID
-       */
-      getTask(taskId: string): TaskEntity | undefined {
-        return store.tasks().get(taskId);
-      },
-
-      /**
-       * Set loading state
-       */
-      setLoading(isLoading: boolean): void {
-        patchState(store, { isLoading });
-      },
-
-      /**
-       * Set error
-       */
-      setError(error: string | null): void {
-        patchState(store, { error });
-      },
-
-      /**
-       * Clear all tasks
-       */
-      clearTasks(): void {
-        patchState(store, {
-          tasks: new Map(),
-          error: null,
-        });
-      },
-    }))
-  );
-}
-
-/**
- * Tasks Store Type
- */
-export type TasksStore = ReturnType<typeof createTasksStore>;
+    /**
+     * Clear all tasks (workspace switch)
+     */
+    clearTasks(): void {
+      patchState(store, {
+        tasks: [],
+        error: null,
+      });
+    },
+  }))
+);

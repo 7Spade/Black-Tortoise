@@ -8,19 +8,25 @@
  * Pure TypeScript - no framework dependencies.
  */
 
-export type TaskStatus = 
-  | 'draft'
-  | 'ready'
-  | 'in-progress'
-  | 'in-qc'
-  | 'qc-failed'
-  | 'in-acceptance'
-  | 'accepted'
-  | 'rejected'
-  | 'completed'
-  | 'blocked';
+export enum TaskStatus {
+  DRAFT = 'draft',
+  READY = 'ready',
+  IN_PROGRESS = 'in-progress',
+  IN_QC = 'in-qc',
+  QC_FAILED = 'qc-failed',
+  IN_ACCEPTANCE = 'in-acceptance',
+  ACCEPTED = 'accepted',
+  REJECTED = 'rejected',
+  COMPLETED = 'completed',
+  BLOCKED = 'blocked',
+}
 
-export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
+export enum TaskPriority {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical',
+}
 
 /**
  * Task Entity
@@ -34,9 +40,9 @@ export interface TaskEntity {
   readonly priority: TaskPriority;
   readonly assigneeId: string | null;
   readonly createdById: string;
-  readonly createdAt: Date;
-  readonly updatedAt: Date;
-  readonly dueDate: Date | null;
+  readonly createdAt: number;
+  readonly updatedAt: number;
+  readonly dueDate: number | null;
   readonly blockedByIssueIds: ReadonlyArray<string>;
 }
 
@@ -50,22 +56,22 @@ export interface CreateTaskParams {
   readonly createdById: string;
   readonly priority?: TaskPriority;
   readonly assigneeId?: string | null;
-  readonly dueDate?: Date | null;
+  readonly dueDate?: number | null;
 }
 
 /**
  * Create a new Task entity
  */
 export function createTask(params: CreateTaskParams): TaskEntity {
-  const now = new Date();
+  const now = Date.now();
   
   return {
     id: crypto.randomUUID(),
     workspaceId: params.workspaceId,
     title: params.title,
     description: params.description,
-    status: 'draft',
-    priority: params.priority ?? 'medium',
+    status: TaskStatus.DRAFT,
+    priority: params.priority ?? TaskPriority.MEDIUM,
     assigneeId: params.assigneeId ?? null,
     createdById: params.createdById,
     createdAt: now,
@@ -82,7 +88,7 @@ export function updateTaskStatus(task: TaskEntity, newStatus: TaskStatus): TaskE
   return {
     ...task,
     status: newStatus,
-    updatedAt: new Date(),
+    updatedAt: Date.now(),
   };
 }
 
@@ -96,9 +102,9 @@ export function blockTask(task: TaskEntity, issueId: string): TaskEntity {
   
   return {
     ...task,
-    status: 'blocked',
+    status: TaskStatus.BLOCKED,
     blockedByIssueIds: [...task.blockedByIssueIds, issueId],
-    updatedAt: new Date(),
+    updatedAt: Date.now(),
   };
 }
 
@@ -110,8 +116,8 @@ export function unblockTask(task: TaskEntity, issueId: string): TaskEntity {
   
   return {
     ...task,
-    status: newBlockedIds.length === 0 ? 'ready' : 'blocked',
+    status: newBlockedIds.length === 0 ? TaskStatus.READY : TaskStatus.BLOCKED,
     blockedByIssueIds: newBlockedIds,
-    updatedAt: new Date(),
+    updatedAt: Date.now(),
   };
 }

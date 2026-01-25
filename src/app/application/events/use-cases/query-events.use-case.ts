@@ -15,47 +15,44 @@
 
 import { inject, Injectable } from '@angular/core';
 import { DomainEvent } from '@domain/event/domain-event';
-import { EventStore } from '@domain/event-store/event-store.interface';
+import { EVENT_STORE } from '../tokens/event-infrastructure.tokens';
 
 export interface QueryEventsRequest {
   readonly aggregateId?: string;
-  readonly workspaceId?: string;
   readonly eventType?: string;
-  readonly causalityId?: string;
-  readonly since?: Date;
-  readonly timeRange?: { start: Date; end: Date };
+  readonly correlationId?: string;
+  readonly since?: number;
+  readonly timeRange?: { start: number; end: number };
 }
 
-export interface QueryEventsResponse {
-  readonly events: DomainEvent[];
+export interface QueryEventsResponse<TPayload> {
+  readonly events: DomainEvent<TPayload>[];
   readonly count: number;
 }
 
 @Injectable({ providedIn: 'root' })
 export class QueryEventsUseCase {
-  private readonly eventStore = inject(EventStore);
+  private readonly eventStore = inject(EVENT_STORE);
 
   /**
    * Execute use case: Query events
    */
-  async execute(request: QueryEventsRequest): Promise<QueryEventsResponse> {
-    const { aggregateId, workspaceId, eventType, causalityId, since, timeRange } = request;
+  async execute<TPayload>(request: QueryEventsRequest): Promise<QueryEventsResponse<TPayload>> {
+    const { aggregateId, eventType, correlationId, since, timeRange } = request;
 
-    let events: DomainEvent[] = [];
+    let events: DomainEvent<TPayload>[] = [];
 
     // Query by different criteria
     if (aggregateId) {
-      events = await this.eventStore.getEventsForAggregate(aggregateId);
-    } else if (workspaceId) {
-      events = await this.eventStore.getEventsForWorkspace(workspaceId);
+      events = await this.eventStore.getEventsForAggregate<TPayload>(aggregateId);
     } else if (eventType) {
-      events = await this.eventStore.getEventsByType(eventType);
-    } else if (causalityId) {
-      events = await this.eventStore.getEventsByCausality(causalityId);
-    } else if (since) {
-      events = await this.eventStore.getEventsSince(since);
+      events = await this.eventStore.getEventsByType<TPayload>(eventType);
+    } else if (correlationId) {
+      events = await this.eventStore.getEventsByCausality<TPayload>(correlationId);
+    } else if (since !== undefined) {
+      events = await this.eventStore.getEventsSince<TPayload>(since);
     } else if (timeRange) {
-      events = await this.eventStore.getEventsInRange(timeRange.start, timeRange.end);
+      events = await this.eventStore.getEventsInRange<TPayload>(timeRange.start, timeRange.end);
     }
 
     return {

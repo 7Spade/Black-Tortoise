@@ -1,225 +1,319 @@
 #!/usr/bin/env node
+/**
+ * Architecture Gate CI Script
+ * 
+ * Enforces event-sourcing and DDD architectural invariants per comment_id 3796470142:
+ * - Presentation layer: no EventBus/EventStore/DomainEvent imports
+ * - ONLY PublishEventUseCase and event handlers can call eventBus.publish() or eventStore.append()
+ * - Stores MUST be in application layer only
+ * - No parallel append/publish (must be sequential)
+ * - Event handlers MUST propagate correlationId and set causationId
+ * - No allowlists except PublishEventUseCase and event handlers
+ * 
+ * Exit codes:
+ * 0 = All checks passed
+ * 1 = Architecture violations detected
+ */
 
 const fs = require('fs');
 const path = require('path');
 
-const violations = [];
-const fileAnalysis = {};
+const SRC_DIR = 'src/app';
+let violationsFound = 0;
 
-function analyzeFile(filePath) {
-  const content = fs.readFileSync(filePath, 'utf-8');
+/**
+ * Get all TypeScript files recursively
+ */
+function getAllFiles(dir, fileList = []) {
+  if (!fs.existsSync(dir)) return fileList;
+  
+  const items = fs.readdirSync(dir);
+  items.forEach(item => {
+    const fullPath = path.join(dir, item);
+    if (fs.statSync(fullPath).isDirectory()) {
+      getAllFiles(fullPath, fileList);
+    } else if (item.endsWith('.ts') && !item.endsWith('.spec.ts')) {
+      fileList.push(fullPath);
+    }
+  });
+  return fileList;
+}
+
+/**
+ * Check if path is in presentation layer
+ */
+function isPresentationLayer(filePath) {
+  const rel = path.relative(SRC_DIR, filePath);
+  return rel.startsWith('presentation' + path.sep);
+}
+
+/**
+ * Check if path is application event handler
+ */
+function isEventHandler(filePath) {
+  const rel = path.relative(SRC_DIR, filePath);
+  return rel.includes('handlers') && 
+         rel.includes('event-handler') &&
+         rel.startsWith('application');
+}
+
+/**
+ * Check if path is PublishEventUseCase
+ */
+function isPublishEventUseCase(filePath) {
+  return filePath.endsWith('publish-event.use-case.ts');
+}
+
+/**
+ * Report violation
+ */
+function reportViolation(filePath, line, rule, message) {
+  const rel = path.relative('', filePath);
+  console.error(`❌ VIOLATION: ${rel}:${line}`);
+  console.error(`   Rule: ${rule}`);
+  console.error(`   ${message}`);
+  console.error('');
+  violationsFound++;
+}
+
+/**
+ * Rule 1: Presentation layer CANNOT import EventBus/EventStore/DomainEvent
+ */
+function checkPresentationImports(filePath, content) {
+  if (!isPresentationLayer(filePath)) return;
+  
   const lines = content.split('\n');
   
-  const relPath = path.relative(process.cwd(), filePath);
-  let currentLayer = null;
+  lines.forEach((line, idx) => {
+    // Check for forbidden imports
+    if (line.match(/from\s+['"]@domain\/event-bus['"]/)) {
+      reportViolation(
+        filePath, 
+        idx + 1, 
+        'Presentation Layer Isolation',
+        'Presentation layer CANNOT import EventBus from domain layer'
+      );
+    }
+    
+    if (line.match(/from\s+['"]@domain\/event-store['"]/)) {
+      reportViolation(
+        filePath, 
+        idx + 1, 
+        'Presentation Layer Isolation',
+        'Presentation layer CANNOT import EventStore from domain layer'
+      );
+    }
+    
+    if (line.match(/from\s+['"]@domain\/event['"]/)) {
+      reportViolation(
+        filePath, 
+        idx + 1, 
+        'Presentation Layer Isolation',
+        'Presentation layer CANNOT import DomainEvent from domain layer'
+      );
+    }
+  });
+}
+
+/**
+ * Rule 2: Only PublishEventUseCase and event handlers can call append/publish
+ */
+function checkEventPublishing(filePath, content) {
+  // Allow PublishEventUseCase and event handlers
+  if (isPublishEventUseCase(filePath) || isEventHandler(filePath)) return;
   
-  if (relPath.includes('/domain/')) currentLayer = 'domain';
-  else if (relPath.includes('/application/')) currentLayer = 'application';
-  else if (relPath.includes('/infrastructure/')) currentLayer = 'infrastructure';
-  else if (relPath.includes('/presentation/')) currentLayer = 'presentation';
-  else return;
-  
-  fileAnalysis[relPath] = { layer: currentLayer, imports: [], violations: [] };
+  const lines = content.split('\n');
   
   lines.forEach((line, idx) => {
-    const importMatch = line.match(/^\s*import\s+.*?\s+from\s+['"](.+?)['"]/);
-    if (!importMatch) return;
+    // Skip comments
+    if (line.trim().startsWith('//') || line.trim().startsWith('*')) return;
     
-    const importPath = importMatch[1];
-    fileAnalysis[relPath].imports.push({ line: idx + 1, path: importPath });
-    
-    // Check for framework dependencies in domain layer
-    if (currentLayer === 'domain') {
-      const frameworkPatterns = [
-        '@angular/',
-        'rxjs',
-        '@angular/fire',
-        'firebase/',
-        '@ngrx/',
-        'zone.js',
-      ];
-      
-      for (const pattern of frameworkPatterns) {
-        if (importPath.startsWith(pattern)) {
-          const violation = {
-            severity: 'CRITICAL',
-            layer: currentLayer,
-            file: relPath,
-            line: idx + 1,
-            issue: `Domain layer MUST NOT import framework: ${importPath}`,
-            type: 'domain-framework-dependency',
-            importPath: importPath,
-            lineContent: line.trim(),
-            fix: 'Remove framework dependency from domain layer. Domain must be pure TypeScript.'
-          };
-          violations.push(violation);
-          fileAnalysis[relPath].violations.push(violation);
-        }
-      }
+    // Check for eventBus.publish calls
+    if (line.match(/eventBus\.publish\s*\(/)) {
+      reportViolation(
+        filePath, 
+        idx + 1, 
+        'Event Publishing Control',
+        'Only PublishEventUseCase and event handlers can call eventBus.publish()'
+      );
     }
     
-    // Determine imported layer
-    let importedLayer = null;
-    const layerPatterns = [
-      { pattern: /\/domain\/|@domain/, layer: 'domain' },
-      { pattern: /\/application\/|@application/, layer: 'application' },
-      { pattern: /\/infrastructure\/|@infrastructure/, layer: 'infrastructure' },
-      { pattern: /\/presentation\/|@presentation/, layer: 'presentation' },
-    ];
-    
-    for (const { pattern, layer } of layerPatterns) {
-      if (pattern.test(importPath)) {
-        importedLayer = layer;
-        break;
-      }
-    }
-    
-    if (!importedLayer) return;
-    
-    // Check dependency rules
-    let isViolation = false;
-    let violationType = null;
-    let severity = 'HIGH';
-    let fixSuggestion = '';
-    
-    if (currentLayer === 'domain' && importedLayer !== 'domain') {
-      isViolation = true;
-      violationType = 'domain-to-other';
-      severity = 'CRITICAL';
-      fixSuggestion = 'Domain layer MUST NOT depend on any other layer. Move this dependency to Application or Infrastructure.';
-    }
-    
-    if (currentLayer === 'application') {
-      if (importedLayer === 'infrastructure') {
-        isViolation = true;
-        violationType = 'application-to-infrastructure';
-        fixSuggestion = 'Application MUST NOT depend on concrete Infrastructure. Use interfaces/abstractions instead.';
-      } else if (importedLayer === 'presentation') {
-        isViolation = true;
-        violationType = 'application-to-presentation';
-        fixSuggestion = 'Application MUST NOT depend on Presentation. Move the dependency to Application layer.';
-      }
-    }
-    
-    if (currentLayer === 'presentation') {
-      if (importedLayer === 'domain') {
-        isViolation = true;
-        violationType = 'presentation-to-domain';
-        fixSuggestion = 'Presentation MUST NOT directly use Domain. Use Application facades/stores instead.';
-      } else if (importedLayer === 'infrastructure') {
-        isViolation = true;
-        violationType = 'presentation-to-infrastructure';
-        fixSuggestion = 'Presentation MUST NOT directly use Infrastructure. Use Application facades/stores instead.';
-      }
-    }
-    
-    if (isViolation) {
-      const violation = {
-        severity,
-        layer: currentLayer,
-        file: relPath,
-        line: idx + 1,
-        issue: `${currentLayer} → ${importedLayer}: ${importPath}`,
-        type: violationType,
-        importPath: importPath,
-        lineContent: line.trim(),
-        fix: fixSuggestion
-      };
-      violations.push(violation);
-      fileAnalysis[relPath].violations.push(violation);
+    // Check for eventStore.append calls
+    if (line.match(/eventStore\.append\s*\(/) || line.match(/eventStore\.appendBatch\s*\(/)) {
+      reportViolation(
+        filePath, 
+        idx + 1, 
+        'Event Store Immutability',
+        'Only PublishEventUseCase can call eventStore.append()'
+      );
     }
   });
 }
 
-function findTsFiles(dir) {
-  const files = [];
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
+/**
+ * Rule 3: Stores must be in application layer only
+ */
+function checkStoreLocation(filePath) {
+  // Skip if not a store file
+  if (!filePath.endsWith('.store.ts')) return;
   
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      files.push(...findTsFiles(fullPath));
-    } else if (entry.name.endsWith('.ts') && !entry.name.endsWith('.spec.ts')) {
-      files.push(fullPath);
+  const rel = path.relative(SRC_DIR, filePath);
+  
+  // Stores must be in application layer
+  if (!rel.startsWith('application')) {
+    reportViolation(
+      filePath, 
+      1, 
+      'Store Layer Placement',
+      'Stores MUST be in application layer (src/app/application/**/stores/)'
+    );
+  }
+}
+
+/**
+ * Rule 4: No parallel append/publish (must be sequential)
+ */
+function checkSequentialPublish(filePath, content) {
+  const lines = content.split('\n');
+  
+  lines.forEach((line, idx) => {
+    // Skip comments
+    if (line.trim().startsWith('//') || line.trim().startsWith('*')) return;
+    
+    // Check for Promise.all with eventBus.publish or eventStore.append
+    if (line.match(/Promise\.all.*\[.*event(Bus|Store)\.(publish|append)/)) {
+      reportViolation(
+        filePath, 
+        idx + 1, 
+        'Sequential Append-Before-Publish',
+        'Events MUST be appended and published sequentially (no Promise.all)'
+      );
     }
+  });
+}
+
+/**
+ * Rule 5: Event handlers must propagate correlationId and set causationId
+ */
+function checkCausalityPropagation(filePath, content) {
+  if (!isEventHandler(filePath)) return;
+  
+  const lines = content.split('\n');
+  let hasEventCreation = false;
+  let hasCorrelationId = false;
+  let hasCausationId = false;
+  
+  lines.forEach((line, idx) => {
+    // Check if this handler creates events
+    if (line.match(/eventType:\s*['"]/) || line.match(/createEvent\s*\(/)) {
+      hasEventCreation = true;
+    }
+    
+    // Check for correlationId
+    if (line.match(/correlationId:\s*event\.correlationId/) || 
+        line.match(/correlationId:\s*\w+\.correlationId/)) {
+      hasCorrelationId = true;
+    }
+    
+    // Check for causationId
+    if (line.match(/causationId:\s*event\.eventId/) || 
+        line.match(/causationId:\s*\w+\.eventId/)) {
+      hasCausationId = true;
+    }
+  });
+  
+  if (hasEventCreation && !hasCorrelationId) {
+    reportViolation(
+      filePath, 
+      1, 
+      'Event Causality Propagation',
+      'Event handler MUST propagate correlationId from parent event'
+    );
   }
   
-  return files;
+  if (hasEventCreation && !hasCausationId) {
+    reportViolation(
+      filePath, 
+      1, 
+      'Event Causality Propagation',
+      'Event handler MUST set causationId to parent event.eventId'
+    );
+  }
 }
 
-// Main execution
-const appDir = path.join(process.cwd(), 'src/app');
-const tsFiles = findTsFiles(appDir);
-
-console.log(`\n🔍 Comprehensive DDD/Clean Architecture Audit\n`);
-console.log(`Analyzing ${tsFiles.length} TypeScript files...\n`);
-tsFiles.forEach(analyzeFile);
-
-// Group violations by type
-const violationsByType = {};
-violations.forEach(v => {
-  if (!violationsByType[v.type]) violationsByType[v.type] = [];
-  violationsByType[v.type].push(v);
-});
-
-// Group files by layer
-const filesByLayer = { domain: [], application: [], infrastructure: [], presentation: [] };
-Object.entries(fileAnalysis).forEach(([file, data]) => {
-  if (data.layer) filesByLayer[data.layer].push(file);
-});
-
-console.log('═══════════════════════════════════════════════════════════════');
-console.log('📊 AUDIT SUMMARY');
-console.log('═══════════════════════════════════════════════════════════════\n');
-console.log(`Total files analyzed: ${tsFiles.length}`);
-console.log(`Violations found: ${violations.length}\n`);
-
-console.log('Files by Layer:');
-console.log(`  Domain:         ${filesByLayer.domain.length} files`);
-console.log(`  Application:    ${filesByLayer.application.length} files`);
-console.log(`  Infrastructure: ${filesByLayer.infrastructure.length} files`);
-console.log(`  Presentation:   ${filesByLayer.presentation.length} files\n`);
-
-if (violations.length === 0) {
-  console.log('✅ NO VIOLATIONS FOUND - Architecture is compliant!\n');
-} else {
-  console.log('═══════════════════════════════════════════════════════════════');
-  console.log('❌ VIOLATIONS BY TYPE');
-  console.log('═══════════════════════════════════════════════════════════════\n');
+/**
+ * Rule 6: No RxJS in presentation (prefer signals)
+ */
+function checkRxJsUsage(filePath, content) {
+  if (!isPresentationLayer(filePath)) return;
   
-  Object.keys(violationsByType).sort().forEach(type => {
-    const viols = violationsByType[type];
-    const severityEmoji = viols[0].severity === 'CRITICAL' ? '🔴' : '🟡';
-    console.log(`${severityEmoji} ${type.toUpperCase()}: ${viols.length} violation(s)\n`);
+  const lines = content.split('\n');
+  
+  lines.forEach((line, idx) => {
+    // Skip comments
+    if (line.trim().startsWith('//') || line.trim().startsWith('*')) return;
     
-    viols.forEach((v, i) => {
-      console.log(`  ${i + 1}. ${v.file}:${v.line}`);
-      console.log(`     Issue: ${v.issue}`);
-      console.log(`     Code:  ${v.lineContent}`);
-      console.log(`     Fix:   ${v.fix}\n`);
-    });
+    // Check for RxJS imports (excluding rxjs/operators for interop)
+    if (line.match(/from\s+['"]rxjs['"]/) && !line.match(/rxjs\/operators/)) {
+      reportViolation(
+        filePath, 
+        idx + 1, 
+        'Signal-First Architecture',
+        'Presentation layer should use Angular Signals instead of RxJS (warning)'
+      );
+    }
   });
 }
 
-// Save report
-const report = {
-  summary: {
-    totalFiles: tsFiles.length,
-    violationCount: violations.length,
-    filesByLayer: {
-      domain: filesByLayer.domain.length,
-      application: filesByLayer.application.length,
-      infrastructure: filesByLayer.infrastructure.length,
-      presentation: filesByLayer.presentation.length,
-    }
-  },
-  violations,
-  fileAnalysis
-};
+/**
+ * Main execution
+ */
+function main() {
+  console.log('🔍 Running Event-Sourcing Architecture Gate...');
+  console.log('');
+  console.log('Enforcing rules from comment_id 3796470142:');
+  console.log('');
+  console.log('  ✓ Presentation layer isolation (no EventBus/EventStore imports)');
+  console.log('  ✓ Event publishing control (only PublishEventUseCase)');
+  console.log('  ✓ Store layer placement (application only)');
+  console.log('  ✓ Sequential append-before-publish');
+  console.log('  ✓ Event causality propagation (correlationId, causationId)');
+  console.log('  ✓ Signal-first architecture (minimal RxJS)');
+  console.log('');
+  
+  const files = getAllFiles(SRC_DIR);
+  
+  console.log(`Scanning ${files.length} TypeScript files...`);
+  console.log('');
+  
+  for (const filePath of files) {
+    const content = fs.readFileSync(filePath, 'utf-8');
+    
+    // Run all checks
+    checkPresentationImports(filePath, content);
+    checkEventPublishing(filePath, content);
+    checkStoreLocation(filePath);
+    checkSequentialPublish(filePath, content);
+    checkCausalityPropagation(filePath, content);
+    checkRxJsUsage(filePath, content);
+  }
+  
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('');
+  
+  if (violationsFound === 0) {
+    console.log('✅ All architecture checks passed!');
+    console.log('');
+    process.exit(0);
+  } else {
+    console.error(`💥 Found ${violationsFound} architecture violation(s)!`);
+    console.error('');
+    console.error('Please fix the violations above to maintain architectural integrity.');
+    console.error('See .architectural-rules.md for detailed rules.');
+    console.error('');
+    process.exit(1);
+  }
+}
 
-fs.writeFileSync('comprehensive-audit-report.json', JSON.stringify(report, null, 2));
-console.log('═══════════════════════════════════════════════════════════════');
-console.log('📝 Detailed report saved to: comprehensive-audit-report.json');
-console.log('═══════════════════════════════════════════════════════════════\n');
+main();
 
-process.exit(violations.length > 0 ? 1 : 0);

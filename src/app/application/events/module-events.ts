@@ -19,7 +19,7 @@
 export interface AppEvent {
   readonly eventId: string;
   readonly eventType: string;
-  readonly occurredAt: Date;
+  readonly timestamp: number;
 }
 
 /**
@@ -36,12 +36,12 @@ export interface ModuleInitialized extends AppEvent {
  * Module Data Changed Event
  * Generic event for module data changes
  */
-export interface ModuleDataChanged extends AppEvent {
+export interface ModuleDataChanged<T = Record<string, never>> extends AppEvent {
   readonly eventType: 'ModuleDataChanged';
   readonly moduleId: string;
   readonly workspaceId: string;
   readonly dataType: string;
-  readonly data: unknown;
+  readonly data: T;
 }
 
 /**

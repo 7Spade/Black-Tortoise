@@ -24,36 +24,36 @@
 
 import { DomainEvent } from '../event/domain-event';
 
-export type EventHandler<T extends DomainEvent = DomainEvent> = (event: T) => void | Promise<void>;
+export type EventHandler<T extends DomainEvent<TPayload>, TPayload = unknown> = (event: T) => void | Promise<void>;
 
 export interface EventBus {
   /**
    * Publish a domain event to all subscribers (Event Flow)
    */
-  publish(event: DomainEvent): Promise<void>;
+  publish<TPayload>(event: DomainEvent<TPayload>): Promise<void>;
 
   /**
    * Publish multiple events (Batch Publishing)
    */
-  publishBatch(events: DomainEvent[]): Promise<void>;
+  publishBatch<TPayload>(events: DomainEvent<TPayload>[]): Promise<void>;
 
   /**
    * Subscribe to events of a specific type (Type-based filtering)
    */
-  subscribe<T extends DomainEvent>(
+  subscribe<TPayload>(
     eventType: string,
-    handler: EventHandler<T>
+    handler: EventHandler<DomainEvent<TPayload>, TPayload>
   ): () => void; // Returns unsubscribe function
 
   /**
    * Subscribe to all events (Global event listener)
    */
-  subscribeAll(handler: EventHandler): () => void;
+  subscribeAll<TPayload>(handler: EventHandler<DomainEvent<TPayload>, TPayload>): () => void;
 
   /**
    * Unsubscribe a handler from an event type
    */
-  unsubscribe(eventType: string, handler: EventHandler): void;
+  unsubscribe<TPayload>(eventType: string, handler: EventHandler<DomainEvent<TPayload>, TPayload>): void;
 
   /**
    * Clear all subscriptions (Cleanup)

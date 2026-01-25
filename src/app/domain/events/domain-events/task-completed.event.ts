@@ -8,28 +8,19 @@
  * Contains all information needed to track task completion in the event store.
  */
 
-export interface TaskCompletedEvent {
-  readonly eventId: string;
-  readonly eventType: 'TaskCompleted';
-  readonly aggregateId: string; // taskId
+import { DomainEvent } from '@domain/event/domain-event';
+
+export interface TaskCompletedPayload {
   readonly workspaceId: string;
-  readonly timestamp: Date;
-  readonly causalityId: string;
-  
-  // Payload
-  readonly payload: {
-    readonly taskId: string;
-    readonly taskName: string;
-    readonly completedBy: string;
-    readonly completionNotes?: string;
-  };
-  
-  // Metadata for event sourcing
-  readonly metadata: {
-    readonly version: number;
-    readonly userId?: string;
-    readonly correlationId?: string;
-  };
+  readonly taskId: string;
+  readonly taskName: string;
+  readonly completedBy: string;
+  readonly completionNotes?: string;
+  readonly userId?: string;
+}
+
+export interface TaskCompletedEvent extends DomainEvent<TaskCompletedPayload> {
+  readonly type: 'TaskCompleted';
 }
 
 /**
@@ -42,26 +33,28 @@ export function createTaskCompletedEvent(
   workspaceId: string,
   completionNotes?: string,
   userId?: string,
-  causalityId?: string,
-  correlationId?: string
+  correlationId?: string,
+  causationId?: string | null
 ): TaskCompletedEvent {
-  return {
-    eventId: crypto.randomUUID(),
-    eventType: 'TaskCompleted',
-    aggregateId: taskId,
+  const eventId = crypto.randomUUID();
+  const newCorrelationId = correlationId ?? eventId;
+  
+  const payload: TaskCompletedPayload = {
     workspaceId,
-    timestamp: new Date(),
-    causalityId: causalityId ?? crypto.randomUUID(),
-    payload: {
-      taskId,
-      taskName,
-      completedBy,
-      completionNotes,
-    },
-    metadata: {
-      version: 1,
-      userId,
-      correlationId,
-    },
+    taskId,
+    taskName,
+    completedBy,
+    ...(completionNotes !== undefined ? { completionNotes } : {}),
+    ...(userId !== undefined ? { userId } : {}),
+  };
+  
+  return {
+    eventId,
+    type: 'TaskCompleted',
+    aggregateId: taskId,
+    correlationId: newCorrelationId,
+    causationId: causationId ?? null,
+    timestamp: Date.now(),
+    payload,
   };
 }

@@ -12,32 +12,38 @@
  * - Type-based and global subscriptions
  * - Automatic cleanup on unsubscribe
  * 
+ * DI Configuration:
+ * - Provided via EVENT_BUS token in app.config.ts
+ * - Singleton instance managed by Angular DI
+ * 
  * Note: For RxJS-based implementation, see in-memory-event-bus-rxjs.impl.ts
  */
 
+import { Injectable } from '@angular/core';
 import { EventBus, EventHandler } from '@domain/event-bus/event-bus.interface';
 import { DomainEvent } from '@domain/event/domain-event';
 
+@Injectable()
 export class InMemoryEventBus implements EventBus {
-  private subscribers: Map<string, Set<EventHandler>> = new Map();
-  private globalSubscribers: Set<EventHandler> = new Set();
+  private subscribers: Map<string, Set<EventHandler<DomainEvent<unknown>, unknown>>> = new Map();
+  private globalSubscribers: Set<EventHandler<DomainEvent<unknown>, unknown>> = new Set();
 
   /**
    * Publish a domain event to all subscribers
    */
-  async publish(event: DomainEvent): Promise<void> {
+  async publish<TPayload>(event: DomainEvent<TPayload>): Promise<void> {
     // Notify type-specific subscribers
-    const typeSubscribers = this.subscribers.get(event.eventType);
+    const typeSubscribers = this.subscribers.get(event.type);
     if (typeSubscribers) {
       const promises = Array.from(typeSubscribers).map(handler =>
-        Promise.resolve(handler(event))
+        Promise.resolve(handler(event as DomainEvent<unknown>))
       );
       await Promise.all(promises);
     }
 
     // Notify global subscribers
     const globalPromises = Array.from(this.globalSubscribers).map(handler =>
-      Promise.resolve(handler(event))
+      Promise.resolve(handler(event as DomainEvent<unknown>))
     );
     await Promise.all(globalPromises);
   }
@@ -45,7 +51,7 @@ export class InMemoryEventBus implements EventBus {
   /**
    * Publish multiple events
    */
-  async publishBatch(events: DomainEvent[]): Promise<void> {
+  async publishBatch<TPayload>(events: DomainEvent<TPayload>[]): Promise<void> {
     const promises = events.map(event => this.publish(event));
     await Promise.all(promises);
   }
@@ -53,42 +59,42 @@ export class InMemoryEventBus implements EventBus {
   /**
    * Subscribe to events of a specific type
    */
-  subscribe<T extends DomainEvent>(
+  subscribe<TPayload>(
     eventType: string,
-    handler: EventHandler<T>
+    handler: EventHandler<DomainEvent<TPayload>, TPayload>
   ): () => void {
     if (!this.subscribers.has(eventType)) {
       this.subscribers.set(eventType, new Set());
     }
 
     const typeSubscribers = this.subscribers.get(eventType)!;
-    typeSubscribers.add(handler as EventHandler);
+    typeSubscribers.add(handler as EventHandler<DomainEvent<unknown>, unknown>);
 
     // Return unsubscribe function
     return () => {
-      this.unsubscribe(eventType, handler as EventHandler);
+      this.unsubscribe(eventType, handler as EventHandler<DomainEvent<unknown>, unknown>);
     };
   }
 
   /**
    * Subscribe to all events
    */
-  subscribeAll(handler: EventHandler): () => void {
-    this.globalSubscribers.add(handler);
+  subscribeAll<TPayload>(handler: EventHandler<DomainEvent<TPayload>, TPayload>): () => void {
+    this.globalSubscribers.add(handler as EventHandler<DomainEvent<unknown>, unknown>);
 
     // Return unsubscribe function
     return () => {
-      this.globalSubscribers.delete(handler);
+      this.globalSubscribers.delete(handler as EventHandler<DomainEvent<unknown>, unknown>);
     };
   }
 
   /**
    * Unsubscribe a handler from an event type
    */
-  unsubscribe(eventType: string, handler: EventHandler): void {
+  unsubscribe<TPayload>(eventType: string, handler: EventHandler<DomainEvent<TPayload>, TPayload>): void {
     const typeSubscribers = this.subscribers.get(eventType);
     if (typeSubscribers) {
-      typeSubscribers.delete(handler);
+      typeSubscribers.delete(handler as EventHandler<DomainEvent<unknown>, unknown>);
       if (typeSubscribers.size === 0) {
         this.subscribers.delete(eventType);
       }

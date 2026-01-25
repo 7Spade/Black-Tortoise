@@ -8,28 +8,19 @@
  * Contains all information needed to track workspace creation in the event store.
  */
 
-export interface WorkspaceCreatedEvent {
-  readonly eventId: string;
-  readonly eventType: 'WorkspaceCreated';
-  readonly aggregateId: string; // workspaceId
+import { DomainEvent } from '@domain/event/domain-event';
+
+export interface WorkspaceCreatedPayload {
   readonly workspaceId: string;
-  readonly timestamp: Date;
-  readonly causalityId: string;
-  
-  // Payload
-  readonly payload: {
-    readonly name: string;
-    readonly ownerId: string;
-    readonly ownerType: 'user' | 'organization';
-    readonly organizationId: string;
-  };
-  
-  // Metadata for event sourcing
-  readonly metadata: {
-    readonly version: number;
-    readonly userId?: string;
-    readonly correlationId?: string;
-  };
+  readonly name: string;
+  readonly ownerId: string;
+  readonly ownerType: 'user' | 'organization';
+  readonly organizationId: string;
+  readonly userId?: string;
+}
+
+export interface WorkspaceCreatedEvent extends DomainEvent<WorkspaceCreatedPayload> {
+  readonly type: 'WorkspaceCreated';
 }
 
 /**
@@ -42,26 +33,28 @@ export function createWorkspaceCreatedEvent(
   ownerType: 'user' | 'organization',
   organizationId: string,
   userId?: string,
-  causalityId?: string,
-  correlationId?: string
+  correlationId?: string,
+  causationId?: string | null
 ): WorkspaceCreatedEvent {
-  return {
-    eventId: crypto.randomUUID(),
-    eventType: 'WorkspaceCreated',
-    aggregateId: workspaceId,
+  const eventId = crypto.randomUUID();
+  const newCorrelationId = correlationId ?? eventId;
+  
+  const payload: WorkspaceCreatedPayload = {
     workspaceId,
-    timestamp: new Date(),
-    causalityId: causalityId ?? crypto.randomUUID(),
-    payload: {
-      name,
-      ownerId,
-      ownerType,
-      organizationId,
-    },
-    metadata: {
-      version: 1,
-      userId,
-      correlationId,
-    },
+    name,
+    ownerId,
+    ownerType,
+    organizationId,
+    ...(userId !== undefined ? { userId } : {}),
+  };
+  
+  return {
+    eventId,
+    type: 'WorkspaceCreated',
+    aggregateId: workspaceId,
+    correlationId: newCorrelationId,
+    causationId: causationId ?? null,
+    timestamp: Date.now(),
+    payload,
   };
 }
