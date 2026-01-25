@@ -1,4 +1,4 @@
-# Fast Scan – DDD Structure Snapshot
+# DDD Structure Fast Scan
 
 ## Layer Presence & Health
 - **domain**: 存在，未見 Angular/HTTP 依賴，結構符合 aggregates/entities/value-objects → **狀態：存在（低污染風險低）**
