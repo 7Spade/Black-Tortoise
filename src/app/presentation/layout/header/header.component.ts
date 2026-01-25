@@ -16,7 +16,7 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { IdentitySwitcherComponent, WorkspaceSwitcherComponent } from '@presentation/features/workspace';
+import { IdentitySwitcherComponent, WorkspaceSwitcherComponent } from '@presentation/workspaces';
 import { NotificationComponent } from '@presentation/layout/widgets/notification';
 import { SearchComponent } from '@presentation/layout/widgets/search';
 import { ThemeToggleComponent } from '@presentation/layout/widgets/theme-toggle';
