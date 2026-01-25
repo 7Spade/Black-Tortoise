@@ -22,10 +22,8 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal, i
 import { FormsModule } from '@angular/forms';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
-import { TasksStore } from '@application/tasks/stores/tasks.store';
-import { createTask, TaskEntity, TaskPriority, TaskStatus } from '@domain/task/task.entity';
-import { CreateTaskUseCase } from '@application/tasks/use-cases/create-task.use-case';
-import { SubmitTaskForQCUseCase } from '@application/tasks/use-cases/submit-task-for-qc.use-case';
+import { TasksStore, TaskEntity, TaskPriority, TaskStatus, createTask } from '@application/tasks';
+import { CreateTaskUseCase, SubmitTaskForQCUseCase } from '@application/tasks';
 import { FailQCUseCase } from '@application/quality-control/use-cases/fail-qc.use-case';
 import { ResolveIssueUseCase } from '@application/issues/use-cases/resolve-issue.use-case';
 
