@@ -8,22 +8,20 @@
 
 import { DomainEvent } from '@domain/event/domain-event';
 
-/**
- * Module Initialized Event
- * Published when a module is initialized in a workspace
- */
-export interface ModuleInitialized extends DomainEvent {
-  readonly eventType: 'ModuleInitialized';
+export interface ModuleInitializedPayload {
   readonly moduleId: string;
   readonly workspaceId: string;
 }
 
 /**
- * Module Data Changed Event
- * Generic event for module data changes
+ * Module Initialized Event
+ * Published when a module is initialized in a workspace
  */
-export interface ModuleDataChanged extends DomainEvent {
-  readonly eventType: 'ModuleDataChanged';
+export interface ModuleInitialized extends DomainEvent<ModuleInitializedPayload> {
+  readonly type: 'ModuleInitialized';
+}
+
+export interface ModuleDataChangedPayload {
   readonly moduleId: string;
   readonly workspaceId: string;
   readonly dataType: string;
@@ -31,11 +29,22 @@ export interface ModuleDataChanged extends DomainEvent {
 }
 
 /**
- * Module Error Event
+ * Module Data Changed Event
+ * Generic event for module data changes
  */
-export interface ModuleError extends DomainEvent {
-  readonly eventType: 'ModuleError';
+export interface ModuleDataChanged extends DomainEvent<ModuleDataChangedPayload> {
+  readonly type: 'ModuleDataChanged';
+}
+
+export interface ModuleErrorPayload {
   readonly moduleId: string;
   readonly workspaceId: string;
   readonly error: string;
+}
+
+/**
+ * Module Error Event
+ */
+export interface ModuleError extends DomainEvent<ModuleErrorPayload> {
+  readonly type: 'ModuleError';
 }

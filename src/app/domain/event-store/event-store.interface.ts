@@ -10,7 +10,7 @@
  * 
  * Event Sourcing Capabilities:
  * - Append events (write-only, immutable)
- * - Query events by aggregate, workspace, causality, type, time range
+ * - Query events by aggregate, causality, type, time range
  * - Support for batch operations
  * 
  * Implementation Note:
@@ -23,40 +23,35 @@ export interface EventStore {
   /**
    * Append an event to the event store (Event Sourcing)
    */
-  append(event: DomainEvent): Promise<void>;
+  append<TPayload>(event: DomainEvent<TPayload>): Promise<void>;
 
   /**
    * Append multiple events atomically
    */
-  appendBatch(events: DomainEvent[]): Promise<void>;
+  appendBatch<TPayload>(events: DomainEvent<TPayload>[]): Promise<void>;
 
   /**
    * Get all events for a specific aggregate (Reconstitute aggregate state)
    */
-  getEventsForAggregate(aggregateId: string): Promise<DomainEvent[]>;
-
-  /**
-   * Get events for a specific workspace (Multi-tenancy)
-   */
-  getEventsForWorkspace(workspaceId: string): Promise<DomainEvent[]>;
+  getEventsForAggregate<TPayload>(aggregateId: string): Promise<DomainEvent<TPayload>[]>;
 
   /**
    * Get events after a specific timestamp (Incremental sync)
    */
-  getEventsSince(timestamp: Date): Promise<DomainEvent[]>;
+  getEventsSince<TPayload>(timestamp: number): Promise<DomainEvent<TPayload>[]>;
 
   /**
    * Get events for a specific causality chain (Causality Tracking)
    */
-  getEventsByCausality(causalityId: string): Promise<DomainEvent[]>;
+  getEventsByCausality<TPayload>(correlationId: string): Promise<DomainEvent<TPayload>[]>;
 
   /**
    * Get all events of a specific type (Event Type filtering)
    */
-  getEventsByType(eventType: string): Promise<DomainEvent[]>;
+  getEventsByType<TPayload>(eventType: string): Promise<DomainEvent<TPayload>[]>;
 
   /**
    * Get events within a time range (Time-based queries)
    */
-  getEventsInRange(startTime: Date, endTime: Date): Promise<DomainEvent[]>;
+  getEventsInRange<TPayload>(startTime: number, endTime: number): Promise<DomainEvent<TPayload>[]>;
 }

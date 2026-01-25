@@ -8,15 +8,16 @@
  * Contains all information needed to track workspace context changes.
  */
 
-import { DomainEvent, EventMetadata } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 export interface WorkspaceSwitchedPayload {
   readonly previousWorkspaceId: string | null;
   readonly currentWorkspaceId: string;
+  readonly userId?: string;
 }
 
 export interface WorkspaceSwitchedEvent extends DomainEvent<WorkspaceSwitchedPayload> {
-  readonly eventType: 'WorkspaceSwitched';
+  readonly type: 'WorkspaceSwitched';
 }
 
 /**
@@ -31,22 +32,18 @@ export function createWorkspaceSwitchedEvent(
 ): WorkspaceSwitchedEvent {
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
-  const metadata: EventMetadata = userId
-    ? { version: 1, userId }
-    : { version: 1 };
   
   return {
     eventId,
-    eventType: 'WorkspaceSwitched',
+    type: 'WorkspaceSwitched',
     aggregateId: currentWorkspaceId,
-    workspaceId: currentWorkspaceId,
-    timestamp: new Date(),
     correlationId: newCorrelationId,
     causationId: causationId ?? null,
+    timestamp: Date.now(),
     payload: {
       previousWorkspaceId,
       currentWorkspaceId,
+      userId,
     },
-    metadata,
   };
 }

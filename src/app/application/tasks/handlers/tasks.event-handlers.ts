@@ -25,12 +25,12 @@ import { createTask, updateTaskStatus } from '@domain/task/task.entity';
 export function registerTasksEventHandlers(eventBus: EventBus): void {
   const tasksStore = inject(TasksStore);
   
-  eventBus.subscribe<TaskCreatedEvent>(
+  eventBus.subscribe<TaskCreatedEvent['payload']>(
     'TaskCreated',
     (event) => {
       console.log('[TasksEventHandlers] TaskCreated:', event);
       const task = createTask({
-        workspaceId: event.workspaceId,
+        workspaceId: event.payload.workspaceId,
         title: event.payload.title,
         description: event.payload.description,
         createdById: event.payload.createdById,
@@ -40,7 +40,7 @@ export function registerTasksEventHandlers(eventBus: EventBus): void {
     }
   );
   
-  eventBus.subscribe<TaskSubmittedForQCEvent>(
+  eventBus.subscribe<TaskSubmittedForQCEvent['payload']>(
     'TaskSubmittedForQC',
     (event) => {
       console.log('[TasksEventHandlers] TaskSubmittedForQC:', event);
@@ -52,7 +52,7 @@ export function registerTasksEventHandlers(eventBus: EventBus): void {
     }
   );
   
-  eventBus.subscribe<QCFailedEvent>(
+  eventBus.subscribe<QCFailedEvent['payload']>(
     'QCFailed',
     (event) => {
       console.log('[TasksEventHandlers] QCFailed:', event);
@@ -64,7 +64,7 @@ export function registerTasksEventHandlers(eventBus: EventBus): void {
     }
   );
   
-  eventBus.subscribe<IssueResolvedEvent>(
+  eventBus.subscribe<IssueResolvedEvent['payload']>(
     'IssueResolved',
     (event) => {
       console.log('[TasksEventHandlers] IssueResolved:', event);

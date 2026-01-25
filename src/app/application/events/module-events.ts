@@ -19,7 +19,7 @@
 export interface AppEvent {
   readonly eventId: string;
   readonly eventType: string;
-  readonly occurredAt: Date;
+  readonly timestamp: number;
 }
 
 /**

@@ -6,9 +6,10 @@
  * Emitted by: Permissions module
  */
 
-import { DomainEvent, EventMetadata } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 export interface PermissionRevokedPayload {
+  readonly workspaceId: string;
   readonly roleId: string;
   readonly resource: string;
   readonly action: string;
@@ -16,7 +17,7 @@ export interface PermissionRevokedPayload {
 }
 
 export interface PermissionRevokedEvent extends DomainEvent<PermissionRevokedPayload> {
-  readonly eventType: 'PermissionRevoked';
+  readonly type: 'PermissionRevoked';
 }
 
 export function createPermissionRevokedEvent(
@@ -25,25 +26,25 @@ export function createPermissionRevokedEvent(
   resource: string,
   action: string,
   revokedBy: string,
-  correlationId?: string
+  correlationId?: string,
+  causationId?: string | null
 ): PermissionRevokedEvent {
+  const eventId = crypto.randomUUID();
+  const newCorrelationId = correlationId ?? eventId;
+  
   return {
-    eventId: crypto.randomUUID(),
-    eventType: 'PermissionRevoked',
+    eventId,
+    type: 'PermissionRevoked',
     aggregateId: roleId,
-    workspaceId,
-    timestamp: new Date(),
-    correlationId: correlationId || crypto.randomUUID(),
-    causationId: null,
+    correlationId: newCorrelationId,
+    causationId: causationId ?? null,
+    timestamp: Date.now(),
     payload: {
+      workspaceId,
       roleId,
       resource,
       action,
       revokedBy,
-    },
-    metadata: {
-      version: 1,
-      userId: revokedBy,
     },
   };
 }

@@ -26,33 +26,33 @@ export function registerQualityControlEventHandlers(eventBus: EventBus): void {
   const qcStore = inject(QualityControlStore);
   const createIssueUseCase = inject(CreateIssueUseCase);
   
-  eventBus.subscribe<TaskSubmittedForQCEvent>(
+  eventBus.subscribe<TaskSubmittedForQCEvent['payload']>(
     'TaskSubmittedForQC',
     (event) => {
       console.log('[QCEventHandlers] TaskSubmittedForQC:', event);
       qcStore.addTaskForReview({
         taskId: event.aggregateId,
         taskTitle: event.payload.taskTitle,
-        taskDescription: event.payload.taskDescription || 'No description',
+        taskDescription: '',
         submittedAt: new Date(event.timestamp),
-        submittedBy: event.payload.submittedBy,
+        submittedBy: event.payload.submittedById,
       });
     }
   );
   
-  eventBus.subscribe<QCPassedEvent>(
+  eventBus.subscribe<QCPassedEvent['payload']>(
     'QCPassed',
     (event) => {
       console.log('[QCEventHandlers] QCPassed:', event);
       qcStore.passTask(
         event.aggregateId,
-        event.payload.reviewedBy,
+        event.payload.reviewerId,
         event.payload.reviewNotes
       );
     }
   );
   
-  eventBus.subscribe<QCFailedEvent>(
+  eventBus.subscribe<QCFailedEvent['payload']>(
     'QCFailed',
     async (event) => {
       console.log('[QCEventHandlers] QCFailed:', event);
@@ -60,7 +60,7 @@ export function registerQualityControlEventHandlers(eventBus: EventBus): void {
       // Update QC store state
       qcStore.failTask(
         event.aggregateId,
-        event.payload.reviewedBy,
+        event.payload.reviewedById,
         event.payload.failureReason
       );
       
@@ -70,10 +70,10 @@ export function registerQualityControlEventHandlers(eventBus: EventBus): void {
       await createIssueUseCase.execute({
         issueId,
         taskId: event.aggregateId,
-        workspaceId: event.workspaceId,
+        workspaceId: event.payload.workspaceId,
         title: `QC Failed: ${event.payload.taskTitle}`,
         description: event.payload.failureReason,
-        createdBy: event.payload.reviewedBy,
+        createdBy: event.payload.reviewedById,
         correlationId: event.correlationId, // Inherited from parent
         causationId: event.eventId, // Parent event that caused this
       });

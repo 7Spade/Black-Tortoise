@@ -28,7 +28,7 @@ import { AcceptanceStore } from '../stores/acceptance.store';
 export function registerAcceptanceEventHandlers(eventBus: EventBus): void {
   const acceptanceStore = inject(AcceptanceStore);
   
-  eventBus.subscribe<QCPassedEvent>(
+  eventBus.subscribe<QCPassedEvent['payload']>(
     'QCPassed',
     (event) => {
       console.log('[AcceptanceEventHandlers] QCPassed:', event);
@@ -42,7 +42,7 @@ export function registerAcceptanceEventHandlers(eventBus: EventBus): void {
     }
   );
   
-  eventBus.subscribe<AcceptanceApprovedEvent>(
+  eventBus.subscribe<AcceptanceApprovedEvent['payload']>(
     'AcceptanceApproved',
     (event) => {
       console.log('[AcceptanceEventHandlers] AcceptanceApproved:', event);
@@ -50,7 +50,7 @@ export function registerAcceptanceEventHandlers(eventBus: EventBus): void {
     }
   );
   
-  eventBus.subscribe<AcceptanceRejectedEvent>(
+  eventBus.subscribe<AcceptanceRejectedEvent['payload']>(
     'AcceptanceRejected',
     (event) => {
       console.log('[AcceptanceEventHandlers] AcceptanceRejected:', event);

@@ -6,9 +6,10 @@
  * Emitted by: QualityControl module
  */
 
-import { DomainEvent, EventMetadata } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 export interface QCPassedPayload {
+  readonly workspaceId: string;
   readonly taskId: string;
   readonly taskTitle: string;
   readonly reviewerId: string;
@@ -16,7 +17,7 @@ export interface QCPassedPayload {
 }
 
 export interface QCPassedEvent extends DomainEvent<QCPassedPayload> {
-  readonly eventType: 'QCPassed';
+  readonly type: 'QCPassed';
 }
 
 export function createQCPassedEvent(
@@ -28,23 +29,22 @@ export function createQCPassedEvent(
   correlationId?: string,
   causationId?: string | null
 ): QCPassedEvent {
+  const eventId = crypto.randomUUID();
+  const newCorrelationId = correlationId ?? eventId;
+  
   return {
-    eventId: crypto.randomUUID(),
-    eventType: 'QCPassed',
+    eventId,
+    type: 'QCPassed',
     aggregateId: taskId,
-    workspaceId,
-    timestamp: new Date(),
-    correlationId: correlationId || crypto.randomUUID(),
-    causationId: causationId || null,
+    correlationId: newCorrelationId,
+    causationId: causationId ?? null,
+    timestamp: Date.now(),
     payload: {
+      workspaceId,
       taskId,
       taskTitle,
       reviewerId,
-      ...(reviewNotes !== undefined && { reviewNotes }),
-    },
-    metadata: {
-      version: 1,
-      userId: reviewerId,
+      reviewNotes,
     },
   };
 }

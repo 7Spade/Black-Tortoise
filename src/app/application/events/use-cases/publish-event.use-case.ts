@@ -19,8 +19,8 @@ import { DomainEvent } from '@domain/event/domain-event';
 import { EventBus } from '@domain/event-bus/event-bus.interface';
 import { EventStore } from '@domain/event-store/event-store.interface';
 
-export interface PublishEventRequest {
-  readonly event: DomainEvent;
+export interface PublishEventRequest<TPayload> {
+  readonly event: DomainEvent<TPayload>;
 }
 
 export interface PublishEventResponse {
@@ -36,7 +36,7 @@ export class PublishEventUseCase {
   /**
    * Execute use case: Publish event
    */
-  async execute(request: PublishEventRequest): Promise<PublishEventResponse> {
+  async execute<TPayload>(request: PublishEventRequest<TPayload>): Promise<PublishEventResponse> {
     try {
       const { event } = request;
 
@@ -61,24 +61,21 @@ export class PublishEventUseCase {
   /**
    * Validate event structure
    */
-  private validateEvent(event: DomainEvent): void {
+  private validateEvent<TPayload>(event: DomainEvent<TPayload>): void {
     if (!event.eventId) {
       throw new Error('Event must have eventId');
     }
-    if (!event.eventType) {
-      throw new Error('Event must have eventType');
+    if (!event.type) {
+      throw new Error('Event must have type');
     }
     if (!event.aggregateId) {
       throw new Error('Event must have aggregateId');
     }
-    if (!event.workspaceId) {
-      throw new Error('Event must have workspaceId');
-    }
-    if (!event.timestamp) {
+    if (event.timestamp === undefined || event.timestamp === null) {
       throw new Error('Event must have timestamp');
     }
-    if (!(event.timestamp instanceof Date)) {
-      throw new Error('Event timestamp must be a Date instance');
+    if (typeof event.timestamp !== 'number') {
+      throw new Error('Event timestamp must be a number (milliseconds)');
     }
     if (!event.correlationId) {
       throw new Error('Event must have correlationId');

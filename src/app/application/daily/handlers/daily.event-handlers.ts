@@ -18,7 +18,7 @@ import { DailyStore } from '../stores/daily.store';
 export function registerDailyEventHandlers(eventBus: EventBus): void {
   const dailyStore = inject(DailyStore);
   
-  eventBus.subscribe<DailyEntryCreatedEvent>(
+  eventBus.subscribe<DailyEntryCreatedEvent['payload']>(
     'DailyEntryCreated',
     (event) => {
       console.log('[DailyEventHandlers] DailyEntryCreatedEvent:', event);

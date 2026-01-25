@@ -7,9 +7,10 @@
  * Emitted when a new task is created.
  */
 
-import { DomainEvent, EventMetadata } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 export interface TaskCreatedPayload {
+  readonly workspaceId: string;
   readonly taskId: string;
   readonly title: string;
   readonly description: string;
@@ -18,7 +19,7 @@ export interface TaskCreatedPayload {
 }
 
 export interface TaskCreatedEvent extends DomainEvent<TaskCreatedPayload> {
-  readonly eventType: 'TaskCreated';
+  readonly type: 'TaskCreated';
 }
 
 export function createTaskCreatedEvent(
@@ -36,22 +37,18 @@ export function createTaskCreatedEvent(
   
   return {
     eventId,
-    eventType: 'TaskCreated',
+    type: 'TaskCreated',
     aggregateId: taskId,
-    workspaceId,
-    timestamp: new Date(),
     correlationId: newCorrelationId,
     causationId: causationId ?? null,
+    timestamp: Date.now(),
     payload: {
+      workspaceId,
       taskId,
       title,
       description,
       priority,
       createdById,
-    },
-    metadata: {
-      version: 1,
-      userId: createdById,
     },
   };
 }

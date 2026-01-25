@@ -25,24 +25,24 @@ import { EventStore } from '@domain/event-store/event-store.interface';
 import { DomainEvent } from '@domain/event/domain-event';
 
 export class InMemoryEventStore implements EventStore {
-  private readonly events: DomainEvent[] = [];
+  private readonly events: DomainEvent<unknown>[] = [];
 
   /**
    * Append an event to the store
    * Constitution: Append-only, immutable, replay-safe
    */
-  async append(event: DomainEvent): Promise<void> {
+  async append<TPayload>(event: DomainEvent<TPayload>): Promise<void> {
     // Freeze event to ensure immutability
     const frozenEvent = Object.freeze({ ...event });
-    this.events.push(frozenEvent);
+    this.events.push(frozenEvent as DomainEvent<unknown>);
   }
 
   /**
    * Append multiple events atomically
    * Constitution: Append-only, immutable, replay-safe
    */
-  async appendBatch(events: DomainEvent[]): Promise<void> {
-    const frozenEvents = events.map(e => Object.freeze({ ...e }));
+  async appendBatch<TPayload>(events: DomainEvent<TPayload>[]): Promise<void> {
+    const frozenEvents = events.map(e => Object.freeze({ ...e }) as DomainEvent<unknown>);
     this.events.push(...frozenEvents);
   }
 
@@ -50,66 +50,55 @@ export class InMemoryEventStore implements EventStore {
    * Get all events for a specific aggregate
    * Returns defensive copy for replay safety
    */
-  async getEventsForAggregate(aggregateId: string): Promise<DomainEvent[]> {
+  async getEventsForAggregate<TPayload>(aggregateId: string): Promise<DomainEvent<TPayload>[]> {
     return this.events
       .filter(e => e.aggregateId === aggregateId)
-      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-      .map(e => ({ ...e })); // Defensive copy
-  }
-
-  /**
-   * Get events for a specific workspace
-   * Returns defensive copy for replay safety
-   */
-  async getEventsForWorkspace(workspaceId: string): Promise<DomainEvent[]> {
-    return this.events
-      .filter(e => e.workspaceId === workspaceId)
-      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-      .map(e => ({ ...e })); // Defensive copy
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .map(e => ({ ...e })) as DomainEvent<TPayload>[]; // Defensive copy
   }
 
   /**
    * Get events after a specific timestamp
    * Returns defensive copy for replay safety
    */
-  async getEventsSince(timestamp: Date): Promise<DomainEvent[]> {
+  async getEventsSince<TPayload>(timestamp: number): Promise<DomainEvent<TPayload>[]> {
     return this.events
       .filter(e => e.timestamp >= timestamp)
-      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-      .map(e => ({ ...e })); // Defensive copy
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .map(e => ({ ...e })) as DomainEvent<TPayload>[]; // Defensive copy
   }
 
   /**
    * Get events for a specific causality chain
    * Returns defensive copy for replay safety
    */
-  async getEventsByCausality(causalityId: string): Promise<DomainEvent[]> {
+  async getEventsByCausality<TPayload>(correlationId: string): Promise<DomainEvent<TPayload>[]> {
     return this.events
-      .filter(e => e.correlationId === causalityId || e.causationId === causalityId)
-      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-      .map(e => ({ ...e })); // Defensive copy
+      .filter(e => e.correlationId === correlationId || e.causationId === correlationId)
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .map(e => ({ ...e })) as DomainEvent<TPayload>[]; // Defensive copy
   }
 
   /**
    * Get all events of a specific type
    * Returns defensive copy for replay safety
    */
-  async getEventsByType(eventType: string): Promise<DomainEvent[]> {
+  async getEventsByType<TPayload>(eventType: string): Promise<DomainEvent<TPayload>[]> {
     return this.events
-      .filter(e => e.eventType === eventType)
-      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-      .map(e => ({ ...e })); // Defensive copy
+      .filter(e => e.type === eventType)
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .map(e => ({ ...e })) as DomainEvent<TPayload>[]; // Defensive copy
   }
 
   /**
    * Get events within a time range
    * Returns defensive copy for replay safety
    */
-  async getEventsInRange(startTime: Date, endTime: Date): Promise<DomainEvent[]> {
+  async getEventsInRange<TPayload>(startTime: number, endTime: number): Promise<DomainEvent<TPayload>[]> {
     return this.events
       .filter(e => e.timestamp >= startTime && e.timestamp <= endTime)
-      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-      .map(e => ({ ...e })); // Defensive copy
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .map(e => ({ ...e })) as DomainEvent<TPayload>[]; // Defensive copy
   }
 
   /**

@@ -6,9 +6,10 @@
  * Emitted by: Members module
  */
 
-import { DomainEvent, EventMetadata } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 export interface MemberInvitedPayload {
+  readonly workspaceId: string;
   readonly inviteId: string;
   readonly email: string;
   readonly roleId: string;
@@ -16,7 +17,7 @@ export interface MemberInvitedPayload {
 }
 
 export interface MemberInvitedEvent extends DomainEvent<MemberInvitedPayload> {
-  readonly eventType: 'MemberInvited';
+  readonly type: 'MemberInvited';
 }
 
 export function createMemberInvitedEvent(
@@ -25,25 +26,25 @@ export function createMemberInvitedEvent(
   email: string,
   roleId: string,
   invitedBy: string,
-  correlationId?: string
+  correlationId?: string,
+  causationId?: string | null
 ): MemberInvitedEvent {
+  const eventId = crypto.randomUUID();
+  const newCorrelationId = correlationId ?? eventId;
+  
   return {
-    eventId: crypto.randomUUID(),
-    eventType: 'MemberInvited',
+    eventId,
+    type: 'MemberInvited',
     aggregateId: inviteId,
-    workspaceId,
-    timestamp: new Date(),
-    correlationId: correlationId || crypto.randomUUID(),
-    causationId: null,
+    correlationId: newCorrelationId,
+    causationId: causationId ?? null,
+    timestamp: Date.now(),
     payload: {
+      workspaceId,
       inviteId,
       email,
       roleId,
       invitedBy,
-    },
-    metadata: {
-      version: 1,
-      userId: invitedBy,
     },
   };
 }

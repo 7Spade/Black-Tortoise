@@ -18,7 +18,7 @@ import { IssuesStore } from '../stores/issues.store';
 export function registerIssuesEventHandlers(eventBus: EventBus): void {
   const issuesStore = inject(IssuesStore);
   
-  eventBus.subscribe<IssueCreatedEvent>(
+  eventBus.subscribe<IssueCreatedEvent['payload']>(
     'IssueCreated',
     (event) => {
       console.log('[IssuesEventHandlers] IssueCreated:', event);
@@ -32,7 +32,7 @@ export function registerIssuesEventHandlers(eventBus: EventBus): void {
     }
   );
   
-  eventBus.subscribe<IssueResolvedEvent>(
+  eventBus.subscribe<IssueResolvedEvent['payload']>(
     'IssueResolved',
     (event) => {
       console.log('[IssuesEventHandlers] IssueResolved:', event);

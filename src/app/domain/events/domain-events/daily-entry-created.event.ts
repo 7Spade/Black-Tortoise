@@ -6,9 +6,10 @@
  * Emitted by: Daily module
  */
 
-import { DomainEvent, EventMetadata } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 export interface DailyEntryCreatedPayload {
+  readonly workspaceId: string;
   readonly entryId: string;
   readonly date: string;
   readonly userId: string;
@@ -18,7 +19,7 @@ export interface DailyEntryCreatedPayload {
 }
 
 export interface DailyEntryCreatedEvent extends DomainEvent<DailyEntryCreatedPayload> {
-  readonly eventType: 'DailyEntryCreated';
+  readonly type: 'DailyEntryCreated';
 }
 
 export function createDailyEntryCreatedEvent(
@@ -29,27 +30,27 @@ export function createDailyEntryCreatedEvent(
   taskIds: string[],
   hoursLogged: number,
   notes?: string,
-  correlationId?: string
+  correlationId?: string,
+  causationId?: string | null
 ): DailyEntryCreatedEvent {
+  const eventId = crypto.randomUUID();
+  const newCorrelationId = correlationId ?? eventId;
+  
   return {
-    eventId: crypto.randomUUID(),
-    eventType: 'DailyEntryCreated',
+    eventId,
+    type: 'DailyEntryCreated',
     aggregateId: entryId,
-    workspaceId,
-    timestamp: new Date(),
-    correlationId: correlationId || crypto.randomUUID(),
-    causationId: null,
+    correlationId: newCorrelationId,
+    causationId: causationId ?? null,
+    timestamp: Date.now(),
     payload: {
+      workspaceId,
       entryId,
       date,
       userId,
       taskIds,
       hoursLogged,
-      ...(notes !== undefined && { notes }),
-    },
-    metadata: {
-      version: 1,
-      userId,
+      notes,
     },
   };
 }

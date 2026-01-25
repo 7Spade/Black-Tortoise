@@ -6,9 +6,10 @@
  * Emitted by: Acceptance module
  */
 
-import { DomainEvent, EventMetadata } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 export interface AcceptanceRejectedPayload {
+  readonly workspaceId: string;
   readonly taskId: string;
   readonly taskTitle: string;
   readonly rejectedById: string;
@@ -16,7 +17,7 @@ export interface AcceptanceRejectedPayload {
 }
 
 export interface AcceptanceRejectedEvent extends DomainEvent<AcceptanceRejectedPayload> {
-  readonly eventType: 'AcceptanceRejected';
+  readonly type: 'AcceptanceRejected';
 }
 
 export function createAcceptanceRejectedEvent(
@@ -28,23 +29,22 @@ export function createAcceptanceRejectedEvent(
   correlationId?: string,
   causationId?: string | null
 ): AcceptanceRejectedEvent {
+  const eventId = crypto.randomUUID();
+  const newCorrelationId = correlationId ?? eventId;
+  
   return {
-    eventId: crypto.randomUUID(),
-    eventType: 'AcceptanceRejected',
+    eventId,
+    type: 'AcceptanceRejected',
     aggregateId: taskId,
-    workspaceId,
-    timestamp: new Date(),
-    correlationId: correlationId || crypto.randomUUID(),
-    causationId: causationId || null,
+    correlationId: newCorrelationId,
+    causationId: causationId ?? null,
+    timestamp: Date.now(),
     payload: {
+      workspaceId,
       taskId,
       taskTitle,
       rejectedById,
       rejectionReason,
-    },
-    metadata: {
-      version: 1,
-      userId: rejectedById,
     },
   };
 }
