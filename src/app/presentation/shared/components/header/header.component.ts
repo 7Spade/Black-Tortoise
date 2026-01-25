@@ -16,11 +16,11 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { NotificationComponent } from '@presentation/shared/components/notification';
-import { SearchComponent } from '@presentation/shared/components/search';
-import { ThemeToggleComponent } from '@presentation/shared/components/theme-toggle';
-import { UserAvatarComponent } from '@presentation/shared/components/user-avatar/user-avatar.component';
 import { IdentitySwitcherComponent, WorkspaceSwitcherComponent } from '@presentation/features/workspace';
+import { NotificationComponent } from '@presentation/layout/widgets/notification';
+import { SearchComponent } from '@presentation/layout/widgets/search';
+import { ThemeToggleComponent } from '@presentation/layout/widgets/theme-toggle';
+import { UserAvatarComponent } from '@presentation/layout/widgets/user-avatar/user-avatar.component';
 
 @Component({
   selector: 'app-header',
