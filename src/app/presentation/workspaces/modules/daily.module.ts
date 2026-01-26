@@ -339,7 +339,7 @@ export class DailyModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Daily';
   readonly type: ModuleType = 'daily';
   
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   readonly dailyStore = inject(DailyStore);
   private readonly createDailyEntryUseCase = inject(CreateDailyEntryUseCase);
   

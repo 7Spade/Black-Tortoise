@@ -82,7 +82,7 @@ export class DocumentsModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Documents';
   readonly type: ModuleType = 'documents';
   
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   readonly documentsStore = inject(DocumentsStore);
   
   private readonly currentUserId = 'user-demo';

@@ -61,7 +61,7 @@ export class AuditModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Audit';
   readonly type: ModuleType = 'audit';
   
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   readonly auditStore = inject(AuditStore);
   
   private subscriptions = ModuleEventHelper.createSubscriptionManager();

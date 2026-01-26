@@ -171,7 +171,7 @@ export class AcceptanceModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Acceptance';
   readonly type: ModuleType = 'acceptance';
   
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   
   readonly acceptanceStore = inject(AcceptanceStore);
   private readonly approveTaskUseCase = inject(ApproveTaskUseCase);

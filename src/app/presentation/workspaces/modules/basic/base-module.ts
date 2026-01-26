@@ -31,7 +31,7 @@ export abstract class BaseModule implements IAppModule, OnDestroy {
    * Event bus input - parent component must provide this
    * This is the ONLY way modules should receive dependencies
    */
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   
   /**
    * Subscription manager for cleanup
