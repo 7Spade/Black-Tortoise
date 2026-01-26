@@ -14,8 +14,48 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
   selector: 'app-context-switcher',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './context-switcher.component.html',
-  styleUrls: ['./context-switcher.component.scss'],
+  template: `
+<!--
+  Context switcher template
+
+  Note: Placeholder component for context switching.
+  Full implementation will use application layer facade.
+-->
+<div class="context-switcher">
+  <button type="button" aria-haspopup="listbox" (click)="toggle()">
+    Switch Context
+  </button>
+
+  @if (isOpen()) {
+    <div class="context-list">
+      @for (ctx of contexts(); track ctx.id) {
+        <button (click)="switch(ctx.id)">{{ctx.name}}</button>
+      }
+    </div>
+  }
+</div>
+  `,
+  styles: [`
+.context-switcher {
+  position: relative;
+  display: inline-block;
+}
+
+.context-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  padding: 8px;
+  min-width: 160px;
+}
+
+.context-item {
+  padding: 6px 8px;
+}
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContextSwitcherComponent {
