@@ -65,9 +65,11 @@ import { OrganizationCreateTriggerComponent } from './organization-create-trigge
               </div>
             }
 
-            <div class="identity-menu-item create-wrapper">
-               <app-organization-create-trigger></app-organization-create-trigger>
+            <div class="identity-menu-item" (click)="createTrigger.openDialog()">
+               <mat-icon>add</mat-icon>
+               <span>Create Organization</span>
             </div>
+            <app-organization-create-trigger #createTrigger></app-organization-create-trigger>
 
             <div class="identity-menu-divider"></div>
             <div class="identity-menu-item logout" (click)="facade.signOut()">

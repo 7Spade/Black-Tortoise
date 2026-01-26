@@ -25,7 +25,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
 import { isWorkspaceCreateResult } from '@application/models/workspace-create-result.validator';
-import { WorkspaceCreateDialogComponent } from '@presentation/dialogs/workspace-create-dialog.component';
+import { WorkspaceCreateDialogComponent } from './workspace-create-dialog.component';
 
 @Component({
   selector: 'app-workspace-create-trigger',

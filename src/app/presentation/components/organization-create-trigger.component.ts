@@ -17,12 +17,14 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { OrganizationCreateDialogComponent } from './organization-create-dialog.component';
 
 @Component({
   selector: 'app-organization-create-trigger',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatDialogModule],
   template: `
 <!--
   Organization Create Trigger Template
@@ -45,6 +47,8 @@ import { ChangeDetectionStrategy, Component, output, signal } from '@angular/cor
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrganizationCreateTriggerComponent {
+  private readonly dialog = inject(MatDialog);
+
   /**
    * Output for dialog results
    */
@@ -61,8 +65,19 @@ export class OrganizationCreateTriggerComponent {
    */
   openDialog(): void {
     this.isOpen.set(true);
-    // TODO: Implement dialog opening logic with MatDialog
-    // Use toSignal() pattern like WorkspaceCreateTriggerComponent
-    // Convert afterClosed() Observable to signal and emit via dialogResult output
+    
+    const dialogRef = this.dialog.open(OrganizationCreateDialogComponent, {
+      width: '600px',
+      data: { /* initial data */ },
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+        this.isOpen.set(false);
+        if (result) {
+            this.dialogResult.emit(result);
+        }
+    });
   }
 }
+
