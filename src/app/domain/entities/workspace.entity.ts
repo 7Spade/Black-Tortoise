@@ -1,5 +1,4 @@
 import { AggregateRoot } from '../base/aggregate-root';
-import { OrganizationId } from '../value-objects/organization-id.vo';
 import { UserId } from '../value-objects/user-id.vo';
 import { WorkspaceId } from '../value-objects/workspace-id.vo';
 
