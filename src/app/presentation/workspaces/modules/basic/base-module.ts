@@ -15,7 +15,7 @@
  * - Receives event bus via dependency injection pattern
  */
 
-import { Input, OnDestroy } from '@angular/core';
+import { Directive, Input, OnDestroy } from '@angular/core';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule } from '@application/interfaces/module.interface';
 import { ModuleEventHelper, ModuleEventSubscriptions } from '@presentation/workspaces/modules/basic/module-event-helper';
@@ -23,15 +23,16 @@ import { ModuleEventHelper, ModuleEventSubscriptions } from '@presentation/works
 /**
  * Base implementation pattern for modules
  * 
- * Note: This is an abstract class that modules can extend.
+ * Note: This is an abstract directive that modules can extend.
  * Alternatively, modules can implement the pattern manually.
  */
+@Directive()
 export abstract class BaseModule implements IAppModule, OnDestroy {
   /**
    * Event bus input - parent component must provide this
    * This is the ONLY way modules should receive dependencies
    */
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   
   /**
    * Subscription manager for cleanup

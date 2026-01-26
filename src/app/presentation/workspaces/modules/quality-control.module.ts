@@ -223,7 +223,7 @@ export class QualityControlModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Quality Control';
   readonly type: ModuleType = 'quality-control';
   
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   
   readonly qcStore = inject(QualityControlStore);
   private readonly passQCUseCase = inject(PassQCUseCase);

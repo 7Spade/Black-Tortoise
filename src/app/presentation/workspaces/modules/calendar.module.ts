@@ -281,7 +281,7 @@ export class CalendarModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Calendar';
   readonly type: ModuleType = 'calendar';
   
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   readonly tasksStore = inject(TasksStore);
   
   readonly weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

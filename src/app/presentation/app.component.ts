@@ -3,17 +3,21 @@
  * 
  * Layer: Presentation
  * Architecture: Zone-less, Standalone Component
+ * 
+ * Responsibilities:
+ * - Render global shell component only
+ * - NO router-outlet (shell contains the only router-outlet)
  */
 
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { GlobalShellComponent } from '@presentation/shell';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [GlobalShellComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<router-outlet />`,
+  template: `<app-shell />`,
   styles: [`
     :host {
       display: block;

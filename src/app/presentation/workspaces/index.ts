@@ -1,29 +1,22 @@
 /**
- * Containers Public API
- * 
- * Smart container components that orchestrate features
- */
-
-export { ModuleHostContainerComponent } from './host/module-host-container.component';
-export { WorkspaceHostComponent } from './host/workspace-host.component';
-
-/**
  * Workspace Feature Public API
+ * 
+ * Layer: Presentation - Workspaces
+ * Purpose: Complete workspace feature exports
+ * Architecture: Zone-less, Pure Reactive, Signal-based
  */
 
-// Components
-export { IdentitySwitcherComponent } from '../layout/widgets/identity-switcher/identity-switcher.component';
-export { WorkspaceCreateTriggerComponent } from './create-trigger/workspace-create-trigger.component';
-export { WorkspaceSwitcherComponent } from './switcher/workspace-switcher.component';
+// Host containers
+export * from './host';
+
+// Workspace switcher
+export * from './switcher';
+
+// Create trigger
+export * from './create-trigger';
 
 // Dialogs
-export {
-  WorkspaceCreateDialogComponent,
-  WorkspaceCreateDialogResult
-} from './dialogs/workspace-create-dialog.component';
+export * from './dialogs';
 
-// Re-export WorkspaceCreateResult from Application layer (backward compatibility)
-export { WorkspaceCreateResult } from '@application/workspace/models/workspace-create-result.model';
-
-// Facades
-export { IdentityFacade, WorkspaceFacade } from '@application/workspace';
+// Workspace modules
+export * from './modules';

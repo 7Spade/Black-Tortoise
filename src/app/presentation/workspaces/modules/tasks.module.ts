@@ -581,7 +581,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Tasks';
   readonly type: ModuleType = 'tasks';
 
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
 
   readonly tasksStore = inject(TasksStore);
   private readonly createTaskUseCase = inject(CreateTaskUseCase);

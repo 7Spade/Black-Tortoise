@@ -2,4 +2,5 @@
  * Team Components Public API
  */
 
-export { TeamPlaceholderComponent } from './team-placeholder.component';
+export * from './team-create-trigger';
+export * from './team-placeholder.component';

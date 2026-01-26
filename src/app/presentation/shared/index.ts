@@ -1,14 +1,8 @@
 /**
- * Shared Components Public API
+ * Shared Presentation Utilities Public API
  *
- * Reusable UI components, directives, and pipes
+ * Reusable directives, pipes, and utilities
  */
 
-// Components
-export * from '../layout/widgets/notification';
-export * from '../layout/widgets/search';
-export * from '../layout/widgets/theme-toggle';
-
-// Re-export PresentationStore from Application layer (backward compatibility)
-export { PresentationStore } from '@application/stores/presentation.store';
-
+export * from './directives';
+export * from './pipes';

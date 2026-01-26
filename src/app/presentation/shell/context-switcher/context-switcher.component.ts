@@ -4,10 +4,11 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 /**
  * ContextSwitcherComponent
  *
- * 功能與設計指引：
- * - 本元件負責顯示與切換應用程式的當前上下文（例如 workspace/identity）。
- * - 不在此處直接操作 domain 或基礎設施；應透過 application 層的 facade/store 發出切換指令。
- * - 使用 Signals 管理 UI local state（例如下拉開關狀態），並保留單一來源的真相（single source of truth）。
+ * Purpose: Display and switch application context (workspace/identity)
+ * Architecture: Zone-less, OnPush, Signals
+ * 
+ * Note: This is a placeholder component. Full implementation will use
+ * application layer facade/store for context management.
  */
 @Component({
   selector: 'app-context-switcher',
@@ -18,13 +19,23 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContextSwitcherComponent {
-  // 下拉菜單是否開啟的本地 state
+  // Local state for dropdown menu
   isOpen = signal(false);
-
-  // TODO: 在 application/facade 中建立 API 以取得 context 列表與執行切換。
-  // 例如: contextFacade.switchTo(newContextId)
+  
+  // Placeholder contexts - will be replaced with facade signal
+  contexts = signal<Array<{ id: string; name: string }>>([
+    { id: '1', name: 'Context 1' },
+    { id: '2', name: 'Context 2' }
+  ]);
 
   toggle() {
     this.isOpen.update(v => !v);
+  }
+  
+  switch(contextId: string) {
+    // TODO: Implement via application layer facade
+    // contextFacade.switchTo(contextId)
+    console.log('Switching to context:', contextId);
+    this.isOpen.set(false);
   }
 }

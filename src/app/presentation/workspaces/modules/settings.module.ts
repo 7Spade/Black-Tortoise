@@ -370,7 +370,7 @@ export class SettingsModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Settings';
   readonly type: ModuleType = 'settings';
   
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   readonly settingsStore = inject(SettingsStore);
   
   activeTab = signal<'workspace' | 'preferences' | 'notifications'>('workspace');

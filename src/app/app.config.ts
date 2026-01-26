@@ -29,7 +29,7 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
 import { getVertexAI, provideVertexAI } from '@angular/fire/vertexai';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { routes } from './app.routes';
+import { routes } from '@presentation/app.routes';
 import { environment } from '../environments/environment';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/workspace/tokens/workspace-runtime.token';
 import { WorkspaceRuntimeFactory } from '@infrastructure/workspace';
