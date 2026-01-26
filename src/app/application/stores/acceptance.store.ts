@@ -102,6 +102,23 @@ export const AcceptanceStore = signalStore(
     ),
 
     /**
+     * Add Check
+     */
+    async addCheck(check: AcceptanceCheckEntity): Promise<void> {
+      patchState(store, { isProcessing: true, error: null });
+      try {
+        await repo.save(check);
+        patchState(store, {
+          checks: [...store.checks(), check],
+          isProcessing: false,
+          error: null
+        });
+      } catch (err: any) {
+        patchState(store, { error: err.message, isProcessing: false });
+      }
+    },
+
+    /**
      * Update check (approve/reject)
      */
     async updateCheck(check: AcceptanceCheckEntity): Promise<void> {
@@ -116,6 +133,13 @@ export const AcceptanceStore = signalStore(
       } catch (err: any) {
         patchState(store, { error: err.message, isProcessing: false });
       }
+    },
+
+    /**
+     * Reset State (Clear on Workspace Switch)
+     */
+    resetState(): void {
+      patchState(store, initialState);
     },
 
     /**

@@ -642,7 +642,7 @@ export class TasksComponent implements IAppModule, OnInit, OnDestroy {
 
     this.unsubscribers.push(
       eventBus.subscribe('WorkspaceSwitched', () => {
-        this.tasksStore.clearTasks();
+        this.tasksStore.resetState();
         this.eventLog.set([]);
       })
     );

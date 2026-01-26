@@ -149,6 +149,13 @@ export const IssuesStore = signalStore(
      */
     selectIssue(issueId: string | null): void {
       patchState(store, { selectedIssueId: issueId });
+    },
+
+    /**
+     * Reset State
+     */
+    resetState(): void {
+      patchState(store, initialState);
     }
   }))
 );

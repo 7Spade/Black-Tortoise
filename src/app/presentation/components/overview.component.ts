@@ -37,7 +37,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
           <p>Pending QC</p>
         </div>
         <div class="metric-card">
-          <h3>{{ acceptanceStore.pendingTasks().length }}</h3>
+          <h3>{{ acceptanceStore.pendingChecks().length }}</h3>
           <p>Pending Acceptance</p>
         </div>
         <div class="metric-card">

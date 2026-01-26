@@ -62,7 +62,6 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
         @for (issue of issuesStore.resolvedIssues(); track issue.id) {
           <div class="issue-card resolved">
             <h4>{{ issue.title }}</h4>
-            <p>{{ issue.resolution }}</p>
             <span>Resolved: {{ issue.resolvedAt?.toLocaleString() }}</span>
           </div>
         }
@@ -124,7 +123,7 @@ export class IssuesComponent implements IAppModule, OnInit, OnDestroy {
     
     this.subscriptions.add(
       ModuleEventHelper.onWorkspaceSwitched(eventBus, () => {
-        this.issuesStore.clearIssues();
+        this.issuesStore.resetState();
       })
     );
     
@@ -137,7 +136,7 @@ export class IssuesComponent implements IAppModule, OnInit, OnDestroy {
     }
     
     const issue = this.issuesStore.issues().find(i => i.id === issueId);
-    if (!issue) return;
+    if (!issue || !issue.taskId) return;
     
     await this.resolveIssueHandler.execute({
       issueId,

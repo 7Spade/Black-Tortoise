@@ -6,10 +6,8 @@
  */
 
 import { inject } from '@angular/core';
-import { IssuePriority, createIssue, IssueType, IssueStatus } from '@domain/aggregates';
-import { WorkspaceId } from '@domain/value-objects';
-import { IssueCreatedEvent } from '@domain/events';
-import { IssueResolvedEvent } from '@domain/events';
+import { createIssue, IssuePriority, IssueStatus, IssueType } from '@domain/aggregates';
+import { IssueCreatedEvent, IssueResolvedEvent } from '@domain/events';
 import { EventBus } from '@domain/types';
 import { IssuesStore } from '../stores/issues.store';
 
@@ -23,7 +21,7 @@ export function registerIssuesEventHandlers(eventBus: EventBus): void {
       
       const issue = createIssue(
         event.aggregateId,
-        WorkspaceId.create(event.payload.workspaceId),
+        event.payload.workspaceId,
         event.payload.title,
         event.payload.description,
         IssueType.BUG, // Defaulting to BUG as type isn't in event payload yet

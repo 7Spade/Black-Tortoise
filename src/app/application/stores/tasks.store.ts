@@ -160,6 +160,13 @@ export const TasksStore = signalStore(
        } catch (err: any) {
          patchState(store, { error: err.message, isLoading: false });
        }
+    },
+
+    /**
+     * Reset State
+     */
+    resetState(): void {
+      patchState(store, initialState);
     }
   }))
 );

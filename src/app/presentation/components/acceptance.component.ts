@@ -6,25 +6,16 @@
  * 
  * Architecture:
  * - Injects AcceptanceStore for state management (READ-ONLY)
+ * - Injects TasksStore for Denormalization (Task Titles)
  * - Delegates actions to Use Cases (event-driven)
  * - Communicates via WorkspaceEventBus for cross-module events
- * - Event bus passed via @Input() from parent component
- * - Follows Append → Publish → React pattern
- * 
- * Events Handled:
- * - Reacts to: QCPassed (only QC-passed tasks can enter acceptance)
- * - Use Cases publish: AcceptanceApproved, AcceptanceRejected
- * 
- * DDD Boundary:
- * - NO direct event publishing
- * - NO state mutations
- * - ALL actions via Application Use Cases
  */
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AcceptanceStore } from '@application/stores/acceptance.store';
+import { TasksStore } from '@application/stores/tasks.store';
 import { ApproveTaskHandler } from '@application/handlers/approve-task.handler';
 import { RejectTaskHandler } from '@application/handlers/reject-task.handler';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
@@ -45,22 +36,21 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
       
       <!-- Pending Acceptance -->
       <div class="acceptance-section">
-        <h3>Pending Acceptance ({{ acceptanceStore.pendingTasks().length }})</h3>
+        <h3>Pending Acceptance ({{ pendingChecksView().length }})</h3>
         
-        @if (acceptanceStore.pendingTasks().length === 0) {
+        @if (pendingChecksView().length === 0) {
           <div class="empty-state">No tasks pending acceptance</div>
         }
         
-        @for (task of acceptanceStore.pendingTasks(); track task.id) {
+        @for (item of pendingChecksView(); track item.check.id) {
           <div class="acceptance-card">
             <div class="task-header">
-              <h4>{{ task.taskTitle }}</h4>
-              <span class="status-badge">{{ task.acceptanceStatus }}</span>
+              <h4>{{ item.taskTitle }}</h4>
+              <span class="status-badge">{{ item.check.status }}</span>
             </div>
-            <p>{{ task.taskDescription }}</p>
+            <p>{{ item.taskDescription }}</p>
             <div class="task-meta">
-              <span>QC Passed: {{ task.qcPassedAt.toLocaleString() }}</span>
-              <span>Reviewed by: {{ task.qcReviewedBy }}</span>
+              <span>Criteria: {{ item.check.criteria.join(', ') }}</span> 
             </div>
             
             <div class="acceptance-actions">
@@ -70,10 +60,10 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
                 placeholder="Acceptance notes..."
                 class="input-field"
               />
-              <button (click)="approveTask(task.taskId)" class="btn-success">
+              <button (click)="approveTask(item.check.taskId, item.taskTitle)" class="btn-success">
                 ✓ Approve
               </button>
-              <button (click)="rejectTask(task.taskId)" class="btn-danger">
+              <button (click)="rejectTask(item.check.taskId, item.taskTitle)" class="btn-danger">
                 ✗ Reject
               </button>
             </div>
@@ -83,17 +73,17 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
 
       <!-- Completed -->
       <div class="completed-section">
-        <h3>Completed ({{ completedTasksCount() }})</h3>
-        @for (task of completedTasks(); track task.id) {
-          <div class="result-card" [class.approved]="task.acceptanceStatus === 'approved'">
-            <h4>{{ task.taskTitle }}</h4>
+        <h3>Completed ({{ completedChecksView().length }})</h3>
+        @for (item of completedChecksView(); track item.check.id) {
+          <div class="result-card" [class.approved]="item.check.status === 'approved'">
+            <h4>{{ item.taskTitle }}</h4>
             <div class="result-meta">
-              <span class="status">{{ task.acceptanceStatus }}</span>
-              <span>{{ task.decidedAt?.toLocaleString() }}</span>
-              <span>By: {{ task.decidedBy }}</span>
+              <span class="status">{{ item.check.status }}</span>
+              <span>{{ item.check.reviewedAt ? (item.check.reviewedAt | date) : 'N/A' }}</span>
+              <span>By: {{ item.check.reviewedBy }}</span>
             </div>
-            @if (task.notes) {
-              <p class="notes">{{ task.notes }}</p>
+            @if (item.check.notes) {
+              <p class="notes">{{ item.check.notes }}</p>
             }
           </div>
         }
@@ -174,18 +164,38 @@ export class AcceptanceComponent implements IAppModule, OnInit, OnDestroy {
   @Input() eventBus: IModuleEventBus | undefined;
   
   readonly acceptanceStore = inject(AcceptanceStore);
+  readonly tasksStore = inject(TasksStore);
   private readonly approveTaskHandler = inject(ApproveTaskHandler);
   private readonly rejectTaskHandler = inject(RejectTaskHandler);
   
-  // Computed signal for completed tasks (approved + rejected)
-  readonly completedTasks = computed(() => [
-    ...this.acceptanceStore.approvedTasks(),
-    ...this.acceptanceStore.rejectedTasks()
-  ]);
-  
-  readonly completedTasksCount = computed(() => 
-    this.acceptanceStore.approvedTasks().length + this.acceptanceStore.rejectedTasks().length
-  );
+  // ViewModel: Join Checks with Task Data
+  readonly pendingChecksView = computed(() => {
+    const checks = this.acceptanceStore.pendingChecks();
+    const tasks = this.tasksStore.tasks();
+    return checks.map(check => {
+      const task = tasks.find(t => t.id === check.taskId);
+      return {
+        check,
+        taskTitle: task?.title ?? 'Unknown Task',
+        taskDescription: task?.description ?? 'No description'
+      };
+    });
+  });
+
+  readonly completedChecksView = computed(() => {
+    const checks = [
+        ...this.acceptanceStore.approvedChecks(),
+        ...this.acceptanceStore.rejectedChecks()
+    ];
+    const tasks = this.tasksStore.tasks();
+    return checks.map(check => {
+      const task = tasks.find(t => t.id === check.taskId);
+      return {
+        check,
+        taskTitle: task?.title ?? 'Unknown Task'
+      };
+    });
+  });
   
   notes = '';
   private readonly currentUserId = 'user-demo-acceptance';
@@ -208,22 +218,20 @@ export class AcceptanceComponent implements IAppModule, OnInit, OnDestroy {
     
     this.subscriptions.add(
       ModuleEventHelper.onWorkspaceSwitched(eventBus, () => {
-        this.acceptanceStore.clearTasks();
+        this.acceptanceStore.resetState();
       })
     );
     
   }
   
-  approveTask(taskId: string): void {
+  approveTask(taskId: string, taskTitle: string): void {
     if (!this.eventBus) return;
     
-    const task = this.acceptanceStore.tasks().find(t => t.taskId === taskId);
-    if (!task) return;
-    
+    // Check exists in view, so we proceed directly
     const request: Parameters<typeof this.approveTaskHandler.execute>[0] = {
       taskId,
       workspaceId: this.eventBus.workspaceId,
-      taskTitle: task.taskTitle,
+      taskTitle: taskTitle,
       approverId: this.currentUserId,
       ...(this.notes ? { approvalNotes: this.notes } : {}),
     };
@@ -237,20 +245,17 @@ export class AcceptanceComponent implements IAppModule, OnInit, OnDestroy {
     this.notes = '';
   }
   
-  rejectTask(taskId: string): void {
+  rejectTask(taskId: string, taskTitle: string): void {
     if (!this.eventBus || !this.notes.trim()) {
       alert('Please provide rejection reason');
       return;
     }
     
-    const task = this.acceptanceStore.tasks().find(t => t.taskId === taskId);
-    if (!task) return;
-    
     // Delegate to Use Case - creates event, appends to store, publishes to bus
     this.rejectTaskHandler.execute({
       taskId,
       workspaceId: this.eventBus.workspaceId,
-      taskTitle: task.taskTitle,
+      taskTitle: taskTitle,
       rejectedById: this.currentUserId,
       rejectionReason: this.notes,
     }).then(result => {

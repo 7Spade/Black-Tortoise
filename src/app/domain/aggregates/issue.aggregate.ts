@@ -42,6 +42,7 @@ export interface IssueAggregate {
   readonly status: IssueStatus;
   readonly priority: IssuePriority;
   readonly assigneeId?: string;
+  readonly taskId?: string;
   readonly reportedBy: string;
   readonly createdAt: number;
   readonly updatedAt: number;
@@ -61,7 +62,8 @@ export function createIssue(
   type: IssueType,
   priority: IssuePriority,
   reportedBy: string,
-  assigneeId?: string
+  assigneeId?: string,
+  taskId?: string
 ): IssueAggregate {
   if (!title || title.trim().length === 0) {
     throw new Error('Issue title cannot be empty');
@@ -86,7 +88,11 @@ export function createIssue(
   };
   
   if (assigneeId !== undefined) {
-    (result as { assigneeId?: string }).assigneeId = assigneeId;
+    (result as any).assigneeId = assigneeId;
+  }
+
+  if (taskId !== undefined) {
+    (result as any).taskId = taskId;
   }
   
   return result;
