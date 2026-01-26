@@ -23,8 +23,25 @@ import { ChangeDetectionStrategy, Component, output, signal } from '@angular/cor
   selector: 'app-organization-create-trigger',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './organization-create-trigger.component.html',
-  styleUrls: ['./organization-create-trigger.component.scss'],
+  template: `
+<!--
+  Organization Create Trigger Template
+  
+  Hidden component - used programmatically to open dialog
+-->
+<div class="organization-create-trigger" [hidden]="true">
+  <!-- Trigger component - no visible UI -->
+</div>
+  `,
+  styles: [`
+/**
+ * Organization Create Trigger Styles
+ */
+
+.organization-create-trigger {
+  display: none;
+}
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrganizationCreateTriggerComponent {

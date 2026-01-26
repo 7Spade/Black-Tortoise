@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
   selector: 'app-team-create-trigger',
   standalone: true,
   imports: [CommonModule, MatButtonModule],
-  templateUrl: './team-create-trigger.html',
-  styleUrls: ['./team-create-trigger.scss']
+  template: ``,
+  styles: [``]
 })
 export class TeamCreateTriggerComponent {}
