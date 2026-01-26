@@ -23,6 +23,24 @@ $app-theme: mat.define-theme((
   )
 ));
 
+$dark-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  typography: (
+    brand-family: 'Roboto, system-ui, -apple-system, sans-serif',
+    plain-family: 'Roboto, system-ui, -apple-system, sans-serif',
+    bold-weight: 700,
+    medium-weight: 500,
+    regular-weight: 400,
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
 :root {
   @include mat.all-component-themes($app-theme);
 
@@ -65,8 +83,54 @@ $app-theme: mat.define-theme((
   /* Outline */
   --md-sys-color-outline: #e0e0e0;
   --md-sys-color-outline-variant: #f5f5f5;
+}
 
-  /* ========== Typography Tokens ========== */
+body.dark {
+  @include mat.all-component-themes($dark-theme);
+
+  /* ========== Color Tokens (Dark Theme) ========== */
+  
+  /* Primary Color */
+  --md-sys-color-primary: #64b5f6;
+  --md-sys-color-on-primary: #0d47a1;
+  --md-sys-color-primary-container: #1976d2;
+  --md-sys-color-on-primary-container: #e3f2fd;
+  
+  /* Secondary Color */
+  --md-sys-color-secondary: #4fc3f7;
+  --md-sys-color-on-secondary: #01579b;
+  --md-sys-color-secondary-container: #0288d1;
+  --md-sys-color-on-secondary-container: #e1f5fe;
+  
+  /* Tertiary Color */
+  --md-sys-color-tertiary: #4dd0e1;
+  --md-sys-color-on-tertiary: #006064;
+  --md-sys-color-tertiary-container: #0097a7;
+  --md-sys-color-on-tertiary-container: #e0f7fa;
+  
+  /* Error Color */
+  --md-sys-color-error: #ef5350;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #c62828;
+  --md-sys-color-on-error-container: #ffebee;
+  
+  /* Surface Colors */
+  --md-sys-color-surface: #424242;
+  --md-sys-color-on-surface: #ffffff;
+  --md-sys-color-surface-variant: #616161;
+  --md-sys-color-on-surface-variant: #eeeeee;
+  
+  /* Background */
+  --md-sys-color-background: #303030;
+  --md-sys-color-on-background: #ffffff;
+  
+  /* Outline */
+  --md-sys-color-outline: #757575;
+  --md-sys-color-outline-variant: #424242;
+}
+
+:root {
+/* ========== Typography Tokens ========== */
   
   /* Display */
   --md-sys-typescale-display-large-font-size: 3.5rem;
