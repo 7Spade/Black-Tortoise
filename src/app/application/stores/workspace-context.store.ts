@@ -13,10 +13,13 @@ import { computed, effect, inject } from '@angular/core';
 import { CreateOrganizationHandler } from '@application/handlers/create-organization.handler';
 import { CreateWorkspaceHandler } from '@application/handlers/create-workspace.handler';
 import { SwitchWorkspaceHandler } from '@application/handlers/switch-workspace.handler';
+import { ORGANIZATION_REPOSITORY } from '@application/interfaces/organization-repository.token';
 import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
 import { AuthStore } from '@application/stores/auth.store';
 import { WorkspaceEntity } from '@domain/aggregates';
+import { Organization } from '@domain/entities/organization.entity';
+import { UserId } from '@domain/value-objects/user-id.vo';
 import { tapResponse } from '@ngrx/operators';
 import {
   patchState,
@@ -39,6 +42,7 @@ export interface WorkspaceContextState {
   readonly currentOrganizationDisplayName: string | null;
   readonly currentWorkspace: WorkspaceEntity | null;
   readonly availableWorkspaces: ReadonlyArray<WorkspaceEntity>;
+  readonly availableOrganizations: ReadonlyArray<Organization>;
   readonly activeModuleId: string | null;
   readonly isLoading: boolean;
   readonly error: string | null;
@@ -54,6 +58,7 @@ const initialState: WorkspaceContextState = {
   currentOrganizationDisplayName: null,
   currentWorkspace: null,
   availableWorkspaces: [],
+  availableOrganizations: [],
   activeModuleId: null,
   isLoading: false,
   error: null,
@@ -132,9 +137,11 @@ export const WorkspaceContextStore = signalStore(
     const createOrganizationHandler = inject(CreateOrganizationHandler);
     const createWorkspaceHandler = inject(CreateWorkspaceHandler);
     const switchWorkspaceHandler = inject(SwitchWorkspaceHandler);
+    const organizationRepository = inject(ORGANIZATION_REPOSITORY);
+    const authStore = inject(AuthStore);
     const runtimeFactory = inject(WORKSPACE_RUNTIME_FACTORY);
     const repository = inject(WORKSPACE_REPOSITORY);
-    
+
     return {
       /**
        * Set current identity
@@ -161,6 +168,25 @@ export const WorkspaceContextStore = signalStore(
       },
       
       /**
+       * Load available organizations for the current user
+       */
+      loadOrganizations: rxMethod<void>(
+        pipe(
+          switchMap(() => {
+            const userId = authStore.currentUserId();
+            if (!userId) return of([]);
+            
+            return from(organizationRepository.findByOwner(UserId.create(userId))).pipe(
+              tapResponse({
+                next: (organizations) => patchState(store, { availableOrganizations: organizations }),
+                error: (err: any) => console.error('Failed to load organizations', err)
+              })
+            );
+          })
+        )
+      ),
+
+      /**
        * Create new organization
        */
       createOrganization: rxMethod<{ displayName: string }>(
@@ -181,6 +207,7 @@ export const WorkspaceContextStore = signalStore(
                   patchState(store, { 
                     currentOrganizationId: org.id.toString(),
                     currentOrganizationDisplayName: org.displayName,
+                    availableOrganizations: [...store.availableOrganizations(), org],
                     isLoading: false 
                   });
                 },
@@ -360,6 +387,13 @@ export const WorkspaceContextStore = signalStore(
       console.log('[WorkspaceContextStore] Initialized');
       
       const auth = inject(AuthStore);
+
+      // Auto-load organizations when authenticated
+      effect(() => {
+        if (auth.isLoggedIn()) {
+          store.loadOrganizations();
+        }
+      });
       
       // Sync Identity with Auth State
       effect(() => {

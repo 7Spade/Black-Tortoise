@@ -63,20 +63,10 @@ export class IdentityFacade {
   });
 
   readonly organizations = computed(() => {
-    const workspaces = this.workspaceContext.availableWorkspaces();
-    const orgs = new Map<string, { id: string, name: string }>();
-    workspaces.forEach(ws => {
-      // Assuming workspace has organization details. 
-      // If ownerType is organization, we can derive it.
-      if (ws.ownerType === 'organization' && ws.organizationId && ws.organizationDisplayName) {
-        orgs.set(ws.organizationId, { id: ws.organizationId, name: ws.organizationDisplayName });
-      }
-    });
-
-    // Also include current organization if not in workspaces list yet?
-    // Not strictly necessary if we assume consistency.
-
-    return Array.from(orgs.values());
+    return this.workspaceContext.availableOrganizations().map(org => ({
+        id: org.id.toString(),
+        name: org.displayName
+    }));
   });
 
   // ViewModel: User Avatar
