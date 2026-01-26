@@ -5,6 +5,7 @@
 
 export * from './acceptance.repository';
 export * from './audit-log.repository';
+export * from './auth.repository';
 export * from './daily.repository';
 export * from './document.repository';
 export * from './issue.repository';

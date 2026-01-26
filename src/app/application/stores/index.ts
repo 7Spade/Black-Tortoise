@@ -5,6 +5,7 @@
 
 export * from './acceptance.store';
 export * from './audit.store';
+export * from './auth.store';
 export * from './daily.store';
 export * from './documents.store';
 export * from './issues.store';
@@ -16,3 +17,4 @@ export * from './quality-control.store';
 export * from './settings.store';
 export * from './tasks.store';
 export * from './workspace-context.store';
+

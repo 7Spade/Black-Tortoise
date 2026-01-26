@@ -21,6 +21,29 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+  // Auth Routes
+  {
+    path: 'auth/login',
+    loadComponent: () =>
+      import('@presentation/pages/auth').then(
+        m => m.LoginPage
+      ),
+  },
+  {
+    path: 'auth/register',
+    loadComponent: () =>
+      import('@presentation/pages/auth').then(
+        m => m.RegisterPage
+      ),
+  },
+  {
+    path: 'auth/forgot-password',
+    loadComponent: () =>
+      import('@presentation/pages/auth').then(
+        m => m.ForgotPasswordPage
+      ),
+  },
+
   // Demo route - presentation-only dashboard
   {
     path: 'demo',

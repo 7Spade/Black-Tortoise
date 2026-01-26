@@ -8,3 +8,4 @@ export * from './module-event-bus.interface';
 export * from './module.interface';
 export * from './workspace-runtime-factory.interface';
 export * from './workspace-runtime.token';
+export * from './auth-repository.token';
