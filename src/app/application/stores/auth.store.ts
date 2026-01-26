@@ -13,33 +13,40 @@
 
 import { computed, inject } from '@angular/core';
 import { AUTH_REPOSITORY } from '@application/interfaces';
-import { UserEntity } from '@domain/aggregates';
+import { User } from '@domain/entities';
 import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap } from 'rxjs';
 
+type AuthStatus = 'unknown' | 'anonymous' | 'authenticated';
+
 interface AuthState {
-  user: UserEntity | null;
+  user: User | null;
+  status: AuthStatus;
   loading: boolean;
   error: string | null;
-  initialized: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
+  status: 'unknown',
   loading: false,
-  error: null,
-  initialized: false
+  error: null
 };
 
 export const AuthStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   
-  withComputed(({ user }) => ({
-    isLoggedIn: computed(() => !!user()),
-    currentUserId: computed(() => user()?.id ?? null),
+  withComputed(({ user, status }) => ({
+    isLoggedIn: computed(() => status() === 'authenticated'),
+    isAnonymous: computed(() => status() === 'anonymous'),
+    isUnknown: computed(() => status() === 'unknown'),
+    currentUserId: computed(() => user()?.id?.toString() ?? null),
+    displayName: computed(() => user()?.displayName ?? ''),
+    email: computed(() => user()?.email?.toString() ?? ''),
+    photoUrl: computed(() => user()?.photoUrl ?? null),
   })),
 
   withMethods((store, authRepo = inject(AUTH_REPOSITORY)) => ({
@@ -51,8 +58,16 @@ export const AuthStore = signalStore(
       pipe(
         switchMap(() => authRepo.authState$),
         tapResponse({
-          next: (user) => patchState(store, { user, initialized: true, loading: false }),
-          error: (err: any) => patchState(store, { error: err.message, initialized: true, loading: false })
+          next: (user) => patchState(store, { 
+            user, 
+            status: user ? 'authenticated' : 'anonymous',
+            loading: false 
+          }),
+          error: (err: any) => patchState(store, { 
+            error: err.message, 
+            status: 'anonymous', // Fallback to anonymous on error
+            loading: false 
+          })
         })
       )
     ),

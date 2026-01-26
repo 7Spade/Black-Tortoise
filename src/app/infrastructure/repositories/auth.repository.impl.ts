@@ -11,8 +11,9 @@
 
 import { Injectable, inject } from '@angular/core';
 import { Auth, User as FirebaseUser, authState, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateProfile } from '@angular/fire/auth';
-import { UserEntity, createUser } from '@domain/aggregates';
+import { User } from '@domain/entities';
 import { AuthRepository } from '@domain/repositories';
+import { Email, UserId } from '@domain/value-objects';
 import { Observable, map } from 'rxjs';
 
 @Injectable({
@@ -22,9 +23,9 @@ export class AuthRepositoryImpl implements AuthRepository {
   private auth = inject(Auth);
 
   /**
-   * Stream of auth state changes mapped to Domain UserEntity
+   * Stream of auth state changes mapped to Domain Entity User
    */
-  readonly authState$: Observable<UserEntity | null> = authState(this.auth).pipe(
+  readonly authState$: Observable<User | null> = authState(this.auth).pipe(
     map(firebaseUser => this.mapToUserEntity(firebaseUser))
   );
 
@@ -47,25 +48,27 @@ export class AuthRepositoryImpl implements AuthRepository {
     await sendPasswordResetEmail(this.auth, email);
   }
 
-  async getCurrentUser(): Promise<UserEntity | null> {
+  async getCurrentUser(): Promise<User | null> {
     const user = this.auth.currentUser;
     return this.mapToUserEntity(user);
   }
 
   // --- Mapper ---
 
-  private mapToUserEntity(firebaseUser: FirebaseUser | null): UserEntity | null {
+  private mapToUserEntity(firebaseUser: FirebaseUser | null): User | null {
     if (!firebaseUser) {
       return null;
     }
     
-    // In a real app, we might also fetch additional user data from Firestore here
-    // For now, we construct the entity from the Auth token data
-    return createUser(
-        firebaseUser.uid,
-        firebaseUser.email || '',
+    // Construct VOs
+    const id = UserId.create(firebaseUser.uid);
+    const email = Email.create(firebaseUser.email || `missing-${firebaseUser.uid}@example.com`);
+    
+    return User.create(
+        id,
+        email,
         firebaseUser.displayName || 'Unknown User',
-        firebaseUser.photoURL || undefined
+        firebaseUser.photoURL || null
     );
   }
 }

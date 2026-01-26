@@ -1,6 +1,8 @@
 import {
+  APP_INITIALIZER,
   ApplicationConfig,
-  provideZonelessChangeDetection,
+  inject,
+  provideZonelessChangeDetection
 } from '@angular/core';
 import {
   getAnalytics,
@@ -32,6 +34,7 @@ import { provideRouter } from '@angular/router';
 import { AUTH_REPOSITORY, EVENT_BUS, EVENT_STORE } from '@application/interfaces';
 import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
+import { AuthStore } from '@application/stores/auth.store';
 import { InMemoryEventBus } from '@infrastructure/adapters';
 import { WorkspaceRuntimeFactory } from '@infrastructure/factories';
 import { AuthRepositoryImpl, InMemoryEventStore, WorkspaceRepositoryImpl } from '@infrastructure/repositories';
@@ -68,6 +71,17 @@ export const appConfig: ApplicationConfig = {
     // Router configuration with lazy-loaded routes
     provideRouter(routes),
     provideAnimations(),
+
+    // Application Initializers
+    // 1. Initialize Auth Store (Connect to Firebase Stream)
+    {
+      provide: APP_INITIALIZER,
+      useFactory: () => {
+        const authStore = inject(AuthStore);
+        return () => authStore.connect();
+      },
+      multi: true
+    },
     
     // DDD/Clean Architecture: Infrastructure Providers
     // Register infrastructure implementations for application abstractions

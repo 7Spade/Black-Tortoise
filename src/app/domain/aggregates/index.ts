@@ -16,7 +16,7 @@ export * from './role-definition.aggregate';
 export * from './role.entity';
 export * from './task.aggregate';
 export * from './team.entity';
-export * from './user.entity';
 export * from './workspace-settings.aggregate';
 export * from './workspace.aggregate';
 export * from './workspace.entity';
+

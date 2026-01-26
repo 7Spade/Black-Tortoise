@@ -9,14 +9,14 @@
  */
 
 import { Observable } from 'rxjs';
-import { UserEntity } from '../aggregates/user.entity';
+import { User } from '../entities/user.entity';
 
 export interface AuthRepository {
   /**
    * Stream of the current user state
    * Emits null if no user is logged in
    */
-  authState$: Observable<UserEntity | null>;
+  authState$: Observable<User | null>;
 
   /**
    * Login with email and password
@@ -41,5 +41,5 @@ export interface AuthRepository {
   /**
    * Get the current user snapshot
    */
-  getCurrentUser(): Promise<UserEntity | null>;
+  getCurrentUser(): Promise<User | null>;
 }

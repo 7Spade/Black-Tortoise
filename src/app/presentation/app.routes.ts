@@ -19,11 +19,13 @@
  */
 
 import { Routes } from '@angular/router';
+import { canActivateAuth, canActivatePublic } from '@application/guards';
 
 export const routes: Routes = [
   // Auth Routes
   {
     path: 'auth/login',
+    canActivate: [canActivatePublic],
     loadComponent: () =>
       import('@presentation/pages/auth').then(
         m => m.LoginPage
@@ -31,6 +33,7 @@ export const routes: Routes = [
   },
   {
     path: 'auth/register',
+    canActivate: [canActivatePublic],
     loadComponent: () =>
       import('@presentation/pages/auth').then(
         m => m.RegisterPage
@@ -38,6 +41,7 @@ export const routes: Routes = [
   },
   {
     path: 'auth/forgot-password',
+    canActivate: [canActivatePublic],
     loadComponent: () =>
       import('@presentation/pages/auth').then(
         m => m.ForgotPasswordPage
@@ -54,6 +58,7 @@ export const routes: Routes = [
   },
   {
     path: 'settings',
+    canActivate: [canActivateAuth],
     loadComponent: () =>
       import('@presentation/pages/settings').then(
         m => m.SettingsComponent
@@ -63,6 +68,7 @@ export const routes: Routes = [
   // Workspace page - contains workspace host with nested module routes
   {
     path: 'workspace',
+    canActivate: [canActivateAuth],
     loadComponent: () =>
       import('@presentation/pages/workspace').then(
         m => m.WorkspacePage

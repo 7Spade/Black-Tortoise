@@ -1,3 +1,4 @@
+import { Entity } from '../base/entity';
 import { Email } from '../value-objects/email.vo';
 import { UserId } from '../value-objects/user-id.vo';
 
@@ -6,17 +7,20 @@ import { UserId } from '../value-objects/user-id.vo';
  * 
  * Layer: Domain
  * Purpose: Represents a registered user in the system.
+ * Note: CRUD entity, not Event Sourced.
  */
-export class User {
+export class User extends Entity<UserId> {
     constructor(
-        public readonly id: UserId,
+        id: UserId,
         public readonly email: Email,
-        // Using string for simple names, could be generic Name VO if strictness increases
-        public readonly displayName: string
-    ) {}
+        public readonly displayName: string,
+        public readonly photoUrl: string | null = null
+    ) {
+        super(id);
+    }
 
     // Factory method strict enforcement
-    static create(id: UserId, email: Email, displayName: string): User {
-        return new User(id, email, displayName);
+    static create(id: UserId, email: Email, displayName: string, photoUrl: string | null = null): User {
+        return new User(id, email, displayName, photoUrl);
     }
 }
