@@ -48,92 +48,92 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/overview.module').then(
-            m => m.OverviewModule
+          import('@presentation/components/overview.component').then(
+            m => m.OverviewComponent
           ),
       },
       {
         path: 'overview',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/overview.module').then(
-            m => m.OverviewModule
+          import('@presentation/components/overview.component').then(
+            m => m.OverviewComponent
           ),
       },
       {
         path: 'documents',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/documents.module').then(
-            m => m.DocumentsModule
+          import('@presentation/components/documents.component').then(
+            m => m.DocumentsComponent
           ),
       },
       {
         path: 'tasks',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/tasks.module').then(
-            m => m.TasksModule
+          import('@presentation/components/tasks.component').then(
+            m => m.TasksComponent
           ),
       },
       {
         path: 'calendar',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/calendar.module').then(
-            m => m.CalendarModule
+          import('@presentation/components/calendar.component').then(
+            m => m.CalendarComponent
           ),
       },
       {
         path: 'daily',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/daily.module').then(
-            m => m.DailyModule
+          import('@presentation/components/daily.component').then(
+            m => m.DailyComponent
           ),
       },
       {
         path: 'quality-control',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/quality-control.module').then(
-            m => m.QualityControlModule
+          import('@presentation/components/quality-control.component').then(
+            m => m.QualityControlComponent
           ),
       },
       {
         path: 'acceptance',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/acceptance.module').then(
-            m => m.AcceptanceModule
+          import('@presentation/components/acceptance.component').then(
+            m => m.AcceptanceComponent
           ),
       },
       {
         path: 'issues',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/issues.module').then(
-            m => m.IssuesModule
+          import('@presentation/components/issues.component').then(
+            m => m.IssuesComponent
           ),
       },
       {
         path: 'members',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/members.module').then(
-            m => m.MembersModule
+          import('@presentation/components/members.component').then(
+            m => m.MembersComponent
           ),
       },
       {
         path: 'permissions',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/permissions.module').then(
-            m => m.PermissionsModule
+          import('@presentation/components/permissions.component').then(
+            m => m.PermissionsComponent
           ),
       },
       {
         path: 'audit',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/audit.module').then(
-            m => m.AuditModule
+          import('@presentation/components/audit.component').then(
+            m => m.AuditComponent
           ),
       },
       {
         path: 'settings',
         loadComponent: () =>
-          import('@presentation/workspaces/modules/settings.module').then(
-            m => m.SettingsModule
+          import('@presentation/components/settings.component').then(
+            m => m.SettingsComponent
           ),
       },
     ],

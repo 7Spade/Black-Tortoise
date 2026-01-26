@@ -1,5 +1,5 @@
 /**
- * Presentation Layer - pages
+ * Presentation Layer - styles
  * Technical Barrel File
  */
 

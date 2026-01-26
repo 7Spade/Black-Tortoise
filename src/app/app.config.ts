@@ -29,13 +29,13 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
 import { getVertexAI, provideVertexAI } from '@angular/fire/vertexai';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
+import { EVENT_BUS, EVENT_STORE } from '@application/interfaces';
+import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
+import { InMemoryEventBus } from '@infrastructure/adapters';
+import { WorkspaceRuntimeFactory } from '@infrastructure/factories';
+import { InMemoryEventStore } from '@infrastructure/repositories';
 import { routes } from '@presentation/app.routes';
 import { environment } from '../environments/environment';
-import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
-import { WorkspaceRuntimeFactory } from '@infrastructure/workspace';
-import { EVENT_BUS, EVENT_STORE } from '@application/interfaces';
-import { InMemoryEventBus } from '@infrastructure/adapters';
-import { InMemoryEventStore } from '@infrastructure/persistence';
 
 /**
  * Application Configuration with Zone-less Change Detection

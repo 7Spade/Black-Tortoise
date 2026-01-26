@@ -16,7 +16,7 @@
 
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HeaderComponent } from '@presentation/layout/header';
+import {  HeaderComponent  } from '@presentation/layouts';;
 
 @Component({
   selector: 'app-shell',

@@ -1,12 +1,9 @@
 /**
  * Infrastructure Layer - Public API
- * 
- * Exports all infrastructure implementations.
+ * Unified Technical Layer Exports
  */
 
 export * from './adapters';
-export * from './events';
-export * from './firebase';
-export * from './persistence';
-export * from './workspace';
-
+export * from './factories';
+export * from './repositories';
+export * from './services';

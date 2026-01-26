@@ -11,7 +11,7 @@
  */
 
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { WorkspaceHostComponent } from '@presentation/workspaces/host/workspace-host.component';
+import { WorkspaceHostComponent } from '@presentation/components/workspace-host.component';
 
 @Component({
   selector: 'app-workspace-page',
