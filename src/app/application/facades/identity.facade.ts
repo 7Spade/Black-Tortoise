@@ -62,6 +62,23 @@ export class IdentityFacade {
     };
   });
 
+  readonly organizations = computed(() => {
+    const workspaces = this.workspaceContext.availableWorkspaces();
+    const orgs = new Map<string, { id: string, name: string }>();
+    workspaces.forEach(ws => {
+      // Assuming workspace has organization details. 
+      // If ownerType is organization, we can derive it.
+      if (ws.ownerType === 'organization' && ws.organizationId && ws.organizationDisplayName) {
+        orgs.set(ws.organizationId, { id: ws.organizationId, name: ws.organizationDisplayName });
+      }
+    });
+
+    // Also include current organization if not in workspaces list yet?
+    // Not strictly necessary if we assume consistency.
+
+    return Array.from(orgs.values());
+  });
+
   // ViewModel: User Avatar
   readonly userAvatarVm = computed<UserAvatarViewModel>(() => {
     const photoUrl = this.authStore.photoUrl();
@@ -121,10 +138,21 @@ export class IdentityFacade {
   /**
    * Handle identity selection
    */
-  selectIdentity(identityType: 'personal' | 'organization'): void {
+  selectIdentity(identityType: 'personal'): void {
     this.closeAllMenus();
-    // In future phases, this will trigger the WorkspaceContextStore to switch contexts
-    console.log('Selected identity:', identityType);
+    const userId = this.authStore.currentUserId();
+    if (userId) {
+        this.workspaceContext.setIdentity(userId, 'user');
+    }
+  }
+
+  /**
+   * Handle organization selection
+   */
+  selectOrganization(organizationId: string, organizationName: string): void {
+      this.closeAllMenus();
+      this.workspaceContext.setIdentity(organizationId, 'organization');
+      this.workspaceContext.setOrganization(organizationId, organizationName);
   }
 
   /**

@@ -20,7 +20,9 @@
 
 import { ChangeDetectionStrategy, Component, effect, inject, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
 import { isWorkspaceCreateResult } from '@application/models/workspace-create-result.validator';
 import { WorkspaceCreateDialogComponent } from '@presentation/dialogs/workspace-create-dialog.component';
@@ -28,9 +30,21 @@ import { WorkspaceCreateDialogComponent } from '@presentation/dialogs/workspace-
 @Component({
   selector: 'app-workspace-create-trigger',
   standalone: true,
+  imports: [MatButtonModule, MatIconModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<!-- Workspace Create Trigger Component - Hidden trigger component -->`,
-  styles: [`/* Workspace Create Trigger Component styles - This component has no visual representation */`],
+  template: `
+    <button mat-button class="create-workspace-btn" (click)="openDialog()">
+      <mat-icon>add</mat-icon>
+      <span>Create Workspace</span>
+    </button>
+  `,
+  styles: [`
+    .create-workspace-btn {
+      width: 100%;
+      justify-content: flex-start;
+      margin: 4px 0;
+    }
+  `],
 })
 export class WorkspaceCreateTriggerComponent {
   private readonly dialog = inject(MatDialog);

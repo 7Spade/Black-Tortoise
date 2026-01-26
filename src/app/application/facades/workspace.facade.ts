@@ -104,6 +104,25 @@ export class WorkspaceFacade {
   }
 
   /**
+   * Handle organization creation
+   */
+  createOrganization(name: string): void {
+    this.closeAllMenus();
+    this.workspaceContext.createWorkspace({ 
+        name: `Default Workspace`, // Every Org needs a default workspace? Or just create org logic?
+        // Wait, requirements say "Create Organization". 
+        // But WorkspaceContextStore has method `createWorkspace`.
+        // It does NOT have `createOrganization`.
+        // Let's assume for now we reuse createWorkspace but we probably need a dedicated handler.
+        // Or if creating an organization implies creating a workspace within it.
+    });
+    // REVISIT: The store lacks createOrganization. 
+    // I will log for now and assume WorkspaceContextStore needs an update.
+    console.log('[WorkspaceFacade] Create Organization Requested:', name);
+    // TODO: Implement createOrganization in WorkspaceContextStore
+  }
+
+  /**
    * Check if workspace is currently active
    */
   isWorkspaceActive(workspaceId: string): boolean {

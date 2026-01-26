@@ -17,11 +17,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { IdentityFacade } from '@application/facades';
+import { OrganizationCreateTriggerComponent } from './organization-create-trigger.component';
 
 @Component({
   selector: 'app-identity-switcher',
   standalone: true,
-  imports: [CommonModule, MatMenuModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatMenuModule, MatButtonModule, MatIconModule, OrganizationCreateTriggerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (facade.identityVm().isAuthenticated) {
@@ -48,10 +49,26 @@ import { IdentityFacade } from '@application/facades';
               <mat-icon>person</mat-icon>
               <span>Personal Account</span>
             </div>
-            <div class="identity-menu-item" (click)="facade.selectIdentity('organization')">
-              <mat-icon>business</mat-icon>
-              <span>Organization</span>
+
+            <div class="identity-menu-divider"></div>
+
+            <div class="identity-menu-section-label">Organizations</div>
+
+            @for (org of facade.organizations(); track org.id) {
+              <div class="identity-menu-item" (click)="facade.selectOrganization(org.id, org.name)">
+                <mat-icon>business</mat-icon>
+                <span>{{ org.name }}</span>
+              </div>
+            } @empty {
+              <div class="identity-menu-item disabled">
+                 <span class="no-org-label">沒有任何組織</span>
+              </div>
+            }
+
+            <div class="identity-menu-item create-wrapper">
+               <app-organization-create-trigger></app-organization-create-trigger>
             </div>
+
             <div class="identity-menu-divider"></div>
             <div class="identity-menu-item logout" (click)="facade.signOut()">
               <mat-icon>logout</mat-icon>
@@ -132,6 +149,14 @@ import { IdentityFacade } from '@application/facades';
       background-color: var(--mat-sys-surface-variant);
     }
     
+    .identity-menu-item.disabled {
+        cursor: default;
+        opacity: 0.6;
+        pointer-events: none;
+        justify-content: center;
+        font-size: 0.85rem;
+    }
+    
     .identity-menu-item.logout {
         color: var(--mat-sys-error);
     }
@@ -140,6 +165,19 @@ import { IdentityFacade } from '@application/facades';
         height: 1px;
         background-color: var(--mat-sys-outline-variant);
         margin: 0.5rem 0;
+    }
+
+    .identity-menu-section-label {
+        padding: 0.5rem 1rem 0.25rem 1rem;
+        font-size: 0.75rem;
+        color: var(--mat-sys-on-surface-variant);
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+
+    .create-wrapper {
+        padding: 0.25rem 0.5rem; 
+        /* Override default menu item padding to let the button handle it */
     }
   `]
 })

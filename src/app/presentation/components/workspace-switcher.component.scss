@@ -66,10 +66,37 @@
     background: var(--mat-sys-primary-container, #eaddff);
     color: var(--mat-sys-on-primary-container, #21005e);
   }
+
+  &.disabled {
+    cursor: default;
+    opacity: 0.6;
+    pointer-events: none;
+    justify-content: center;
+  }
+}
+
+.workspace-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  cursor: default;
 }
 
 .workspace-menu-divider {
   height: 1px;
   background: var(--mat-sys-outline-variant, #cac4d0);
   margin: 0.25rem 0;
+}
+
+.menu-actions {
+  padding: 0.25rem 0.5rem;
+}
+
+.no-workspace-label {
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+    white-space: nowrap;
 }

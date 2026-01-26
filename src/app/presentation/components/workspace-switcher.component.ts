@@ -14,6 +14,9 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { WorkspaceFacade } from '@application/facades';
 import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
 import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.component';
@@ -21,26 +24,27 @@ import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.comp
 @Component({
   selector: 'app-workspace-switcher',
   standalone: true,
-  imports: [CommonModule, WorkspaceCreateTriggerComponent],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule, WorkspaceCreateTriggerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./workspace-switcher.component.scss'],
   template: `
     <!-- Workspace Switcher -->
-    @if (facade.hasWorkspace()) {
+    @if (facade.isAuthenticated()) {
       <div class="workspace-switcher">
         <button
+          mat-button
           class="workspace-button"
           (click)="facade.toggleWorkspaceMenu()"
-          aria-label="Switch workspace"
-          type="button">
-          <span class="material-icons">folder</span>
+          aria-label="Switch workspace">
+          <mat-icon>folder</mat-icon>
           <span class="workspace-name">
-            {{ facade.currentWorkspaceName() }}
+            {{ facade.currentWorkspaceName() || '選擇工作區' }}
           </span>
-          <span class="material-icons">expand_more</span>
+          <mat-icon iconPositionEnd>expand_more</mat-icon>
         </button>
 
         @if (facade.showWorkspaceMenu()) {
+          <div class="workspace-menu-overlay" (click)="facade.closeAllMenus()"></div>
           <div class="workspace-menu">
             @for (workspace of facade.availableWorkspaces(); track workspace.id) {
               <button
@@ -48,25 +52,24 @@ import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.comp
                 [class.active]="facade.isWorkspaceActive(workspace.id)"
                 (click)="facade.selectWorkspace(workspace.id)"
                 type="button">
-                <span class="material-icons">folder</span>
-                <span>{{ workspace.name }}</span>
+                <span class="workspace-item-name">{{ workspace.name }}</span>
+                @if (workspace.organizationDisplayName) {
+                   <span class="workspace-org-name">{{ workspace.organizationDisplayName }}</span>
+                }
               </button>
+            } @empty {
+              <div class="workspace-menu-item disabled">
+                 <span class="no-workspace-label">沒有工作區</span>
+              </div>
             }
-            <div class="workspace-menu-divider"></div>
-            <button
-              class="workspace-menu-item"
-              (click)="openCreateDialog()"
-              type="button">
-              <span class="material-icons">add</span>
-              <span>Create Workspace</span>
-            </button>
+            <div class="divider"></div>
+            <div class="menu-actions">
+              <app-workspace-create-trigger (dialogResult)="onCreateWorkspace($event)"></app-workspace-create-trigger>
+            </div>
           </div>
         }
       </div>
     }
-
-    <!-- WorkspaceCreateTriggerComponent - signal-based dialog trigger -->
-    <app-workspace-create-trigger (dialogResult)="onWorkspaceCreated($event)" />
   `,
 })
 export class WorkspaceSwitcherComponent {
@@ -94,5 +97,11 @@ export class WorkspaceSwitcherComponent {
    */
   onWorkspaceCreated(result: WorkspaceCreateResult): void {
     this.facade.createWorkspace(result);
+  }
+
+  onCreateWorkspace(result: unknown): void {
+     // This method handles the output from the template binding
+     // Since WorkspaceCreateResult is a type, we might need casting if output is generic
+     this.onWorkspaceCreated(result as WorkspaceCreateResult);
   }
 }

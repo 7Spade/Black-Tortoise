@@ -1,18 +1,13 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { SettingsFacade } from '@application/facades/settings.facade';
 
 /**
  * ThemeToggleComponent
  * - Presentation layer shared component: Toggle application theme (light / dark)
  * - Architecture: Zone-less, OnPush, Angular 20, Signal-based
- * - Component manages UI-level theme toggle and persistence in localStorage
- * - Global theme application is handled via document body class manipulation
- * 
- * Design:
- *   1) Uses `signal()` to store local state for reactive UI binding
- *   2) Persists theme preference in localStorage
- *   3) Applies theme by toggling body classes for global CSS effect
- *   4) Can be enhanced to emit events to Application layer store if needed
+ * - Persists theme preference via SettingsFacade
+ * - Global theme application is handled via effect reacting to Facade state
  */
 @Component({
   selector: 'app-theme-toggle',
@@ -24,9 +19,9 @@ import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@ang
       class="icon-button theme-toggle" 
       aria-label="Toggle theme" 
       type="button" 
-      (click)="toggle()">
+      (click)="facade.toggleTheme()">
       <span class="material-icons">
-        @if (isDark()) { light_mode } @else { dark_mode }
+        @if (facade.isDark()) { light_mode } @else { dark_mode }
       </span>
     </button>
   `,
@@ -58,37 +53,17 @@ import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@ang
   `]
 })
 export class ThemeToggleComponent {
+  readonly facade = inject(SettingsFacade);
   private readonly document = inject(DOCUMENT);
-  private readonly themeStorageKey = 'ui.theme';
-  
-  // Local UI state: dark mode enabled
-  isDark = signal(false);
-  private readonly themeClass = signal<'light' | 'dark'>('light');
-
-  toggle(): void {
-    const nextMode = !this.isDark();
-    this.isDark.set(nextMode);
-    
-    // Persist to localStorage
-    localStorage.setItem(this.themeStorageKey, nextMode ? 'dark' : 'light');
-    this.themeClass.set(nextMode ? 'dark' : 'light');
-  }
 
   constructor() {
-    // Initialize from localStorage or system preference
-    const storedTheme = localStorage.getItem(this.themeStorageKey);
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initialDark = storedTheme === 'dark' || (!storedTheme && prefersDark);
-    
-    const initialTheme: 'light' | 'dark' = initialDark ? 'dark' : 'light';
-    this.isDark.set(initialDark);
-    this.themeClass.set(initialTheme);
-
     // Apply global theme via body class reactively
     effect(() => {
-      const theme = this.themeClass();
+      const isDark = this.facade.isDark();
+      const themeClass = isDark ? 'dark' : 'light';
+      
       this.document.body.classList.remove('light', 'dark');
-      this.document.body.classList.add(theme);
+      this.document.body.classList.add(themeClass);
     });
   }
 }

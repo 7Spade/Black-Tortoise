@@ -9,11 +9,12 @@
  * and integrates with the DDD domain layer and use cases.
  */
 
-import { computed, inject } from '@angular/core';
+import { computed, effect, inject } from '@angular/core';
 import { CreateWorkspaceHandler } from '@application/handlers/create-workspace.handler';
 import { SwitchWorkspaceHandler } from '@application/handlers/switch-workspace.handler';
 import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
+import { AuthStore } from '@application/stores/auth.store';
 import { WorkspaceEntity } from '@domain/aggregates';
 import { tapResponse } from '@ngrx/operators';
 import {
@@ -321,6 +322,28 @@ export const WorkspaceContextStore = signalStore(
     onInit(store) {
       // Auto-load if identity exists (or listener could be set up here if we had an AuthStore ref)
       console.log('[WorkspaceContextStore] Initialized');
+      
+      const auth = inject(AuthStore);
+      
+      // Sync Identity with Auth State
+      effect(() => {
+        const userId = auth.currentUserId();
+        const currentId = store.currentIdentityId();
+        
+        if (userId && currentId !== userId) {
+            console.log('[WorkspaceContextStore] Syncing identity from AuthStore:', userId);
+            store.setIdentity(userId, 'user');
+        } else if (!userId && currentId) {
+            console.log('[WorkspaceContextStore] Clearing identity (Auth logout)');
+            // Create a specialized reset or patch
+            patchState(store, {
+                currentIdentityId: null,
+                currentIdentityType: null,
+                availableWorkspaces: [],
+                currentWorkspace: null
+            });
+        }
+      });
     },
     
     onDestroy() {
