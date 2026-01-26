@@ -1,4 +1,4 @@
-/**
+﻿/**
  * InMemoryEventStore Implementation
  * 
  * Layer: Infrastructure
@@ -26,8 +26,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { EventStore } from '@domain/event-store/event-store.interface';
-import { DomainEvent } from '@domain/event/domain-event';
+import { EventStore } from '@domain/shared/events/event-store/event-store.interface';
+import { DomainEvent } from '@domain/shared/events/domain-event';
 
 @Injectable()
 export class InMemoryEventStore implements EventStore {
@@ -121,3 +121,4 @@ export class InMemoryEventStore implements EventStore {
     return this.events.length;
   }
 }
+

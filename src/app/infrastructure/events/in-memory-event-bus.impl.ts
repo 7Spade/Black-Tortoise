@@ -1,4 +1,4 @@
-/**
+﻿/**
  * InMemoryEventBus Implementation
  * 
  * Layer: Infrastructure
@@ -20,8 +20,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { EventBus, EventHandler } from '@domain/event-bus/event-bus.interface';
-import { DomainEvent } from '@domain/event/domain-event';
+import { EventBus, EventHandler } from '@domain/shared/events/event-bus/event-bus.interface';
+import { DomainEvent } from '@domain/shared/events/domain-event';
 
 @Injectable()
 export class InMemoryEventBus implements EventBus {
@@ -124,3 +124,4 @@ export class InMemoryEventBus implements EventBus {
     return this.globalSubscribers.size;
   }
 }
+

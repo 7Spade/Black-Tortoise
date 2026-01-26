@@ -1,4 +1,4 @@
-/**
+﻿/**
  * In-Memory Event Bus Implementation
  * 
  * Layer: Infrastructure
@@ -7,7 +7,7 @@
  * This is where RxJS Subject/Observable are used (not in domain layer)
  */
 
-import { DomainEvent } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/shared/events/domain-event';
 import { EventHandler, WorkspaceEventBus } from '@domain/workspace';
 import { Subject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -72,3 +72,4 @@ export class InMemoryEventBus implements WorkspaceEventBus {
     this.events$.complete();
   }
 }
+

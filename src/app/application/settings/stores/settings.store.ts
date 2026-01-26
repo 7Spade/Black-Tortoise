@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Settings Store
  *
  * Layer: Application - Store
@@ -23,7 +23,7 @@
 
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { TaskPriority } from '@domain/task/task.entity';
+import { TaskPriority } from '@domain/modules/tasks/aggregates/task.aggregate';
 
 export interface WorkspaceSettings {
   readonly workingHours: {
@@ -156,3 +156,4 @@ export const SettingsStore = signalStore(
     },
   }))
 );
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Daily Event Handlers
  * 
  * Layer: Application - Event Handlers
@@ -11,10 +11,9 @@
  */
 
 import { inject } from '@angular/core';
-import { EVENT_BUS } from '@application/events';
-import { EventBus } from '@domain/event-bus/event-bus.interface';
-import { DailyEntryCreatedEvent } from '@domain/events/domain-events';
-import { DailyStore, DailyEntry } from '../stores/daily.store';
+import { DailyEntryCreatedEvent } from '@domain/modules/daily/events/daily-entry-created.event';
+import { EventBus } from '@domain/shared/events/event-bus/event-bus.interface';
+import { DailyEntry, DailyStore } from '../stores/daily.store';
 
 export function registerDailyEventHandlers(eventBus: EventBus): void {
   const dailyStore = inject(DailyStore);
@@ -36,3 +35,4 @@ export function registerDailyEventHandlers(eventBus: EventBus): void {
   
   console.log('[DailyEventHandlers] Registered event handlers for workspace');
 }
+

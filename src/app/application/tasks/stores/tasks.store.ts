@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tasks Signal Store
  * 
  * Layer: Application
@@ -11,7 +11,7 @@
 
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { TaskEntity, TaskStatus } from '@domain/task/task.entity';
+import { TaskEntity, TaskStatus } from '@domain/modules/tasks/aggregates/task.aggregate';
 
 /**
  * Tasks State
@@ -144,3 +144,4 @@ export const TasksStore = signalStore(
     },
   }))
 );
+

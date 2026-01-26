@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Module Domain Events
  * 
  * Layer: Domain
@@ -6,7 +6,7 @@
  * No Angular or RxJS dependencies
  */
 
-import { DomainEvent } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/shared/events/domain-event';
 
 export interface ModuleInitializedPayload {
   readonly moduleId: string;
@@ -48,3 +48,4 @@ export interface ModuleErrorPayload {
 export interface ModuleError extends DomainEvent<ModuleErrorPayload> {
   readonly type: 'ModuleError';
 }
+

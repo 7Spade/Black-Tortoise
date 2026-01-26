@@ -28,8 +28,8 @@ import {
   Timestamp,
   CollectionReference
 } from '@angular/fire/firestore';
-import { EventStore } from '../../../../domain/event-store/event-store.interface';
-import { DomainEvent } from '../../../../domain/event/domain-event';
+import { EventStore } from '../../../../domain/shared/events/event-store/event-store.interface';
+import { DomainEvent } from '../../../../domain/shared/events/domain-event';
 
 /**
  * Firestore Event Store
@@ -230,7 +230,7 @@ export class FirestoreEventStore implements EventStore {
 檔案: `app.config.ts`
 
 ```typescript
-import { EventStore } from './domain/event-store/event-store.interface';
+import { EventStore } from './domain/shared/events/event-store/event-store.interface';
 import { FirestoreEventStore } from './infrastructure/persistence/firestore/event-store/firestore-event-store.service';
 import { InMemoryEventStore } from './infrastructure/events/in-memory-event-store.impl';
 

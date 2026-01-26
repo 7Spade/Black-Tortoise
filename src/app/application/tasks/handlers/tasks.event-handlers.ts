@@ -1,9 +1,11 @@
-import { inject } from '@angular/core';
-import { EVENT_BUS } from '@application/events';
-import { EventBus } from '@domain/event-bus/event-bus.interface';
-import { TaskCreatedEvent, TaskSubmittedForQCEvent, QCFailedEvent, IssueResolvedEvent } from '@domain/events/domain-events';
+﻿import { inject } from '@angular/core';
+import { IssueResolvedEvent } from '@domain/modules/issues/events/issue-resolved.event';
+import { QCFailedEvent } from '@domain/modules/quality-control/events/qc-failed.event';
+import { createTask, TaskStatus, updateTaskStatus } from '@domain/modules/tasks/aggregates/task.aggregate';
+import { TaskCreatedEvent } from '@domain/modules/tasks/events/task-created.event';
+import { TaskSubmittedForQCEvent } from '@domain/modules/tasks/events/task-submitted-for-qc.event';
+import { EventBus } from '@domain/shared/events/event-bus/event-bus.interface';
 import { TasksStore } from '../stores/tasks.store';
-import { createTask, updateTaskStatus, TaskStatus } from '@domain/task/task.entity';
 
 export function registerTasksEventHandlers(eventBus: EventBus): void {
   const tasksStore = inject(TasksStore);
@@ -65,3 +67,4 @@ export function registerTasksEventHandlers(eventBus: EventBus): void {
   
   console.log('[TasksEventHandlers] Registered event handlers for workspace');
 }
+

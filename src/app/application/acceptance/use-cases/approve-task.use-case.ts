@@ -14,8 +14,8 @@
  */
 
 import { inject, Injectable } from '@angular/core';
-import { createAcceptanceApprovedEvent } from '@domain/events/domain-events';
 import { PublishEventUseCase } from '@application/events/use-cases/publish-event.use-case';
+import { createAcceptanceApprovedEvent } from '@domain/modules/acceptance/events/acceptance-approved.event';
 
 export interface ApproveTaskRequest {
   readonly taskId: string;

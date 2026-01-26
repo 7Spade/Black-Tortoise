@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Workspace Event Bus Interface
  * 
  * Layer: Domain
@@ -12,7 +12,7 @@
  * Implementation with RxJS will be in Infrastructure layer
  */
 
-import { DomainEvent } from '@domain/event/domain-event';
+import { DomainEvent } from '@domain/shared/events/domain-event';
 
 /**
  * Event handler function type
@@ -47,3 +47,4 @@ export interface WorkspaceEventBus {
    */
   clear(): void;
 }
+

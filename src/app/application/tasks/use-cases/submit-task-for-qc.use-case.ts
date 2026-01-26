@@ -11,8 +11,8 @@
  */
 
 import { inject, Injectable } from '@angular/core';
-import { createTaskSubmittedForQCEvent } from '@domain/events/domain-events';
 import { PublishEventUseCase } from '@application/events/use-cases/publish-event.use-case';
+import { createTaskSubmittedForQCEvent } from '@domain/modules/tasks/events/task-submitted-for-qc.event';
 
 export interface SubmitTaskForQCRequest {
   readonly taskId: string;

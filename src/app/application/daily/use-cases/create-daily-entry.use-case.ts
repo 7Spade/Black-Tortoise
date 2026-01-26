@@ -11,8 +11,8 @@
  */
 
 import { inject, Injectable } from '@angular/core';
-import { createDailyEntryCreatedEvent } from '@domain/events/domain-events';
 import { PublishEventUseCase } from '@application/events/use-cases/publish-event.use-case';
+import { createDailyEntryCreatedEvent } from '@domain/modules/daily/events/daily-entry-created.event';
 
 export interface CreateDailyEntryRequest {
   readonly entryId: string;

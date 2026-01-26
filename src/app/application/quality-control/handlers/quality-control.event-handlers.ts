@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Quality Control Event Handlers
  * 
  * Layer: Application - Event Handlers
@@ -7,7 +7,7 @@
  * Responsibilities:
  * - Subscribe to TaskSubmittedForQC, QCPassed, QCFailed events
  * - Delegate to QualityControlStore for state mutations
- * - Handle QCFailed → IssueCreated causality chain
+ * - Handle QCFailed ??IssueCreated causality chain
  * - Event-driven state management (react pattern)
  * 
  * Constitution Compliance:
@@ -17,11 +17,12 @@
  */
 
 import { inject } from '@angular/core';
-import { EVENT_BUS } from '@application/events';
-import { EventBus } from '@domain/event-bus/event-bus.interface';
-import { TaskSubmittedForQCEvent, QCPassedEvent, QCFailedEvent } from '@domain/events/domain-events';
-import { QualityControlStore } from '../stores/quality-control.store';
 import { CreateIssueUseCase } from '@application/issues/use-cases/create-issue.use-case';
+import { QCFailedEvent } from '@domain/modules/quality-control/events/qc-failed.event';
+import { QCPassedEvent } from '@domain/modules/quality-control/events/qc-passed.event';
+import { TaskSubmittedForQCEvent } from '@domain/modules/tasks/events/task-submitted-for-qc.event';
+import { EventBus } from '@domain/shared/events/event-bus/event-bus.interface';
+import { QualityControlStore } from '../stores/quality-control.store';
 
 export function registerQualityControlEventHandlers(eventBus: EventBus): void {
   const qcStore = inject(QualityControlStore);
@@ -83,3 +84,4 @@ export function registerQualityControlEventHandlers(eventBus: EventBus): void {
   
   console.log('[QCEventHandlers] Registered event handlers for workspace');
 }
+

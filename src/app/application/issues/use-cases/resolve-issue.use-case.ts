@@ -11,8 +11,8 @@
  */
 
 import { inject, Injectable } from '@angular/core';
-import { createIssueResolvedEvent } from '@domain/events/domain-events';
 import { PublishEventUseCase } from '@application/events/use-cases/publish-event.use-case';
+import { createIssueResolvedEvent } from '@domain/modules/issues/events/issue-resolved.event';
 
 export interface ResolveIssueRequest {
   readonly issueId: string;

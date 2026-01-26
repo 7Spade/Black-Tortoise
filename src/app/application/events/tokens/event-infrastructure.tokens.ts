@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Event Infrastructure Injection Tokens
  * 
  * Layer: Application
@@ -14,13 +14,13 @@
  * Benefits:
  * - Type-safe dependency injection
  * - Singleton instances managed by Angular DI
- * - Easy to swap implementations (e.g., InMemory → Firestore)
+ * - Easy to swap implementations (e.g., InMemory ??Firestore)
  * - Clean Architecture: Application depends on abstractions, not implementations
  */
 
 import { InjectionToken } from '@angular/core';
-import { EventBus } from '@domain/event-bus/event-bus.interface';
-import { EventStore } from '@domain/event-store/event-store.interface';
+import { EventBus } from '@domain/shared/events/event-bus/event-bus.interface';
+import { EventStore } from '@domain/shared/events/event-store/event-store.interface';
 
 /**
  * Event Bus Injection Token
@@ -65,3 +65,4 @@ export const EVENT_STORE = new InjectionToken<EventStore>(
     }
   }
 );
+

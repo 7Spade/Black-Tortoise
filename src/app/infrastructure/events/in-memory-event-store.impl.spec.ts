@@ -1,4 +1,4 @@
-/**
+﻿/**
  * InMemoryEventStore Tests
  * 
  * Layer: Infrastructure
@@ -6,7 +6,7 @@
  */
 
 import { InMemoryEventStore } from './in-memory-event-store.impl';
-import { testEventStoreContract } from '@domain/event-store/event-store.interface.spec';
+import { testEventStoreContract } from '@domain/shared/events/event-store/event-store.interface.spec';
 
 describe('InMemoryEventStore', () => {
   // Run contract tests
@@ -59,3 +59,4 @@ describe('InMemoryEventStore', () => {
     });
   });
 });
+

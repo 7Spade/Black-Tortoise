@@ -23,11 +23,9 @@
  */
 
 import { computed } from '@angular/core';
+import { AcceptanceApprovedEvent } from '@domain/modules/acceptance/events/acceptance-approved.event';
+import { AcceptanceRejectedEvent } from '@domain/modules/acceptance/events/acceptance-rejected.event';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { 
-  AcceptanceApprovedEvent, 
-  AcceptanceRejectedEvent 
-} from '@domain/events/domain-events';
 
 export interface AcceptanceTask {
   readonly id: string;

@@ -11,8 +11,8 @@
  */
 
 import { inject, Injectable } from '@angular/core';
-import { createQCPassedEvent } from '@domain/events/domain-events';
 import { PublishEventUseCase } from '@application/events/use-cases/publish-event.use-case';
+import { createQCPassedEvent } from '@domain/modules/quality-control/events/qc-passed.event';
 
 export interface PassQCRequest {
   readonly taskId: string;

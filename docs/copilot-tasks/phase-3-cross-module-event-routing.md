@@ -21,9 +21,9 @@
 
 ```typescript
 import { inject } from '@angular/core';
-import { EventBus } from '../../../domain/event-bus/event-bus.interface';
+import { EventBus } from '../../../domain/shared/events/event-bus/event-bus.interface';
 import { DailyStore } from '../stores/daily.store';
-import { DomainEvent } from '../../../domain/event/domain-event';
+import { DomainEvent } from '../../../domain/shared/events/domain-event';
 
 /**
  * ✨ 新增: Task Completed 事件處理

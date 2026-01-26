@@ -1,4 +1,4 @@
-/**
+﻿/**
  * InMemoryEventBus Tests
  * 
  * Layer: Infrastructure
@@ -6,7 +6,7 @@
  */
 
 import { InMemoryEventBus } from './in-memory-event-bus.impl';
-import { testEventBusContract } from '@domain/event-bus/event-bus.interface.spec';
+import { testEventBusContract } from '@domain/shared/events/event-bus/event-bus.interface.spec';
 
 describe('InMemoryEventBus', () => {
   // Run contract tests
@@ -66,3 +66,4 @@ describe('InMemoryEventBus', () => {
     });
   });
 });
+

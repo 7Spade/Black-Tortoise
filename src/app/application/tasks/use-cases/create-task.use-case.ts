@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Create Task Use Case
  * 
  * Layer: Application - Use Case
@@ -6,17 +6,17 @@
  * 
  * Responsibilities:
  * - Create TaskCreatedEvent
- * - Publish via PublishEventUseCase (append → publish)
+ * - Publish via PublishEventUseCase (append ??publish)
  * - Returns success/failure
  * 
  * DDD Pattern: Application Service
- * Event Flow: create → append(EventStore) → publish(EventBus) → react
+ * Event Flow: create ??append(EventStore) ??publish(EventBus) ??react
  */
 
 import { inject, Injectable } from '@angular/core';
-import { createTaskCreatedEvent } from '@domain/events/domain-events';
 import { PublishEventUseCase } from '@application/events/use-cases/publish-event.use-case';
-import { TaskPriority } from '@domain/task/task.entity';
+import { TaskPriority } from '@domain/modules/tasks/aggregates/task.aggregate';
+import { createTaskCreatedEvent } from '@domain/modules/tasks/events/task-created.event';
 
 export interface CreateTaskRequest {
   readonly taskId: string;
@@ -61,3 +61,4 @@ export class CreateTaskUseCase {
     }
   }
 }
+

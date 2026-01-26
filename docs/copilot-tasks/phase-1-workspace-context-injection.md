@@ -15,7 +15,7 @@
 ## 實施步驟
 
 ### 步驟 1: 擴展 EventMetadata
-檔案: `domain/event/event-metadata.ts`
+檔案: `domain/shared/events/event-metadata.ts`
 
 根據報告, 這個檔案已被標記為 deprecated, 我們要重新啟用它:
 
@@ -42,7 +42,7 @@ export interface EventMetadata {
 ```
 
 ### 步驟 2: 修改 DomainEvent 基礎介面
-檔案: `domain/event/domain-event.ts`
+檔案: `domain/shared/events/domain-event.ts`
 
 根據報告, 當前結構是:
 ```typescript
@@ -77,7 +77,7 @@ export interface DomainEvent<TPayload> {
 ```typescript
 import { Injectable, inject } from '@angular/core';
 import { WorkspaceContextStore } from '../../application/workspace/stores/workspace-context.store';
-import { EventMetadata } from '../../domain/event/event-metadata';
+import { EventMetadata } from '../../domain/shared/events/event-metadata';
 
 /**
  * Workspace Context Service
@@ -131,16 +131,16 @@ export class WorkspaceContextService {
 
 ### 步驟 4: 更新 3 個 Event Factory 作為示範
 根據報告, 選擇這三個檔案範例進行修改 (請確保修改其餘相關 Event Factory):
-- `domain/events/domain-events/task-created.event.ts`
-- `domain/events/domain-events/task-completed.event.ts`
-- `domain/events/domain-events/document-uploaded.event.ts`
+- `domain/modules/tasks/events/task-created.event.ts`
+- `domain/modules/tasks/events/task-completed.event.ts`
+- `domain/modules/documents/events/document-uploaded.event.ts`
 
 修改 `task-created.event.ts` 範例:
 
 ```typescript
-import { DomainEvent, EventMetadata } from '../../event';
+import { DomainEvent, EventMetadata } from '../../../shared/events';
 import { inject } from '@angular/core';
-import { WorkspaceContextService } from '../../../infrastructure/context/workspace-context.service';
+import { WorkspaceContextService } from '../../../../infrastructure/context/workspace-context.service';
 
 export interface TaskCreatedPayload {
   taskId: string;
@@ -212,7 +212,7 @@ export function createTaskCreatedEvent(
 import { TestBed } from '@angular/core/testing';
 import { WorkspaceContextService } from './workspace-context.service';
 import { WorkspaceContextStore } from '../../application/workspace/stores/workspace-context.store';
-import { createTaskCreatedEvent } from '../../domain/events/domain-events/task-created.event';
+import { createTaskCreatedEvent } from '../../domain/modules/tasks/events/task-created.event';
 
 describe('WorkspaceContextService', () => {
   it('should auto-inject workspaceId into events', () => {

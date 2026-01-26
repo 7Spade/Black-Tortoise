@@ -54,9 +54,9 @@ export class InMemoryEventBus implements EventBus {
 
 ```typescript
 import { inject } from '@angular/core';
-import { EventBus } from '../../../domain/event-bus/event-bus.interface';
+import { EventBus } from '../../../domain/shared/events/event-bus/event-bus.interface';
 import { AuditStore } from '../stores/audit.store';
-import { DomainEvent } from '../../../domain/event/domain-event';
+import { DomainEvent } from '../../../domain/shared/events/domain-event';
 
 /**
  * ✨ Audit Module 全局事件處理器

@@ -11,8 +11,8 @@
  */
 
 import { inject, Injectable } from '@angular/core';
-import { createQCFailedEvent } from '@domain/events/domain-events';
 import { PublishEventUseCase } from '@application/events/use-cases/publish-event.use-case';
+import { createQCFailedEvent } from '@domain/modules/quality-control/events/qc-failed.event';
 
 export interface FailQCRequest {
   readonly taskId: string;

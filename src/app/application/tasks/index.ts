@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tasks Feature - Public API
  * 
  * Layer: Application
@@ -13,5 +13,6 @@ export * from './use-cases';
 
 // Domain types re-exported for Presentation layer (DDD boundary compliance)
 // Presentation must not import directly from Domain - use Application as facade
-export { TaskEntity, TaskStatus, TaskPriority } from '@domain/task/task.entity';
-export { createTask, updateTaskStatus } from '@domain/task/task.entity';
+export { TaskEntity, TaskStatus, TaskPriority } from '@domain/modules/tasks/aggregates/task.aggregate';
+export { createTask, updateTaskStatus } from '@domain/modules/tasks/aggregates/task.aggregate';
+
