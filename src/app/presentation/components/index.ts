@@ -31,8 +31,6 @@ export * from './types';
 export * from './user-avatar.component';
 export * from './workspace-create-trigger.component';
 export * from './workspace-host.component';
-export * from './workspace-list-item.component';
-export * from './workspace-menu.component';
 export * from './workspace-switcher.component';
 export * from './workspace-trigger.component';
 
