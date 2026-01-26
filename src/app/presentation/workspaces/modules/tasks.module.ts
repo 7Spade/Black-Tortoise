@@ -25,7 +25,7 @@ import { IAppModule, ModuleType } from '@application/interfaces/module.interface
 import { ResolveIssueUseCase } from '@application/issues/use-cases/resolve-issue.use-case';
 import { FailQCUseCase } from '@application/quality-control/use-cases/fail-qc.use-case';
 import { CreateTaskUseCase, SubmitTaskForQCUseCase, TasksStore } from '@application/tasks';
-import { TaskPriority, createTask, TaskAggregate } from '@domain/modules/tasks';
+import { TaskAggregate, TaskPriority, createTask } from '@domain/modules/tasks';
 
 @Component({
   selector: 'app-tasks-module',

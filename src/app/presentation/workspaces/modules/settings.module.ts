@@ -21,7 +21,7 @@ import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module
   template: `
     <div class="settings-module">
       <div class="module-header">
-        <h2>?™ï? Settings</h2>
+        <h2>Workspace Settings</h2>
         <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
 
@@ -168,7 +168,7 @@ import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module
                   <option value="es">EspaÃ±ol</option>
                   <option value="fr">FranÃ§ais</option>
                   <option value="de">Deutsch</option>
-                  <option value="zh">ä¸­æ?</option>
+                  <option value="zh">ä¸­ï¿½?</option>
                 </select>
               </div>
               <div class="setting-row toggle-row">
