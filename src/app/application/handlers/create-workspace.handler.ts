@@ -2,13 +2,14 @@
  * Create Workspace Use Case
  * 
  * Layer: Application
- * Purpose: Orchestrates workspace creation with proper event publishing
+ * Purpose: Orchestrates workspace creation with proper persistence and event publishing
  */
 
 import { inject, Injectable } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { createWorkspaceCreatedEvent } from '@domain/events';
+import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
 import { createWorkspaceEntity, WorkspaceEntity } from '@domain/aggregates';
+import { createWorkspaceCreatedEvent } from '@domain/events';
 import { WorkspaceId } from '@domain/value-objects';
 
 /**
@@ -29,8 +30,9 @@ export interface CreateWorkspaceCommand {
 @Injectable({ providedIn: 'root' })
 export class CreateWorkspaceHandler {
   private readonly publishEvent = inject(PublishEventHandler);
+  private readonly repository = inject(WORKSPACE_REPOSITORY);
 
-  execute(command: CreateWorkspaceCommand): WorkspaceEntity {
+  async execute(command: CreateWorkspaceCommand): Promise<WorkspaceEntity> {
     // Generate unique workspace ID
     const workspaceId = WorkspaceId.generate().getValue();
     
@@ -45,6 +47,9 @@ export class CreateWorkspaceHandler {
       command.moduleIds
     );
     
+    // Persist to infrastructure
+    await this.repository.save(workspace);
+    
     // Create domain event using the factory function
     const event = createWorkspaceCreatedEvent(
       workspace.id,
@@ -55,6 +60,7 @@ export class CreateWorkspaceHandler {
       command.ownerId
     );
 
+    // Publish event asynchronously
     void this.publishEvent.execute({ event });
     
     return workspace;

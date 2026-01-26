@@ -20,8 +20,8 @@
 
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { WorkspaceContextStore } from '@application/stores';
 import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
+import { WorkspaceContextStore } from '@application/stores';
 
 @Injectable({ providedIn: 'root' })
 export class HeaderFacade {
@@ -44,9 +44,10 @@ export class HeaderFacade {
    * @param result - Dialog result containing workspace name
    */
   createWorkspace(result: WorkspaceCreateResult): void {
-    this.workspaceContext.createWorkspace(result.workspaceName);
-    this.router.navigate(['/workspace']).catch(() => {
-      this.workspaceContext.setError('Failed to navigate to workspace');
+    this.workspaceContext.createWorkspace({ 
+      name: result.workspaceName 
     });
+    // Navigation is handled by side-effects or user action
+    // this.router.navigate(['/workspace']); 
   }
 }

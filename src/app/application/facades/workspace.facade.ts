@@ -15,8 +15,8 @@
 
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
 import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
+import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
 
 @Injectable({ providedIn: 'root' })
 export class WorkspaceFacade {
@@ -92,22 +92,15 @@ export class WorkspaceFacade {
 
   /**
    * Handle workspace creation
-   * Delegates to WorkspaceContextStore and handles navigation
+   * Delegates to WorkspaceContextStore
    */
   createWorkspace(result: WorkspaceCreateResult): void {
     this.closeAllMenus();
-    
-    try {
-      this.workspaceContext.createWorkspace(result.workspaceName);
-      
-      // Navigate to workspace route
-      this.router.navigate(['/workspace']).catch(() => {
-        this.workspaceContext.setError('Failed to navigate to workspace');
-      });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to create workspace';
-      this.workspaceContext.setError(message);
-    }
+    this.workspaceContext.createWorkspace({ 
+      name: result.workspaceName 
+    });
+    // Navigation is handled by side-effects or user action
+    // State update is asynchronous
   }
 
   /**

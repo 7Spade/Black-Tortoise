@@ -9,45 +9,44 @@
  * This interface is pure TypeScript with no framework dependencies.
  */
 
-import { WorkspaceId } from '../value-objects';
-import { WorkspaceAggregate } from '../aggregates';
+import { WorkspaceEntity } from '../aggregates/workspace.entity';
 
 export interface WorkspaceRepository {
   /**
    * Find a workspace by its ID
    * @returns The workspace if found, undefined otherwise
    */
-  findById(id: WorkspaceId): Promise<WorkspaceAggregate | undefined>;
+  findById(id: string): Promise<WorkspaceEntity | undefined>;
 
   /**
    * Find all workspaces owned by a user or organization
    */
-  findByOwnerId(ownerId: string, ownerType: 'user' | 'organization'): Promise<WorkspaceAggregate[]>;
+  findByOwnerId(ownerId: string, ownerType: 'user' | 'organization'): Promise<WorkspaceEntity[]>;
 
   /**
    * Find all workspaces in an organization
    */
-  findByOrganizationId(organizationId: string): Promise<WorkspaceAggregate[]>;
+  findByOrganizationId(organizationId: string): Promise<WorkspaceEntity[]>;
 
   /**
    * Find all active workspaces
    */
-  findAllActive(): Promise<WorkspaceAggregate[]>;
+  findAllActive(): Promise<WorkspaceEntity[]>;
 
   /**
    * Save a workspace (create or update)
    */
-  save(workspace: WorkspaceAggregate): Promise<void>;
+  save(workspace: WorkspaceEntity): Promise<void>;
 
   /**
    * Delete a workspace by ID
    */
-  delete(id: WorkspaceId): Promise<void>;
+  delete(id: string): Promise<void>;
 
   /**
    * Check if a workspace exists
    */
-  exists(id: WorkspaceId): Promise<boolean>;
+  exists(id: string): Promise<boolean>;
 
   /**
    * Count total workspaces

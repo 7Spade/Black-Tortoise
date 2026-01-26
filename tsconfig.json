@@ -42,7 +42,6 @@
       "@infrastructure/repositories": ["src/app/infrastructure/repositories/index.ts"],
       "@infrastructure/services": ["src/app/infrastructure/services/index.ts"],
       "@infrastructure/*": ["src/app/infrastructure/*"],
-      "@shared/*": ["src/app/shared/*"],
       "@env/*": ["src/environments/*"],
       "@styles/*": ["src/styles/*"]
     },

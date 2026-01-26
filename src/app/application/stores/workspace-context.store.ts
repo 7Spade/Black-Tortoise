@@ -12,17 +12,20 @@
 import { computed, inject } from '@angular/core';
 import { CreateWorkspaceHandler } from '@application/handlers/create-workspace.handler';
 import { SwitchWorkspaceHandler } from '@application/handlers/switch-workspace.handler';
+import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
-import { OrganizationEntity } from '@domain/entities';
 import { WorkspaceEntity } from '@domain/aggregates';
+import { tapResponse } from '@ngrx/operators';
 import {
-  patchState,
-  signalStore,
-  withComputed,
-  withHooks,
-  withMethods,
-  withState,
+    patchState,
+    signalStore,
+    withComputed,
+    withHooks,
+    withMethods,
+    withState,
 } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { exhaustMap, from, of, pipe, switchMap, tap } from 'rxjs';
 
 /**
  * Workspace Context State
@@ -127,7 +130,7 @@ export const WorkspaceContextStore = signalStore(
     const createWorkspaceHandler = inject(CreateWorkspaceHandler);
     const switchWorkspaceHandler = inject(SwitchWorkspaceHandler);
     const runtimeFactory = inject(WORKSPACE_RUNTIME_FACTORY);
-    let demoRuntimeInitialized = false;
+    const repository = inject(WORKSPACE_REPOSITORY);
     
     return {
       /**
@@ -139,6 +142,8 @@ export const WorkspaceContextStore = signalStore(
           currentIdentityType: identityType,
           error: null,
         });
+        // Trigger load
+        this.loadWorkspaces();
       },
 
       /**
@@ -155,38 +160,49 @@ export const WorkspaceContextStore = signalStore(
       /**
        * Create new workspace
        */
-      createWorkspace(name: string, moduleIds?: string[]): WorkspaceEntity {
-        const identityId = store.currentIdentityId();
-        const identityType = store.currentIdentityType();
-        const organizationId = store.currentOrganizationId() ?? 'org-demo-001';
-        const organizationDisplayName = store.currentOrganizationDisplayName() ?? 'Demo Organization';
-        
-        if (!identityId || !identityType) {
-          patchState(store, { error: 'No identity selected' });
-          throw new Error('Cannot create workspace: No identity selected');
-        }
-        
-        // Execute use case with all modules if not specified
-        const workspace = createWorkspaceHandler.execute({
-          name,
-          organizationId,
-          organizationDisplayName,
-          ownerId: identityId,
-          ownerType: identityType,
-          moduleIds: moduleIds ?? ALL_MODULE_IDS,
-        });
-        
-        // Create runtime for new workspace
-        runtimeFactory.createRuntime(workspace);
-        
-        // Add to available workspaces
-        patchState(store, {
-          availableWorkspaces: [...store.availableWorkspaces(), workspace],
-          error: null,
-        });
-        
-        return workspace;
-      },
+      createWorkspace: rxMethod<{ name: string; moduleIds?: string[] }>(
+        pipe(
+          tap(() => patchState(store, { isLoading: true })),
+          exhaustMap(({ name, moduleIds }) => {
+            const identityId = store.currentIdentityId();
+            const identityType = store.currentIdentityType();
+            const organizationId = store.currentOrganizationId() ?? 'org-default';
+            const organizationDisplayName = store.currentOrganizationDisplayName() ?? 'Default Organization';
+            
+            if (!identityId || !identityType) {
+              patchState(store, { error: 'No identity selected', isLoading: false });
+              return of(null);
+            }
+
+            return from(createWorkspaceHandler.execute({
+                name,
+                organizationId,
+                organizationDisplayName,
+                ownerId: identityId,
+                ownerType: identityType,
+                moduleIds: moduleIds ?? ALL_MODULE_IDS,
+            })).pipe(
+              tapResponse({
+                next: (workspace) => {
+                  runtimeFactory.createRuntime(workspace);
+                  patchState(store, {
+                    availableWorkspaces: [...store.availableWorkspaces(), workspace],
+                    currentWorkspace: workspace,
+                    currentOrganizationId: workspace.organizationId,
+                    currentOrganizationDisplayName: workspace.organizationDisplayName,
+                    isLoading: false,
+                    error: null,
+                  });
+                },
+                error: (err: any) => patchState(store, { 
+                  isLoading: false, 
+                  error: err?.message || 'Failed to create workspace' 
+                }),
+              })
+            );
+          })
+        )
+      ),
       
       /**
        * Switch to workspace
@@ -245,12 +261,35 @@ export const WorkspaceContextStore = signalStore(
       /**
        * Load available workspaces for current identity
        */
-      loadWorkspaces(workspaces: ReadonlyArray<WorkspaceEntity>): void {
-        patchState(store, {
-          availableWorkspaces: workspaces,
-          error: null,
-        });
-      },
+      loadWorkspaces: rxMethod<void>(
+        pipe(
+          tap(() => patchState(store, { isLoading: true })),
+          switchMap(() => {
+             const ownerId = store.currentIdentityId();
+             const ownerType = store.currentIdentityType();
+
+             if (!ownerId || !ownerType) {
+                 return of([]);
+             }
+
+             return from(repository.findByOwnerId(ownerId, ownerType)).pipe(
+               tapResponse({
+                 next: (workspaces) => {
+                   workspaces.forEach(ws => runtimeFactory.createRuntime(ws));
+                   patchState(store, { 
+                     availableWorkspaces: workspaces,
+                     isLoading: false 
+                   });
+                 },
+                 error: (err: any) => patchState(store, { 
+                   isLoading: false, 
+                   error: err?.message || 'Failed to load workspaces' 
+                 })
+               })
+             );
+          })
+        )
+      ),
       
       /**
        * Set loading state
@@ -275,76 +314,13 @@ export const WorkspaceContextStore = signalStore(
         
         patchState(store, initialState);
       },
-      
-      /**
-       * Load demo data for demonstration
-       * Updated to include all 11 modules
-       */
-      loadDemoData(): void {
-        if (demoRuntimeInitialized) {
-          return;
-        }
-
-        // Demo identity
-        const demoUserId = 'user-demo-001';
-        const demoOrganizationId = 'org-demo-001';
-        const demoOrganizationName = 'Demo Organization';
-        const demoOrganization: OrganizationEntity = {
-          id: demoOrganizationId,
-          displayName: demoOrganizationName,
-        };
-        
-        patchState(store, {
-          currentIdentityId: demoUserId,
-          currentIdentityType: 'user',
-          currentOrganizationId: demoOrganization.id,
-          currentOrganizationDisplayName: demoOrganization.displayName,
-        });
-        
-        // Create demo workspaces with all 11 modules
-        const workspace1 = createWorkspaceHandler.execute({
-          name: 'Personal Projects',
-          organizationId: demoOrganizationId,
-          organizationDisplayName: demoOrganizationName,
-          ownerId: demoUserId,
-          ownerType: 'user',
-          moduleIds: ALL_MODULE_IDS,
-        });
-        
-        const workspace2 = createWorkspaceHandler.execute({
-          name: 'Team Collaboration',
-          organizationId: demoOrganizationId,
-          organizationDisplayName: demoOrganizationName,
-          ownerId: demoUserId,
-          ownerType: 'user',
-          moduleIds: ALL_MODULE_IDS,
-        });
-        
-        // Create runtimes
-        runtimeFactory.createRuntime(workspace1);
-        runtimeFactory.createRuntime(workspace2);
-        
-        // Update state
-        patchState(store, {
-          availableWorkspaces: [workspace1, workspace2],
-          currentWorkspace: workspace1,
-          activeModuleId: 'overview',
-          currentOrganizationId: demoOrganizationId,
-          currentOrganizationDisplayName: demoOrganizationName,
-          isLoading: false,
-          error: null,
-        });
-
-        demoRuntimeInitialized = true;
-      },
     };
   }),
   
   withHooks({
     onInit(store) {
-      // Always load demo data for demonstration purposes
-      // In production, this would be replaced with actual data loading from backend
-      store.loadDemoData();
+      // Auto-load if identity exists (or listener could be set up here if we had an AuthStore ref)
+      console.log('[WorkspaceContextStore] Initialized');
     },
     
     onDestroy() {

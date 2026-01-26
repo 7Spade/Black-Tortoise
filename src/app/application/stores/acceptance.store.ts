@@ -1,55 +1,37 @@
 /**
- * Acceptance Store
+ * Acceptance Signal Store
  *
  * Layer: Application - Store
- * Purpose: Manages acceptance workflow state using NgRx Signals
- * Architecture: Zone-less, Pure Reactive, Angular 20+, Event-Driven
+ * Purpose: Manages acceptance workflow state using NgRx Signals (Repository Backed)
+ * Architecture: Zone-less, Signal-based, Pure Reactive
  *
  * Responsibilities:
- * - Track tasks pending acceptance
- * - React to AcceptanceApproved/AcceptanceRejected/QCPassed events
- * - All state changes via event handlers ONLY
- *
- * Event Integration:
- * - Reacts to: QCPassed, AcceptanceApproved, AcceptanceRejected
- * - State mutations ONLY in event handlers
- * - Event handlers are registered by workspace runtime/event orchestrator
+ * - Track acceptance checks for tasks
+ * - React to approval/rejection events (via UI calls triggers repo updates)
  *
  * Clean Architecture Compliance:
- * - Single source of truth for acceptance state
- * - All state updates via patchState in event handlers
- * - Event-driven architecture (append ??publish ??react)
- * - Pure signal-based reactivity
+ * - Single source of truth for acceptance checks
+ * - Backend sync via AcceptanceRepository
  */
 
-import { computed } from '@angular/core';
-import { AcceptanceApprovedEvent } from '@domain/events';
-import { AcceptanceRejectedEvent } from '@domain/events';
+import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-
-export interface AcceptanceTask {
-  readonly id: string;
-  readonly taskId: string;
-  readonly taskTitle: string;
-  readonly taskDescription: string;
-  readonly qcPassedAt: Date;
-  readonly qcReviewedBy: string;
-  readonly acceptanceStatus: 'pending' | 'approved' | 'rejected';
-  readonly decidedAt?: Date;
-  readonly decidedBy?: string;
-  readonly notes?: string;
-}
+import { AcceptanceCheckEntity, AcceptanceStatus } from '@domain/aggregates';
+import { ACCEPTANCE_REPOSITORY } from '@application/interfaces';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { pipe, switchMap, from } from 'rxjs';
+import { tapResponse } from '@ngrx/operators';
 
 export interface AcceptanceState {
-  readonly tasks: ReadonlyArray<AcceptanceTask>;
-  readonly selectedTaskId: string | null;
+  readonly checks: ReadonlyArray<AcceptanceCheckEntity>;
+  readonly selectedCheckId: string | null;
   readonly isProcessing: boolean;
   readonly error: string | null;
 }
 
 const initialState: AcceptanceState = {
-  tasks: [],
-  selectedTaskId: null,
+  checks: [],
+  selectedCheckId: null,
   isProcessing: false,
   error: null,
 };
@@ -66,129 +48,81 @@ export const AcceptanceStore = signalStore(
 
   withComputed((state) => ({
     /**
-     * Pending acceptance tasks
+     * Pending acceptance checks
      */
-    pendingTasks: computed(() =>
-      state.tasks().filter(t => t.acceptanceStatus === 'pending')
+    pendingChecks: computed(() =>
+      state.checks().filter(c => c.status === AcceptanceStatus.PENDING)
     ),
 
     /**
-     * Approved tasks
+     * Approved checks
      */
-    approvedTasks: computed(() =>
-      state.tasks().filter(t => t.acceptanceStatus === 'approved')
+    approvedChecks: computed(() =>
+      state.checks().filter(c => c.status === AcceptanceStatus.APPROVED)
     ),
 
     /**
-     * Rejected tasks
+     * Rejected checks
      */
-    rejectedTasks: computed(() =>
-      state.tasks().filter(t => t.acceptanceStatus === 'rejected')
+    rejectedChecks: computed(() =>
+      state.checks().filter(c => c.status === AcceptanceStatus.REJECTED)
     ),
 
     /**
-     * Selected task
+     * Selected check
      */
-    selectedTask: computed(() => {
-      const id = state.selectedTaskId();
-      return id ? state.tasks().find(t => t.id === id) || null : null;
+    selectedCheck: computed(() => {
+      const id = state.selectedCheckId();
+      return id ? state.checks().find(c => c.id === id) || null : null;
     }),
 
     /**
-     * Has pending tasks
+     * Has pending checks
      */
-    hasPendingTasks: computed(() => state.tasks().some(t => t.acceptanceStatus === 'pending')),
+    hasPendingChecks: computed(() => state.checks().some(c => c.status === AcceptanceStatus.PENDING)),
   })),
 
-  withMethods((store) => ({
+  withMethods((store, repo = inject(ACCEPTANCE_REPOSITORY)) => ({
+    
     /**
-     * Add task for acceptance review (from QCPassed event)
-     * Called by event handler ONLY
+     * Load acceptance checks for a workspace
      */
-    addTaskForAcceptance(task: Omit<AcceptanceTask, 'id' | 'acceptanceStatus'>): void {
-      const acceptanceTask: AcceptanceTask = {
-        ...task,
-        id: crypto.randomUUID(),
-        acceptanceStatus: 'pending',
-      };
+    loadByWorkspace: rxMethod<string>(
+      pipe(
+        switchMap((workspaceId) => {
+          patchState(store, { isProcessing: true, error: null });
+          return from(repo.findByWorkspaceId(workspaceId)).pipe(
+            tapResponse({
+              next: (checks) => patchState(store, { checks, isProcessing: false, error: null }),
+              error: (err: any) => patchState(store, { error: err.message, isProcessing: false })
+            })
+          );
+        })
+      )
+    ),
 
-      patchState(store, {
-        tasks: [...store.tasks(), acceptanceTask],
-      });
+    /**
+     * Update check (approve/reject)
+     */
+    async updateCheck(check: AcceptanceCheckEntity): Promise<void> {
+      patchState(store, { isProcessing: true, error: null });
+      try {
+        await repo.save(check);
+        patchState(store, {
+          checks: store.checks().map(c => c.id === check.id ? check : c),
+          isProcessing: false,
+          error: null
+        });
+      } catch (err: any) {
+        patchState(store, { error: err.message, isProcessing: false });
+      }
     },
 
     /**
-     * Handle AcceptanceApproved event
-     * Event handler - mutates state in response to event
+     * Select Check
      */
-    handleAcceptanceApproved(event: AcceptanceApprovedEvent): void {
-      const updatedTasks = store.tasks().map(t =>
-        t.taskId === event.payload.taskId
-          ? { 
-              ...t, 
-              acceptanceStatus: 'approved' as const, 
-              decidedAt: event.timestamp, 
-              decidedBy: event.payload.approverId, 
-              notes: event.payload.approvalNotes 
-            }
-          : t
-      );
-
-      patchState(store, {
-        tasks: updatedTasks as ReadonlyArray<AcceptanceTask>,
-        isProcessing: false,
-      });
-    },
-
-    /**
-     * Handle AcceptanceRejected event
-     * Event handler - mutates state in response to event
-     */
-    handleAcceptanceRejected(event: AcceptanceRejectedEvent): void {
-      const updatedTasks = store.tasks().map(t =>
-        t.taskId === event.payload.taskId
-          ? { 
-              ...t, 
-              acceptanceStatus: 'rejected' as const, 
-              decidedAt: event.timestamp, 
-              decidedBy: event.payload.rejectedById, 
-              notes: event.payload.rejectionReason 
-            }
-          : t
-      );
-
-      patchState(store, {
-        tasks: updatedTasks as ReadonlyArray<AcceptanceTask>,
-        isProcessing: false,
-      });
-    },
-
-    /**
-     * Select task for review
-     */
-    selectTask(taskId: string | null): void {
-      patchState(store, { selectedTaskId: taskId });
-    },
-
-    /**
-     * Clear all tasks (workspace switch)
-     */
-    clearTasks(): void {
-      patchState(store, {
-        tasks: [],
-        selectedTaskId: null,
-        isProcessing: false,
-        error: null,
-      });
-    },
-
-    /**
-     * Set error
-     */
-    setError(error: string | null): void {
-      patchState(store, { error, isProcessing: false });
-    },
+    selectCheck(checkId: string | null): void {
+      patchState(store, { selectedCheckId: checkId });
+    }
   }))
 );
-
-

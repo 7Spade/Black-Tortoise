@@ -1,46 +1,30 @@
 /**
- * Issues Store
+ * Issues Signal Store
  *
  * Layer: Application - Store
- * Purpose: Manages issue tracking state using NgRx Signals
- * Architecture: Zone-less, Pure Reactive, Angular 20+, NO RxJS
+ * Purpose: Manages issue tracking state using NgRx Signals (Repository Backed)
+ * Architecture: Zone-less, Signal-based, Pure Reactive
  *
  * Responsibilities:
  * - Track all issues
  * - Manage issue lifecycle (open/resolved/closed)
  * - Link issues to tasks (blocking relationships)
  *
- * Event Integration:
- * - Reacts to: QCFailed, AcceptanceRejected (auto-create issues)
- * - Publishes: IssueCreated, IssueResolved
- *
  * Clean Architecture Compliance:
  * - Single source of truth for issues state
- * - All state updates via patchState
- * - No RxJS subscriptions
- * - Pure signal-based reactivity
+ * - Backend sync via IssueRepository
  */
 
-import { computed } from '@angular/core';
+import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { IssueStatus, IssuePriority } from '@domain/aggregates';
-
-export interface Issue {
-  readonly id: string;
-  readonly taskId: string;
-  readonly title: string;
-  readonly description: string;
-  readonly status: IssueStatus;
-  readonly priority: IssuePriority;
-  readonly createdAt: number;
-  readonly createdBy: string;
-  readonly resolvedAt?: number;
-  readonly resolvedBy?: string;
-  readonly resolution?: string;
-}
+import { IssueAggregate, IssueStatus, IssuePriority } from '@domain/aggregates';
+import { ISSUE_REPOSITORY } from '@application/interfaces';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { pipe, switchMap, from } from 'rxjs';
+import { tapResponse } from '@ngrx/operators';
 
 export interface IssuesState {
-  readonly issues: ReadonlyArray<Issue>;
+  readonly issues: ReadonlyArray<IssueAggregate>;
   readonly selectedIssueId: string | null;
   readonly isProcessing: boolean;
   readonly error: string | null;
@@ -68,14 +52,14 @@ export const IssuesStore = signalStore(
      * Open issues
      */
     openIssues: computed(() =>
-      state.issues().filter(i => i.status === 'open' || i.status === 'in-progress')
+      state.issues().filter(i => i.status === IssueStatus.OPEN || i.status === IssueStatus.IN_PROGRESS)
     ),
 
     /**
      * Resolved issues
      */
     resolvedIssues: computed(() =>
-      state.issues().filter(i => i.status === 'resolved' || i.status === 'closed')
+      state.issues().filter(i => i.status === IssueStatus.RESOLVED || i.status === IssueStatus.CLOSED)
     ),
 
     /**
@@ -96,78 +80,75 @@ export const IssuesStore = signalStore(
     /**
      * Has open issues
      */
-    hasOpenIssues: computed(() => state.issues().some(i => i.status === 'open' || i.status === 'in-progress')),
+    hasOpenIssues: computed(() => state.issues().some(i => i.status === IssueStatus.OPEN || i.status === IssueStatus.IN_PROGRESS)),
   })),
 
-  withMethods((store) => ({
+  withMethods((store, repo = inject(ISSUE_REPOSITORY)) => ({
+    
     /**
-     * Create new issue
+     * Load issues for a workspace
      */
-    createIssue(issue: Omit<Issue, 'id' | 'status' | 'createdAt'>): void {
-      const newIssue: Issue = {
-        ...issue,
-        id: crypto.randomUUID(),
-        status: IssueStatus.OPEN,
-        createdAt: Date.now(),
-      };
+    loadByWorkspace: rxMethod<string>(
+      pipe(
+        switchMap((workspaceId) => {
+          patchState(store, { isProcessing: true, error: null });
+          return from(repo.findByWorkspaceId(workspaceId)).pipe(
+            tapResponse({
+              next: (issues) => patchState(store, { issues, isProcessing: false, error: null }),
+              error: (err: any) => patchState(store, { error: err.message, isProcessing: false })
+            })
+          );
+        })
+      )
+    ),
 
-      patchState(store, {
-        issues: [...store.issues(), newIssue],
-      });
+    /**
+     * Create Issue
+     */
+    async createIssue(issue: IssueAggregate): Promise<void> {
+      patchState(store, { isProcessing: true, error: null });
+      try {
+        await repo.save(issue);
+        patchState(store, {
+          issues: [...store.issues(), issue],
+          isProcessing: false,
+          error: null
+        });
+      } catch (err: any) {
+        patchState(store, { error: err.message, isProcessing: false });
+      }
     },
 
     /**
-     * Resolve issue
+     * Update Issue
      */
-    resolveIssue(issueId: string, resolvedBy: string, resolution: string): void {
-      patchState(store, {
-        issues: store.issues().map(i =>
-          i.id === issueId
-            ? { ...i, status: IssueStatus.RESOLVED, resolvedAt: Date.now(), resolvedBy, resolution }
-            : i
-        ),
-        isProcessing: false,
-      });
+    async updateIssue(issueId: string, updates: Partial<IssueAggregate>): Promise<void> {
+        const issue = store.issues().find(i => i.id === issueId);
+        if (!issue) {
+            patchState(store, { error: `Issue ${issueId} not found` });
+            return;
+        }
+
+        const updatedIssue = { ...issue, ...updates }; // Aggregate structure copy
+        patchState(store, { isProcessing: true, error: null });
+
+        try {
+            await repo.save(updatedIssue as IssueAggregate); // Cast might be needed if Partial doesn't align perfectly but save expects full
+            patchState(store, {
+                issues: store.issues().map(i => i.id === issueId ? (updatedIssue as IssueAggregate) : i),
+                isProcessing: false,
+                error: null
+            });
+        } catch (err: any) {
+            patchState(store, { error: err.message, isProcessing: false });
+        }
     },
 
     /**
-     * Update issue status
-     */
-    updateIssueStatus(issueId: string, status: Issue['status']): void {
-      patchState(store, {
-        issues: store.issues().map(i =>
-          i.id === issueId ? { ...i, status } : i
-        ),
-      });
-    },
-
-    /**
-     * Select issue
+     * Select Issue
      */
     selectIssue(issueId: string | null): void {
       patchState(store, { selectedIssueId: issueId });
-    },
-
-    /**
-     * Clear all issues (workspace switch)
-     */
-    clearIssues(): void {
-      patchState(store, {
-        issues: [],
-        selectedIssueId: null,
-        isProcessing: false,
-        error: null,
-      });
-    },
-
-    /**
-     * Set error
-     */
-    setError(error: string | null): void {
-      patchState(store, { error, isProcessing: false });
-    },
+    }
   }))
 );
-
-
-
