@@ -1,11 +1,10 @@
 /**
  * Workspace Host Container Public API
+ * 
+ * Exports only the public host containers.
+ * Internal components are NOT re-exported.
  */
 
-export { ModuleContentComponent } from './components/module-content.component';
-export { ModuleNavigationComponent } from './components/module-navigation.component';
-// Facades moved to application layer
-// export { WorkspaceHostFacade } from './facade/workspace-host.facade';
 export { ModuleHostContainerComponent } from './module-host-container.component';
 export { WorkspaceHostComponent } from './workspace-host.component';
 

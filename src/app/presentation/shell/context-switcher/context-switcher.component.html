@@ -1,9 +1,8 @@
 <!--
   Context switcher template
 
-  說明：
-  - 此元件應由 application 層提供可切換的 context 資料（例如 via a facade signal）。
-  - 本 template 僅為樣板，實際項目需由整合階段補上資料綁定與事件處理。
+  Note: Placeholder component for context switching.
+  Full implementation will use application layer facade.
 -->
 <div class="context-switcher">
   <button type="button" aria-haspopup="listbox" (click)="toggle()">
@@ -12,7 +11,7 @@
 
   @if (isOpen()) {
     <div class="context-list">
-      @for (ctx of contexts; track ctx.id) {
+      @for (ctx of contexts(); track ctx.id) {
         <button (click)="switch(ctx.id)">{{ctx.name}}</button>
       }
     </div>

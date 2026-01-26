@@ -4,7 +4,6 @@
  * Global application shell and layout orchestration
  */
 
-// Facades moved to application layer
-// export { ShellFacade } from './facade/shell.facade';
-export { GlobalShellComponent } from './global-shell.component';
+export * from './context-switcher';
+export * from './global-shell.component';
 

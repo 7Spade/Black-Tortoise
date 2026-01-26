@@ -2,27 +2,19 @@
  * Presentation Layer Public API
  * 
  * DDD + Angular 20+ Pure Reactive Architecture
- * Structure: shell/, pages/, organization/, workspace/, team/, settings/, containers/, shared/, theme/
+ * Structure: shell/, pages/, organization/, workspaces/, layout/, shared/, theme/
  */
 
-// Shell
-export * from './shell';
-
-// Pages
-export * from './pages';
-
-// Domain-specific presentation layers
-export * from './features/workspace';
-export * from './organization';
-export * from './organization/team';
-export * from './pages/settings';
-
-// Containers
-export * from './workspaces';
-
-// Shared
-export * from './shared';
-
-// Root Component
+// Core components
 export { AppComponent } from './app.component';
+export * from './app.routes';
+
+// Feature modules
+export * from './layout';
+export * from './organization';
+export * from './pages';
+export * from './shared';
+export * from './shell';
+export * from './theme';
+export * from './workspaces';
 

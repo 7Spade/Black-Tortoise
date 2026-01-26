@@ -3,5 +3,5 @@
  */
 
 export * from './components';
-export * from './dialogs/team-create-dialog';
+export * from './dialogs';
 

@@ -21,7 +21,9 @@
               "aot": true,
               "extractLicenses": true,
               "namedChunks": false,
-              "optimization": true,
+              "optimization": {
+                "fonts": false
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "fileReplacements": [

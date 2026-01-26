@@ -1,20 +1,10 @@
 /**
- * Workspace Switcher Support Components
+ * Workspace Switcher Public API
  * 
- * Layer: Presentation - Shared Components
- * Purpose: Reusable sub-components for workspace switcher
+ * Layer: Presentation - Workspace Feature
+ * Purpose: Workspace switcher UI components
  * Architecture: Zone-less, OnPush, Angular 20 control flow, Pure Reactive
- * 
- * NOTE: The main WorkspaceSwitcherComponent lives in features/workspace
- * These are optional sub-components for custom implementations
- * 
- * Exports:
- * - WorkspaceTriggerComponent: Trigger button (optional)
- * - WorkspaceMenuComponent: Dropdown menu (optional)
- * - WorkspaceListItemComponent: Individual workspace item (optional)
  */
 
-export { WorkspaceTriggerComponent } from './workspace-trigger.component';
-export { WorkspaceMenuComponent } from './workspace-menu.component';
-export { WorkspaceListItemComponent } from './workspace-list-item.component';
-export { WorkspaceItem } from './types';
+export { WorkspaceSwitcherComponent } from './workspace-switcher.component';
+export type { WorkspaceItem } from './types';
