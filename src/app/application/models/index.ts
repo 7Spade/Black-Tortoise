@@ -6,3 +6,6 @@
 export * from './workspace-create-result.model';
 export * from './workspace-create-result.validator';
 
+
+export * from './identity.view-model';
+export * from './user-avatar.view-model';

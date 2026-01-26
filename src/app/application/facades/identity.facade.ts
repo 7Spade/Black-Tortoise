@@ -7,38 +7,101 @@
  *
  * Responsibilities:
  * - Manages identity UI state coordination
- * - Provides reactive signals for identity components
+ * - Provides reactive signals for identity components (ViewModels)
  * - Coordinates between identity components and application/presentation layers
  * - No business logic - pure presentation orchestration
  */
 
 import { computed, inject, Injectable, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { IdentityViewModel, UserAvatarViewModel } from '@application/models';
+import { AuthStore } from '@application/stores/auth.store';
 import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
 
 @Injectable({ providedIn: 'root' })
 export class IdentityFacade {
+  private readonly authStore = inject(AuthStore);
   private readonly workspaceContext = inject(WorkspaceContextStore);
+  private readonly router = inject(Router);
 
   // Local identity UI state
   private readonly _showIdentityMenu = signal(false);
+  private readonly _showAvatarMenu = signal(false);
+  
+  // Public signal for menu state
+  readonly showIdentityMenu = this._showIdentityMenu.asReadonly();
+  readonly showAvatarMenu = this._showAvatarMenu.asReadonly();
 
-  // Computed signals for identity UI
-  readonly showIdentityMenu = computed(() => this._showIdentityMenu());
-  readonly currentOrganizationName = computed(() =>
-    this.workspaceContext.currentOrganizationName()
-  );
-  readonly isAuthenticated = computed(() =>
-    this.workspaceContext.isAuthenticated()
-  );
-  readonly currentIdentityType = computed(() =>
-    this.workspaceContext.currentIdentityType()
-  );
+  // ViewModel: Identity
+  readonly identityVm = computed<IdentityViewModel>(() => {
+    const contextType = this.workspaceContext.currentIdentityType(); // 'user' | 'organization' | null
+    const orgName = this.workspaceContext.currentOrganizationDisplayName();
+    const userName = this.authStore.displayName();
+    const isAuthenticated = this.authStore.isLoggedIn();
+
+    // Map context type to VM type
+    const mappedType: 'personal' | 'organization' = contextType === 'organization' ? 'organization' : 'personal';
+
+    let displayName = 'Guest';
+    let roleLabel: string | undefined = undefined;
+
+    if (isAuthenticated) {
+        if (mappedType === 'organization' && orgName) {
+            displayName = orgName;
+            roleLabel = 'Admin'; // TODO: Get actual role from context
+        } else {
+            displayName = userName || 'User';
+        }
+    }
+
+    return {
+        type: mappedType,
+        displayName,
+        roleLabel,
+        isAuthenticated
+    };
+  });
+
+  // ViewModel: User Avatar
+  readonly userAvatarVm = computed<UserAvatarViewModel>(() => {
+    const photoUrl = this.authStore.photoUrl();
+    const displayName = this.authStore.displayName() || 'Guest';
+
+    return {
+        photoUrl,
+        initials: this.getInitials(displayName),
+        color: this.getColor(displayName)
+    };
+  });
 
   /**
    * Toggle identity menu
    */
   toggleIdentityMenu(): void {
-    this._showIdentityMenu.update(v => !v);
+    const currentState = this._showIdentityMenu();
+    this.closeAllMenus();
+    if (!currentState) {
+        this._showIdentityMenu.set(true);
+    }
+  }
+  
+  /**
+   * Toggle avatar menu
+   */
+  toggleAvatarMenu(): void {
+    const currentState = this._showAvatarMenu();
+    this.closeAllMenus();
+    if (!currentState) {
+        this._showAvatarMenu.set(true);
+    }
+  }
+
+  /**
+   * Close all menus
+   */
+  closeAllMenus(): void {
+    this._showIdentityMenu.set(false);
+    this._showAvatarMenu.set(false);
   }
 
   /**
@@ -49,20 +112,63 @@ export class IdentityFacade {
   }
 
   /**
+   * Close avatar menu
+   */
+  closeAvatarMenu(): void {
+      this._showAvatarMenu.set(false);
+  }
+
+  /**
    * Handle identity selection
    */
   selectIdentity(identityType: 'personal' | 'organization'): void {
-    this.closeIdentityMenu();
-    // TODO: Implement identity switching logic
-    // This would delegate to application layer for actual identity switching
+    this.closeAllMenus();
+    // In future phases, this will trigger the WorkspaceContextStore to switch contexts
+    console.log('Selected identity:', identityType);
+  }
+
+  /**
+   * Navigation Actions
+   */
+  async navigateToProfile(): Promise<void> {
+      this.closeAllMenus();
+      await this.router.navigate(['/profile']);
+  }
+
+  async navigateToSettings(): Promise<void> {
+    this.closeAllMenus();
+    await this.router.navigate(['/settings']);
   }
 
   /**
    * Handle sign out
    */
-  signOut(): void {
-    this.closeIdentityMenu();
-    // TODO: Implement sign out logic
-    // This would delegate to application layer for actual sign out
+  async signOut(): Promise<void> {
+    this.closeAllMenus();
+    await this.authStore.logout();
+    await this.router.navigate(['/']);
+  }
+
+  // --- Private Helpers ---
+
+  private getInitials(name: string): string {
+    if (!name) return '??';
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  }
+
+  private getColor(name: string): string {
+    if (!name) return '#CCC';
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    // Simple color generation
+    const c = (hash & 0x00ffffff).toString(16).toUpperCase();
+    return '#' + '00000'.substring(0, 6 - c.length) + c;
   }
 }

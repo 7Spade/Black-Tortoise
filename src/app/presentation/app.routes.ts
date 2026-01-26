@@ -46,10 +46,20 @@ export const routes: Routes = [
     path: 'auth/register',
     canActivate: [canActivatePublic],
     loadComponent: () =>
-      import('@presentation/pages/auth').then(
-        m => m.RegisterPage
-      ),
-  },
+        import('@presentation/pages/auth').then(
+          m => m.RegisterPage
+        ),
+    },
+    
+    // Profile Page
+    {
+      path: 'profile',
+      canActivate: [canActivateAuth],
+      loadComponent: () =>
+        import('@presentation/pages/profile').then(
+          (m) => m.ProfileComponent
+        ),
+    },
   {
     path: 'auth/forgot-password',
     canActivate: [canActivatePublic],
@@ -65,6 +75,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@presentation/pages/dashboard').then(
         m => m.DemoDashboardComponent
+      ),
+  },
+  {
+    path: 'profile',
+    canActivate: [canActivateAuth],
+    loadComponent: () =>
+      import('@presentation/pages/profile/profile.component').then(
+        m => m.ProfileComponent
       ),
   },
   {

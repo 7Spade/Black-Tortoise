@@ -1,43 +1,49 @@
-<!--
-  Template for UserAvatarComponent
-  
-  Presentation-only component with dropdown menu for user actions.
-  - Displays avatar with menu toggle
-  - Shows dropdown menu with links to Settings and Profile
-  - Uses Angular 20 @if control flow
-  - Maintains accessibility (a11y) with ARIA labels
--->
 <div class="user-avatar-container">
-  <button 
-    class="avatar-button" 
-    (click)="toggleMenu()"
-    aria-label="User menu"
-    type="button">
-    @if (avatarUrl(); as url) {
-      <img [src]="url" alt="User avatar" class="avatar-img" />
-    } @else {
-      <div class="avatar-placeholder" aria-hidden="true">
-        <span class="material-icons">account_circle</span>
-      </div>
+    <button 
+        class="avatar-button" 
+        (click)="facade.toggleAvatarMenu()"
+        type="button">
+        
+        @if (facade.userAvatarVm().photoUrl; as url) {
+            <img [src]="url" alt="User avatar" class="avatar-img" />
+        } @else {
+            <div 
+                class="avatar-placeholder" 
+                [style.background-color]="facade.userAvatarVm().color"
+                aria-hidden="true">
+            <span class="initials">{{ facade.userAvatarVm().initials }}</span>
+            </div>
+        }
+    </button>
+
+    @if (facade.showAvatarMenu()) {
+        <div class="avatar-menu-overlay" (click)="facade.closeAvatarMenu()"></div>
+        <div class="avatar-menu">
+            <div class="menu-header">
+                <span class="initials-small" [style.background-color]="facade.userAvatarVm().color">
+                    {{ facade.userAvatarVm().initials }}
+                </span>
+                <span class="display-name">{{ facade.identityVm().displayName }}</span>
+            </div>
+            
+            <div class="menu-divider"></div>
+
+            <button class="menu-item" (click)="facade.navigateToProfile()">
+                <mat-icon>person</mat-icon>
+                <span>Profile</span>
+            </button>
+
+            <button class="menu-item" (click)="facade.navigateToSettings()">
+                <mat-icon>settings</mat-icon>
+                <span>Settings</span>
+            </button>
+
+            <div class="menu-divider"></div>
+
+            <button class="menu-item logout" (click)="facade.signOut()">
+                <mat-icon>logout</mat-icon>
+                <span>Sign Out</span>
+            </button>
+        </div>
     }
-  </button>
-  
-  @if (showMenu()) {
-    <div class="avatar-menu">
-      <button 
-        class="avatar-menu-item" 
-        (click)="onMenuItemClick('settings')"
-        type="button">
-        <span class="material-icons">settings</span>
-        <span>Settings</span>
-      </button>
-      <button 
-        class="avatar-menu-item" 
-        (click)="onMenuItemClick('profile')"
-        type="button">
-        <span class="material-icons">person</span>
-        <span>Profile</span>
-      </button>
-    </div>
-  }
 </div>
