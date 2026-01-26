@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -7,11 +6,14 @@ import { AuthStore } from '@application/stores';
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink],
   template: `
     <div class="auth-container">
       <h2>Login</h2>
-      <div *ngIf="authStore.error()" class="error">{{ authStore.error() }}</div>
+      
+      @if (authStore.error()) {
+        <div class="error">{{ authStore.error() }}</div>
+      }
       
       <form (ngSubmit)="onSubmit()">
         <div class="form-group">
@@ -25,7 +27,11 @@ import { AuthStore } from '@application/stores';
         </div>
         
         <button type="submit" [disabled]="authStore.loading()">
-          {{ authStore.loading() ? 'Logging in...' : 'Login' }}
+          @if (authStore.loading()) {
+            Logging in...
+          } @else {
+            Login
+          }
         </button>
       </form>
       

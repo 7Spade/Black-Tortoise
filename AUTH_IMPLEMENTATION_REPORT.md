@@ -15,11 +15,14 @@ Successfully implemented a full vertical slice for Authentication following stri
 **File:** `src/app/application/stores/auth.store.ts`
 - Implemented `AuthStore` using `@ngrx/signals`.
 - Features: `login`, `register`, `logout`, `loadUser`.
-- State: `user`, `loading`, `error`.
-- **Compliance:** Uses `rxMethod` for async, `patchState` for updates, depends only on Domain interface.
+- State: `user`, `loading`, `error`, `status`.
+- **Status Enum:** `unknown | anonymous | authenticated`.
+- **Logic:** `rxMethod` listens to stream, `patchState` updates signals. NO imperative logic in components.
 
-**File:** `src/app/application/interfaces/auth-repository.token.ts`
-- Defined `AUTH_REPOSITORY` InjectionToken for dependency injection.
+**File:** `src/app/application/guards/auth.guard.ts`
+- `canActivateAuth`: Pure signal-based guard.
+- `canActivatePublic`: Pure signal-based guard.
+- **Compliance:** Reads `AuthStore.status()`, no RxJS logic.
 
 ### 3. Infrastructure Layer (Implementation details)
 **File:** `src/app/infrastructure/repositories/auth.repository.impl.ts`
@@ -29,16 +32,19 @@ Successfully implemented a full vertical slice for Authentication following stri
 
 ### 4. Presentation Layer (UI)
 **Folder:** `src/app/presentation/pages/auth/`
-- `LoginPage`: Login form with validation.
-- `RegisterPage`: Registration form.
-- `ForgotPasswordPage`: Password reset flow.
-- Wired into `app.routes.ts` with lazy loading.
+- `LoginPage`: Angular 20 Control Flow (`@if`), Signals only.
+- `RegisterPage`: Angular 20 Control Flow (`@if`), Signals only.
+- `ForgotPasswordPage`: Angular 20 Control Flow (`@if`), Signals only.
+- **Compliance:** `*ngIf` removed. `CommonModule` removed.
 
 ### 5. Configuration (Wiring)
 **File:** `src/app/app.config.ts`
 - Provided `AUTH_REPOSITORY` mapped to `AuthRepositoryImpl`.
+- **Initialization**: `APP_INITIALIZER` connects AuthStore stream before routing.
 
 ## Verification
 - **Build**: `pnpm build` passed successfully.
 - **Layers**: Strict separation enforced on file level.
 - **State**: Fully reactive, signal-based.
+- **Control Flow**: Updated to Angular 20 syntax.
+
