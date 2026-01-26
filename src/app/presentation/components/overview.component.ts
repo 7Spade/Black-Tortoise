@@ -6,9 +6,9 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
-import { AcceptanceStore } from '@application/stores/acceptance.store';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
+import { AcceptanceStore } from '@application/stores/acceptance.store';
 import { IssuesStore } from '@application/stores/issues.store';
 import { OverviewStore } from '@application/stores/overview.store';
 import { QualityControlStore } from '@application/stores/quality-control.store';

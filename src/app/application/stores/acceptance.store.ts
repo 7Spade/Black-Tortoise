@@ -15,12 +15,12 @@
  */
 
 import { computed, inject } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { AcceptanceCheckEntity, AcceptanceStatus } from '@domain/aggregates';
 import { ACCEPTANCE_REPOSITORY } from '@application/interfaces';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, from } from 'rxjs';
+import { AcceptanceCheckEntity, AcceptanceStatus } from '@domain/aggregates';
 import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { from, pipe, switchMap } from 'rxjs';
 
 export interface AcceptanceState {
   readonly checks: ReadonlyArray<AcceptanceCheckEntity>;

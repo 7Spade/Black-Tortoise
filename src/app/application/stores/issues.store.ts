@@ -16,12 +16,12 @@
  */
 
 import { computed, inject } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { IssueAggregate, IssueStatus, IssuePriority } from '@domain/aggregates';
 import { ISSUE_REPOSITORY } from '@application/interfaces';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, from } from 'rxjs';
+import { IssueAggregate, IssueStatus } from '@domain/aggregates';
 import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { from, pipe, switchMap } from 'rxjs';
 
 export interface IssuesState {
   readonly issues: ReadonlyArray<IssueAggregate>;

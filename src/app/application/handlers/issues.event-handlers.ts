@@ -6,11 +6,10 @@
  */
 
 import { inject } from '@angular/core';
-import { IssuePriority, createIssue, IssueType, IssueStatus } from '@domain/aggregates';
-import { WorkspaceId } from '@domain/value-objects';
-import { IssueCreatedEvent } from '@domain/events';
-import { IssueResolvedEvent } from '@domain/events';
+import { createIssue, IssuePriority, IssueStatus, IssueType } from '@domain/aggregates';
+import { IssueCreatedEvent, IssueResolvedEvent } from '@domain/events';
 import { EventBus } from '@domain/types';
+import { WorkspaceId } from '@domain/value-objects';
 import { IssuesStore } from '../stores/issues.store';
 
 export function registerIssuesEventHandlers(eventBus: EventBus): void {

@@ -7,11 +7,11 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CreateIssueHandler } from '@application/handlers/create-issue.handler';
+import { ResolveIssueHandler } from '@application/handlers/resolve-issue.handler';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IssuesStore } from '@application/stores/issues.store';
-import { CreateIssueHandler } from '@application/handlers/create-issue.handler';
-import { ResolveIssueHandler } from '@application/handlers/resolve-issue.handler';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 @Component({

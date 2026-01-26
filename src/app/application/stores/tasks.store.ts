@@ -10,14 +10,13 @@
  */
 
 import { computed, inject } from '@angular/core';
-import { TaskAggregate, TaskStatus } from '@domain/aggregates';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { TASK_REPOSITORY } from '@application/interfaces';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap } from 'rxjs';
+import { TaskAggregate, TaskStatus } from '@domain/aggregates';
+import { TaskId, WorkspaceId } from '@domain/value-objects';
 import { tapResponse } from '@ngrx/operators';
-import { WorkspaceId, TaskId } from '@domain/value-objects';
-import { from } from 'rxjs';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { from, pipe, switchMap } from 'rxjs';
 
 /**
  * Tasks State
