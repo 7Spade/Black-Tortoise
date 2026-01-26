@@ -82,22 +82,19 @@ graph TB
     Planning --> Execute
     
     Execute --> IsCodeChange{代碼變更?}
-    IsCodeChange -->|Yes| BuildCheck[執行 pnpm build]
-    IsCodeChange -->|No| Validate
+    IsCodeChange -->|Yes| Playwright[Playwright 驗證]
+    IsCodeChange -->|No| Memory
     
-    BuildCheck -->|Fail| AutoFix[自我修正]
-    AutoFix --> BuildCheck
-    BuildCheck -->|Pass| Validate{需UI驗證?}
+    Playwright -->|Fail| AutoFix[自我修正]
+    AutoFix --> Playwright
+    Playwright -->|Pass| Memory[更新記憶]
     
-    Validate -->|UI測試| Playwright
-    Validate -->|否| Memory[更新記憶]
-    Playwright --> Memory
     Memory --> Done[✓ 完成]
     
     style Low fill:#90EE90
     style High fill:#FFB6C1
     style Execute fill:#87CEEB
-    style BuildCheck fill:#FFA500
+    style Playwright fill:#FFA500
 ```
 
 ### 工具調用策略
@@ -223,21 +220,41 @@ readonly vm = computed(() => ({
 
 ```yaml
 強制驗證循環 (Mandatory Validation Loop):
-1. [ ] 執行 `pnpm build --strict`
+1. [ ] 執行 Playwright E2E 驗證 (詳見下文協議)
    - 失敗: 進入 AutoFix 循環，禁止提交
    - 成功: 繼續下一步
-2. [ ] 檢查 Angular AOT Compliance (Template Type Check)
 
-環境檢查:導致 AOT Build Error。
+環境檢查: 透過瀏覽器實際運行確保無 Runtime/Compile 錯誤。
 
 ---
 
-## ✅ 6. 完成清單 (Definition of Done)
+## 🧪 6. 自動化驗證協議 (Automated Verification Protocol)
+
+**強制執行：**每次任務完成前，**必須**使用 `microsoft/playwright-mcp` 工具在真實瀏覽器中驗證功能。
+
+**測試專用憑證:**
+- **Email:** `demo@test.com`
+- **Password:** `123123`
+- **Login URL:** `http://localhost:4200/login`
+
+**驗證標準程序:**
+1. **Launch**: 使用 `mcp_microsoft_pla_browser_navigate` (或其他瀏覽器工具) 訪問應用。
+2. **Login**: 輸入上述測試憑證登入系統。
+3. **Action**: 執行本次修改涉及的關鍵操作 (點擊按鈕、填寫表單等)。
+4. **Assert**: 檢查頁面狀態變更 (DOM 元素出現、文字變更、Toaster 提示)。
+5. **Report**: 確保操作成功，若失敗則進行修復。
+
+---
+
+## ✅ 7. 完成清單 (Definition of Done)
 
 ```yaml
 環境檢查:
-- [ ] pnpm build --strict 通過
 - [ ] 無 Zone.js 相關依賴 (Promise loop)
+
+驗證測試 (Playwright):
+- [ ] 已通過瀏覽器 E2E 驗證 (Login -> Action -> Assert)
+- [ ] 使用 `demo@test.com` 測試帳號確認權限與流程
 
 架構完整性:
 - [ ] Facade 提供 ViewModel, 無 Entity 洩漏
@@ -249,7 +266,7 @@ readonly vm = computed(() => ({
 - [ ] 更新 docs/ 下的架構文檔 (如變更)
 ```
 
-## 📜 7. 核心誡命 (Black-Tortoise 11 Laws)
+## 📜 8. 核心誡命 (Black-Tortoise 11 Laws)
 
 1. 🔒 **TypeScript 純淨** - 禁 `any`, 禁 `as unknown`
 2. ⚡ **Zone-less 強制** - 所有功能無 `zone.js`
