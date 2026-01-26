@@ -22,8 +22,8 @@
  */
 
 import { computed } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { TaskPriority } from '@domain/aggregates';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 
 export interface WorkspaceSettings {
   readonly workingHours: {
@@ -122,10 +122,18 @@ export const SettingsStore = signalStore(
      */
     updateUserPreferences(updates: Partial<UserPreferences>): void {
       const current = store.userPreferences();
-      if (!current) return;
+      // Handle null state by merging with defaults
+      const defaults: UserPreferences = {
+        theme: 'system',
+        language: 'en',
+        compactMode: false,
+        showCompletedTasks: false
+      };
+
+      const newPreferences = current ? { ...current, ...updates } : { ...defaults, ...updates };
 
       patchState(store, {
-        userPreferences: { ...current, ...updates },
+        userPreferences: newPreferences,
         isSaving: false,
       });
     },
