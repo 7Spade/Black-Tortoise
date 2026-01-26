@@ -1,1 +1,2 @@
-export { ContextSwitcherComponent } from './context-switcher.component';
+export { ContextSwitcherComponent } from '../../components/context-switcher.component';
+

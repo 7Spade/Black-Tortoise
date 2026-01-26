@@ -128,10 +128,10 @@ const presentationLayerBoundaries = [
   // Architecture Lock: PR Comment 3796307372 - No EventBus/EventStore internals in Presentation
   {
     group: [
-      '@domain/event-bus/**',
-      '@domain/event-store/**',
-      '**/domain/event-bus/**',
-      '**/domain/event-store/**',
+      '@domain/shared/events/event-bus/**',
+      '@domain/shared/events/event-store/**',
+      '**/domain/shared/events/event-bus/**',
+      '**/domain/shared/events/event-store/**',
       '@infrastructure/events/**',
       '**/infrastructure/events/**',
     ],
@@ -280,10 +280,10 @@ export default [
           },
           {
             group: [
-              '@domain/event-bus/**',
-              '@domain/event-store/**',
-              '**/domain/event-bus/**',
-              '**/domain/event-store/**',
+              '@domain/shared/events/event-bus/**',
+              '@domain/shared/events/event-store/**',
+              '**/domain/shared/events/event-bus/**',
+              '**/domain/shared/events/event-store/**',
               '@infrastructure/events/**',
               '**/infrastructure/events/**',
             ],

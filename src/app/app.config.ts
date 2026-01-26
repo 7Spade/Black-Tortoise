@@ -1,18 +1,20 @@
 import {
-  ApplicationConfig,
-  provideZonelessChangeDetection,
+    APP_INITIALIZER,
+    ApplicationConfig,
+    inject,
+    provideZonelessChangeDetection
 } from '@angular/core';
 import {
-  getAnalytics,
-  provideAnalytics,
-  ScreenTrackingService,
-  UserTrackingService,
+    getAnalytics,
+    provideAnalytics,
+    ScreenTrackingService,
+    UserTrackingService,
 } from '@angular/fire/analytics';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import {
-  initializeAppCheck,
-  provideAppCheck,
-  ReCaptchaEnterpriseProvider,
+    initializeAppCheck,
+    provideAppCheck,
+    ReCaptchaEnterpriseProvider,
 } from '@angular/fire/app-check';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getDataConnect, provideDataConnect } from '@angular/fire/data-connect';
@@ -22,19 +24,23 @@ import { getFunctions, provideFunctions } from '@angular/fire/functions';
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { getPerformance, providePerformance } from '@angular/fire/performance';
 import {
-  getRemoteConfig,
-  provideRemoteConfig,
+    getRemoteConfig,
+    provideRemoteConfig,
 } from '@angular/fire/remote-config';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { getVertexAI, provideVertexAI } from '@angular/fire/vertexai';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
+import { provideEventHandlers } from '@application/event-handler.registry';
+import { AUTH_REPOSITORY, AUTH_STREAM, EVENT_BUS, EVENT_STORE, ORGANIZATION_REPOSITORY } from '@application/interfaces';
+import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
+import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
+import { AuthStore } from '@application/stores/auth.store';
+import { InMemoryEventBus } from '@infrastructure/adapters';
+import { WorkspaceRuntimeFactory } from '@infrastructure/factories';
+import { AuthRepositoryImpl, InMemoryEventStore, OrganizationRepositoryImpl, WorkspaceRepositoryImpl } from '@infrastructure/repositories';
 import { routes } from '@presentation/app.routes';
 import { environment } from '../environments/environment';
-import { WORKSPACE_RUNTIME_FACTORY } from '@application/workspace/tokens/workspace-runtime.token';
-import { WorkspaceRuntimeFactory } from '@infrastructure/workspace';
-import { EVENT_BUS, EVENT_STORE } from '@application/events';
-import { InMemoryEventBus, InMemoryEventStore } from '@infrastructure/events';
 
 /**
  * Application Configuration with Zone-less Change Detection
@@ -66,12 +72,39 @@ export const appConfig: ApplicationConfig = {
     // Router configuration with lazy-loaded routes
     provideRouter(routes),
     provideAnimations(),
+
+    // Application Initializers
+    // 1. Initialize Auth Store (Connect to Firebase Stream)
+    {
+      provide: APP_INITIALIZER,
+      useFactory: () => {
+        const authStore = inject(AuthStore);
+        return () => authStore.connect();
+      },
+      multi: true
+    },
     
     // DDD/Clean Architecture: Infrastructure Providers
     // Register infrastructure implementations for application abstractions
     {
       provide: WORKSPACE_RUNTIME_FACTORY,
       useClass: WorkspaceRuntimeFactory
+    },
+    {
+      provide: AUTH_REPOSITORY,
+      useClass: AuthRepositoryImpl
+    },
+    {
+      provide: AUTH_STREAM,
+      useClass: AuthRepositoryImpl
+    },
+    {
+      provide: WORKSPACE_REPOSITORY,
+      useClass: WorkspaceRepositoryImpl
+    },
+    {
+      provide: ORGANIZATION_REPOSITORY,
+      useClass: OrganizationRepositoryImpl
     },
     
     // Event Infrastructure: Singleton EventBus and EventStore
@@ -85,6 +118,9 @@ export const appConfig: ApplicationConfig = {
       provide: EVENT_STORE,
       useClass: InMemoryEventStore
     },
+
+    // Initialize Domain Event Handlers
+    provideEventHandlers(),
 
     // Firebase App Initialization
     provideFirebaseApp(() => initializeApp(environment.firebase)),

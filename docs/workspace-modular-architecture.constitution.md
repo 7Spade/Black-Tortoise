@@ -75,6 +75,30 @@ Copilot 在生成代碼時必須嚴格遵守此文件，優先於其他通用規
 - **閉環邏輯**：Issue 的生命週期必須與 Task 狀態掛鉤 (Blocking 關係)。
 - **自動化**：接收到 `QCFailed` 事件時，自動預填 Issue Title 與 Context，減少人工輸入。
 
+### 8. 總覽模組 (OverviewModule)
+- **職責**：Workspace 核心指標與活動儀表板。
+- **設計**：
+  - 聚合各模組關鍵資訊 (Key Metrics)，如待辦事項數、Issue 統計等。
+  - 使用 Widget 模式設計，支援響應式佈局。
+
+### 9. 成員模組 (MembersModule)
+- **職責**：團隊成員管理與角色分配。
+- **互動**：
+  - 邀請/移除成員必須發布 `MemberUpdated` 事件。
+  - 變更角色時需連動 PermissionsModule 的檢查邏輯。
+
+### 10. 稽核模組 (AuditModule)
+- **職責**：系統操作與安全日誌 (Audit Log)。
+- **特性**：
+  - 唯讀 (Read-Only) 呈現，確保日誌不可篡改。
+  - 支援依時間、操作者、模組進行多維度篩選。
+
+### 11. 行事曆模組 (CalendarModule)
+- **職責**：以時間維度檢視任務與工作日誌。
+- **資料來源**：
+  - 聚合 TasksModule (到期日) 與 DailyModule (工時紀錄)。
+  - **禁止** 重新 fetch 資料，應訂閱原模組的 Store 或使用 Selector。
+
 *(註：若專案擴展至更多模組，如 Chat, Wiki, Meetings 等，皆需遵循上述模組化隔離原則)*
 
 ---

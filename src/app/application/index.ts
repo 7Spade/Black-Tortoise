@@ -1,26 +1,15 @@
 /**
  * Application Layer - Public API
  * 
- * Exports all public interfaces, tokens, facades, and services
- * for use by Presentation layer and external consumers
+ * Exports all technical layers strictly adhering to the Unified Agent Protocol.
  */
 
-// Core modules
+export * from './commands';
 export * from './events';
 export * from './facades';
+export * from './guards';
+export * from './handlers';
 export * from './interfaces';
+export * from './models';
 export * from './stores';
-export * from './workspace';
 
-// Feature modules
-export * from './acceptance';
-export * from './audit';
-export * from './daily';
-export * from './documents';
-export * from './issues';
-export * from './members';
-export * from './overview';
-export * from './permissions';
-export * from './quality-control';
-export * from './settings';
-export * from './tasks';

@@ -9,9 +9,9 @@
  * This interface is pure TypeScript with no framework dependencies.
  */
 
-import { TaskId } from '../value-objects/task-id.vo';
-import { TaskAggregate } from '../aggregates/task.aggregate';
-import { WorkspaceId } from '../value-objects/workspace-id.vo';
+import { WorkspaceId } from '@domain/value-objects';
+import { TaskAggregate } from '../aggregates';
+import { TaskId } from '../value-objects';
 
 export interface TaskRepository {
   /**

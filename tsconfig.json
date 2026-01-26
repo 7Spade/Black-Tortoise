@@ -18,11 +18,37 @@
     "importHelpers": true,
     "baseUrl": ".",
     "paths": {
+      "@presentation/components": ["src/app/presentation/components/index.ts"],
+      "@presentation/dialogs": ["src/app/presentation/dialogs/index.ts"],
+      "@presentation/directives": ["src/app/presentation/directives/index.ts"],
+      "@presentation/layouts": ["src/app/presentation/layouts/index.ts"],
+      "@presentation/pages": ["src/app/presentation/pages/index.ts"],
+      "@presentation/pipes": ["src/app/presentation/pipes/index.ts"],
+      "@presentation/styles": ["src/app/presentation/styles/index.ts"],
       "@presentation/*": ["src/app/presentation/*"],
+      "@application/commands": ["src/app/application/commands/index.ts"],
+      "@application/events": ["src/app/application/events/index.ts"],
+      "@application/facades": ["src/app/application/facades/index.ts"],
+      "@application/handlers": ["src/app/application/handlers/index.ts"],
+      "@application/interfaces": ["src/app/application/interfaces/index.ts"],
+      "@application/models": ["src/app/application/models/index.ts"],
+      "@application/stores": ["src/app/application/stores/index.ts"],
       "@application/*": ["src/app/application/*"],
+      "@domain/aggregates": ["src/app/domain/aggregates/index.ts"],
+      "@domain/entities": ["src/app/domain/entities/index.ts"],
+      "@domain/events": ["src/app/domain/events/index.ts"],
+      "@domain/factories": ["src/app/domain/factories/index.ts"],
+      "@domain/policies": ["src/app/domain/policies/index.ts"],
+      "@domain/repositories": ["src/app/domain/repositories/index.ts"],
+      "@domain/services": ["src/app/domain/services/index.ts"],
+      "@domain/types": ["src/app/domain/types/index.ts"],
+      "@domain/value-objects": ["src/app/domain/value-objects/index.ts"],
       "@domain/*": ["src/app/domain/*"],
+      "@infrastructure/adapters": ["src/app/infrastructure/adapters/index.ts"],
+      "@infrastructure/factories": ["src/app/infrastructure/factories/index.ts"],
+      "@infrastructure/repositories": ["src/app/infrastructure/repositories/index.ts"],
+      "@infrastructure/services": ["src/app/infrastructure/services/index.ts"],
       "@infrastructure/*": ["src/app/infrastructure/*"],
-      "@shared/*": ["src/app/shared/*"],
       "@env/*": ["src/environments/*"],
       "@styles/*": ["src/styles/*"]
     },
@@ -35,5 +61,10 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "exclude": [
+    "**/*.spec.ts",
+    "test.ts",
+    "**/*.test.ts"
+  ]
 }

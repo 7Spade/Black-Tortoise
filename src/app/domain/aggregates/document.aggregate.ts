@@ -8,8 +8,8 @@
  * It enforces business rules around document lifecycle and permissions.
  */
 
-import { DocumentId } from '../value-objects/document-id.vo';
-import { WorkspaceId } from '../value-objects/workspace-id.vo';
+import { WorkspaceId } from '@domain/value-objects';
+import { DocumentId } from '../value-objects';
 
 export type DocumentType = 'text' | 'spreadsheet' | 'presentation' | 'pdf' | 'image' | 'other';
 export type DocumentStatus = 'draft' | 'published' | 'archived';
