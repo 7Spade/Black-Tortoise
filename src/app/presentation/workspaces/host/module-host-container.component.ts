@@ -94,17 +94,17 @@ import { IModuleEventBus } from '@application/interfaces/module-event-bus.interf
 })
 export class ModuleHostContainerComponent implements OnInit, OnDestroy {
   @ViewChild('moduleContainer', { read: ViewContainerRef }) 
-  moduleContainer?: ViewContainerRef;
+  moduleContainer: ViewContainerRef | undefined;
   
   /**
    * Module component type to load
    */
-  @Input() moduleComponent?: Type<IAppModule>;
+  @Input() moduleComponent: Type<IAppModule> | undefined;
   
   /**
    * Module ID for debugging
    */
-  @Input() moduleId?: string;
+  @Input() moduleId: string | undefined;
   
   /**
    * Component state
@@ -121,15 +121,16 @@ export class ModuleHostContainerComponent implements OnInit, OnDestroy {
   /**
    * Current module instance
    */
-  private moduleRef?: ComponentRef<IAppModule>;
-  private eventBus?: IModuleEventBus;
+  private moduleRef: ComponentRef<IAppModule> | undefined;
+  private eventBus: IModuleEventBus | undefined;
   
   constructor() {
     // Watch for workspace changes and recreate eventBus
     effect(() => {
       const workspace = this.workspaceContext.currentWorkspace();
       if (workspace) {
-        this.eventBus = this.moduleFacade.getEventBus(workspace.id) ?? undefined;
+        const eventBus = this.moduleFacade.getEventBus(workspace.id);
+        this.eventBus = eventBus !== null ? eventBus : undefined;
         if (this.eventBus) {
           this.reloadModule();
         }
@@ -160,7 +161,8 @@ export class ModuleHostContainerComponent implements OnInit, OnDestroy {
       return;
     }
     
-    this.eventBus = this.moduleFacade.getEventBus(workspace.id) ?? undefined;
+    const eventBus = this.moduleFacade.getEventBus(workspace.id);
+    this.eventBus = eventBus !== null ? eventBus : undefined;
     if (!this.eventBus) {
       this.error.set('Workspace event bus not found');
       return;

@@ -88,7 +88,7 @@ export class IssuesModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Issues';
   readonly type: ModuleType = 'issues';
   
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   readonly issuesStore = inject(IssuesStore);
   private readonly createIssueUseCase = inject(CreateIssueUseCase);
   private readonly resolveIssueUseCase = inject(ResolveIssueUseCase);

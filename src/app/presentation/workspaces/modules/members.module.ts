@@ -66,7 +66,7 @@ export class MembersModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Members';
   readonly type: ModuleType = 'members';
   
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   readonly membersStore = inject(MembersStore);
   
   private subscriptions = ModuleEventHelper.createSubscriptionManager();

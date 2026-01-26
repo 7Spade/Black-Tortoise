@@ -92,7 +92,7 @@ export class OverviewModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Overview';
   readonly type: ModuleType = 'overview';
   
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   
   readonly overviewStore = inject(OverviewStore);
   readonly tasksStore = inject(TasksStore);

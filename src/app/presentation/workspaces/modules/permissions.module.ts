@@ -68,7 +68,7 @@ export class PermissionsModule implements IAppModule, OnInit, OnDestroy {
   readonly name = 'Permissions';
   readonly type: ModuleType = 'permissions';
   
-  @Input() eventBus?: IModuleEventBus;
+  @Input() eventBus: IModuleEventBus | undefined;
   readonly permissionsStore = inject(PermissionsStore);
   
   private subscriptions = ModuleEventHelper.createSubscriptionManager();
