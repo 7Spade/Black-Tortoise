@@ -5,8 +5,8 @@
  * DDD Pattern: Command
  */
 
-import { WorkspaceId } from '@domain/core/workspace';
-import { MemberRole } from '@domain/modules/members/aggregates/member.aggregate';
+import { WorkspaceId } from '@domain/value-objects';
+import { MemberRole } from '@domain/aggregates';
 
 export interface InviteMemberCommand {
   workspaceId: WorkspaceId;

@@ -7,11 +7,11 @@
 
 import { Injectable, inject } from '@angular/core';
 import { CreateRoleCommand } from '../commands/create-role.command';
-// import { PermissionsRepository } from '@domain/modules/permissions/repositories';
+// import { PermissionRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class CreateRoleHandler {
-  // private repo = inject(PermissionsRepository);
+  // private repo = inject(PermissionRepository);
 
   async execute(command: CreateRoleCommand): Promise<void> {
     // TODO: Implement Use Case logic

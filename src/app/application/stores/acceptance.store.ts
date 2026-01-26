@@ -23,8 +23,8 @@
  */
 
 import { computed } from '@angular/core';
-import { AcceptanceApprovedEvent } from '@domain/modules/acceptance/events/acceptance-approved.event';
-import { AcceptanceRejectedEvent } from '@domain/modules/acceptance/events/acceptance-rejected.event';
+import { AcceptanceApprovedEvent } from '@domain/events';
+import { AcceptanceRejectedEvent } from '@domain/events';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 
 export interface AcceptanceTask {

@@ -21,10 +21,10 @@
  */
 
 import { inject } from '@angular/core';
-import { AcceptanceApprovedEvent } from '@domain/modules/acceptance/events/acceptance-approved.event';
-import { AcceptanceRejectedEvent } from '@domain/modules/acceptance/events/acceptance-rejected.event';
-import { QCPassedEvent } from '@domain/modules/quality-control/events/qc-passed.event';
-import { EventBus } from '@domain/shared/events/event-bus/event-bus.interface';
+import { AcceptanceApprovedEvent } from '@domain/events';
+import { AcceptanceRejectedEvent } from '@domain/events';
+import { QCPassedEvent } from '@domain/events';
+import { EventBus } from '@domain/types';
 import { AcceptanceStore } from '../stores/acceptance.store';
 
 export function registerAcceptanceEventHandlers(eventBus: EventBus): void {

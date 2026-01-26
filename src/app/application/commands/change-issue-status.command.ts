@@ -5,7 +5,7 @@
  * DDD Pattern: Command
  */
 
-import { IssueStatus } from '@domain/modules/issues/aggregates/issue.aggregate';
+import { IssueStatus } from '@domain/aggregates';
 
 export interface ChangeIssueStatusCommand {
   issueId: string;

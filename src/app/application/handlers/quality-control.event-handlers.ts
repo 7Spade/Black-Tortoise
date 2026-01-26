@@ -18,10 +18,10 @@
 
 import { inject } from '@angular/core';
 import { CreateIssueHandler } from '@application/handlers/create-issue.handler';
-import { QCFailedEvent } from '@domain/modules/quality-control/events/qc-failed.event';
-import { QCPassedEvent } from '@domain/modules/quality-control/events/qc-passed.event';
-import { TaskSubmittedForQCEvent } from '@domain/modules/tasks/events/task-submitted-for-qc.event';
-import { EventBus } from '@domain/shared/events/event-bus/event-bus.interface';
+import { QCFailedEvent } from '@domain/events';
+import { QCPassedEvent } from '@domain/events';
+import { TaskSubmittedForQCEvent } from '@domain/events';
+import { EventBus } from '@domain/types';
 import { QualityControlStore } from '../stores/quality-control.store';
 
 export function registerQualityControlEventHandlers(eventBus: EventBus): void {

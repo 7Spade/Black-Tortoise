@@ -7,8 +7,9 @@
 
 import { inject, Injectable } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { createWorkspaceCreatedEvent } from '@domain/core/workspace/events/workspace-created.event';
-import { createWorkspaceEntity, WorkspaceEntity, WorkspaceId } from '@domain/core/workspace';
+import { createWorkspaceCreatedEvent } from '@domain/events';
+import { createWorkspaceEntity, WorkspaceEntity } from '@domain/aggregates';
+import { WorkspaceId } from '@domain/value-objects';
 
 /**
  * Create Workspace Command

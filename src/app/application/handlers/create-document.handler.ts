@@ -7,11 +7,11 @@
 
 import { Injectable, inject } from '@angular/core';
 import { CreateDocumentCommand } from '../commands/create-document.command';
-// import { DocumentsRepository } from '@domain/modules/documents/repositories';
+// import { DocumentRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class CreateDocumentHandler {
-  // private repo = inject(DocumentsRepository);
+  // private repo = inject(DocumentRepository);
 
   async execute(command: CreateDocumentCommand): Promise<void> {
     // TODO: Implement Use Case logic

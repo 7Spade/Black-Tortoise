@@ -7,7 +7,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { SubmitQCCheckCommand } from '../commands/submit-qc-check.command';
-// import { Quality-controlRepository } from '@domain/modules/quality-control/repositories';
+// import { Quality-controlRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class SubmitQcCheckHandler {

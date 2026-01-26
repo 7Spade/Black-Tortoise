@@ -7,11 +7,11 @@
 
 import { Injectable, inject } from '@angular/core';
 import { ChangeIssueStatusCommand } from '../commands/change-issue-status.command';
-// import { IssuesRepository } from '@domain/modules/issues/repositories';
+// import { IssueRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class ChangeIssueStatusHandler {
-  // private repo = inject(IssuesRepository);
+  // private repo = inject(IssueRepository);
 
   async execute(command: ChangeIssueStatusCommand): Promise<void> {
     // TODO: Implement Use Case logic

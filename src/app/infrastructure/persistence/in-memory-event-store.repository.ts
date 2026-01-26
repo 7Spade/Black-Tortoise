@@ -26,8 +26,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { EventStore } from '@domain/shared/events/event-store/event-store.interface';
-import { DomainEvent } from '@domain/shared/events/domain-event';
+import { EventStore } from '@domain/types';
+import { DomainEvent } from '@domain/events';
 
 @Injectable()
 export class InMemoryEventStore implements EventStore {

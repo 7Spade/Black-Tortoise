@@ -5,9 +5,9 @@
  * DDD Pattern: Command
  */
 
-import { WorkspaceId } from '@domain/core/workspace';
-import { DocumentType } from '@domain/modules/documents/aggregates/document.aggregate';
-import { DocumentId } from '@domain/modules/documents/value-objects';
+import { WorkspaceId } from '@domain/value-objects';
+import { DocumentType } from '@domain/aggregates';
+import { DocumentId } from '@domain/value-objects';
 
 export interface CreateDocumentCommand {
   id: DocumentId;

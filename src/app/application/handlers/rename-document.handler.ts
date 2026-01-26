@@ -7,11 +7,11 @@
 
 import { Injectable, inject } from '@angular/core';
 import { RenameDocumentCommand } from '../commands/rename-document.command';
-// import { DocumentsRepository } from '@domain/modules/documents/repositories';
+// import { DocumentRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class RenameDocumentHandler {
-  // private repo = inject(DocumentsRepository);
+  // private repo = inject(DocumentRepository);
 
   async execute(command: RenameDocumentCommand): Promise<void> {
     // TODO: Implement Use Case logic

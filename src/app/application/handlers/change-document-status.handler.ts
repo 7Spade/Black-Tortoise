@@ -7,11 +7,11 @@
 
 import { Injectable, inject } from '@angular/core';
 import { ChangeDocumentStatusCommand } from '../commands/change-document-status.command';
-// import { DocumentsRepository } from '@domain/modules/documents/repositories';
+// import { DocumentRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class ChangeDocumentStatusHandler {
-  // private repo = inject(DocumentsRepository);
+  // private repo = inject(DocumentRepository);
 
   async execute(command: ChangeDocumentStatusCommand): Promise<void> {
     // TODO: Implement Use Case logic

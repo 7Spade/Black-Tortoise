@@ -1,10 +1,10 @@
 import { inject } from '@angular/core';
-import { IssueResolvedEvent } from '@domain/modules/issues/events/issue-resolved.event';
-import { QCFailedEvent } from '@domain/modules/quality-control/events/qc-failed.event';
-import { createTask, TaskStatus, updateTaskStatus } from '@domain/modules/tasks/aggregates/task.aggregate';
-import { TaskCreatedEvent } from '@domain/modules/tasks/events/task-created.event';
-import { TaskSubmittedForQCEvent } from '@domain/modules/tasks/events/task-submitted-for-qc.event';
-import { EventBus } from '@domain/shared/events/event-bus/event-bus.interface';
+import { IssueResolvedEvent } from '@domain/events';
+import { QCFailedEvent } from '@domain/events';
+import { createTask, TaskStatus, updateTaskStatus } from '@domain/aggregates';
+import { TaskCreatedEvent } from '@domain/events';
+import { TaskSubmittedForQCEvent } from '@domain/events';
+import { EventBus } from '@domain/types';
 import { TasksStore } from '../stores/tasks.store';
 
 export function registerTasksEventHandlers(eventBus: EventBus): void {

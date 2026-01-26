@@ -12,7 +12,7 @@
 
 import { inject, Injectable } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { createIssueResolvedEvent } from '@domain/modules/issues/events/issue-resolved.event';
+import { createIssueResolvedEvent } from '@domain/events';
 
 export interface ResolveIssueRequest {
   readonly issueId: string;

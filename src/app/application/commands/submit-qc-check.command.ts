@@ -5,7 +5,7 @@
  * DDD Pattern: Command
  */
 
-import { QCStatus } from '@domain/modules/quality-control/aggregates/quality-control.aggregate';
+import { QCStatus } from '@domain/aggregates';
 
 export interface SubmitQCCheckCommand {
   id: string;

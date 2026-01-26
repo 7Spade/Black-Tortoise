@@ -7,11 +7,11 @@
 
 import { Injectable, inject } from '@angular/core';
 import { CreateAuditEntryCommand } from '../commands/create-audit-entry.command';
-// import { AuditRepository } from '@domain/modules/audit/repositories';
+// import { AuditLogRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class CreateAuditEntryHandler {
-  // private repo = inject(AuditRepository);
+  // private repo = inject(AuditLogRepository);
 
   async execute(command: CreateAuditEntryCommand): Promise<void> {
     // TODO: Implement Use Case logic

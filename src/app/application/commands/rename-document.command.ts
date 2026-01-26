@@ -5,7 +5,7 @@
  * DDD Pattern: Command
  */
 
-import { DocumentId } from '@domain/modules/documents/value-objects/document-id.vo';
+import { DocumentId } from '@domain/value-objects';
 
 export interface RenameDocumentCommand {
   documentId: DocumentId;

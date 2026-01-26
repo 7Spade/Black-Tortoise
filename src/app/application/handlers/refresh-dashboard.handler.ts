@@ -7,7 +7,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { RefreshDashboardCommand } from '../commands/refresh-dashboard.command';
-// import { OverviewRepository } from '@domain/modules/overview/repositories';
+// import { OverviewRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class RefreshDashboardHandler {

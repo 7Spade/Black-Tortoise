@@ -12,7 +12,7 @@
 
 import { inject, Injectable } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { createQCPassedEvent } from '@domain/modules/quality-control/events/qc-passed.event';
+import { createQCPassedEvent } from '@domain/events';
 
 export interface PassQCRequest {
   readonly taskId: string;

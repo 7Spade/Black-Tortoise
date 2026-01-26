@@ -7,7 +7,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { UpdateSettingsCommand } from '../commands/update-settings.command';
-// import { SettingsRepository } from '@domain/modules/settings/repositories';
+// import { SettingsRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class UpdateSettingsHandler {

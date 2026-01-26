@@ -7,11 +7,11 @@
 
 import { Injectable, inject } from '@angular/core';
 import { UpdateMemberRoleCommand } from '../commands/update-member-role.command';
-// import { MembersRepository } from '@domain/modules/members/repositories';
+// import { MemberRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class UpdateMemberRoleHandler {
-  // private repo = inject(MembersRepository);
+  // private repo = inject(MemberRepository);
 
   async execute(command: UpdateMemberRoleCommand): Promise<void> {
     // TODO: Implement Use Case logic

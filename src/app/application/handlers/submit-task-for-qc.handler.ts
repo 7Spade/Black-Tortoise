@@ -12,7 +12,7 @@
 
 import { inject, Injectable } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { createTaskSubmittedForQCEvent } from '@domain/modules/tasks/events/task-submitted-for-qc.event';
+import { createTaskSubmittedForQCEvent } from '@domain/events';
 
 export interface SubmitTaskForQCRequest {
   readonly taskId: string;

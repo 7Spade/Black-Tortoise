@@ -13,7 +13,8 @@
  * - Presentation accesses via Application facades
  */
 
-import { WorkspaceEntity, WorkspaceContext, WorkspaceEventBus } from '@domain/core/workspace';
+import { WorkspaceEntity } from '@domain/aggregates';
+import { WorkspaceContext, WorkspaceEventBus } from '@domain/types';
 
 /**
  * Workspace Runtime

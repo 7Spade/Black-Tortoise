@@ -19,8 +19,8 @@
  */
 
 import { InjectionToken } from '@angular/core';
-import { EventBus } from '@domain/shared/events/event-bus/event-bus.interface';
-import { EventStore } from '@domain/shared/events/event-store/event-store.interface';
+import { EventBus } from '@domain/types';
+import { EventStore } from '@domain/types';
 
 /**
  * Event Bus Injection Token

@@ -5,7 +5,7 @@
  * DDD Pattern: Command
  */
 
-import { MemberRole } from '@domain/modules/members/aggregates/member.aggregate';
+import { MemberRole } from '@domain/aggregates';
 
 export interface UpdateMemberRoleCommand {
   memberId: string;

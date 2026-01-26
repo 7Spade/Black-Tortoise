@@ -11,8 +11,8 @@
  */
 
 import { inject } from '@angular/core';
-import { DailyEntryCreatedEvent } from '@domain/modules/daily/events/daily-entry-created.event';
-import { EventBus } from '@domain/shared/events/event-bus/event-bus.interface';
+import { DailyEntryCreatedEvent } from '@domain/events';
+import { EventBus } from '@domain/types';
 import { DailyEntry, DailyStore } from '../stores/daily.store';
 
 export function registerDailyEventHandlers(eventBus: EventBus): void {

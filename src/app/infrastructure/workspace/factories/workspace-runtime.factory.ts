@@ -14,7 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { IWorkspaceRuntimeFactory, WorkspaceRuntime } from '@application/interfaces/workspace-runtime-factory.interface';
-import { WorkspaceContext, createWorkspaceContext, WorkspaceEntity } from '@domain/core/workspace';
+import { WorkspaceContext, createWorkspaceContext } from '@domain/types';
+import { WorkspaceEntity } from '@domain/aggregates';
 import { InMemoryEventBus } from './in-memory-event-bus';
 
 /**

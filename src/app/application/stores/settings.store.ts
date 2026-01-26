@@ -23,7 +23,7 @@
 
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { TaskPriority } from '@domain/modules/tasks/aggregates/task.aggregate';
+import { TaskPriority } from '@domain/aggregates';
 
 export interface WorkspaceSettings {
   readonly workingHours: {

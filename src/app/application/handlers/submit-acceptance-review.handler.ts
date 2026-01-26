@@ -7,7 +7,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { SubmitAcceptanceReviewCommand } from '../commands/submit-acceptance-review.command';
-// import { AcceptanceRepository } from '@domain/modules/acceptance/repositories';
+// import { AcceptanceRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class SubmitAcceptanceReviewHandler {

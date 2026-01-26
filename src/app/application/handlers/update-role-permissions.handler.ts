@@ -7,11 +7,11 @@
 
 import { Injectable, inject } from '@angular/core';
 import { UpdateRolePermissionsCommand } from '../commands/update-role-permissions.command';
-// import { PermissionsRepository } from '@domain/modules/permissions/repositories';
+// import { PermissionRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class UpdateRolePermissionsHandler {
-  // private repo = inject(PermissionsRepository);
+  // private repo = inject(PermissionRepository);
 
   async execute(command: UpdateRolePermissionsCommand): Promise<void> {
     // TODO: Implement Use Case logic

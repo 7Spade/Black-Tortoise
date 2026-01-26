@@ -24,7 +24,7 @@ import { CreateTaskHandler, FailQCHandler, ResolveIssueHandler, SubmitTaskForQCH
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { TasksStore } from '@application/stores';
-import { TaskAggregate, TaskPriority, createTask } from '@domain/modules/tasks';
+import { TaskAggregate, TaskPriority, createTask } from '@domain/aggregates';
 
 @Component({
   selector: 'app-tasks-module',

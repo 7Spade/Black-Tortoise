@@ -15,8 +15,8 @@
 
 import { inject, Injectable } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { TaskPriority } from '@domain/modules/tasks/aggregates/task.aggregate';
-import { createTaskCreatedEvent } from '@domain/modules/tasks/events/task-created.event';
+import { TaskPriority } from '@domain/aggregates';
+import { createTaskCreatedEvent } from '@domain/events';
 
 export interface CreateTaskRequest {
   readonly taskId: string;

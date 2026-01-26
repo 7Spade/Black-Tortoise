@@ -13,8 +13,8 @@ import { computed, inject } from '@angular/core';
 import { CreateWorkspaceHandler } from '@application/handlers/create-workspace.handler';
 import { SwitchWorkspaceHandler } from '@application/handlers/switch-workspace.handler';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
-import { OrganizationEntity } from '@domain/core/organization/organization.entity';
-import { WorkspaceEntity } from '@domain/core/workspace';
+import { OrganizationEntity } from '@domain/entities';
+import { WorkspaceEntity } from '@domain/aggregates';
 import {
   patchState,
   signalStore,

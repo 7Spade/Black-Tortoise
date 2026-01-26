@@ -5,7 +5,7 @@
  * DDD Pattern: Command
  */
 
-import { AcceptanceStatus } from '@domain/modules/acceptance/aggregates/acceptance-check.aggregate';
+import { AcceptanceStatus } from '@domain/aggregates';
 
 export interface SubmitAcceptanceReviewCommand {
   id: string;

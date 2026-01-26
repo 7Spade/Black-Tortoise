@@ -20,8 +20,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { EventBus, EventHandler } from '@domain/shared/events/event-bus/event-bus.interface';
-import { DomainEvent } from '@domain/shared/events/domain-event';
+import { EventBus, EventHandler } from '@domain/types';
+import { DomainEvent } from '@domain/events';
 
 @Injectable()
 export class InMemoryEventBus implements EventBus {

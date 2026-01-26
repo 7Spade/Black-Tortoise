@@ -10,7 +10,7 @@
  */
 
 import { computed } from '@angular/core';
-import { TaskAggregate, TaskStatus } from '@domain/modules/tasks/aggregates/task.aggregate';
+import { TaskAggregate, TaskStatus } from '@domain/aggregates';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 
 /**

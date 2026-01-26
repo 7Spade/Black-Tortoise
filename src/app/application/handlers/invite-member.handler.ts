@@ -7,11 +7,11 @@
 
 import { Injectable, inject } from '@angular/core';
 import { InviteMemberCommand } from '../commands/invite-member.command';
-// import { MembersRepository } from '@domain/modules/members/repositories';
+// import { MemberRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class InviteMemberHandler {
-  // private repo = inject(MembersRepository);
+  // private repo = inject(MemberRepository);
 
   async execute(command: InviteMemberCommand): Promise<void> {
     // TODO: Implement Use Case logic

@@ -23,7 +23,7 @@
 
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { IssueStatus, IssuePriority } from '@domain/modules/issues/aggregates/issue.aggregate';
+import { IssueStatus, IssuePriority } from '@domain/aggregates';
 
 export interface Issue {
   readonly id: string;

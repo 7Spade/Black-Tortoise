@@ -6,7 +6,7 @@
  */
 
 import { InMemoryEventStore } from './in-memory-event-store.impl';
-import { testEventStoreContract } from '@domain/shared/events/event-store/event-store.interface.spec';
+import { testEventStoreContract } from '@domain/events';
 
 describe('InMemoryEventStore', () => {
   // Run contract tests

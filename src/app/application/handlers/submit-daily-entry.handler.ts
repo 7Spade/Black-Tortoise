@@ -7,7 +7,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { SubmitDailyEntryCommand } from '../commands/submit-daily-entry.command';
-// import { DailyRepository } from '@domain/modules/daily/repositories';
+// import { DailyRepository } from '@domain/repositories';
 
 @Injectable({ providedIn: 'root' })
 export class SubmitDailyEntryHandler {
