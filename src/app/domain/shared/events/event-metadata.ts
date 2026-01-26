@@ -10,3 +10,4 @@
 
 // This file is kept for backward compatibility during migration
 // but all exports are deprecated and will be removed
+export type EventMetadata = Record<string, any>;

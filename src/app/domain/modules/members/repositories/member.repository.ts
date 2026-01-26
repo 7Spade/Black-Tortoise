@@ -5,7 +5,7 @@
  * DDD Pattern: Repository Interface
  */
 
-import { MemberAggregate } from '../aggregates/member.aggregate';
+import { MemberAggregate } from '../aggregates';
 
 export interface MemberRepository {
   findById(id: string): Promise<MemberAggregate | null>;

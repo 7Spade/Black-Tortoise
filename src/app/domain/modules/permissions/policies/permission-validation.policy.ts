@@ -5,7 +5,7 @@
  * DDD Pattern: Policy
  */
 
-import { RoleDefinitionAggregate } from '../aggregates/role-definition.aggregate';
+import { RoleDefinitionAggregate } from '../aggregates';
 
 /**
  * Validate role modification

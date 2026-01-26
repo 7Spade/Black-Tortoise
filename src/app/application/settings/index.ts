@@ -1,8 +1,7 @@
 /**
- * Settings Feature - Public API
- * 
- * Layer: Application
- * Purpose: Centralized exports for settings feature
+ * Application Module: settings
  */
 
+export * from './commands';
+export * from './use-cases';
 export * from './stores';

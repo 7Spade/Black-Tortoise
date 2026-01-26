@@ -1,8 +1,7 @@
 /**
- * Members Feature - Public API
- * 
- * Layer: Application
- * Purpose: Centralized exports for members feature
+ * Application Module: members
  */
 
+export * from './commands';
+export * from './use-cases';
 export * from './stores';

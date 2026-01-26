@@ -1,0 +1,24 @@
+/**
+ * CreateAuditEntryUseCase
+ * 
+ * Layer: Application
+ * Pattern: Use Case
+ */
+
+import { Injectable, inject } from '@angular/core';
+import { CreateAuditEntryCommand } from '../commands/create-audit-entry.command';
+// import { AuditRepository } from '@domain/modules/audit/repositories';
+
+@Injectable({ providedIn: 'root' })
+export class CreateAuditEntryUseCase {
+  // private repo = inject(AuditRepository);
+
+  async execute(command: CreateAuditEntryCommand): Promise<void> {
+    // TODO: Implement Use Case logic
+    // 1. Load Aggregate
+    // 2. Invoke method
+    // 3. Save
+    // 4. Update Store (via return or event)
+    console.log('Execute CreateAuditEntryUseCase', command);
+  }
+}

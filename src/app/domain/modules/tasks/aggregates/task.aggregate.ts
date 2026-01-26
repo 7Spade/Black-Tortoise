@@ -29,9 +29,9 @@ export enum TaskPriority {
 }
 
 /**
- * Task Entity
+ * Task Aggregate Root
  */
-export interface TaskEntity {
+export interface TaskAggregate {
   readonly id: string;
   readonly workspaceId: string;
   readonly title: string;
@@ -62,7 +62,7 @@ export interface CreateTaskParams {
 /**
  * Create a new Task entity
  */
-export function createTask(params: CreateTaskParams): TaskEntity {
+export function createTask(params: CreateTaskParams): TaskAggregate {
   const now = Date.now();
   
   return {
@@ -84,7 +84,7 @@ export function createTask(params: CreateTaskParams): TaskEntity {
 /**
  * Update task status
  */
-export function updateTaskStatus(task: TaskEntity, newStatus: TaskStatus): TaskEntity {
+export function updateTaskStatus(task: TaskAggregate, newStatus: TaskStatus): TaskAggregate {
   return {
     ...task,
     status: newStatus,
@@ -95,7 +95,7 @@ export function updateTaskStatus(task: TaskEntity, newStatus: TaskStatus): TaskE
 /**
  * Block task with issue
  */
-export function blockTask(task: TaskEntity, issueId: string): TaskEntity {
+export function blockTask(task: TaskAggregate, issueId: string): TaskAggregate {
   if (task.blockedByIssueIds.includes(issueId)) {
     return task;
   }
@@ -111,8 +111,8 @@ export function blockTask(task: TaskEntity, issueId: string): TaskEntity {
 /**
  * Unblock task when issue is resolved
  */
-export function unblockTask(task: TaskEntity, issueId: string): TaskEntity {
-  const newBlockedIds = task.blockedByIssueIds.filter(id => id !== issueId);
+export function unblockTask(task: TaskAggregate, issueId: string): TaskAggregate {
+  const newBlockedIds = task.blockedByIssueIds.filter((id: string) => id !== issueId);
   
   return {
     ...task,

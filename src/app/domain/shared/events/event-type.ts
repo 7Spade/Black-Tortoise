@@ -45,6 +45,26 @@ export const EventType = {
   DOCUMENT_UPLOADED: 'DocumentUploaded',
   DOCUMENT_DELETED: 'DocumentDeleted',
   DOCUMENT_SHARED: 'DocumentShared',
+
+  // Audit Events
+  AUDIT_LOG_CREATED: 'AuditLogCreated',
+
+  // Overview Events
+  DASHBOARD_REFRESHED: 'DashboardRefreshed',
+
+  // Settings Events
+  SETTINGS_UPDATED: 'SettingsUpdated',
+
+  // Member Events
+  MEMBER_INVITED: 'MemberInvited',
+  MEMBER_JOINED: 'MemberJoined',
+  MEMBER_LEFT: 'MemberLeft',
+  MEMBER_ROLE_UPDATED: 'MemberRoleUpdated',
+  MEMBER_REMOVED: 'MemberRemoved',
+
+  // Permission Events
+  PERMISSION_GRANTED: 'PermissionGranted',
+  PERMISSION_REVOKED: 'PermissionRevoked',
 } as const;
 
 export type EventTypeValue = typeof EventType[keyof typeof EventType];

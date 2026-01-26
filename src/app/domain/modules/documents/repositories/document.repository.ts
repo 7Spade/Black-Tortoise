@@ -9,9 +9,9 @@
  * This interface is pure TypeScript with no framework dependencies.
  */
 
-import { DocumentId } from '../value-objects/document-id.vo';
-import { DocumentAggregate } from '../aggregates/document.aggregate';
-import { WorkspaceId } from '../value-objects/workspace-id.vo';
+import { WorkspaceId } from '@domain/core/workspace/value-objects';
+import { DocumentAggregate } from '../aggregates';
+import { DocumentId } from '../value-objects';
 
 export interface DocumentRepository {
   /**

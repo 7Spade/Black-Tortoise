@@ -9,7 +9,7 @@ export interface SettingsUpdatedPayload {
 }
 
 export class SettingsUpdatedEvent implements DomainEvent<SettingsUpdatedPayload> {
-  readonly eventType = 'SettingsUpdated'; // Custom string if not in Enum
+  readonly type = 'SettingsUpdated'; // Custom string if not in Enum
   readonly timestamp = Date.now();
 
   constructor(
@@ -17,7 +17,7 @@ export class SettingsUpdatedEvent implements DomainEvent<SettingsUpdatedPayload>
     readonly aggregateId: string, // workspaceId
     readonly workspaceId: string,
     readonly payload: SettingsUpdatedPayload,
-    readonly causalityId: string | null,
+    readonly causationId: string | null,
     readonly correlationId: string,
     readonly metadata: EventMetadata = {} as any
   ) {}

@@ -8,7 +8,7 @@
  * It enforces business rules around member invitation, activation, and role management.
  */
 
-import { WorkspaceId } from '../value-objects/workspace-id.vo';
+import { WorkspaceId } from '@domain/core/workspace/value-objects';
 
 export type MemberRole = 'owner' | 'admin' | 'member' | 'guest';
 export type MemberStatus = 'pending' | 'active' | 'suspended' | 'removed';

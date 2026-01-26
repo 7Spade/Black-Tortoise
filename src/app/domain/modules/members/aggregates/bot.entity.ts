@@ -16,7 +16,7 @@ export interface BotEntity {
   readonly botType: BotType;
   readonly workspaceId: string;
   readonly apiKey: string;
-  readonly description?: string;
+  readonly description?: string | undefined;
   readonly isActive: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;

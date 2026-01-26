@@ -1,5 +1,5 @@
 
-import { RoleEntity } from '../entities/role.entity';
+import { RoleEntity } from '../aggregates';
 
 export interface PermissionRepository {
   findAllRoles(workspaceId: string): Promise<RoleEntity[]>;

@@ -1,10 +1,8 @@
 /**
- * Acceptance Feature - Public API
- * 
- * Layer: Application
- * Purpose: Centralized exports for acceptance feature
+ * Application Module: acceptance
  */
 
+export * from './commands';
+export * from './use-cases';
 export * from './handlers';
 export * from './stores';
-export * from './use-cases';

@@ -30,7 +30,7 @@ export interface WorkspaceEntity {
 /**
  * Factory function to create a new Workspace
  */
-export function createWorkspace(
+export function createWorkspaceEntity(
   id: string,
   name: string,
   organizationId: string,

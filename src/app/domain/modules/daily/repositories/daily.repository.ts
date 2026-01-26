@@ -1,5 +1,5 @@
 
-import { DailyEntryEntity } from '../aggregates/daily-entry.aggregate';
+import { DailyEntryEntity } from '../aggregates';
 
 export interface DailyRepository {
   findById(id: string): Promise<DailyEntryEntity | null>;

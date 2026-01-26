@@ -10,14 +10,14 @@
  */
 
 import { computed } from '@angular/core';
+import { TaskAggregate, TaskStatus } from '@domain/modules/tasks/aggregates/task.aggregate';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { TaskEntity, TaskStatus } from '@domain/modules/tasks/aggregates/task.aggregate';
 
 /**
  * Tasks State
  */
 export interface TasksState {
-  readonly tasks: ReadonlyArray<TaskEntity>;
+  readonly tasks: ReadonlyArray<TaskAggregate>;
   readonly isLoading: boolean;
   readonly error: string | null;
 }
@@ -77,7 +77,7 @@ export const TasksStore = signalStore(
     /**
      * Add task to store
      */
-    addTask(task: TaskEntity): void {
+    addTask(task: TaskAggregate): void {
       patchState(store, {
         tasks: [...store.tasks(), task],
         error: null,
@@ -87,7 +87,7 @@ export const TasksStore = signalStore(
     /**
      * Update task
      */
-    updateTask(taskId: string, updates: Partial<TaskEntity>): void {
+    updateTask(taskId: string, updates: Partial<TaskAggregate>): void {
       const task = store.tasks().find(t => t.id === taskId);
       if (!task) {
         patchState(store, { error: `Task ${taskId} not found` });
@@ -115,7 +115,7 @@ export const TasksStore = signalStore(
     /**
      * Get task by ID
      */
-    getTask(taskId: string): TaskEntity | undefined {
+    getTask(taskId: string): TaskAggregate | undefined {
       return store.tasks().find(t => t.id === taskId);
     },
 

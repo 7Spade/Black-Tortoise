@@ -1,31 +1,4 @@
-/**
- * Task Policy
- * 
- * Layer: Domain
- * DDD Pattern: Policy (Business Rules)
- * 
- * Encapsulates complex business rules related to tasks.
- * Policies are stateless and operate on domain objects to enforce business rules.
- * 
- * This policy handles task-specific business rules such as:
- * - Task priority calculation
- * - Due date validation
- * - Task completion rules
- * - Task dependency validation
- */
-
-import { TaskAggregate } from '../aggregates/task.aggregate';
-// import { TaskId } from '../value-objects/task-id.vo'; // Unused in original file but kept import if needed later, though linter might complain. Original used it but didn't seem to use it in code.
-
-/**
- * Task priority levels
- */
-export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
-
-/**
- * Task status values
- */
-export type TaskStatus = 'todo' | 'in-progress' | 'review' | 'done' | 'blocked';
+﻿import { TaskAggregate, TaskPriority, TaskStatus } from '../aggregates';
 
 /**
  * Validates task title according to business rules
@@ -64,7 +37,7 @@ export function validateDueDate(dueDate: Date): {
   const errors: string[] = [];
   const now = new Date();
 
-  if (dueDate < now) {
+  if (dueDate.getTime() < now.getTime()) {
     errors.push('Due date cannot be in the past');
   }
 
@@ -72,7 +45,7 @@ export function validateDueDate(dueDate: Date): {
   const fiveYearsFromNow = new Date();
   fiveYearsFromNow.setFullYear(fiveYearsFromNow.getFullYear() + 5);
 
-  if (dueDate > fiveYearsFromNow) {
+  if (dueDate.getTime() > fiveYearsFromNow.getTime()) {
     errors.push('Due date cannot be more than 5 years in the future');
   }
 
@@ -95,7 +68,7 @@ export function calculateTaskPriority(factors: {
 
   // Blocked tasks are always critical
   if (hasBlockers) {
-    return 'critical';
+    return TaskPriority.CRITICAL;
   }
 
   // Calculate days until due
@@ -107,20 +80,20 @@ export function calculateTaskPriority(factors: {
 
   // Critical if due within 3 days or has many dependents
   if (daysUntilDue <= 3 || dependentTaskCount > 5) {
-    return 'critical';
+    return TaskPriority.CRITICAL;
   }
 
   // High if due within a week or multiple assignees
   if (daysUntilDue <= 7 || assigneeCount > 2) {
-    return 'high';
+    return TaskPriority.HIGH;
   }
 
   // Medium if due within 2 weeks
   if (daysUntilDue <= 14) {
-    return 'medium';
+    return TaskPriority.MEDIUM;
   }
 
-  return 'low';
+  return TaskPriority.LOW;
 }
 
 /**
@@ -140,14 +113,14 @@ export function canCompleteTask(
     };
   }
 
-  if (task.status === 'done') {
+  if (task.status === TaskStatus.COMPLETED) {
     return {
       canComplete: false,
       reason: 'Task is already completed',
     };
   }
 
-  if (task.status === 'blocked') {
+  if (task.status === TaskStatus.BLOCKED) {
     return {
       canComplete: false,
       reason: 'Task is blocked and cannot be completed',
@@ -161,20 +134,20 @@ export function canCompleteTask(
  * Check if a task is overdue
  */
 export function isTaskOverdue(task: TaskAggregate): boolean {
-  if (!task.dueDate || task.status === 'done') {
+  if (!task.dueDate || task.status === TaskStatus.COMPLETED) {
     return false;
   }
 
   const now = new Date();
-  return task.dueDate < now;
+  return task.dueDate < now.getTime();
 }
 
 /**
  * Calculate days until due
  */
-export function getDaysUntilDue(dueDate: Date): number {
+export function getDaysUntilDue(dueDate: number): number {
   const now = new Date();
-  const diffTime = dueDate.getTime() - now.getTime();
+  const diffTime = dueDate - now.getTime();
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
@@ -197,19 +170,24 @@ export function isValidStatusTransition(
   }
 
   // Define valid transitions
-  const validTransitions: Record<TaskStatus, TaskStatus[]> = {
-    todo: ['in-progress', 'blocked'],
-    'in-progress': ['review', 'blocked', 'todo'],
-    review: ['done', 'in-progress', 'blocked'],
-    done: ['todo'], // Can reopen
-    blocked: ['todo', 'in-progress'],
+  const validTransitions: Partial<Record<TaskStatus, TaskStatus[]>> = {
+    [TaskStatus.DRAFT]: [TaskStatus.READY],
+    [TaskStatus.READY]: [TaskStatus.IN_PROGRESS, TaskStatus.BLOCKED],
+    [TaskStatus.IN_PROGRESS]: [TaskStatus.IN_QC, TaskStatus.BLOCKED, TaskStatus.READY],
+    [TaskStatus.IN_QC]: [TaskStatus.COMPLETED, TaskStatus.IN_PROGRESS, TaskStatus.BLOCKED, TaskStatus.QC_FAILED],
+    [TaskStatus.QC_FAILED]: [TaskStatus.IN_PROGRESS, TaskStatus.BLOCKED],
+    [TaskStatus.IN_ACCEPTANCE]: [TaskStatus.ACCEPTED, TaskStatus.REJECTED],
+    [TaskStatus.ACCEPTED]: [TaskStatus.COMPLETED],
+    [TaskStatus.REJECTED]: [TaskStatus.IN_PROGRESS],
+    [TaskStatus.COMPLETED]: [TaskStatus.READY, TaskStatus.IN_PROGRESS],
+    [TaskStatus.BLOCKED]: [TaskStatus.READY, TaskStatus.IN_PROGRESS],
   };
 
-  const allowedStatuses = validTransitions[currentStatus];
+  const allowedStatuses = validTransitions[currentStatus] || [];
   if (!allowedStatuses.includes(newStatus)) {
     return {
       isValid: false,
-      reason: `Cannot transition from ${currentStatus} to ${newStatus}`,
+      reason: 'Cannot transition from ' + currentStatus + ' to ' + newStatus,
     };
   }
 
@@ -231,15 +209,25 @@ export function estimateCompletionPercentage(
   }
 
   // Otherwise estimate based on status
-  const statusPercentages: Record<TaskStatus, number> = {
-    todo: 0,
-    'in-progress': 40,
-    review: 80,
-    done: 100,
-    blocked: 0,
-  };
-
-  return statusPercentages[status];
+  switch (status) {
+    case TaskStatus.DRAFT:
+    case TaskStatus.READY:
+    case TaskStatus.BLOCKED:
+      return 0;
+    case TaskStatus.IN_PROGRESS:
+      return 40;
+    case TaskStatus.IN_QC:
+    case TaskStatus.QC_FAILED:
+      return 80;
+    case TaskStatus.IN_ACCEPTANCE:
+    case TaskStatus.REJECTED:
+      return 90;
+    case TaskStatus.ACCEPTED:
+    case TaskStatus.COMPLETED:
+      return 100;
+    default:
+      return 0;
+  }
 }
 
 /**
@@ -255,35 +243,38 @@ export function generateTaskSummary(tasks: TaskAggregate[]): {
   const summary = {
     total: tasks.length,
     byStatus: {
-      todo: 0,
-      'in-progress': 0,
-      review: 0,
-      done: 0,
-      blocked: 0,
+      [TaskStatus.DRAFT]: 0,
+      [TaskStatus.READY]: 0,
+      [TaskStatus.IN_PROGRESS]: 0,
+      [TaskStatus.IN_QC]: 0,
+      [TaskStatus.QC_FAILED]: 0,
+      [TaskStatus.IN_ACCEPTANCE]: 0,
+      [TaskStatus.ACCEPTED]: 0,
+      [TaskStatus.REJECTED]: 0,
+      [TaskStatus.COMPLETED]: 0,
+      [TaskStatus.BLOCKED]: 0,
     } as Record<TaskStatus, number>,
     byPriority: {
-      low: 0,
-      medium: 0,
-      high: 0,
-      critical: 0,
+      [TaskPriority.LOW]: 0,
+      [TaskPriority.MEDIUM]: 0,
+      [TaskPriority.HIGH]: 0,
+      [TaskPriority.CRITICAL]: 0,
     } as Record<TaskPriority, number>,
     overdue: 0,
     completionRate: 0,
   };
 
-  tasks.forEach((task) => {
-    summary.byStatus[task.status as TaskStatus] =
-      (summary.byStatus[task.status as TaskStatus] || 0) + 1;
-    summary.byPriority[task.priority as TaskPriority] =
-      (summary.byPriority[task.priority as TaskPriority] || 0) + 1;
+  tasks.forEach((task: TaskAggregate) => {
+    summary.byStatus[task.status] = (summary.byStatus[task.status] || 0) + 1;
+    summary.byPriority[task.priority] = (summary.byPriority[task.priority] || 0) + 1;
 
     if (isTaskOverdue(task)) {
       summary.overdue++;
     }
   });
 
-  summary.completionRate =
-    tasks.length > 0 ? (summary.byStatus.done / tasks.length) * 100 : 0;
+  const completedCount = summary.byStatus[TaskStatus.COMPLETED] + summary.byStatus[TaskStatus.ACCEPTED];
+  summary.completionRate = tasks.length > 0 ? (completedCount / tasks.length) * 100 : 0;
 
   return summary;
 }

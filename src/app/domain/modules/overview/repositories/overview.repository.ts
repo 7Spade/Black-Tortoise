@@ -1,5 +1,5 @@
 
-import { OverviewDashboard } from '../aggregates/overview-dashboard.aggregate';
+import { OverviewDashboard } from '../aggregates';
 
 export interface OverviewRepository {
   getDashboard(workspaceId: string): Promise<OverviewDashboard>;

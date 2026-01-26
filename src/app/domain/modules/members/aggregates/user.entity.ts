@@ -12,7 +12,7 @@ export interface UserEntity {
   readonly id: string;
   readonly email: string;
   readonly displayName: string;
-  readonly photoUrl?: string;
+  readonly photoUrl?: string | undefined;
   readonly isActive: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;

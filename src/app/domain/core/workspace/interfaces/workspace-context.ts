@@ -8,7 +8,7 @@
  * provides access to the workspace-scoped event bus.
  */
 
-import { WorkspaceEntity } from '../aggregates/workspace.entity';
+import { WorkspaceEntity } from '../aggregates';
 
 export interface WorkspaceContext {
   readonly workspace: WorkspaceEntity;

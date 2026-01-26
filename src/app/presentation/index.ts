@@ -15,6 +15,6 @@ export * from './organization';
 export * from './pages';
 export * from './shared';
 export * from './shell';
-export * from './theme';
+// export * from './theme';
 export * from './workspaces';
 

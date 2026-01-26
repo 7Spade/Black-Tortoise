@@ -7,7 +7,7 @@
  * Encapsulates business rules for member role management and status transitions.
  */
 
-import { MemberAggregate, MemberRole } from '../aggregates/member.aggregate';
+import { MemberAggregate, MemberRole } from '../aggregates';
 
 /**
  * Check if the member can be promoted to the target role

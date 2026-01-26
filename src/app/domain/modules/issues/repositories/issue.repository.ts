@@ -5,7 +5,7 @@
  * DDD Pattern: Repository Interface
  */
 
-import { IssueAggregate } from '../aggregates/issue.aggregate';
+import { IssueAggregate } from '../aggregates';
 
 export interface IssueRepository {
   findById(id: string): Promise<IssueAggregate | null>;

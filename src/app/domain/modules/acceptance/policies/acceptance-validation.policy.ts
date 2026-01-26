@@ -5,7 +5,7 @@
  * DDD Pattern: Policy
  */
 
-import { AcceptanceStatus } from '../aggregates/acceptance-check.aggregate';
+import { AcceptanceStatus } from '../aggregates';
 
 /**
  * Validate acceptance criteria

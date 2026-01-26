@@ -16,7 +16,7 @@ export interface RoleDefinitionAggregate {
   readonly version: number;
 }
 
-export function createRole(
+export function createRoleDefinition(
   id: string,
   workspaceId: string,
   name: string,

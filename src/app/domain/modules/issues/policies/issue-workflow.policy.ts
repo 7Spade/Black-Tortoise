@@ -5,7 +5,7 @@
  * DDD Pattern: Policy
  */
 
-import { IssueStatus } from '../aggregates/issue.aggregate';
+import { IssueStatus } from '../aggregates';
 
 /**
  * Valid transitions for issue status

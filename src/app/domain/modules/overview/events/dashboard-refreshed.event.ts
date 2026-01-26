@@ -7,7 +7,7 @@ export interface DashboardRefreshedPayload {
 }
 
 export class DashboardRefreshedEvent implements DomainEvent<DashboardRefreshedPayload> {
-  readonly eventType = 'DashboardRefreshed';
+  readonly type = 'DashboardRefreshed';
   readonly timestamp = Date.now();
 
   constructor(
@@ -15,7 +15,7 @@ export class DashboardRefreshedEvent implements DomainEvent<DashboardRefreshedPa
     readonly aggregateId: string,
     readonly workspaceId: string,
     readonly payload: DashboardRefreshedPayload,
-    readonly causalityId: string | null,
+    readonly causationId: string | null,
     readonly correlationId: string,
     readonly metadata: EventMetadata = {} as any
   ) {}

@@ -1,5 +1,5 @@
 
-import { QCCheckEntity } from '../aggregates/quality-control.aggregate';
+import { QCCheckEntity } from '../aggregates';
 
 export interface QualityControlRepository {
   findByTaskId(taskId: string): Promise<QCCheckEntity | null>;

@@ -9,7 +9,7 @@
  * This aggregate follows event sourcing principles for state reconstruction.
  */
 
-import { WorkspaceId } from '../value-objects/workspace-id.vo';
+import { WorkspaceId } from '../value-objects';
 
 export interface WorkspaceAggregate {
   readonly id: WorkspaceId;

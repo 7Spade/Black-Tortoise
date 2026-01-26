@@ -19,7 +19,7 @@ export type Permission =
 export interface RoleEntity {
   readonly id: string;
   readonly name: string;
-  readonly description?: string;
+  readonly description?: string | undefined;
   readonly permissions: Permission[];
   readonly isSystemRole: boolean;
   readonly createdAt: Date;

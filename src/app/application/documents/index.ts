@@ -1,8 +1,7 @@
 /**
- * Documents Feature - Public API
- * 
- * Layer: Application
- * Purpose: Centralized exports for documents feature
+ * Application Module: documents
  */
 
+export * from './commands';
+export * from './use-cases';
 export * from './stores';

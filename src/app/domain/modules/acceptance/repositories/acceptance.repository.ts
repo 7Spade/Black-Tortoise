@@ -1,5 +1,5 @@
 
-import { AcceptanceCheckEntity } from '../aggregates/acceptance-check.aggregate';
+import { AcceptanceCheckEntity } from '../aggregates';
 
 export interface AcceptanceRepository {
   findByTaskId(taskId: string): Promise<AcceptanceCheckEntity | null>;

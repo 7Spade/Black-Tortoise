@@ -4,7 +4,7 @@
  */
 
 // Entities
-export { addModuleToWorkspace, createWorkspace as createWorkspaceEntity, removeModuleFromWorkspace, WorkspaceEntity } from './aggregates/workspace.entity';
+export { addModuleToWorkspace, createWorkspaceEntity, removeModuleFromWorkspace, WorkspaceEntity } from './aggregates/workspace.entity';
 
 // Value Objects
 export { WorkspaceId } from './value-objects/workspace-id.vo';

@@ -1,5 +1,5 @@
 
-import { AuditLogEntity } from '../aggregates/audit-log.aggregate';
+import { AuditLogEntity } from '../aggregates';
 
 export interface AuditLogRepository {
   findById(id: string): Promise<AuditLogEntity | null>;

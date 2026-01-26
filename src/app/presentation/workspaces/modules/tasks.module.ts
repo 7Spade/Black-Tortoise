@@ -18,14 +18,14 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
-import { TasksStore, TaskEntity, TaskPriority, TaskStatus, createTask } from '@application/tasks';
-import { CreateTaskUseCase, SubmitTaskForQCUseCase } from '@application/tasks';
-import { FailQCUseCase } from '@application/quality-control/use-cases/fail-qc.use-case';
+import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { ResolveIssueUseCase } from '@application/issues/use-cases/resolve-issue.use-case';
+import { FailQCUseCase } from '@application/quality-control/use-cases/fail-qc.use-case';
+import { CreateTaskUseCase, SubmitTaskForQCUseCase, TasksStore } from '@application/tasks';
+import { TaskPriority, createTask, TaskAggregate } from '@domain/modules/tasks';
 
 @Component({
   selector: 'app-tasks-module',
@@ -678,7 +678,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
     }
   }
 
-  async submitTaskForQC(task: TaskEntity): Promise<void> {
+  async submitTaskForQC(task: TaskAggregate): Promise<void> {
     if (!this.eventBus) return;
 
     await this.submitTaskForQCUseCase.execute({
@@ -698,7 +698,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
    * - QC event handler creates derived IssueCreated event with causality
    * - No direct issue creation in presentation layer
    */
-  async failQC(task: TaskEntity): Promise<void> {
+  async failQC(task: TaskAggregate): Promise<void> {
     if (!this.eventBus) return;
 
     const failureReason = 'Quality standards not met (stub)';
@@ -714,7 +714,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
     // with proper causality (correlationId inherited, causationId = QCFailed.eventId)
   }
 
-  async resolveIssue(task: TaskEntity): Promise<void> {
+  async resolveIssue(task: TaskAggregate): Promise<void> {
     if (!this.eventBus || task.blockedByIssueIds.length === 0) return;
 
     const issueId = task.blockedByIssueIds[0];
@@ -739,11 +739,11 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
     return new Date(date).toLocaleTimeString();
   }
 
-  getTasksByStatus(status: string): TaskEntity[] {
+  getTasksByStatus(status: string): TaskAggregate[] {
     return this.tasksStore.tasks().filter(t => t.status === status);
   }
 
-  getTaskProgress(task: TaskEntity): number {
+  getTaskProgress(task: TaskAggregate): number {
     const statusProgress: Record<string, number> = {
       'draft': 10,
       'ready': 25,

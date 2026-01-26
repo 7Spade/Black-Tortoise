@@ -1,5 +1,5 @@
 
-import { WorkspaceSettingsEntity } from '../aggregates/workspace-settings.aggregate';
+import { WorkspaceSettingsEntity } from '../aggregates';
 
 export interface SettingsRepository {
   getSettings(workspaceId: string): Promise<WorkspaceSettingsEntity>;

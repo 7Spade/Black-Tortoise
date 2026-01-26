@@ -9,8 +9,8 @@
  * This interface is pure TypeScript with no framework dependencies.
  */
 
-import { WorkspaceId } from '../value-objects/workspace-id.vo';
-import { WorkspaceAggregate } from '../aggregates/workspace.aggregate';
+import { WorkspaceId } from '../value-objects';
+import { WorkspaceAggregate } from '../aggregates';
 
 export interface WorkspaceRepository {
   /**
