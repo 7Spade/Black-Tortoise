@@ -81,7 +81,14 @@ graph TB
     Sequential --> Execute
     Planning --> Execute
     
-    Execute --> Validate{需驗證?}
+    Execute --> IsCodeChange{代碼變更?}
+    IsCodeChange -->|Yes| BuildCheck[執行 pnpm build]
+    IsCodeChange -->|No| Validate
+    
+    BuildCheck -->|Fail| AutoFix[自我修正]
+    AutoFix --> BuildCheck
+    BuildCheck -->|Pass| Validate{需UI驗證?}
+    
     Validate -->|UI測試| Playwright
     Validate -->|否| Memory[更新記憶]
     Playwright --> Memory
@@ -90,6 +97,7 @@ graph TB
     style Low fill:#90EE90
     style High fill:#FFB6C1
     style Execute fill:#87CEEB
+    style BuildCheck fill:#FFA500
 ```
 
 ### 工具調用策略
@@ -211,9 +219,16 @@ readonly vm = computed(() => ({
 **當修正架構違規 (如移除 Store 中的 UI 欄位) 時，必須執行「原子性遷移」：**
 
 1.  **影響評估**: 修改前**必須**搜索所有引用 (`list_code_usages`)。
-2.  **鋪設軌道**: 先在 `Facade` 或 `ViewModel` 建立替代方案。
-3.  **同步切換**: 在**同一次回應**中，移除違規代碼並更新所有調用處。
-4.  **禁止中斷**: 嚴禁只刪除定義而不修復下游，導致 AOT Build Error。
+所有變更必須通過以下驗證流程才算完成：
+
+```yaml
+強制驗證循環 (Mandatory Validation Loop):
+1. [ ] 執行 `pnpm build --strict`
+   - 失敗: 進入 AutoFix 循環，禁止提交
+   - 成功: 繼續下一步
+2. [ ] 檢查 Angular AOT Compliance (Template Type Check)
+
+環境檢查:導致 AOT Build Error。
 
 ---
 
