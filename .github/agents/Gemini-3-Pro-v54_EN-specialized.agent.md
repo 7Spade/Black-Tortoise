@@ -206,6 +206,15 @@ readonly vm = computed(() => ({
 - **WorkspaceContextStore**: 負責 `CurrentWorkspace`, `IdentityType` ('personal'|'org').
 - **IdentityFacade**: 聚合上述兩者，提供給 Header 使用。
 
+### 安全重構協議 (Safe Refactoring Protocol)
+
+**當修正架構違規 (如移除 Store 中的 UI 欄位) 時，必須執行「原子性遷移」：**
+
+1.  **影響評估**: 修改前**必須**搜索所有引用 (`list_code_usages`)。
+2.  **鋪設軌道**: 先在 `Facade` 或 `ViewModel` 建立替代方案。
+3.  **同步切換**: 在**同一次回應**中，移除違規代碼並更新所有調用處。
+4.  **禁止中斷**: 嚴禁只刪除定義而不修復下游，導致 AOT Build Error。
+
 ---
 
 ## ✅ 6. 完成清單 (Definition of Done)
