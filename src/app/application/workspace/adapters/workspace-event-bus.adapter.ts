@@ -13,7 +13,7 @@
  * Constitution Compliance: No RxJS, No manual subscribe patterns
  */
 
-import { WorkspaceEventBus } from '@domain/workspace';
+import { WorkspaceEventBus } from '@domain/core/workspace';
 import { EventHandler, IModuleEventBus } from '../../interfaces/module-event-bus.interface';
 
 /**
@@ -48,3 +48,6 @@ export class WorkspaceEventBusAdapter implements IModuleEventBus {
     this.domainEventBus.clear();
   }
 }
+
+
+

@@ -6,7 +6,7 @@
  * 
  * Responsibilities:
  * - Create IssueCreatedEvent
- * - Publish via PublishEventUseCase (append → publish)
+ * - Publish via PublishEventUseCase (append ??publish)
  * - Returns success/failure
  */
 
@@ -57,3 +57,5 @@ export class CreateIssueUseCase {
     }
   }
 }
+
+

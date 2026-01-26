@@ -6,11 +6,11 @@
  * 
  * Responsibilities:
  * - Create AcceptanceApprovedEvent
- * - Publish via PublishEventUseCase (append → publish)
+ * - Publish via PublishEventUseCase (append ??publish)
  * - Returns success/failure
  * 
  * DDD Pattern: Application Service
- * Event Flow: create → append(EventStore) → publish(EventBus) → react
+ * Event Flow: create ??append(EventStore) ??publish(EventBus) ??react
  */
 
 import { inject, Injectable } from '@angular/core';
@@ -64,3 +64,5 @@ export class ApproveTaskUseCase {
     }
   }
 }
+
+

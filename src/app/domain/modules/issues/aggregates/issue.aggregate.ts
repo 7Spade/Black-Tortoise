@@ -8,7 +8,7 @@
  * It enforces business rules around issue lifecycle and assignment.
  */
 
-import { WorkspaceId } from '../value-objects/workspace-id.vo';
+import { WorkspaceId } from '@domain/core/workspace';
 
 export enum IssueStatus {
   OPEN = 'open',

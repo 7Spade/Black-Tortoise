@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Settings Module - Workspace Configuration with Comprehensive Settings
  * Layer: Presentation
  * Architecture: Signal-based, Event-driven
@@ -21,7 +21,7 @@ import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module
   template: `
     <div class="settings-module">
       <div class="module-header">
-        <h2>?? Settings</h2>
+        <h2>?��? Settings</h2>
         <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
 
@@ -165,10 +165,10 @@ import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module
                   (change)="updateLanguage($event)"
                   class="input-field">
                   <option value="en">English</option>
-                  <option value="es">Espa簽ol</option>
-                  <option value="fr">Fran癟ais</option>
+                  <option value="es">Español</option>
+                  <option value="fr">Français</option>
                   <option value="de">Deutsch</option>
-                  <option value="zh">銝剜?</option>
+                  <option value="zh">中�?</option>
                 </select>
               </div>
               <div class="setting-row toggle-row">
@@ -474,4 +474,6 @@ export class SettingsModule implements IAppModule, OnInit, OnDestroy {
     this.destroy();
   }
 }
+
+
 

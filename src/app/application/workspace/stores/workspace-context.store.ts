@@ -13,8 +13,8 @@ import { computed, inject } from '@angular/core';
 import { CreateWorkspaceUseCase } from '@application/workspace/use-cases/create-workspace.use-case';
 import { SwitchWorkspaceUseCase } from '@application/workspace/use-cases/switch-workspace.use-case';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/workspace/tokens/workspace-runtime.token';
-import { OrganizationEntity } from '@domain/organization/organization.entity';
-import { WorkspaceEntity } from '@domain/workspace';
+import { OrganizationEntity } from '@domain/core/organization/organization.entity';
+import { WorkspaceEntity } from '@domain/core/workspace';
 import {
   patchState,
   signalStore,
@@ -352,3 +352,6 @@ export const WorkspaceContextStore = signalStore(
     },
   }),
 );
+
+
+

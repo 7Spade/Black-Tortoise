@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { IWorkspaceRuntimeFactory, WorkspaceRuntime } from '@application/workspace/interfaces/workspace-runtime-factory.interface';
-import { WorkspaceContext, createWorkspaceContext, WorkspaceEntity } from '@domain/workspace';
+import { WorkspaceContext, createWorkspaceContext, WorkspaceEntity } from '@domain/core/workspace';
 import { InMemoryEventBus } from './in-memory-event-bus';
 
 /**
@@ -88,3 +88,6 @@ export class WorkspaceRuntimeFactory implements IWorkspaceRuntimeFactory {
     console.log('[WorkspaceRuntimeFactory] Destroyed all runtimes');
   }
 }
+
+
+

@@ -1,5 +1,5 @@
-﻿import { inject } from '@angular/core';
-import { IssuePriority } from '@domain/aggregates/issue.aggregate';
+import { inject } from '@angular/core';
+import { IssuePriority } from '@domain/modules/issues/aggregates/issue.aggregate';
 import { IssueCreatedEvent } from '@domain/modules/issues/events/issue-created.event';
 import { IssueResolvedEvent } from '@domain/modules/issues/events/issue-resolved.event';
 import { EventBus } from '@domain/shared/events/event-bus/event-bus.interface';
@@ -36,4 +36,7 @@ export function registerIssuesEventHandlers(eventBus: EventBus): void {
   
   console.log('[IssuesEventHandlers] Registered event handlers for workspace');
 }
+
+
+
 

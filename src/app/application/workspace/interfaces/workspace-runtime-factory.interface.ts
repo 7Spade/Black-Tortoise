@@ -13,7 +13,7 @@
  * - Presentation accesses via Application facades
  */
 
-import { WorkspaceEntity, WorkspaceContext, WorkspaceEventBus } from '@domain/workspace';
+import { WorkspaceEntity, WorkspaceContext, WorkspaceEventBus } from '@domain/core/workspace';
 
 /**
  * Workspace Runtime
@@ -49,3 +49,6 @@ export interface IWorkspaceRuntimeFactory {
    */
   destroyAll(): void;
 }
+
+
+

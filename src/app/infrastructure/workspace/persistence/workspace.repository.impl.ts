@@ -9,7 +9,7 @@
  * - Implements WorkspaceRepository interface from Domain layer
  * - Uses Angular/Firebase dependencies (allowed in Infrastructure)
  * - Returns Observables for reactive data streams (RxJS allowed here)
- * - Handles DTO ↔ Domain Model mapping
+ * - Handles DTO ??Domain Model mapping
  * 
  * Note: This is a placeholder implementation for demonstration.
  * In a real application, this would integrate with Firestore.
@@ -17,8 +17,8 @@
 
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { WorkspaceRepository } from '@domain/workspace/repositories/workspace.repository';
-import { WorkspaceAggregate, WorkspaceId } from '@domain/workspace';
+import { WorkspaceRepository } from '@domain/core/workspace/repositories/workspace.repository';
+import { WorkspaceAggregate, WorkspaceId } from '@domain/core/workspace';
 
 /**
  * Firestore DTO for Workspace
@@ -163,7 +163,7 @@ export class WorkspaceRepositoryImpl implements WorkspaceRepository {
 
   /**
    * Map DTO to Domain Aggregate
-   * Infrastructure → Domain mapping
+   * Infrastructure ??Domain mapping
    */
   private mapDTOToAggregate(dto: WorkspaceDTO): WorkspaceAggregate {
     return {
@@ -181,7 +181,7 @@ export class WorkspaceRepositoryImpl implements WorkspaceRepository {
 
   /**
    * Map Domain Aggregate to DTO
-   * Domain → Infrastructure mapping
+   * Domain ??Infrastructure mapping
    */
   private mapAggregateToDTO(aggregate: WorkspaceAggregate): WorkspaceDTO {
     return {
@@ -197,3 +197,6 @@ export class WorkspaceRepositoryImpl implements WorkspaceRepository {
     };
   }
 }
+
+
+

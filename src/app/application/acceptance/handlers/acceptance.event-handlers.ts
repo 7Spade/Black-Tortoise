@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Acceptance Event Handlers
  * 
  * Layer: Application - Event Handlers
@@ -62,4 +62,6 @@ export function registerAcceptanceEventHandlers(eventBus: EventBus): void {
   
   console.log('[AcceptanceEventHandlers] Registered event handlers for workspace');
 }
+
+
 

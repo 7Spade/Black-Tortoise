@@ -1,4 +1,4 @@
-﻿/**
+/**
  * In-Memory Event Bus Implementation
  * 
  * Layer: Infrastructure
@@ -8,7 +8,7 @@
  */
 
 import { DomainEvent } from '@domain/shared/events/domain-event';
-import { EventHandler, WorkspaceEventBus } from '@domain/workspace';
+import { EventHandler, WorkspaceEventBus } from '@domain/core/workspace';
 import { Subject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -72,4 +72,7 @@ export class InMemoryEventBus implements WorkspaceEventBus {
     this.events$.complete();
   }
 }
+
+
+
 

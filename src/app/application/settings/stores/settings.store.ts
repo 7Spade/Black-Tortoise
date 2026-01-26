@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Settings Store
  *
  * Layer: Application - Store
@@ -156,4 +156,6 @@ export const SettingsStore = signalStore(
     },
   }))
 );
+
+
 

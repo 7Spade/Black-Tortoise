@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Workspace Host Facade
  *
  * Layer: Application - Facade
@@ -15,7 +15,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { WorkspaceContextStore } from '@application/workspace/stores/workspace-context.store';
-import { ModuleMetadata, ModuleType, STANDARD_MODULES } from '@domain/module/module.interface';
+import { ModuleMetadata, ModuleType, STANDARD_MODULES } from '@domain/shared/module/module.interface';
 
 @Injectable({ providedIn: 'root' })
 export class WorkspaceHostFacade {

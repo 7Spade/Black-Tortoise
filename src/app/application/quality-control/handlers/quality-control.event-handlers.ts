@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Quality Control Event Handlers
  * 
  * Layer: Application - Event Handlers
@@ -84,4 +84,6 @@ export function registerQualityControlEventHandlers(eventBus: EventBus): void {
   
   console.log('[QCEventHandlers] Registered event handlers for workspace');
 }
+
+
 

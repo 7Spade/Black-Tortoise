@@ -18,7 +18,7 @@
  * Clean Architecture Compliance:
  * - Single source of truth for acceptance state
  * - All state updates via patchState in event handlers
- * - Event-driven architecture (append → publish → react)
+ * - Event-driven architecture (append ??publish ??react)
  * - Pure signal-based reactivity
  */
 
@@ -190,3 +190,5 @@ export const AcceptanceStore = signalStore(
     },
   }))
 );
+
+

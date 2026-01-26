@@ -7,8 +7,8 @@
 
 import { inject, Injectable } from '@angular/core';
 import { PublishEventUseCase } from '@application/events/use-cases/publish-event.use-case';
-import { createWorkspaceCreatedEvent } from '@domain/shared/events/workspace/workspace-created.event';
-import { createWorkspaceEntity, WorkspaceEntity, WorkspaceId } from '@domain/workspace';
+import { createWorkspaceCreatedEvent } from '@domain/core/workspace/events/workspace-created.event';
+import { createWorkspaceEntity, WorkspaceEntity, WorkspaceId } from '@domain/core/workspace';
 
 /**
  * Create Workspace Command
@@ -59,3 +59,6 @@ export class CreateWorkspaceUseCase {
     return workspace;
   }
 }
+
+
+

@@ -11,7 +11,7 @@
  * - Each module is independent and self-contained
  */
 
-import { WorkspaceEventBus } from '@domain/workspace';
+import { WorkspaceEventBus } from '@domain/core/workspace';
 
 /**
  * Module Lifecycle Interface
@@ -185,3 +185,6 @@ export const STANDARD_MODULES: Record<ModuleType, Omit<ModuleMetadata, 'id'>> = 
     isDefault: true,
   },
 };
+
+
+

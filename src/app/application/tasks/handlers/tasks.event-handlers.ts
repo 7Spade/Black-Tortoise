@@ -1,4 +1,4 @@
-﻿import { inject } from '@angular/core';
+import { inject } from '@angular/core';
 import { IssueResolvedEvent } from '@domain/modules/issues/events/issue-resolved.event';
 import { QCFailedEvent } from '@domain/modules/quality-control/events/qc-failed.event';
 import { createTask, TaskStatus, updateTaskStatus } from '@domain/modules/tasks/aggregates/task.aggregate';
@@ -67,4 +67,6 @@ export function registerTasksEventHandlers(eventBus: EventBus): void {
   
   console.log('[TasksEventHandlers] Registered event handlers for workspace');
 }
+
+
 

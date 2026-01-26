@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Daily Event Handlers
  * 
  * Layer: Application - Event Handlers
@@ -35,4 +35,6 @@ export function registerDailyEventHandlers(eventBus: EventBus): void {
   
   console.log('[DailyEventHandlers] Registered event handlers for workspace');
 }
+
+
 
