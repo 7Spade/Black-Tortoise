@@ -22,6 +22,17 @@ import { Routes } from '@angular/router';
 import { canActivateAuth, canActivatePublic } from '@application/guards';
 
 export const routes: Routes = [
+  // Landing Page (Public Home)
+  {
+    path: '',
+    pathMatch: 'full',
+    canActivate: [canActivatePublic],
+    loadComponent: () =>
+      import('@presentation/pages/landing').then(
+        m => m.LandingPage
+      ),
+  },
+
   // Auth Routes
   {
     path: 'auth/login',

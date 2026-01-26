@@ -37,6 +37,11 @@ Successfully implemented a full vertical slice for Authentication following stri
 - `ForgotPasswordPage`: Angular 20 Control Flow (`@if`), Signals only.
 - **Compliance:** `*ngIf` removed. `CommonModule` removed.
 
+**Folder:** `src/app/presentation/pages/landing/`
+- `LandingPage`: Public entry point.
+- **Features**: Links to Login/Register.
+- **Route**: `path: ""` (Default route).
+
 ### 5. Configuration (Wiring)
 **File:** `src/app/app.config.ts`
 - Provided `AUTH_REPOSITORY` mapped to `AuthRepositoryImpl`.
