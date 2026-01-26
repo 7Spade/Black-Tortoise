@@ -10,6 +10,7 @@
  */
 
 import { computed, effect, inject } from '@angular/core';
+import { CreateOrganizationHandler } from '@application/handlers/create-organization.handler';
 import { CreateWorkspaceHandler } from '@application/handlers/create-workspace.handler';
 import { SwitchWorkspaceHandler } from '@application/handlers/switch-workspace.handler';
 import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
@@ -18,12 +19,12 @@ import { AuthStore } from '@application/stores/auth.store';
 import { WorkspaceEntity } from '@domain/aggregates';
 import { tapResponse } from '@ngrx/operators';
 import {
-    patchState,
-    signalStore,
-    withComputed,
-    withHooks,
-    withMethods,
-    withState,
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { exhaustMap, from, of, pipe, switchMap, tap } from 'rxjs';
@@ -128,6 +129,7 @@ export const WorkspaceContextStore = signalStore(
   })),
   
   withMethods((store) => {
+    const createOrganizationHandler = inject(CreateOrganizationHandler);
     const createWorkspaceHandler = inject(CreateWorkspaceHandler);
     const switchWorkspaceHandler = inject(SwitchWorkspaceHandler);
     const runtimeFactory = inject(WORKSPACE_RUNTIME_FACTORY);
@@ -158,6 +160,40 @@ export const WorkspaceContextStore = signalStore(
         });
       },
       
+      /**
+       * Create new organization
+       */
+      createOrganization: rxMethod<{ displayName: string }>(
+        pipe(
+          tap(() => patchState(store, { isLoading: true })),
+          exhaustMap((command) => {
+            const ownerId = store.currentIdentityId();
+            if (!ownerId) {
+                return of(null);
+            }
+
+            return from(createOrganizationHandler.execute({
+              displayName: command.displayName,
+              ownerId: ownerId
+            })).pipe(
+              tapResponse({
+                next: (org) => {
+                  patchState(store, { 
+                    currentOrganizationId: org.id.toString(),
+                    currentOrganizationDisplayName: org.displayName,
+                    isLoading: false 
+                  });
+                },
+                error: (err: any) => patchState(store, { 
+                  isLoading: false, 
+                  error: err?.message || 'Failed to create organization' 
+                })
+              })
+            );
+          })
+        )
+      ),
+
       /**
        * Create new workspace
        */

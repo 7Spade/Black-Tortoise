@@ -18,6 +18,9 @@ export const EventType = {
   WORKSPACE_DEACTIVATED: 'WorkspaceDeactivated',
   WORKSPACE_REACTIVATED: 'WorkspaceReactivated',
   WORKSPACE_OWNERSHIP_TRANSFERRED: 'WorkspaceOwnershipTransferred',
+
+  // Organization Events
+  ORGANIZATION_CREATED: 'OrganizationCreated',
   
   // Module Events
   MODULE_ACTIVATED: 'ModuleActivated',

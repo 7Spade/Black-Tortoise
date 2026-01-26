@@ -17,9 +17,11 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { OrganizationCreateDialogComponent } from './organization-create-dialog.component';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { exhaustMap, pipe, tap } from 'rxjs';
+import { OrganizationCreateDialogComponent, OrganizationCreateResult } from './organization-create-dialog.component';
 
 @Component({
   selector: 'app-organization-create-trigger',
@@ -52,32 +54,27 @@ export class OrganizationCreateTriggerComponent {
   /**
    * Output for dialog results
    */
-  readonly dialogResult = output<unknown>();
-  
-  /**
-   * Loading state
-   */
-  readonly isOpen = signal(false);
+  readonly dialogResult = output<OrganizationCreateResult>();
   
   /**
    * Opens the organization creation dialog
    * Emits result via output signal
    */
-  openDialog(): void {
-    this.isOpen.set(true);
-    
-    const dialogRef = this.dialog.open(OrganizationCreateDialogComponent, {
-      width: '600px',
-      data: { /* initial data */ },
-      autoFocus: false
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-        this.isOpen.set(false);
+  readonly openDialog = rxMethod<void>(
+    pipe(
+      exhaustMap(() => 
+        this.dialog.open<OrganizationCreateDialogComponent, any, OrganizationCreateResult>(OrganizationCreateDialogComponent, {
+          width: '600px',
+          data: { /* initial data */ },
+          autoFocus: false
+        }).afterClosed()
+      ),
+      tap((result) => {
         if (result) {
-            this.dialogResult.emit(result);
+          this.dialogResult.emit(result);
         }
-    });
-  }
+      })
+    )
+  );
 }
 

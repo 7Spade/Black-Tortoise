@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { IdentityFacade } from '@application/facades';
+import { OrganizationCreateResult } from './organization-create-dialog.component';
 import { OrganizationCreateTriggerComponent } from './organization-create-trigger.component';
 
 @Component({
@@ -69,7 +70,7 @@ import { OrganizationCreateTriggerComponent } from './organization-create-trigge
                <mat-icon>add</mat-icon>
                <span>Create Organization</span>
             </div>
-            <app-organization-create-trigger #createTrigger></app-organization-create-trigger>
+            <app-organization-create-trigger #createTrigger (dialogResult)="onOrganizationCreated($event)"></app-organization-create-trigger>
 
             <div class="identity-menu-divider"></div>
             <div class="identity-menu-item logout" (click)="facade.signOut()">
@@ -185,4 +186,10 @@ import { OrganizationCreateTriggerComponent } from './organization-create-trigge
 })
 export class IdentitySwitcherComponent {
   readonly facade = inject(IdentityFacade);
+
+  onOrganizationCreated(result: OrganizationCreateResult | null) {
+      if (result) {
+          this.facade.createOrganization(result.organizationName);
+      }
+  }
 }

@@ -22,3 +22,4 @@ export * from './workspace-repository.token';
 export * from './workspace-runtime-factory.interface';
 export * from './workspace-runtime.token';
 
+export * from './organization-repository.token';

@@ -31,13 +31,13 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
 import { getVertexAI, provideVertexAI } from '@angular/fire/vertexai';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { AUTH_REPOSITORY, EVENT_BUS, EVENT_STORE } from '@application/interfaces';
+import { AUTH_REPOSITORY, EVENT_BUS, EVENT_STORE, ORGANIZATION_REPOSITORY } from '@application/interfaces';
 import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
 import { AuthStore } from '@application/stores/auth.store';
 import { InMemoryEventBus } from '@infrastructure/adapters';
 import { WorkspaceRuntimeFactory } from '@infrastructure/factories';
-import { AuthRepositoryImpl, InMemoryEventStore, WorkspaceRepositoryImpl } from '@infrastructure/repositories';
+import { AuthRepositoryImpl, InMemoryEventStore, OrganizationRepositoryImpl, WorkspaceRepositoryImpl } from '@infrastructure/repositories';
 import { routes } from '@presentation/app.routes';
 import { environment } from '../environments/environment';
 
@@ -96,6 +96,10 @@ export const appConfig: ApplicationConfig = {
     {
       provide: WORKSPACE_REPOSITORY,
       useClass: WorkspaceRepositoryImpl
+    },
+    {
+      provide: ORGANIZATION_REPOSITORY,
+      useClass: OrganizationRepositoryImpl
     },
     
     // Event Infrastructure: Singleton EventBus and EventStore

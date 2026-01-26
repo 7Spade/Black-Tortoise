@@ -156,6 +156,14 @@ export class IdentityFacade {
   }
 
   /**
+   * Create new organization
+   */
+  createOrganization(displayName: string): void {
+      this.closeAllMenus();
+      this.workspaceContext.createOrganization({ displayName });
+  }
+
+  /**
    * Navigation Actions
    */
   async navigateToProfile(): Promise<void> {

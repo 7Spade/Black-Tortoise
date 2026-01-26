@@ -16,3 +16,4 @@ export * from './quality-control.repository';
 export * from './settings.repository';
 export * from './task.repository';
 export * from './workspace.repository';
+export * from './organization.repository';
