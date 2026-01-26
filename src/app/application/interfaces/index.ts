@@ -6,6 +6,7 @@
 export * from './acceptance-repository.token';
 export * from './audit-log-repository.token';
 export * from './auth-repository.token';
+export * from './auth-stream.token';
 export * from './daily-repository.token';
 export * from './document-repository.token';
 export * from './event-infrastructure.tokens';

@@ -12,7 +12,7 @@
  */
 
 import { computed, inject } from '@angular/core';
-import { AUTH_REPOSITORY } from '@application/interfaces';
+import { AUTH_REPOSITORY, AUTH_STREAM } from '@application/interfaces';
 import { User } from '@domain/entities';
 import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
@@ -49,14 +49,18 @@ export const AuthStore = signalStore(
     photoUrl: computed(() => user()?.photoUrl ?? null),
   })),
 
-  withMethods((store, authRepo = inject(AUTH_REPOSITORY)) => ({
+  withMethods((store) => {
+    const authRepo = inject(AUTH_REPOSITORY);
+    const authStream = inject(AUTH_STREAM);
+
+    return {
     
     /**
      * Connect to the Auth Stream
      */
     connect: rxMethod<void>(
       pipe(
-        switchMap(() => authRepo.authState$),
+        switchMap(() => authStream.authState$),
         tapResponse({
           next: (user) => patchState(store, { 
             user, 
@@ -122,7 +126,8 @@ export const AuthStore = signalStore(
         patchState(store, { error: err.message, loading: false });
       }
     }
-  })),
+    };
+  }),
 
   withHooks({
     onInit(store) {

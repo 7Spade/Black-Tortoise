@@ -31,7 +31,7 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
 import { getVertexAI, provideVertexAI } from '@angular/fire/vertexai';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { AUTH_REPOSITORY, EVENT_BUS, EVENT_STORE, ORGANIZATION_REPOSITORY } from '@application/interfaces';
+import { AUTH_REPOSITORY, AUTH_STREAM, EVENT_BUS, EVENT_STORE, ORGANIZATION_REPOSITORY } from '@application/interfaces';
 import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
 import { AuthStore } from '@application/stores/auth.store';
@@ -91,6 +91,10 @@ export const appConfig: ApplicationConfig = {
     },
     {
       provide: AUTH_REPOSITORY,
+      useClass: AuthRepositoryImpl
+    },
+    {
+      provide: AUTH_STREAM,
       useClass: AuthRepositoryImpl
     },
     {

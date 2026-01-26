@@ -8,16 +8,9 @@
  * Pure Domain Layer - No framework dependencies.
  */
 
-import { Observable } from 'rxjs';
 import { User } from '../entities/user.entity';
 
 export interface AuthRepository {
-  /**
-   * Stream of the current user state
-   * Emits null if no user is logged in
-   */
-  authState$: Observable<User | null>;
-
   /**
    * Login with email and password
    */

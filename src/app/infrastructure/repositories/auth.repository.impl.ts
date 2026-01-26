@@ -11,6 +11,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { Auth, User as FirebaseUser, authState, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateProfile } from '@angular/fire/auth';
+import { AuthStream } from '@application/interfaces/auth-stream.token';
 import { User } from '@domain/entities';
 import { AuthRepository } from '@domain/repositories';
 import { Email, UserId } from '@domain/value-objects';
@@ -19,11 +20,12 @@ import { Observable, map } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthRepositoryImpl implements AuthRepository {
+export class AuthRepositoryImpl implements AuthRepository, AuthStream {
   private auth = inject(Auth);
 
   /**
    * Stream of auth state changes mapped to Domain Entity User
+   * Implements AuthStream (Application Layer)
    */
   readonly authState$: Observable<User | null> = authState(this.auth).pipe(
     map(firebaseUser => this.mapToUserEntity(firebaseUser))

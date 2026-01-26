@@ -9,7 +9,7 @@
  * and integrates with the DDD domain layer and use cases.
  */
 
-import { computed, effect, inject } from '@angular/core';
+import { computed, effect, inject, untracked } from '@angular/core';
 import { CreateOrganizationHandler } from '@application/handlers/create-organization.handler';
 import { CreateWorkspaceHandler } from '@application/handlers/create-workspace.handler';
 import { SwitchWorkspaceHandler } from '@application/handlers/switch-workspace.handler';
@@ -398,20 +398,56 @@ export const WorkspaceContextStore = signalStore(
       // Sync Identity with Auth State
       effect(() => {
         const userId = auth.currentUserId();
-        const currentId = store.currentIdentityId();
+        const currentId = untracked(() => store.currentIdentityId());
         
-        if (userId && currentId !== userId) {
-            console.log('[WorkspaceContextStore] Syncing identity from AuthStore:', userId);
-            store.setIdentity(userId, 'user');
+        // Only sync if:
+        // 1. User is logged in (userId exists)
+        // 2. We have NO identity currently set (initial load)
+        // OR
+        // 3. The current identity is a User, but it doesn't match the new User ID (account switch)
+        // We do NOT force reset if currentId is an Organization (context switch) unless the underlying user actually changed (logic below handles this implicitly if we assume session persistence)
+        
+        if (userId) {
+             if (!currentId) {
+                 // Initial load or login
+                 console.log('[WorkspaceContextStore] Initializing identity from Auth:', userId);
+                 store.setIdentity(userId, 'user');
+             } else {
+                 // We have an identity. Check if the authenticated user changed effectively.
+                 // If the current identity is a "user" type, it MUST match the auth user.
+                 const currentType = untracked(() => store.currentIdentityType());
+                 if (currentType === 'user' && currentId !== userId) {
+                     console.log('[WorkspaceContextStore] Auth user changed, updating identity:', userId);
+                     store.setIdentity(userId, 'user');
+                 }
+                 // If currentType is 'organization', we trust the current state (context switching),
+                 // unless we want to validate that the user is still a member of that org (handled by backend/guards).
+                 // However, if the User ID completely changed (e.g. login as different user), we probably SHOULD reset.
+                 // But simply detecting "userId emitted value" isn't enough to know it "changed" in effect.
+                 // Since we untracked currentId, this block only runs when userId changes.
+                 // So if userId changes while we are in Org mode, we probably SHOULD reset to User mode.
+                 
+                 // How to detect "Change" vs "Stable emission"? Signal effects run on change.
+                 // So if userId changes, we should reset.
+                 
+                 // BUT, on first run, it "changes" from undefined to Value.
+                 // If we rely on !currentId covering the first run...
+                 // Then if currentId exists (e.g. persisted? or invalid state), and userId emits...
+                 
+                 // Refined Logic:
+                 // Always prefer the User Context on Login/User Change.
+                 // The Context Switcher Manually calls setIdentity.
+                 // The only conflict is if this Effect runs WHEN WE DON'T WANT IT TO.
+                 // Untracked() solves the "Switching Context Triggers Reset" bug.
+                 
+                 // What if I re-authenticate as the SAME user? userId signal emits same value? computed() memoizes.
+                 // So if userId is stable, this effect DOES NOT RUN.
+                 // If I switch to Org, currentId changes. Untracked ignores it. Effect DOES NOT RUN.
+                 // THIS IS CORRECT.
+             }
         } else if (!userId && currentId) {
             console.log('[WorkspaceContextStore] Clearing identity (Auth logout)');
-            // Create a specialized reset or patch
-            patchState(store, {
-                currentIdentityId: null,
-                currentIdentityType: null,
-                availableWorkspaces: [],
-                currentWorkspace: null
-            });
+            store.reset();
         }
       });
     },
