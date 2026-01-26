@@ -128,7 +128,6 @@ export const WorkspaceContextStore = signalStore(
      */
     currentOrganizationName: computed(() =>
       state.currentOrganizationDisplayName() ??
-      state.currentWorkspace()?.organizationDisplayName ??
       'Organization'
     ),
   })),
@@ -240,8 +239,6 @@ export const WorkspaceContextStore = signalStore(
 
             return from(createWorkspaceHandler.execute({
                 name,
-                organizationId,
-                organizationDisplayName,
                 ownerId: identityId,
                 ownerType: identityType,
                 moduleIds: moduleIds ?? ALL_MODULE_IDS,
@@ -252,8 +249,6 @@ export const WorkspaceContextStore = signalStore(
                   patchState(store, {
                     availableWorkspaces: [...store.availableWorkspaces(), workspace],
                     currentWorkspace: workspace,
-                    currentOrganizationId: workspace.organizationId,
-                    currentOrganizationDisplayName: workspace.organizationDisplayName,
                     isLoading: false,
                     error: null,
                   });
@@ -290,12 +285,20 @@ export const WorkspaceContextStore = signalStore(
         // Ensure runtime exists
         runtimeFactory.createRuntime(workspace);
         
+        // Resolve Org Context from Workspace Owner
+        const orgId = workspace.ownerType === 'organization' ? workspace.ownerId : null;
+        let orgName = null;
+        if (orgId) {
+             const org = store.availableOrganizations().find(o => o.id.toString() === orgId);
+             orgName = org?.displayName || 'Unknown Organization';
+        }
+
         // Update state
         patchState(store, {
           currentWorkspace: workspace,
           activeModuleId: null,
-          currentOrganizationId: workspace.organizationId,
-          currentOrganizationDisplayName: workspace.organizationDisplayName,
+          currentOrganizationId: orgId,
+          currentOrganizationDisplayName: orgName,
           error: null,
         });
       },

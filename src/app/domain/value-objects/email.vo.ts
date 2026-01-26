@@ -25,12 +25,12 @@ export class Email {
     return this.value;
   }
 
+  public toString(): string {
+    return this.value;
+  }
+
   public equals(other: Email): boolean {
     if (!other) return false;
     return this.value === other.value;
-  }
-
-  public toString(): string {
-    return this.value;
   }
 }

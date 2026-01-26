@@ -15,7 +15,6 @@ export interface WorkspaceCreatedPayload {
   readonly name: string;
   readonly ownerId: string;
   readonly ownerType: 'user' | 'organization';
-  readonly organizationId: string;
   readonly userId?: string;
 }
 
@@ -31,7 +30,6 @@ export function createWorkspaceCreatedEvent(
   name: string,
   ownerId: string,
   ownerType: 'user' | 'organization',
-  organizationId: string,
   userId?: string,
   correlationId?: string,
   causationId?: string | null
@@ -44,7 +42,6 @@ export function createWorkspaceCreatedEvent(
     name,
     ownerId,
     ownerType,
-    organizationId,
     ...(userId !== undefined ? { userId } : {}),
   };
   

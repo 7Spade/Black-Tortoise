@@ -18,8 +18,7 @@ export class Workspace extends AggregateRoot<WorkspaceId> {
     constructor(
         id: WorkspaceId,
         public readonly name: string,
-        public readonly ownerId: UserId,
-        public readonly organizationId: OrganizationId | null
+        public readonly ownerId: UserId
     ) {
         super(id);
     }
@@ -27,9 +26,8 @@ export class Workspace extends AggregateRoot<WorkspaceId> {
     static create(
         id: WorkspaceId, 
         name: string, 
-        ownerId: UserId, 
-        organizationId: OrganizationId | null
+        ownerId: UserId
     ): Workspace {
-        return new Workspace(id, name, ownerId, organizationId);
+        return new Workspace(id, name, ownerId);
     }
 }

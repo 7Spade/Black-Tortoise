@@ -17,8 +17,6 @@ import { WorkspaceId } from '@domain/value-objects';
  */
 export interface CreateWorkspaceCommand {
   readonly name: string;
-  readonly organizationId: string;
-  readonly organizationDisplayName: string;
   readonly ownerId: string;
   readonly ownerType: 'user' | 'organization';
   readonly moduleIds: string[];
@@ -40,8 +38,6 @@ export class CreateWorkspaceHandler {
     const workspace = createWorkspaceEntity(
       workspaceId,
       command.name,
-      command.organizationId,
-      command.organizationDisplayName,
       command.ownerId,
       command.ownerType,
       command.moduleIds
@@ -56,8 +52,8 @@ export class CreateWorkspaceHandler {
       workspace.name,
       workspace.ownerId,
       workspace.ownerType,
-      command.organizationId,
-      command.ownerId
+      command.ownerType === 'user' ? command.ownerId : undefined,
+      undefined
     );
 
     // Publish event asynchronously

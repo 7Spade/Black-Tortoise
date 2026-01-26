@@ -156,9 +156,6 @@ import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.comp
                 (click)="facade.selectWorkspace(workspace.id)"
                 type="button">
                 <span class="workspace-item-name">{{ workspace.name }}</span>
-                @if (workspace.organizationDisplayName) {
-                   <span class="workspace-org-name">{{ workspace.organizationDisplayName }}</span>
-                }
               </button>
             } @empty {
               <div class="workspace-menu-item disabled">

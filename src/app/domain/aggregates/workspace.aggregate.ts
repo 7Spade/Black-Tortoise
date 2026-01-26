@@ -16,7 +16,6 @@ export interface WorkspaceAggregate {
   readonly name: string;
   readonly ownerId: string;
   readonly ownerType: 'user' | 'organization';
-  readonly organizationId: string;
   readonly isActive: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;
@@ -30,8 +29,7 @@ export function createWorkspace(
   id: WorkspaceId,
   name: string,
   ownerId: string,
-  ownerType: 'user' | 'organization',
-  organizationId: string
+  ownerType: 'user' | 'organization'
 ): WorkspaceAggregate {
   if (!name || name.trim().length === 0) {
     throw new Error('Workspace name cannot be empty');
@@ -41,16 +39,11 @@ export function createWorkspace(
     throw new Error('Workspace owner ID cannot be empty');
   }
   
-  if (!organizationId || organizationId.trim().length === 0) {
-    throw new Error('Workspace organization ID cannot be empty');
-  }
-
   return {
     id,
     name: name.trim(),
     ownerId,
     ownerType,
-    organizationId,
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),

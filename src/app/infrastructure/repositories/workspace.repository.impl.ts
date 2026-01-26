@@ -65,21 +65,6 @@ export class WorkspaceRepositoryImpl implements WorkspaceRepository {
   }
 
   /**
-   * Find all workspaces in an organization
-   */
-  async findByOrganizationId(organizationId: string): Promise<WorkspaceEntity[]> {
-    const colRef = collection(this.firestore, this.collectionPath);
-    const q = query(
-      colRef, 
-      where('organizationId', '==', organizationId)
-    );
-    
-    const docs$ = collectionData(q, { idField: 'id' }) as Observable<any[]>;
-    const docs = await firstValueFrom(docs$);
-    return this.mapDates(docs);
-  }
-
-  /**
    * Find all active workspaces
    */
   async findAllActive(): Promise<WorkspaceEntity[]> {

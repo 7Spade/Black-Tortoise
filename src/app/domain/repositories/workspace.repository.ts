@@ -24,11 +24,6 @@ export interface WorkspaceRepository {
   findByOwnerId(ownerId: string, ownerType: 'user' | 'organization'): Promise<WorkspaceEntity[]>;
 
   /**
-   * Find all workspaces in an organization
-   */
-  findByOrganizationId(organizationId: string): Promise<WorkspaceEntity[]>;
-
-  /**
    * Find all active workspaces
    */
   findAllActive(): Promise<WorkspaceEntity[]>;

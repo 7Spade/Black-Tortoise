@@ -18,8 +18,6 @@
 export interface WorkspaceEntity {
   readonly id: string;
   readonly name: string;
-  readonly organizationId: string;
-  readonly organizationDisplayName: string;
   readonly ownerId: string;
   readonly ownerType: 'user' | 'organization';
   readonly moduleIds: string[];
@@ -33,8 +31,6 @@ export interface WorkspaceEntity {
 export function createWorkspaceEntity(
   id: string,
   name: string,
-  organizationId: string,
-  organizationDisplayName: string,
   ownerId: string,
   ownerType: 'user' | 'organization',
   moduleIds: string[] = []
@@ -42,8 +38,6 @@ export function createWorkspaceEntity(
   return {
     id,
     name,
-    organizationId,
-    organizationDisplayName,
     ownerId,
     ownerType,
     moduleIds,
