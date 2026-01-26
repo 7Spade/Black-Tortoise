@@ -1,14 +1,13 @@
 /**
- * Task Domain Service
+ * Task Policy
  * 
  * Layer: Domain
- * DDD Pattern: Domain Service
+ * DDD Pattern: Policy (Business Rules)
  * 
- * Encapsulates complex business logic related to tasks that doesn't
- * naturally fit within a single aggregate. Domain services are stateless
- * and operate on domain objects to enforce business rules.
+ * Encapsulates complex business rules related to tasks.
+ * Policies are stateless and operate on domain objects to enforce business rules.
  * 
- * This service handles task-specific business rules such as:
+ * This policy handles task-specific business rules such as:
  * - Task priority calculation
  * - Due date validation
  * - Task completion rules
@@ -16,7 +15,7 @@
  */
 
 import { TaskAggregate } from '../aggregates/task.aggregate';
-import { TaskId } from '../value-objects/task-id.vo';
+// import { TaskId } from '../value-objects/task-id.vo'; // Unused in original file but kept import if needed later, though linter might complain. Original used it but didn't seem to use it in code.
 
 /**
  * Task priority levels
