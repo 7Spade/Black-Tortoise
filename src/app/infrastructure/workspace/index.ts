@@ -6,5 +6,3 @@
 // Factories
 export * from './factories/workspace-runtime.factory';
 
-// Persistence
-export * from './persistence/workspace.repository.impl';

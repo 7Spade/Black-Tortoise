@@ -20,9 +20,9 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } 
 import { FormsModule } from '@angular/forms';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
-import { QualityControlStore } from '@application/quality-control/stores/quality-control.store';
-import { FailQCUseCase } from '@application/quality-control/use-cases/fail-qc.use-case';
-import { PassQCUseCase } from '@application/quality-control/use-cases/pass-qc.use-case';
+import { QualityControlStore } from '@application/stores/quality-control.store';
+import { FailQCHandler } from '@application/handlers/fail-qc.handler';
+import { PassQCUseCase } from '@application/handlers/pass-qc.handler';
 import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module-event-helper';
 
 @Component({
@@ -227,7 +227,7 @@ export class QualityControlModule implements IAppModule, OnInit, OnDestroy {
   
   readonly qcStore = inject(QualityControlStore);
   private readonly passQCUseCase = inject(PassQCUseCase);
-  private readonly failQCUseCase = inject(FailQCUseCase);
+  private readonly failQCHandler = inject(FailQCHandler);
   
   reviewNotes = '';
   
@@ -285,7 +285,7 @@ export class QualityControlModule implements IAppModule, OnInit, OnDestroy {
     const task = this.qcStore.tasks().find(t => t.taskId === taskId);
     if (!task) return;
     
-    await this.failQCUseCase.execute({
+    await this.failQCHandler.execute({
       taskId,
       workspaceId: this.eventBus.workspaceId,
       taskTitle: task.taskTitle,

@@ -3,7 +3,7 @@ import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.comp
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { of } from 'rxjs';
-import { WorkspaceCreateResult } from '@application/workspace/models/workspace-create-result.model';
+import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
 
 describe('WorkspaceCreateTriggerComponent', () => {
   let component: WorkspaceCreateTriggerComponent;

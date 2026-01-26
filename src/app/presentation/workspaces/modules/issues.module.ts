@@ -9,9 +9,9 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } 
 import { FormsModule } from '@angular/forms';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
-import { IssuesStore } from '@application/issues/stores/issues.store';
-import { CreateIssueUseCase } from '@application/issues/use-cases/create-issue.use-case';
-import { ResolveIssueUseCase } from '@application/issues/use-cases/resolve-issue.use-case';
+import { IssuesStore } from '@application/stores/issues.store';
+import { CreateIssueHandler } from '@application/handlers/create-issue.handler';
+import { ResolveIssueHandler } from '@application/handlers/resolve-issue.handler';
 import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module-event-helper';
 
 @Component({
@@ -90,8 +90,8 @@ export class IssuesModule implements IAppModule, OnInit, OnDestroy {
   
   @Input() eventBus: IModuleEventBus | undefined;
   readonly issuesStore = inject(IssuesStore);
-  private readonly createIssueUseCase = inject(CreateIssueUseCase);
-  private readonly resolveIssueUseCase = inject(ResolveIssueUseCase);
+  private readonly createIssueHandler = inject(CreateIssueHandler);
+  private readonly resolveIssueHandler = inject(ResolveIssueHandler);
   
   resolution = '';
   private readonly currentUserId = 'user-demo-issues';
@@ -109,7 +109,7 @@ export class IssuesModule implements IAppModule, OnInit, OnDestroy {
     this.subscriptions.add(
       eventBus.subscribe('QCFailed', async (event: any) => {
         const issueId = crypto.randomUUID();
-        await this.createIssueUseCase.execute({
+        await this.createIssueHandler.execute({
           issueId,
           taskId: event.aggregateId,
           workspaceId: eventBus.workspaceId,
@@ -139,7 +139,7 @@ export class IssuesModule implements IAppModule, OnInit, OnDestroy {
     const issue = this.issuesStore.issues().find(i => i.id === issueId);
     if (!issue) return;
     
-    await this.resolveIssueUseCase.execute({
+    await this.resolveIssueHandler.execute({
       issueId,
       taskId: issue.taskId,
       workspaceId: this.eventBus.workspaceId,

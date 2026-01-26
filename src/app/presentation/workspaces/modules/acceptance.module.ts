@@ -24,9 +24,9 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AcceptanceStore } from '@application/acceptance/stores/acceptance.store';
-import { ApproveTaskUseCase } from '@application/acceptance/use-cases/approve-task.use-case';
-import { RejectTaskUseCase } from '@application/acceptance/use-cases/reject-task.use-case';
+import { AcceptanceStore } from '@application/stores/acceptance.store';
+import { ApproveTaskHandler } from '@application/handlers/approve-task.handler';
+import { RejectTaskHandler } from '@application/handlers/reject-task.handler';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module-event-helper';
@@ -174,8 +174,8 @@ export class AcceptanceModule implements IAppModule, OnInit, OnDestroy {
   @Input() eventBus: IModuleEventBus | undefined;
   
   readonly acceptanceStore = inject(AcceptanceStore);
-  private readonly approveTaskUseCase = inject(ApproveTaskUseCase);
-  private readonly rejectTaskUseCase = inject(RejectTaskUseCase);
+  private readonly approveTaskHandler = inject(ApproveTaskHandler);
+  private readonly rejectTaskHandler = inject(RejectTaskHandler);
   
   // Computed signal for completed tasks (approved + rejected)
   readonly completedTasks = computed(() => [
@@ -220,7 +220,7 @@ export class AcceptanceModule implements IAppModule, OnInit, OnDestroy {
     const task = this.acceptanceStore.tasks().find(t => t.taskId === taskId);
     if (!task) return;
     
-    const request: Parameters<typeof this.approveTaskUseCase.execute>[0] = {
+    const request: Parameters<typeof this.approveTaskHandler.execute>[0] = {
       taskId,
       workspaceId: this.eventBus.workspaceId,
       taskTitle: task.taskTitle,
@@ -228,7 +228,7 @@ export class AcceptanceModule implements IAppModule, OnInit, OnDestroy {
       ...(this.notes ? { approvalNotes: this.notes } : {}),
     };
     
-    this.approveTaskUseCase.execute(request).then(result => {
+    this.approveTaskHandler.execute(request).then(result => {
       if (!result.success) {
         console.error('[AcceptanceModule] Approve failed:', result.error);
       }
@@ -247,7 +247,7 @@ export class AcceptanceModule implements IAppModule, OnInit, OnDestroy {
     if (!task) return;
     
     // Delegate to Use Case - creates event, appends to store, publishes to bus
-    this.rejectTaskUseCase.execute({
+    this.rejectTaskHandler.execute({
       taskId,
       workspaceId: this.eventBus.workspaceId,
       taskTitle: task.taskTitle,

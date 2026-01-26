@@ -21,8 +21,8 @@
 import { ChangeDetectionStrategy, Component, effect, inject, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
-import { WorkspaceCreateResult } from '@application/workspace/models/workspace-create-result.model';
-import { isWorkspaceCreateResult } from '@application/workspace/models/workspace-create-result.validator';
+import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
+import { isWorkspaceCreateResult } from '@application/models/workspace-create-result.validator';
 import { WorkspaceCreateDialogComponent } from '@presentation/workspaces/dialogs/workspace-create-dialog.component';
 
 @Component({

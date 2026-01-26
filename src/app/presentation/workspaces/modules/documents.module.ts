@@ -6,7 +6,7 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
-import { DocumentsStore } from '@application/documents/stores/documents.store';
+import { DocumentsStore } from '@application/stores/documents.store';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module-event-helper';

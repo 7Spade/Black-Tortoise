@@ -31,10 +31,11 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { routes } from '@presentation/app.routes';
 import { environment } from '../environments/environment';
-import { WORKSPACE_RUNTIME_FACTORY } from '@application/workspace/tokens/workspace-runtime.token';
+import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
 import { WorkspaceRuntimeFactory } from '@infrastructure/workspace';
-import { EVENT_BUS, EVENT_STORE } from '@application/events';
-import { InMemoryEventBus, InMemoryEventStore } from '@infrastructure/events';
+import { EVENT_BUS, EVENT_STORE } from '@application/interfaces';
+import { InMemoryEventBus } from '@infrastructure/adapters';
+import { InMemoryEventStore } from '@infrastructure/persistence';
 
 /**
  * Application Configuration with Zone-less Change Detection

@@ -8,8 +8,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DailyStore } from '@application/daily/stores/daily.store';
-import { CreateDailyEntryUseCase } from '@application/daily/use-cases/create-daily-entry.use-case';
+import { DailyStore } from '@application/stores/daily.store';
+import { CreateDailyEntryHandler } from '@application/handlers/create-daily-entry.handler';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module-event-helper';
@@ -341,7 +341,7 @@ export class DailyModule implements IAppModule, OnInit, OnDestroy {
   
   @Input() eventBus: IModuleEventBus | undefined;
   readonly dailyStore = inject(DailyStore);
-  private readonly createDailyEntryUseCase = inject(CreateDailyEntryUseCase);
+  private readonly createDailyEntryHandler = inject(CreateDailyEntryHandler);
   
   entryDate: string = this.getTodayDate();
   hoursLogged = 0;
@@ -381,7 +381,7 @@ export class DailyModule implements IAppModule, OnInit, OnDestroy {
     
     const entryId = crypto.randomUUID();
     
-    const request: Parameters<typeof this.createDailyEntryUseCase.execute>[0] = {
+    const request: Parameters<typeof this.createDailyEntryHandler.execute>[0] = {
       entryId,
       workspaceId: this.eventBus.workspaceId,
       date: this.entryDate,
@@ -391,7 +391,7 @@ export class DailyModule implements IAppModule, OnInit, OnDestroy {
       ...(this.notes ? { notes: this.notes } : {}),
     };
     
-    await this.createDailyEntryUseCase.execute(request);
+    await this.createDailyEntryHandler.execute(request);
     
     this.hoursLogged = 0;
     this.notes = '';

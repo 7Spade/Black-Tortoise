@@ -8,7 +8,7 @@
 
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { WorkspaceContextStore } from '@application/workspace';
+import { WorkspaceContextStore } from '@application/stores';
 
 @Component({
   selector: 'app-demo-dashboard',

@@ -5,7 +5,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { DemoDashboardComponent } from './demo-dashboard.component';
-import { WorkspaceContextStore } from '@application/workspace';
+import { WorkspaceContextStore } from '@application/stores';
 
 describe('DemoDashboardComponent', () => {
   let component: DemoDashboardComponent;

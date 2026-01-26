@@ -8,7 +8,7 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } 
 import { FormsModule } from '@angular/forms';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
-import { MembersStore } from '@application/members/stores/members.store';
+import { MembersStore } from '@application/stores/members.store';
 import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module-event-helper';
 
 @Component({

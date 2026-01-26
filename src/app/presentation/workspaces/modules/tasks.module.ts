@@ -20,11 +20,10 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CreateTaskHandler, FailQCHandler, ResolveIssueHandler, SubmitTaskForQCHandler } from '@application/handlers';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
-import { ResolveIssueUseCase } from '@application/issues/use-cases/resolve-issue.use-case';
-import { FailQCUseCase } from '@application/quality-control/use-cases/fail-qc.use-case';
-import { CreateTaskUseCase, SubmitTaskForQCUseCase, TasksStore } from '@application/tasks';
+import { TasksStore } from '@application/stores';
 import { TaskAggregate, TaskPriority, createTask } from '@domain/modules/tasks';
 
 @Component({
@@ -584,10 +583,10 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
   @Input() eventBus: IModuleEventBus | undefined;
 
   readonly tasksStore = inject(TasksStore);
-  private readonly createTaskUseCase = inject(CreateTaskUseCase);
-  private readonly submitTaskForQCUseCase = inject(SubmitTaskForQCUseCase);
-  private readonly failQCUseCase = inject(FailQCUseCase);
-  private readonly resolveIssueUseCase = inject(ResolveIssueUseCase);
+  private readonly createTaskHandler = inject(CreateTaskHandler);
+  private readonly submitTaskForQCHandler = inject(SubmitTaskForQCHandler);
+  private readonly failQCUseCase = inject(FailQCHandler);
+  private readonly resolveIssueHandler = inject(ResolveIssueHandler);
 
   workspaceId = signal<string>('');
   eventLog = signal<any[]>([]);
@@ -662,7 +661,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       priority: this.newTaskPriority,
     });
 
-    const result = await this.createTaskUseCase.execute({
+    const result = await this.createTaskHandler.execute({
       taskId: task.id,
       workspaceId: task.workspaceId,
       title: task.title,
@@ -681,7 +680,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
   async submitTaskForQC(task: TaskAggregate): Promise<void> {
     if (!this.eventBus) return;
 
-    await this.submitTaskForQCUseCase.execute({
+    await this.submitTaskForQCHandler.execute({
       taskId: task.id,
       workspaceId: this.workspaceId(),
       taskTitle: task.title,
@@ -694,7 +693,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
    * 
    * Constitution Compliance:
    * - Presentation only dispatches command to use case
-   * - Use case publishes QCFailed event via PublishEventUseCase
+   * - Use case publishes QCFailed event via PublishEventHandler
    * - QC event handler creates derived IssueCreated event with causality
    * - No direct issue creation in presentation layer
    */
@@ -722,7 +721,7 @@ export class TasksModule implements IAppModule, OnInit, OnDestroy {
       return;
     }
 
-    await this.resolveIssueUseCase.execute({
+    await this.resolveIssueHandler.execute({
       issueId,
       taskId: task.id,
       workspaceId: this.workspaceId(),

@@ -6,13 +6,13 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
-import { AcceptanceStore } from '@application/acceptance/stores/acceptance.store';
+import { AcceptanceStore } from '@application/stores/acceptance.store';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
-import { IssuesStore } from '@application/issues/stores/issues.store';
-import { OverviewStore } from '@application/overview/stores/overview.store';
-import { QualityControlStore } from '@application/quality-control/stores/quality-control.store';
-import { TasksStore } from '@application/tasks/stores/tasks.store';
+import { IssuesStore } from '@application/stores/issues.store';
+import { OverviewStore } from '@application/stores/overview.store';
+import { QualityControlStore } from '@application/stores/quality-control.store';
+import { TasksStore } from '@application/stores/tasks.store';
 import { ModuleEventHelper } from '@presentation/workspaces/modules/basic/module-event-helper';
 
 @Component({

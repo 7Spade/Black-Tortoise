@@ -31,7 +31,7 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import { WorkspaceContextStore } from '@application/workspace';
+import { WorkspaceContextStore } from '@application/stores';
 import { ModuleFacade } from '@application/facades/module.facade';
 import { IAppModule } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
