@@ -32,7 +32,6 @@ import { PresentationStore } from '@application/stores/presentation.store';
 <!-- Pure UI: Consumes state from PresentationStore, forwards events to SearchFacade -->
 <!-- No local state, no business logic - fully reactive control flow -->
 <section class="search">
-  <label class="search__label" for="search-input">搜尋</label>
   <div class="search__controls">
     <input
       id="search-input"
