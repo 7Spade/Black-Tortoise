@@ -189,6 +189,15 @@ export const WorkspaceStore = signalStore(
       
       /**
        * Switch to workspace
+       * 
+       * Orchestration order (workspace switch cleanup):
+       * 1. Set loading/unknown state
+       * 2. Stop all module runtimes
+       * 3. Stop workspace event bus (destroyRuntime)
+       * 4. Reset all module stores
+       * 5. Start new workspace event bus (createRuntime)
+       * 6. Start module runtimes (implicit via createRuntime)
+       * 7. Set ready state
        */
       switchWorkspace(workspaceId: string): void {
         const workspace = store.availableWorkspaces().find(w => w.id === workspaceId);
@@ -200,14 +209,19 @@ export const WorkspaceStore = signalStore(
         
         const previousWorkspaceId = store.currentWorkspace()?.id || null;
         
-        // Set loading state
+        // 1. Set loading/unknown state (signal to UI: workspace switching)
         patchState(store, { 
           isLoading: true, 
           currentWorkspace: null,
           error: null 
         });
         
-        // Reset all module stores
+        // 2-3. Stop all module runtimes and dispose workspace-scoped event bus
+        if (previousWorkspaceId) {
+          runtimeFactory.destroyRuntime(previousWorkspaceId);
+        }
+        
+        // 4. Reset all module stores (clear workspace-scoped data)
         tasksStore.reset();
         documentsStore.reset();
         issuesStore.reset();
@@ -220,18 +234,13 @@ export const WorkspaceStore = signalStore(
         acceptanceStore.reset();
         dailyStore.reset();
         
-        // Stop all module runtimes and dispose workspace-scoped event bus
-        if (previousWorkspaceId) {
-          runtimeFactory.destroyRuntime(previousWorkspaceId);
-        }
-        
-        // Execute use case
+        // Execute domain use case (business logic)
         switchWorkspaceHandler.execute({
           previousWorkspaceId,
           targetWorkspaceId: workspaceId,
         });
         
-        // Create new workspace runtime (with new event bus)
+        // 5-6. Create new workspace runtime (starts new event bus and module runtimes)
         runtimeFactory.createRuntime(workspace);
         
         // Update organization context if workspace is org-owned
@@ -248,7 +257,7 @@ export const WorkspaceStore = signalStore(
           organizationStore.clearCurrentOrganization();
         }
         
-        // Update state - set ready
+        // 7. Set ready state (signal to UI: workspace ready)
         patchState(store, {
           currentWorkspace: workspace,
           activeModuleId: null,
