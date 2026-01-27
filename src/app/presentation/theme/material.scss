@@ -8,5 +8,5 @@
 }
 
 body.dark {
-  @include mat.all-component-themes(theme.$xuanwu-dark-theme);
+  @include mat.all-component-colors(theme.$xuanwu-dark-theme);
 }

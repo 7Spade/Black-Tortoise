@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { ITemplateRepository } from '../../domain/repositories/template.repository';
 import { AddTemplateSectionCommand } from '../commands/template.commands';
-import { TEMPLATE_REPOSITORY_TOKEN } from '../interfaces/template.repository';
+import { TEMPLATE_REPOSITORY_TOKEN } from '../tokens/template-repository.token';
 
 @Injectable({ providedIn: 'root' })
 export class AddSectionToTemplateUseCase {

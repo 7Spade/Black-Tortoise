@@ -9,8 +9,7 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject, s
 import { FormsModule } from '@angular/forms';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
-import { SettingsStore } from '@application/stores/settings.store';
-import { TaskPriority } from '@domain/aggregates';
+import { SettingsStore, TaskPriority } from '@application/stores/settings.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 @Component({

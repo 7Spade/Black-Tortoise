@@ -4,7 +4,6 @@
     "analytics": "1e1de97b-a744-405a-8b5a-0397bb3d01ce"
   },
   "newProjectRoot": "projects",
-  "packageManager": "npm",
   "projects": {
     "demo": {
       "architect": {

@@ -175,26 +175,18 @@ export const OverviewStore = signalStore(
     },
 
     /**
+     * Reset (Clear on Workspace Switch)
+     */
+    reset(): void {
+      patchState(store, initialState);
+    },
+
+    /**
      * Clear all data (workspace switch)
+     * @deprecated Use reset() instead
      */
     clearOverview(): void {
-      patchState(store, {
-        metrics: {
-          totalTasks: 0,
-          completedTasks: 0,
-          activeTasks: 0,
-          blockedTasks: 0,
-          openIssues: 0,
-          pendingQC: 0,
-          pendingAcceptance: 0,
-          totalMembers: 0,
-          totalDocuments: 0,
-          lastActivityAt: null,
-        },
-        recentActivities: [],
-        isLoading: false,
-        error: null,
-      });
+      this.reset();
     },
 
     /**

@@ -152,10 +152,10 @@ export const IssuesStore = signalStore(
     },
 
     /**
-     * Reset State
+     * Reset State (Clear on Workspace Switch)
      */
-    resetState(): void {
+    reset(): void {
       patchState(store, initialState);
-    }
+    },
   }))
 );
