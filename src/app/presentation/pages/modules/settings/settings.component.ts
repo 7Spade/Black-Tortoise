@@ -5,11 +5,25 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
-import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
-import { SettingsStore, TaskPriority } from '@application/stores/settings.store';
+import {
+  IAppModule,
+  ModuleType,
+} from '@application/interfaces/module.interface';
+import {
+  SettingsStore,
+  TaskPriority,
+} from '@application/stores/settings.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 @Component({
@@ -26,22 +40,25 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
 
       <!-- Settings Navigation -->
       <div class="settings-nav">
-        <button 
+        <button
           [class.active]="activeTab() === 'workspace'"
           (click)="activeTab.set('workspace')"
-          class="nav-btn">
+          class="nav-btn"
+        >
           Workspace
         </button>
-        <button 
+        <button
           [class.active]="activeTab() === 'preferences'"
           (click)="activeTab.set('preferences')"
-          class="nav-btn">
+          class="nav-btn"
+        >
           Preferences
         </button>
-        <button 
+        <button
           [class.active]="activeTab() === 'notifications'"
           (click)="activeTab.set('notifications')"
-          class="nav-btn">
+          class="nav-btn"
+        >
           Notifications
         </button>
       </div>
@@ -50,25 +67,33 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
       @if (activeTab() === 'workspace') {
         <div class="settings-section">
           <h3>Workspace Configuration</h3>
-          
+
           @if (settingsStore.hasWorkspaceSettings()) {
             <div class="setting-group">
               <h4>Working Hours</h4>
               <div class="setting-row">
                 <label>Start Time</label>
-                <input 
-                  type="time" 
-                  [value]="settingsStore.workspaceSettings()?.workingHours?.start ?? '09:00'"
+                <input
+                  type="time"
+                  [value]="
+                    settingsStore.workspaceSettings()?.workingHours?.start ??
+                    '09:00'
+                  "
                   (change)="updateWorkingHours('start', $event)"
-                  class="input-field" />
+                  class="input-field"
+                />
               </div>
               <div class="setting-row">
                 <label>End Time</label>
-                <input 
-                  type="time" 
-                  [value]="settingsStore.workspaceSettings()?.workingHours?.end ?? '17:00'"
+                <input
+                  type="time"
+                  [value]="
+                    settingsStore.workspaceSettings()?.workingHours?.end ??
+                    '17:00'
+                  "
                   (change)="updateWorkingHours('end', $event)"
-                  class="input-field" />
+                  class="input-field"
+                />
               </div>
             </div>
 
@@ -76,10 +101,11 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
               <h4>General</h4>
               <div class="setting-row">
                 <label>Timezone</label>
-                <select 
+                <select
                   [value]="settingsStore.workspaceSettings()?.timezone"
                   (change)="updateTimezone($event)"
-                  class="input-field">
+                  class="input-field"
+                >
                   <option value="UTC">UTC</option>
                   <option value="America/New_York">Eastern Time</option>
                   <option value="America/Los_Angeles">Pacific Time</option>
@@ -89,10 +115,13 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
               </div>
               <div class="setting-row">
                 <label>Default Task Priority</label>
-                <select 
-                  [value]="settingsStore.workspaceSettings()?.defaultTaskPriority"
+                <select
+                  [value]="
+                    settingsStore.workspaceSettings()?.defaultTaskPriority
+                  "
                   (change)="updateDefaultPriority($event)"
-                  class="input-field">
+                  class="input-field"
+                >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
                   <option value="high">High</option>
@@ -105,19 +134,25 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
               <h4>Features</h4>
               <div class="setting-row toggle-row">
                 <label>Enable Notifications</label>
-                <input 
-                  type="checkbox" 
-                  [checked]="settingsStore.workspaceSettings()?.enableNotifications"
+                <input
+                  type="checkbox"
+                  [checked]="
+                    settingsStore.workspaceSettings()?.enableNotifications
+                  "
                   (change)="toggleNotifications($event)"
-                  class="toggle-input" />
+                  class="toggle-input"
+                />
               </div>
               <div class="setting-row toggle-row">
                 <label>Enable Auto-Assignment</label>
-                <input 
-                  type="checkbox" 
-                  [checked]="settingsStore.workspaceSettings()?.enableAutoAssignment"
+                <input
+                  type="checkbox"
+                  [checked]="
+                    settingsStore.workspaceSettings()?.enableAutoAssignment
+                  "
                   (change)="toggleAutoAssignment($event)"
-                  class="toggle-input" />
+                  class="toggle-input"
+                />
               </div>
             </div>
           } @else {
@@ -130,16 +165,17 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
       @if (activeTab() === 'preferences') {
         <div class="settings-section">
           <h3>User Preferences</h3>
-          
+
           @if (settingsStore.hasUserPreferences()) {
             <div class="setting-group">
               <h4>Appearance</h4>
               <div class="setting-row">
                 <label>Theme</label>
-                <select 
-                  [(ngModel)]="theme" 
-                  (change)="updateTheme()" 
-                  class="input-field">
+                <select
+                  [(ngModel)]="theme"
+                  (change)="updateTheme()"
+                  class="input-field"
+                >
                   <option value="light">Light</option>
                   <option value="dark">Dark</option>
                   <option value="system">System</option>
@@ -147,11 +183,12 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
               </div>
               <div class="setting-row toggle-row">
                 <label>Compact Mode</label>
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   [checked]="settingsStore.userPreferences()?.compactMode"
                   (change)="toggleCompactMode($event)"
-                  class="toggle-input" />
+                  class="toggle-input"
+                />
               </div>
             </div>
 
@@ -159,10 +196,11 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
               <h4>Display</h4>
               <div class="setting-row">
                 <label>Language</label>
-                <select 
+                <select
                   [value]="settingsStore.userPreferences()?.language"
                   (change)="updateLanguage($event)"
-                  class="input-field">
+                  class="input-field"
+                >
                   <option value="en">English</option>
                   <option value="es">Español</option>
                   <option value="fr">Français</option>
@@ -172,15 +210,20 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
               </div>
               <div class="setting-row toggle-row">
                 <label>Show Completed Tasks</label>
-                <input 
-                  type="checkbox" 
-                  [checked]="settingsStore.userPreferences()?.showCompletedTasks"
+                <input
+                  type="checkbox"
+                  [checked]="
+                    settingsStore.userPreferences()?.showCompletedTasks
+                  "
                   (change)="toggleShowCompleted($event)"
-                  class="toggle-input" />
+                  class="toggle-input"
+                />
               </div>
             </div>
           } @else {
-            <button (click)="initializePreferences()" class="btn-primary">Initialize Preferences</button>
+            <button (click)="initializePreferences()" class="btn-primary">
+              Initialize Preferences
+            </button>
           }
         </div>
       }
@@ -189,7 +232,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
       @if (activeTab() === 'notifications') {
         <div class="settings-section">
           <h3>Notification Settings</h3>
-          
+
           <div class="setting-group">
             <h4>Email Notifications</h4>
             <div class="setting-row toggle-row">
@@ -221,171 +264,32 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
       }
     </div>
   `,
-  styles: [`
-    .settings-module { 
-      padding: 1.5rem; 
-      max-width: 900px; 
-    }
-    
-    .module-header h2 { 
-      margin: 0 0 0.5rem 0; 
-      color: #1976d2; 
-    }
-    
-    .settings-nav {
-      display: flex;
-      gap: 0.5rem;
-      margin: 1rem 0;
-      border-bottom: 2px solid #e0e0e0;
-      padding-bottom: 0;
-    }
-    
-    .nav-btn {
-      padding: 0.75rem 1.5rem;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      font-weight: 500;
-      color: #666;
-      border-bottom: 3px solid transparent;
-      transition: all 0.2s;
-      margin-bottom: -2px;
-    }
-    
-    .nav-btn.active {
-      color: #1976d2;
-      border-bottom-color: #1976d2;
-    }
-    
-    .settings-section { 
-      background: white; 
-      border: 1px solid #e0e0e0; 
-      border-radius: 8px; 
-      padding: 1.5rem; 
-      margin-top: 1rem; 
-    }
-    
-    .settings-section h3 {
-      margin: 0 0 1.5rem 0;
-      color: #333;
-      font-size: 1.25rem;
-    }
-    
-    .setting-group {
-      margin-bottom: 2rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    
-    .setting-group:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-    
-    .setting-group h4 {
-      margin: 0 0 1rem 0;
-      color: #666;
-      font-size: 0.875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 600;
-    }
-    
-    .setting-row { 
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-      padding: 0.75rem 0;
-    }
-    
-    .setting-row:last-child {
-      margin-bottom: 0;
-    }
-    
-    .setting-row label { 
-      font-weight: 500;
-      color: #333;
-      flex: 1;
-    }
-    
-    .input-field { 
-      flex: 0 0 200px;
-      padding: 0.5rem; 
-      border: 1px solid #ccc; 
-      border-radius: 4px;
-      font-size: 0.875rem;
-    }
-    
-    .toggle-row {
-      padding: 1rem;
-      background: #f9f9f9;
-      border-radius: 4px;
-    }
-    
-    .toggle-input {
-      width: 48px;
-      height: 24px;
-      cursor: pointer;
-    }
-    
-    .btn-primary { 
-      padding: 0.75rem 1.5rem; 
-      border: none; 
-      border-radius: 4px; 
-      background: #1976d2; 
-      color: white; 
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.2s;
-    }
-    
-    .btn-primary:hover {
-      background: #1565c0;
-    }
-    
-    .empty-state { 
-      text-align: center; 
-      color: #999; 
-      padding: 2rem; 
-    }
-    
-    @media (max-width: 768px) {
-      .setting-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-      }
-      
-      .input-field {
-        width: 100%;
-      }
-    }
-  `]
+  styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements IAppModule, OnInit, OnDestroy {
   readonly id = 'settings';
   readonly name = 'Settings';
   readonly type: ModuleType = 'settings';
-  
+
   @Input() eventBus: IModuleEventBus | undefined;
   readonly settingsStore = inject(SettingsStore);
-  
-  activeTab = signal<'workspace' | 'preferences' | 'notifications'>('workspace');
+
+  activeTab = signal<'workspace' | 'preferences' | 'notifications'>(
+    'workspace',
+  );
   theme = 'system';
-  
+
   private subscriptions = ModuleEventHelper.createSubscriptionManager();
-  
+
   ngOnInit(): void {
     if (this.eventBus) {
       this.initialize(this.eventBus);
     }
   }
-  
+
   initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
-    
+
     // Initialize demo settings
     this.settingsStore.setWorkspaceSettings({
       workingHours: { start: '09:00', end: '17:00' },
@@ -394,48 +298,51 @@ export class SettingsComponent implements IAppModule, OnInit, OnDestroy {
       enableNotifications: true,
       enableAutoAssignment: false,
     });
-    
+
     this.subscriptions.add(
       ModuleEventHelper.onWorkspaceSwitched(eventBus, () => {
         this.settingsStore.clearSettings();
-      })
+      }),
     );
-    
   }
-  
+
   updateWorkingHours(field: 'start' | 'end', event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     const current = this.settingsStore.workspaceSettings();
     if (!current) return;
-    
+
     this.settingsStore.updateWorkspaceSettings({
       workingHours: {
         ...current.workingHours,
-        [field]: value
-      }
+        [field]: value,
+      },
     });
   }
-  
+
   updateTimezone(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
     this.settingsStore.updateWorkspaceSettings({ timezone: value });
   }
-  
+
   updateDefaultPriority(event: Event): void {
     const value = (event.target as HTMLSelectElement).value as any;
     this.settingsStore.updateWorkspaceSettings({ defaultTaskPriority: value });
   }
-  
+
   toggleNotifications(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
-    this.settingsStore.updateWorkspaceSettings({ enableNotifications: checked });
+    this.settingsStore.updateWorkspaceSettings({
+      enableNotifications: checked,
+    });
   }
-  
+
   toggleAutoAssignment(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
-    this.settingsStore.updateWorkspaceSettings({ enableAutoAssignment: checked });
+    this.settingsStore.updateWorkspaceSettings({
+      enableAutoAssignment: checked,
+    });
   }
-  
+
   initializePreferences(): void {
     this.settingsStore.setUserPreferences({
       theme: 'system',
@@ -444,26 +351,26 @@ export class SettingsComponent implements IAppModule, OnInit, OnDestroy {
       showCompletedTasks: true,
     });
   }
-  
+
   updateTheme(): void {
     this.settingsStore.updateUserPreferences({ theme: this.theme as any });
   }
-  
+
   updateLanguage(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
     this.settingsStore.updateUserPreferences({ language: value });
   }
-  
+
   toggleCompactMode(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
     this.settingsStore.updateUserPreferences({ compactMode: checked });
   }
-  
+
   toggleShowCompleted(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
     this.settingsStore.updateUserPreferences({ showCompletedTasks: checked });
   }
-  
+
   activate(): void {}
   deactivate(): void {}
   destroy(): void {
@@ -473,6 +380,3 @@ export class SettingsComponent implements IAppModule, OnInit, OnDestroy {
     this.destroy();
   }
 }
-
-
-
