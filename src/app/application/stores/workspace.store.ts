@@ -176,13 +176,25 @@ export const WorkspaceStore = signalStore(
         
         const previousWorkspaceId = store.currentWorkspace()?.id || null;
         
+        // Set loading state
+        patchState(store, { 
+          isLoading: true, 
+          currentWorkspace: null,
+          error: null 
+        });
+        
+        // Stop all module runtimes and dispose workspace-scoped event bus
+        if (previousWorkspaceId) {
+          runtimeFactory.destroyRuntime(previousWorkspaceId);
+        }
+        
         // Execute use case
         switchWorkspaceHandler.execute({
           previousWorkspaceId,
           targetWorkspaceId: workspaceId,
         });
         
-        // Ensure runtime exists
+        // Create new workspace runtime (with new event bus)
         runtimeFactory.createRuntime(workspace);
         
         // Update organization context if workspace is org-owned
@@ -199,10 +211,11 @@ export const WorkspaceStore = signalStore(
           organizationStore.clearCurrentOrganization();
         }
         
-        // Update state
+        // Update state - set ready
         patchState(store, {
           currentWorkspace: workspace,
           activeModuleId: null,
+          isLoading: false,
           error: null,
         });
       },
