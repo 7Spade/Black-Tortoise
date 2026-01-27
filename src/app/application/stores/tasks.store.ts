@@ -10,20 +10,14 @@
  */
 
 import { computed, inject } from '@angular/core';
-import { EVENT_BUS, TASK_REPOSITORY } from '@application/interfaces';
-import { IdentityContextStore } from '@application/stores/identity-context.store';
+import { TASK_REPOSITORY } from '@application/interfaces';
 import {
   TaskAggregate,
   TaskPriority,
   TaskStatus,
   createTask,
 } from '@domain/aggregates';
-import {
-  createTaskCreatedEvent,
-  createTaskDeletedEvent,
-  createTaskUpdatedEvent,
-} from '@domain/events';
-import { TaskId, WorkspaceId } from '@domain/value-objects';
+import { WorkspaceId } from '@domain/value-objects';
 import { tapResponse } from '@ngrx/operators';
 import {
   patchState,
@@ -33,7 +27,7 @@ import {
   withState,
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { concatMap, exhaustMap, from, pipe, switchMap } from 'rxjs';
+import { from, pipe, switchMap } from 'rxjs';
 
 // Re-export domain types for presentation layer use
 export { TaskAggregate, TaskPriority, TaskStatus, createTask };
@@ -101,12 +95,10 @@ export const TasksStore = signalStore(
 
   withMethods((store) => {
     const repo = inject(TASK_REPOSITORY);
-    const eventBus = inject(EVENT_BUS);
-    const identityContext = inject(IdentityContextStore);
 
     return {
       /**
-       * Load tasks for a workspace
+       * Load tasks for a workspace (Query Side)
        */
       loadByWorkspace: rxMethod<string>(
         pipe(
@@ -127,129 +119,46 @@ export const TasksStore = signalStore(
       ),
 
       /**
-       * Add task (saves to repo, updates state, publishes event)
+       * Add task to local state (Reactive Update)
+       * Triggered by: EventBus (TaskCreated)
        */
-      addTask: rxMethod<TaskAggregate>(
-        pipe(
-          exhaustMap((task) => {
-            patchState(store, { isLoading: true, error: null });
-            return from(repo.save(task)).pipe(
-              tapResponse({
-                next: () => {
-                  patchState(store, {
-                    tasks: [...store.tasks(), task],
-                    isLoading: false,
-                    error: null,
-                  });
-                  // Publish Event
-                  eventBus.publish(
-                    createTaskCreatedEvent(
-                      task.id,
-                      task.workspaceId,
-                      task.title,
-                      task.description,
-                      task.priority,
-                      task.createdById,
-                    ),
-                  );
-                },
-                error: (err: any) =>
-                  patchState(store, { error: err.message, isLoading: false }),
-              }),
-            );
-          }),
-        ),
-      ),
+      addTask(task: TaskAggregate): void {
+        patchState(store, {
+          tasks: [...store.tasks(), task],
+          error: null,
+        });
+      },
 
       /**
-       * Update task (saves to repo, updates state, publishes event)
+       * Update task in local state (Reactive Update)
+       * Triggered by: EventBus (TaskUpdated, etc.)
        */
-      updateTask: rxMethod<{ taskId: string; updates: Partial<TaskAggregate> }>(
-        pipe(
-          concatMap(({ taskId, updates }) => {
-            const task = store.tasks().find((t) => t.id === taskId);
-            if (!task) {
-              patchState(store, { error: `Task ${taskId} not found` });
-              return from([]);
-            }
+      updateTask(
+        taskId: string,
+        updates: Partial<TaskAggregate>,
+        updatedAt: number = Date.now(),
+      ): void {
+        const task = store.tasks().find((t) => t.id === taskId);
+        if (!task) return; // Should we log warning?
 
-            const updatedTask = { ...task, ...updates, updatedAt: Date.now() };
-            patchState(store, { isLoading: true, error: null });
+        const updatedTask = { ...task, ...updates, updatedAt };
 
-            return from(repo.save(updatedTask)).pipe(
-              tapResponse({
-                next: () => {
-                  patchState(store, {
-                    tasks: store
-                      .tasks()
-                      .map((t) => (t.id === taskId ? updatedTask : t)),
-                    isLoading: false,
-                    error: null,
-                  });
-
-                  const updatedById =
-                    identityContext.currentIdentityId() || 'system';
-
-                  // Publish Event
-                  eventBus.publish(
-                    createTaskUpdatedEvent(
-                      task.id,
-                      task.workspaceId,
-                      updates,
-                      updatedById,
-                    ),
-                  );
-                },
-                error: (err: any) =>
-                  patchState(store, { error: err.message, isLoading: false }),
-              }),
-            );
-          }),
-        ),
-      ),
+        patchState(store, {
+          tasks: store.tasks().map((t) => (t.id === taskId ? updatedTask : t)),
+          error: null,
+        });
+      },
 
       /**
-       * Delete Task (deletes from repo, updates state, publishes event)
+       * Delete Task from local state (Reactive Update)
+       * Triggered by: EventBus (TaskDeleted)
        */
-      deleteTask: rxMethod<string>(
-        pipe(
-          exhaustMap((taskId) => {
-            const task = store.tasks().find((t) => t.id === taskId);
-            if (!task) {
-              patchState(store, { error: `Task ${taskId} not found` });
-              return from([]);
-            }
-
-            patchState(store, { isLoading: true, error: null });
-
-            return from(repo.delete(TaskId.create(taskId))).pipe(
-              tapResponse({
-                next: () => {
-                  patchState(store, {
-                    tasks: store.tasks().filter((t) => t.id !== taskId),
-                    isLoading: false,
-                    error: null,
-                  });
-
-                  const deletedById =
-                    identityContext.currentIdentityId() || 'system';
-
-                  // Publish Event
-                  eventBus.publish(
-                    createTaskDeletedEvent(
-                      taskId,
-                      task.workspaceId,
-                      deletedById,
-                    ),
-                  );
-                },
-                error: (err: any) =>
-                  patchState(store, { error: err.message, isLoading: false }),
-              }),
-            );
-          }),
-        ),
-      ),
+      deleteTask(taskId: string): void {
+        patchState(store, {
+          tasks: store.tasks().filter((t) => t.id !== taskId),
+          error: null,
+        });
+      },
 
       /**
        * Reset (Clear on Workspace Switch)

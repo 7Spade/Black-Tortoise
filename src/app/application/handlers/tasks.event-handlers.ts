@@ -15,6 +15,7 @@ export function registerTasksEventHandlers(eventBus: EventBus): void {
   eventBus.subscribe<TaskCreatedEvent['payload']>('TaskCreated', (event) => {
     console.log('[TasksEventHandlers] TaskCreated:', event);
     const task = createTask({
+      id: event.payload.taskId,
       workspaceId: event.payload.workspaceId,
       title: event.payload.title,
       description: event.payload.description,
@@ -33,7 +34,7 @@ export function registerTasksEventHandlers(eventBus: EventBus): void {
         .find((t) => t.id === event.aggregateId);
       if (existingTask) {
         const updatedTask = updateTaskStatus(existingTask, TaskStatus.IN_QC);
-        tasksStore.updateTask({ taskId: updatedTask.id, updates: updatedTask });
+        tasksStore.updateTask(updatedTask.id, updatedTask);
       }
     },
   );
@@ -45,7 +46,7 @@ export function registerTasksEventHandlers(eventBus: EventBus): void {
       .find((t) => t.id === event.aggregateId);
     if (existingTask) {
       const updatedTask = updateTaskStatus(existingTask, TaskStatus.QC_FAILED);
-      tasksStore.updateTask({ taskId: updatedTask.id, updates: updatedTask });
+      tasksStore.updateTask(updatedTask.id, updatedTask);
     }
   });
 
@@ -67,10 +68,15 @@ export function registerTasksEventHandlers(eventBus: EventBus): void {
             (id) => id !== event.aggregateId,
           ),
         };
-        tasksStore.updateTask({ taskId: updatedTask.id, updates: updatedTask });
+        tasksStore.updateTask(updatedTask.id, updatedTask);
       }
     },
   );
+
+  eventBus.subscribe('WorkspaceSwitched', () => {
+    console.log('[TasksEventHandlers] WorkspaceSwitched, resetting store');
+    tasksStore.reset();
+  });
 
   console.log('[TasksEventHandlers] Registered event handlers for workspace');
 }

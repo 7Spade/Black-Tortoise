@@ -1,9 +1,9 @@
 /**
  * Task Entity
- * 
+ *
  * Layer: Domain
  * DDD Pattern: Entity (Aggregate Root)
- * 
+ *
  * Core business logic for tasks within a workspace.
  * Pure TypeScript - no framework dependencies.
  */
@@ -50,6 +50,7 @@ export interface TaskAggregate {
  * Create Task Parameters
  */
 export interface CreateTaskParams {
+  readonly id?: string;
   readonly workspaceId: string;
   readonly title: string;
   readonly description: string;
@@ -64,9 +65,9 @@ export interface CreateTaskParams {
  */
 export function createTask(params: CreateTaskParams): TaskAggregate {
   const now = Date.now();
-  
+
   return {
-    id: crypto.randomUUID(),
+    id: params.id ?? crypto.randomUUID(),
     workspaceId: params.workspaceId,
     title: params.title,
     description: params.description,
@@ -84,7 +85,10 @@ export function createTask(params: CreateTaskParams): TaskAggregate {
 /**
  * Update task status
  */
-export function updateTaskStatus(task: TaskAggregate, newStatus: TaskStatus): TaskAggregate {
+export function updateTaskStatus(
+  task: TaskAggregate,
+  newStatus: TaskStatus,
+): TaskAggregate {
   return {
     ...task,
     status: newStatus,
@@ -99,7 +103,7 @@ export function blockTask(task: TaskAggregate, issueId: string): TaskAggregate {
   if (task.blockedByIssueIds.includes(issueId)) {
     return task;
   }
-  
+
   return {
     ...task,
     status: TaskStatus.BLOCKED,
@@ -111,13 +115,26 @@ export function blockTask(task: TaskAggregate, issueId: string): TaskAggregate {
 /**
  * Unblock task when issue is resolved
  */
-export function unblockTask(task: TaskAggregate, issueId: string): TaskAggregate {
-  const newBlockedIds = task.blockedByIssueIds.filter((id: string) => id !== issueId);
-  
+export function unblockTask(
+  task: TaskAggregate,
+  issueId: string,
+): TaskAggregate {
+  const newBlockedIds = task.blockedByIssueIds.filter(
+    (id: string) => id !== issueId,
+  );
+
   return {
     ...task,
     status: newBlockedIds.length === 0 ? TaskStatus.READY : TaskStatus.BLOCKED,
     blockedByIssueIds: newBlockedIds,
     updatedAt: Date.now(),
   };
+}
+
+/**
+ * Restore Task from persistence or event
+ * (Strict DDD: Used for reconstitution, bypassing invariant checks if needed, or just mapping)
+ */
+export function restoreTask(state: TaskAggregate): TaskAggregate {
+  return { ...state };
 }
