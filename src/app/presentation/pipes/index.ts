@@ -3,4 +3,5 @@
  * Technical Barrel File
  */
 
+export * from './date-format.pipe';
 
