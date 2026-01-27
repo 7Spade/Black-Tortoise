@@ -27,6 +27,7 @@ import { PresentationStore } from '@application/stores/presentation.store';
   standalone: true,
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrls: ['./search.component.scss'],
   template: `
 <!-- SearchComponent（Presentation, Shared） -->
 <!-- Pure UI: Consumes state from PresentationStore, forwards events to SearchFacade -->

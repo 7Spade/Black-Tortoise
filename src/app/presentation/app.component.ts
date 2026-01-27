@@ -18,11 +18,6 @@ import { GlobalShellComponent } from '@presentation/shell';
   imports: [GlobalShellComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<app-shell />`,
-  styles: [`
-    :host {
-      display: block;
-      height: 100vh;
-    }
-  `]
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {}

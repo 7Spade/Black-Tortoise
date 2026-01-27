@@ -25,6 +25,7 @@ import { OrganizationCreateTriggerComponent } from './organization-create-trigge
   standalone: true,
   imports: [CommonModule, MatMenuModule, MatButtonModule, MatIconModule, OrganizationCreateTriggerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrls: ['./identity-switcher.component.scss'],
   template: `
     @if (facade.identityVm().isAuthenticated) {
       <div class="identity-switcher">
