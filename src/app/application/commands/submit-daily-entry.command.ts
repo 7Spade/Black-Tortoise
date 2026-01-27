@@ -12,5 +12,5 @@ export interface SubmitDailyEntryCommand {
   date: string;
   tasksWorkedOn: string[];
   notes: string;
-  hoursSpent: number;
+  headcount: number;
 }

@@ -147,6 +147,13 @@ Copilot 在生成代碼時必須嚴格遵守此文件，優先於其他通用規
   - 勾選必須是**樂觀更新 (Optimistic Update)**：先改 UI Signal，背景送 API，失敗再回滾。
   - 提供「全選/全不選」的便捷操作列。
 
+### 4. 現代化模板控制流 (Modern Template Control Flow)
+- **Built-in Control Flow**: 視圖層 **必須** 全面採用 Angular 新版控制流語法。
+  - 使用 `@if (cond) { ... } @else { ... }` 取代 `*ngIf`。
+  - 使用 `@for (item of items; track item.id) { ... }` 取代 `*ngFor`。
+  - 使用 `@switch (val) { @case (c) { ... } }` 取代 `[ngSwitch]`。
+- **強制追蹤 (Mandatory Tracking)**: `@for` 區塊 **必須** 包含 `track` 表達式，嚴禁隱式 index 或無 track 的寫法 (以確保 Zone-less 渲染效能)。
+
 ---
 
 ## 五、響應式狀態規則 (Reactive State Rules)
@@ -184,26 +191,33 @@ Copilot 生成代碼時必須遵循「如無必要，勿增實體」的原則。
 ## 七、事件架構實作規範 (Event Architecture Implementation Specs)
 
 ### 1. 事件定義 (Event Definition)
-所有業務事件必須實作 `DomainEvent<T>` 介面。
+所有業務事件必須實作 `DomainEvent<T>` 介面 並採用包含 Metadata 的結構。
 
 ```typescript
+export interface EventMetadata {
+  correlationId: string;          // 關聯 ID (全鏈路追蹤)
+  causationId?: string | undefined; // 因果 ID (上一層 Event/Command ID)
+  userId?: string | undefined;    // 操作者 ID
+  timestamp: number;              // Unix Timestamp
+  version?: number;               // Aggregate Version
+}
+
 export interface DomainEvent<TPayload = Record<string, unknown>> {
   readonly eventId: string;       // UUID v4
-  readonly eventType: string;     // 使用 EventType 常數
+  readonly eventName: string;     // 使用 EventType 常數 (Past Tense)
   readonly aggregateId: string;   // 聚合根 ID
-  readonly workspaceId: string;
-  readonly timestamp: Date;
-  readonly causalityId: string;   // 溯源 ID
+  readonly occurredOn: Date;      // 發生時間
+  readonly metadata: EventMetadata; // 上下文元數據
   readonly payload: TPayload;     // 純資料
-  readonly metadata: EventMetadata; 
 }
 ```
 
 ### 2. 事件元數據與因果追蹤 (Metadata & Causality)
 所有事件必須包含完整的 `EventMetadata` 以支援分散式追蹤。
 **因果追蹤規則**：
-- UI 觸發的操作 -> 產生新的 `correlationId`。
-- 事件觸發的副作用 -> 繼承 `correlationId`，`causationId` 指向上一個事件。
+- **起點 (Use Case)**：Use Case 執行時必須生成或接收 `correlationId`，並透過 `Command` 傳遞給 Aggregate。
+- **傳遞 (Aggregate)**：Aggregate 方法 (`create`, `update`, `addSection`) 必須接收 Metadata 並注入到產生的 Domain Event 中。
+- **繼承 (Side Effect)**：事件觸發的副作用 -> 繼承 `correlationId`，`causationId` 指向上一個事件。
 
 ### 3. 事件傳遞流程
 1. **Append**: `eventStore.append(event)` (持久化 Fact)。
@@ -263,20 +277,47 @@ export interface DomainEvent<TPayload = Record<string, unknown>> {
 
 ---
 
-## 十、持續演進與防腐層 (Evolution & Anti-Corruption)
+## 十、嚴格領域層實作規範 (Strict Domain Implementation Specs)
+
+本節定義了符合 `template-core` 範例的嚴格 DDD 實作模式，適用於所有核心業務模組。
+
+### 1. Aggregate Root 生命週期
+Aggregate 必須支援兩種構造模式：
+- **Creation (Behaviors)**: 透過靜態工廠方法 (e.g., `create()`)，執行業務檢查，產生 Domain Event，並初始化狀態。
+- **Reconstruction (Snapshot)**: 透過靜態方法 `reconstruct(props)`，從 Persistence/Snapshot 恢復狀態，**不產生** Domain Event。
+
+### 2. 子實體管理 (Child Entities)
+- Aggregate Root 內部的集合 (Users, Sections) 必須封裝為 **Child Entities**。
+- Child Entity 必須擁有独立的 **Value Object ID** (e.g., `SectionId`)。
+- 禁止直接暴露 Child Entity 陣列，必須透過方法 (`addSection`, `removeSection`) 操作，並維護 Aggregate Invariants。
+
+### 3. 嚴格型別安全 (Strict Type Safety)
+- **禁止 `any`**: Domain, Application, Infrastructure 層嚴禁使用 `any` 或 `as unknown` 繞過型別檢查。
+- **Mapper 規範**: Infrastructure Mapper 必須明確處理深層嵌套物件的序列化與反序列化，確保型別一致。
+
+### 4. 深度因果追蹤 (Deep Causality)
+- **Use Case 職責**: 負責初始化 `correlationId` 與 `causationId`。
+- **Factory/Aggregate 職責**: 必須在所有變更狀態的方法中接收 Metadata 參數，並將其寫入 Domain Event。
+
+---
+
+## 十一、持續演進與防腐層 (Evolution & Anti-Corruption)
 
 - **Schema Evolution**：Event Schema 變更時，必須實作 Upcaster 以相容舊事件。
 - **ADR (Architecture Decision Records)**：任何偏離本文件的架構決策，必須即時更新本文件或記錄 ADR，禁止「隱形架構」。
 
 ---
 
-## 十一、落地檢查清單 (Enforcement Checklist)
+## 十二、落地檢查清單 (Enforcement Checklist)
 
 - 層級邊界符合 Domain → Application → Infrastructure → Presentation，且介面定義歸於需求方。
 - Workspace 切換時，所有 Module 的 store/state 會被銷毀並重建，不可殘留跨 Workspace 資料。
 - 模組間僅透過 Workspace Event Bus 互動，事件遵循 Append -> Publish -> React 並攜帶 correlationId。
+- **模板語法檢查**：全面使用 `@if`, `@for` (附帶 `track`), `@switch`，禁止 `*ngIf`/`*ngFor`。
 - 所有狀態以 signalStore 管理，禁止 BehaviorSubject、手動 subscribe 或跨模組共享 Signal。
 - Presentation 僅經由 Application Store/Facade 取得資料，不直接呼叫 Infrastructure 或 Domain。
+- **Aggregate 實作**：檢查是否包含 `reconstruct` 方法，且 Child Entities 使用 Value Object ID。
+- **Event Metadata**：檢查 Domain Event 是否正確攜帶 `correlationId`, `userId` 等元數據。
 - 實作若偏離本憲章或 DDD SKILL，必須立即補充 ADR 或修訂本文件。
 
 

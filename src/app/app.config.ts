@@ -31,7 +31,7 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
 import { getVertexAI, provideVertexAI } from '@angular/fire/vertexai';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
-import { provideEventHandlers } from '@application/event-handler.registry';
+import { provideEventHandlers } from '@application/handlers';
 import { AUTH_REPOSITORY, AUTH_STREAM, EVENT_BUS, EVENT_STORE, ORGANIZATION_REPOSITORY } from '@application/interfaces';
 import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';

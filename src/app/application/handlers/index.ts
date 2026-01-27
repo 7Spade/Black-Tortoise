@@ -15,6 +15,7 @@ export * from './create-role.handler';
 export * from './create-task.handler';
 export * from './create-workspace.handler';
 export * from './daily.event-handlers';
+export * from './event-handler.registry';
 export * from './fail-qc.handler';
 export * from './handle-domain-event.handler';
 export * from './invite-member.handler';
@@ -37,3 +38,4 @@ export * from './update-issue.handler';
 export * from './update-member-role.handler';
 export * from './update-role-permissions.handler';
 export * from './update-settings.handler';
+

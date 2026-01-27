@@ -20,7 +20,7 @@ export interface CreateDailyEntryRequest {
   readonly date: string;
   readonly userId: string;
   readonly taskIds: string[];
-  readonly hoursLogged: number;
+  readonly headcount: number;
   readonly notes?: string;
   readonly correlationId?: string;
   readonly causationId?: string | null;
@@ -43,7 +43,7 @@ export class CreateDailyEntryHandler {
         request.date,
         request.userId,
         request.taskIds,
-        request.hoursLogged,
+        request.headcount,
         request.notes,
         request.correlationId
       );
