@@ -16,12 +16,16 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
+import { IdentityContextStore } from '@application/stores/identity-context.store';
+import { OrganizationStore } from '@application/stores/organization.store';
+import { WorkspaceStore } from '@application/stores/workspace.store';
 
 @Injectable({ providedIn: 'root' })
 export class WorkspaceFacade {
   private readonly router = inject(Router);
-  private readonly workspaceContext = inject(WorkspaceContextStore);
+  private readonly workspaceStore = inject(WorkspaceStore);
+  private readonly organizationStore = inject(OrganizationStore);
+  private readonly identityContext = inject(IdentityContextStore);
 
   // Local workspace UI state
   private readonly _showWorkspaceMenu = signal(false);
@@ -31,25 +35,25 @@ export class WorkspaceFacade {
   readonly showWorkspaceMenu = computed(() => this._showWorkspaceMenu());
   readonly showIdentityMenu = computed(() => this._showIdentityMenu());
   readonly hasWorkspace = computed(() =>
-    this.workspaceContext.hasWorkspace()
+    this.workspaceStore.hasWorkspace()
   );
   readonly availableWorkspaces = computed(() =>
-    this.workspaceContext.availableWorkspaces()
+    this.workspaceStore.availableWorkspaces()
   );
   readonly currentWorkspace = computed(() =>
-    this.workspaceContext.currentWorkspace()
+    this.workspaceStore.currentWorkspace()
   );
   readonly currentWorkspaceName = computed(() =>
-    this.workspaceContext.currentWorkspaceName()
+    this.workspaceStore.currentWorkspaceName()
   );
   readonly currentOrganizationName = computed(() =>
-    this.workspaceContext.currentOrganizationName()
+    this.organizationStore.currentOrganizationName()
   );
   readonly isAuthenticated = computed(() =>
-    this.workspaceContext.isAuthenticated()
+    this.identityContext.isAuthenticated()
   );
   readonly currentIdentityType = computed(() =>
-    this.workspaceContext.currentIdentityType()
+    this.identityContext.currentIdentityType()
   );
 
   /**
@@ -78,25 +82,25 @@ export class WorkspaceFacade {
 
   /**
    * Handle workspace selection
-   * Delegates to WorkspaceContextStore and handles navigation
+   * Delegates to WorkspaceStore and handles navigation
    */
   selectWorkspace(workspaceId: string): void {
     this.closeAllMenus();
-    this.workspaceContext.switchWorkspace(workspaceId);
+    this.workspaceStore.switchWorkspace(workspaceId);
     
     // Navigate to workspace route
     this.router.navigate(['/workspace']).catch(() => {
-      this.workspaceContext.setError('Failed to navigate to workspace');
+      this.workspaceStore.setError('Failed to navigate to workspace');
     });
   }
 
   /**
    * Handle workspace creation
-   * Delegates to WorkspaceContextStore
+   * Delegates to WorkspaceStore
    */
   createWorkspace(result: WorkspaceCreateResult): void {
     this.closeAllMenus();
-    this.workspaceContext.createWorkspace({ 
+    this.workspaceStore.createWorkspace({ 
       name: result.workspaceName 
     });
     // Navigation is handled by side-effects or user action
@@ -108,18 +112,7 @@ export class WorkspaceFacade {
    */
   createOrganization(name: string): void {
     this.closeAllMenus();
-    this.workspaceContext.createWorkspace({ 
-        name: `Default Workspace`, // Every Org needs a default workspace? Or just create org logic?
-        // Wait, requirements say "Create Organization". 
-        // But WorkspaceContextStore has method `createWorkspace`.
-        // It does NOT have `createOrganization`.
-        // Let's assume for now we reuse createWorkspace but we probably need a dedicated handler.
-        // Or if creating an organization implies creating a workspace within it.
-    });
-    // REVISIT: The store lacks createOrganization. 
-    // I will log for now and assume WorkspaceContextStore needs an update.
-    console.log('[WorkspaceFacade] Create Organization Requested:', name);
-    // TODO: Implement createOrganization in WorkspaceContextStore
+    this.organizationStore.createOrganization({ displayName: name });
   }
 
   /**

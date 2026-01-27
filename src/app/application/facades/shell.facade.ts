@@ -1,26 +1,12 @@
-/**
- * Shell Facade
- *
- * Layer: Application - Facade
- * Purpose: Coordinates shell-level presentation concerns
- * Architecture: Zone-less, Pure Reactive, Angular 20+
- *
- * Responsibilities:
- * - Manages global shell state (workspace controls visibility, error display)
- * - Coordinates between shell components and application layer
- * - Provides reactive signals for shell UI state
- * - No business logic - pure presentation orchestration
- */
-
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
-import { WorkspaceContextStore } from '@application/stores';
+import { WorkspaceStore } from '@application/stores/workspace.store';
 import { filter, map, startWith } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ShellFacade {
-  private readonly workspaceContext = inject(WorkspaceContextStore);
+  private readonly workspaceStore = inject(WorkspaceStore);
   private readonly router = inject(Router);
 
   // Local shell state
@@ -46,11 +32,11 @@ export class ShellFacade {
   });
 
   readonly hasWorkspaceError = computed(() =>
-    this.workspaceContext.error() !== null
+    this.workspaceStore.error() !== null
   );
 
   readonly workspaceError = computed(() =>
-    this.workspaceContext.error()
+    this.workspaceStore.error()
   );
 
   /**
@@ -71,7 +57,7 @@ export class ShellFacade {
    * Clear workspace error
    */
   clearWorkspaceError(): void {
-    this.workspaceContext.setError(null);
+    this.workspaceStore.setError(null);
   }
 
   /**
@@ -79,7 +65,7 @@ export class ShellFacade {
    */
   navigateHome(): void {
     this.router.navigate(['/']).catch(() => {
-      this.workspaceContext.setError('Failed to navigate to home');
+      this.workspaceStore.setError('Failed to navigate to home');
     });
   }
 }
