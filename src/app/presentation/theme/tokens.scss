@@ -45,25 +45,3 @@ body {
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
 }
-
-.md-surface {
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-}
-
-.md-primary {
-  background-color: var(--mat-sys-primary);
-  color: var(--mat-sys-on-primary);
-}
-
-.md-elevation-1 {
-  box-shadow: var(--mat-sys-level1);
-}
-
-.md-elevation-2 {
-  box-shadow: var(--mat-sys-level2);
-}
-
-.md-elevation-3 {
-  box-shadow: var(--mat-sys-level3);
-}
