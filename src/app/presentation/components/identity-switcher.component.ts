@@ -23,7 +23,13 @@ import { OrganizationCreateTriggerComponent } from './organization-create-trigge
 @Component({
   selector: 'app-identity-switcher',
   standalone: true,
-  imports: [CommonModule, MatMenuModule, MatButtonModule, MatIconModule, OrganizationCreateTriggerComponent],
+  imports: [
+    CommonModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatIconModule,
+    OrganizationCreateTriggerComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./identity-switcher.component.scss'],
   template: `
@@ -33,21 +39,30 @@ import { OrganizationCreateTriggerComponent } from './organization-create-trigge
           mat-button
           class="identity-button"
           (click)="facade.toggleIdentityMenu()"
-          aria-label="Switch identity">
-          <mat-icon>{{ facade.identityVm().type === 'organization' ? 'business' : 'person' }}</mat-icon>
+          aria-label="Switch identity"
+        >
+          <mat-icon>{{
+            facade.identityVm().type === 'organization' ? 'business' : 'person'
+          }}</mat-icon>
           <span class="identity-name">
             {{ facade.identityVm().displayName }}
           </span>
           @if (facade.identityVm().roleLabel) {
-             <span class="role-badge">{{ facade.identityVm().roleLabel }}</span>
+            <span class="role-badge">{{ facade.identityVm().roleLabel }}</span>
           }
           <mat-icon iconPositionEnd>expand_more</mat-icon>
         </button>
-  
+
         @if (facade.showIdentityMenu()) {
-          <div class="identity-menu-overlay" (click)="facade.closeIdentityMenu()"></div>
+          <div
+            class="identity-menu-overlay"
+            (click)="facade.closeIdentityMenu()"
+          ></div>
           <div class="identity-menu">
-            <div class="identity-menu-item" (click)="facade.selectIdentity('personal')">
+            <div
+              class="identity-menu-item"
+              (click)="facade.selectIdentity('personal')"
+            >
               <mat-icon>person</mat-icon>
               <span>Personal Account</span>
             </div>
@@ -57,21 +72,30 @@ import { OrganizationCreateTriggerComponent } from './organization-create-trigge
             <div class="identity-menu-section-label">Organizations</div>
 
             @for (org of facade.organizations(); track org.id) {
-              <div class="identity-menu-item" (click)="facade.selectOrganization(org.id, org.name)">
+              <div
+                class="identity-menu-item"
+                (click)="facade.selectOrganization(org.id, org.name)"
+              >
                 <mat-icon>business</mat-icon>
                 <span>{{ org.name }}</span>
               </div>
             } @empty {
               <div class="identity-menu-item disabled">
-                 <span class="no-org-label">沒有任何組織</span>
+                <span class="no-org-label">沒有任何組織</span>
               </div>
             }
 
-            <div class="identity-menu-item" (click)="createTrigger.openDialog()">
-               <mat-icon>add</mat-icon>
-               <span>Create Organization</span>
+            <div
+              class="identity-menu-item"
+              (click)="createTrigger.openDialog()"
+            >
+              <mat-icon>add</mat-icon>
+              <span>Create Organization</span>
             </div>
-            <app-organization-create-trigger #createTrigger (dialogResult)="onOrganizationCreated($event)"></app-organization-create-trigger>
+            <app-organization-create-trigger
+              #createTrigger
+              (dialogResult)="onOrganizationCreated($event)"
+            ></app-organization-create-trigger>
 
             <div class="identity-menu-divider"></div>
             <div class="identity-menu-item logout" (click)="facade.signOut()">
@@ -83,53 +107,54 @@ import { OrganizationCreateTriggerComponent } from './organization-create-trigge
       </div>
     }
   `,
-  styles: [`
-    :host {
-      display: block;
-    }
+  styles: [
+    `
+      :host {
+        display: block;
+      }
 
-    .identity-switcher {
-      position: relative;
-    }
+      .identity-switcher {
+        position: relative;
+      }
 
-    .identity-button {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      max-width: 250px;
-    }
+      .identity-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        max-width: 250px;
+      }
 
-    .identity-name {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-weight: 500;
-    }
+      .identity-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 500;
+      }
 
-    .role-badge {
+      .role-badge {
         font-size: 0.75rem;
         background-color: var(--mat-sys-tertiary-container);
         color: var(--mat-sys-on-tertiary-container);
         padding: 0.1rem 0.4rem;
         border-radius: 4px;
         margin-left: 4px;
-    }
+      }
 
-    .identity-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      z-index: 1000;
-      background: var(--mat-sys-surface-container-highest, #ffffff);
-      border: 1px solid var(--mat-sys-outline-variant, #c4c7c5);
-      border-radius: 0.5rem;
-      box-shadow: var(--mat-sys-elevation-2, 0 2px 4px rgba(0, 0, 0, 0.1));
-      min-width: 220px;
-      margin-top: 0.25rem;
-      padding: 0.5rem 0;
-    }
+      .identity-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        z-index: 1000;
+        background: var(--mat-sys-surface-container-highest, #ffffff);
+        border: 1px solid var(--mat-sys-outline-variant, #c4c7c5);
+        border-radius: 0.5rem;
+        box-shadow: var(--mat-sys-elevation-2, 0 2px 4px rgba(0, 0, 0, 0.1));
+        min-width: 220px;
+        margin-top: 0.25rem;
+        padding: 0.5rem 0;
+      }
 
-    .identity-menu-overlay {
+      .identity-menu-overlay {
         position: fixed;
         top: 0;
         left: 0;
@@ -137,60 +162,61 @@ import { OrganizationCreateTriggerComponent } from './organization-create-trigge
         height: 100vh;
         z-index: 999;
         cursor: default;
-    }
+      }
 
-    .identity-menu-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      cursor: pointer;
-      color: var(--mat-sys-on-surface);
-      transition: background-color 0.2s ease;
-    }
+      .identity-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        color: var(--mat-sys-on-surface);
+        transition: background-color 0.2s ease;
+      }
 
-    .identity-menu-item:hover {
-      background-color: var(--mat-sys-surface-variant);
-    }
-    
-    .identity-menu-item.disabled {
+      .identity-menu-item:hover {
+        background-color: var(--mat-sys-surface-variant);
+      }
+
+      .identity-menu-item.disabled {
         cursor: default;
         opacity: 0.6;
         pointer-events: none;
         justify-content: center;
         font-size: 0.85rem;
-    }
-    
-    .identity-menu-item.logout {
-        color: var(--mat-sys-error);
-    }
+      }
 
-    .identity-menu-divider {
+      .identity-menu-item.logout {
+        color: var(--mat-sys-error);
+      }
+
+      .identity-menu-divider {
         height: 1px;
         background-color: var(--mat-sys-outline-variant);
         margin: 0.5rem 0;
-    }
+      }
 
-    .identity-menu-section-label {
+      .identity-menu-section-label {
         padding: 0.5rem 1rem 0.25rem 1rem;
         font-size: 0.75rem;
         color: var(--mat-sys-on-surface-variant);
         font-weight: 500;
         letter-spacing: 0.5px;
-    }
+      }
 
-    .create-wrapper {
-        padding: 0.25rem 0.5rem; 
+      .create-wrapper {
+        padding: 0.25rem 0.5rem;
         /* Override default menu item padding to let the button handle it */
-    }
-  `]
+      }
+    `,
+  ],
 })
 export class IdentitySwitcherComponent {
   readonly facade = inject(IdentityFacade);
 
   onOrganizationCreated(result: OrganizationCreateResult | null) {
-      if (result) {
-          this.facade.createOrganization(result.organizationName);
-      }
+    if (result) {
+      this.facade.createOrganization(result.organizationName);
+    }
   }
 }

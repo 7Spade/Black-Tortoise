@@ -1,15 +1,15 @@
 /**
  * Root Application Component
- * 
+ *
  * Layer: Presentation
  * Architecture: Zone-less, Standalone Component
- * 
+ *
  * Responsibilities:
  * - Render global shell component only
  * - NO router-outlet (shell contains the only router-outlet)
  */
 
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { GlobalShellComponent } from '@presentation/shell';
 
 @Component({
@@ -18,6 +18,6 @@ import { GlobalShellComponent } from '@presentation/shell';
   imports: [GlobalShellComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<app-shell />`,
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {}
