@@ -5,8 +5,8 @@
 $xuanwu-light-theme: mat.define-theme((
   color: (
     theme-type: light,
-    primary: palette.$xuanwu-primary,
-    tertiary: palette.$xuanwu-tertiary,
+    primary: palette.$xuanwu-base,
+    tertiary: palette.$xuanwu-semantic,
   ),
   typography: typography.$xuanwu-typography,
   density: (
@@ -17,8 +17,8 @@ $xuanwu-light-theme: mat.define-theme((
 $xuanwu-dark-theme: mat.define-theme((
   color: (
     theme-type: dark,
-    primary: palette.$xuanwu-primary,
-    tertiary: palette.$xuanwu-tertiary,
+    primary: palette.$xuanwu-base,
+    tertiary: palette.$xuanwu-semantic,
   ),
   typography: typography.$xuanwu-typography,
   density: (
