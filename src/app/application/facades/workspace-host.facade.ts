@@ -1,25 +1,11 @@
-﻿/**
- * Workspace Host Facade
- *
- * Layer: Application - Facade
- * Purpose: Coordinates workspace host presentation concerns
- * Architecture: Zone-less, Pure Reactive, Angular 20+
- *
- * Responsibilities:
- * - Manages workspace host UI state (sidebar collapsed, active module)
- * - Coordinates module navigation and activation
- * - Provides reactive signals for workspace host UI
- * - No business logic - pure presentation orchestration
- */
-
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
+import { WorkspaceStore } from '@application/stores/workspace.store';
 import { ModuleMetadata, ModuleType, STANDARD_MODULES } from '@domain/types';
 
 @Injectable({ providedIn: 'root' })
 export class WorkspaceHostFacade {
-  private readonly workspaceContext = inject(WorkspaceContextStore);
+  private readonly workspaceStore = inject(WorkspaceStore);
   private readonly router = inject(Router);
 
   // Local UI state
@@ -28,10 +14,10 @@ export class WorkspaceHostFacade {
   // Computed signals for workspace host UI
   readonly isSidebarCollapsed = computed(() => this._isSidebarCollapsed());
   readonly currentWorkspaceModules = computed(() =>
-    this.workspaceContext.currentWorkspaceModules()
+    this.workspaceStore.currentWorkspaceModules()
   );
   readonly activeModuleId = computed(() =>
-    this.workspaceContext.activeModuleId()
+    this.workspaceStore.activeModuleId()
   );
 
   /**
@@ -52,11 +38,11 @@ export class WorkspaceHostFacade {
    * Activate a module
    */
   activateModule(moduleId: string): void {
-    this.workspaceContext.activateModule(moduleId);
+    this.workspaceStore.activateModule(moduleId);
 
     // Navigate to module route
     this.router.navigate(['/workspace', moduleId]).catch(() => {
-      this.workspaceContext.setError(`Failed to navigate to module: ${moduleId}`);
+      this.workspaceStore.setError(`Failed to navigate to module: ${moduleId}`);
     });
   }
 

@@ -8,13 +8,15 @@ export * from './audit.store';
 export * from './auth.store';
 export * from './daily.store';
 export * from './documents.store';
+export * from './identity-context.store';
 export * from './issues.store';
 export * from './members.store';
+export * from './organization.store';
 export * from './overview.store';
 export * from './permissions.store';
 export * from './presentation.store';
 export * from './quality-control.store';
 export * from './settings.store';
 export * from './tasks.store';
-export * from './workspace-context.store';
+export * from './workspace.store';
 

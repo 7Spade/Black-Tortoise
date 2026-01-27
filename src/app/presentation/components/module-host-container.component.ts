@@ -31,7 +31,7 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import { WorkspaceContextStore } from '@application/stores';
+import { WorkspaceStore } from '@application/stores/workspace.store';
 import { ModuleFacade } from '@application/facades/module.facade';
 import { IAppModule } from '@application/interfaces/module.interface';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
@@ -115,7 +115,7 @@ export class ModuleHostContainerComponent implements OnInit, OnDestroy {
   /**
    * Dependencies (using Application layer)
    */
-  private readonly workspaceContext = inject(WorkspaceContextStore);
+  private readonly workspaceStore = inject(WorkspaceStore);
   private readonly moduleFacade = inject(ModuleFacade);
   
   /**
@@ -127,7 +127,7 @@ export class ModuleHostContainerComponent implements OnInit, OnDestroy {
   constructor() {
     // Watch for workspace changes and recreate eventBus
     effect(() => {
-      const workspace = this.workspaceContext.currentWorkspace();
+      const workspace = this.workspaceStore.currentWorkspace();
       if (workspace) {
         const eventBus = this.moduleFacade.getEventBus(workspace.id);
         this.eventBus = eventBus !== null ? eventBus : undefined;
@@ -155,7 +155,7 @@ export class ModuleHostContainerComponent implements OnInit, OnDestroy {
       return;
     }
     
-    const workspace = this.workspaceContext.currentWorkspace();
+    const workspace = this.workspaceStore.currentWorkspace();
     if (!workspace) {
       this.error.set('No active workspace');
       return;

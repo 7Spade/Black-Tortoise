@@ -16,12 +16,14 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IdentityViewModel, UserAvatarViewModel } from '@application/models';
 import { AuthStore } from '@application/stores/auth.store';
-import { WorkspaceContextStore } from '@application/stores/workspace-context.store';
+import { IdentityContextStore } from '@application/stores/identity-context.store';
+import { OrganizationStore } from '@application/stores/organization.store';
 
 @Injectable({ providedIn: 'root' })
 export class IdentityFacade {
   private readonly authStore = inject(AuthStore);
-  private readonly workspaceContext = inject(WorkspaceContextStore);
+  private readonly organizationStore = inject(OrganizationStore);
+  private readonly identityContext = inject(IdentityContextStore);
   private readonly router = inject(Router);
 
   // Local identity UI state
@@ -34,8 +36,8 @@ export class IdentityFacade {
 
   // ViewModel: Identity
   readonly identityVm = computed<IdentityViewModel>(() => {
-    const contextType = this.workspaceContext.currentIdentityType(); // 'user' | 'organization' | null
-    const orgName = this.workspaceContext.currentOrganizationDisplayName();
+    const contextType = this.identityContext.currentIdentityType(); // 'user' | 'organization' | null
+    const orgName = this.organizationStore.currentOrganizationDisplayName();
     const userName = this.authStore.displayName();
     const isAuthenticated = this.authStore.isLoggedIn();
 
@@ -63,7 +65,7 @@ export class IdentityFacade {
   });
 
   readonly organizations = computed(() => {
-    return this.workspaceContext.availableOrganizations().map(org => ({
+    return this.organizationStore.availableOrganizations().map(org => ({
         id: org.id.toString(),
         name: org.displayName
     }));
@@ -132,7 +134,7 @@ export class IdentityFacade {
     this.closeAllMenus();
     const userId = this.authStore.currentUserId();
     if (userId) {
-        this.workspaceContext.setIdentity(userId, 'user');
+        this.identityContext.setIdentity(userId, 'user');
     }
   }
 
@@ -141,8 +143,8 @@ export class IdentityFacade {
    */
   selectOrganization(organizationId: string, organizationName: string): void {
       this.closeAllMenus();
-      this.workspaceContext.setIdentity(organizationId, 'organization');
-      this.workspaceContext.setOrganization(organizationId, organizationName);
+      this.identityContext.setIdentity(organizationId, 'organization');
+      this.organizationStore.setCurrentOrganization(organizationId, organizationName);
   }
 
   /**
@@ -150,7 +152,7 @@ export class IdentityFacade {
    */
   createOrganization(displayName: string): void {
       this.closeAllMenus();
-      this.workspaceContext.createOrganization({ displayName });
+      this.organizationStore.createOrganization({ displayName });
   }
 
   /**
