@@ -26,6 +26,6 @@ export abstract class TemplateEntity<T> {
   }
 }
 
-function isEntity(v: any): v is Entity<any> {
-  return v instanceof Entity;
+function isEntity(v: any): v is TemplateEntity<any> {
+  return v instanceof TemplateEntity;
 }

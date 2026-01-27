@@ -26,7 +26,7 @@ export class Template extends TemplateAggregateRoot<TemplateId> {
   }
 
   // Accepts optional metadata to support Causality Tracking (traceId/userId from Command)
-  public static create(name: string, content: string, metadata?: { correlationId?: string, userId?: string }): Template {
+  public static create(name: string, content: string, metadata?: { correlationId?: string, causationId?: string, userId?: string }): Template {
     const id = TemplateId.create();
     const template = new Template(id);
     
@@ -36,6 +36,7 @@ export class Template extends TemplateAggregateRoot<TemplateId> {
       content,
       { 
         correlationId: metadata?.correlationId,
+        causationId: metadata?.causationId,
         userId: metadata?.userId 
       }
     ));

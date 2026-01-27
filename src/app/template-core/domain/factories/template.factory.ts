@@ -4,7 +4,7 @@ import { Template } from '../aggregates/template.aggregate';
 import { TemplateNamingPolicy } from '../policies/template-naming.policy';
 
 export class TemplateFactory {
-  public static createValidTemplate(name: string, content: string, metadata?: { correlationId?: string, userId?: string }): Template {
+  public static createValidTemplate(name: string, content: string, metadata?: { correlationId?: string, causationId?: string, userId?: string }): Template {
     // Enforce Policy before creation
     TemplateNamingPolicy.assertIsValid(name);
     

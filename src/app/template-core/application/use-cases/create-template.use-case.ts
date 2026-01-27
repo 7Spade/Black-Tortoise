@@ -31,6 +31,6 @@ export class CreateTemplateUseCase {
     await this.repository.save(template);
 
     // 4. Return ID
-    return template.id;
+    return template.id.value;
   }
 }
