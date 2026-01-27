@@ -42,6 +42,20 @@ import { TemplateStore } from '../../../application/stores/template.store';
                 </mat-card-header>
                 <mat-card-content>
                   <p>{{ template.previewContent }}</p>
+                  
+                  @if (template.sections.length > 0) {
+                    <div class="sections-list">
+                      <h4>Sections ({{ template.sections.length }})</h4>
+                      <ul>
+                        @for (section of template.sections; track section.id) {
+                          <li>
+                            <span class="section-title">{{ section.title }}</span>
+                            <span class="section-preview">- {{ section.content | slice:0:20 }}...</span>
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                  }
                 </mat-card-content>
                 <mat-card-actions>
                   <button mat-button (click)="viewHistory(template.id)">View History</button>
@@ -104,6 +118,13 @@ import { TemplateStore } from '../../../application/stores/template.store';
     .error { color: red; margin: 1rem 0; }
     .badge { background: #4caf50; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; margin-left: 8px; }
     .card-hover:hover { transform: translateY(-2px); transition: transform 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    
+    .sections-list { margin-top: 1rem; border-top: 1px solid #eee; padding-top: 0.5rem; }
+    .sections-list h4 { font-size: 0.9rem; color: #666; margin-bottom: 0.5rem; }
+    .sections-list ul { padding-left: 1.2rem; margin: 0; }
+    .sections-list li { font-size: 0.85rem; color: #444; }
+    .section-title { font-weight: 500; }
+    .section-preview { color: #888; margin-left: 4px; }
 
     /* History Panel Styles */
     .history-panel { padding: 1.5rem; }
