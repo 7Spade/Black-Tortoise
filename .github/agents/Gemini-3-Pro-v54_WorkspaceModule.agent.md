@@ -116,6 +116,7 @@ withHooks({
 - [ ] **Context Check**: 功能是否正確依賴 `WorkspaceContextStore`？
 - [ ] **Boundary Check**: 是否引入了跨模組的 Service 直接依賴？(應改用 Event)
 - [ ] **State Check**: 模組狀態是否使用 `signalStore` 且支援 Reset？
+- [ ] **Template Syntax**: 視圖層是否全面採用 `@if` / `@for` (含 `track`)？
 - [ ] **View Projection**: 如果是 Task 相關視圖，是否重用了現有的 Entity Map？
 - [ ] **Strict Types**: Event payload 是否有嚴格型別定義？
 

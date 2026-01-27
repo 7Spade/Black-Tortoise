@@ -147,6 +147,13 @@ Copilot 在生成代碼時必須嚴格遵守此文件，優先於其他通用規
   - 勾選必須是**樂觀更新 (Optimistic Update)**：先改 UI Signal，背景送 API，失敗再回滾。
   - 提供「全選/全不選」的便捷操作列。
 
+### 4. 現代化模板控制流 (Modern Template Control Flow)
+- **Built-in Control Flow**: 視圖層 **必須** 全面採用 Angular 新版控制流語法。
+  - 使用 `@if (cond) { ... } @else { ... }` 取代 `*ngIf`。
+  - 使用 `@for (item of items; track item.id) { ... }` 取代 `*ngFor`。
+  - 使用 `@switch (val) { @case (c) { ... } }` 取代 `[ngSwitch]`。
+- **強制追蹤 (Mandatory Tracking)**: `@for` 區塊 **必須** 包含 `track` 表達式，嚴禁隱式 index 或無 track 的寫法 (以確保 Zone-less 渲染效能)。
+
 ---
 
 ## 五、響應式狀態規則 (Reactive State Rules)
@@ -306,6 +313,7 @@ Aggregate 必須支援兩種構造模式：
 - 層級邊界符合 Domain → Application → Infrastructure → Presentation，且介面定義歸於需求方。
 - Workspace 切換時，所有 Module 的 store/state 會被銷毀並重建，不可殘留跨 Workspace 資料。
 - 模組間僅透過 Workspace Event Bus 互動，事件遵循 Append -> Publish -> React 並攜帶 correlationId。
+- **模板語法檢查**：全面使用 `@if`, `@for` (附帶 `track`), `@switch`，禁止 `*ngIf`/`*ngFor`。
 - 所有狀態以 signalStore 管理，禁止 BehaviorSubject、手動 subscribe 或跨模組共享 Signal。
 - Presentation 僅經由 Application Store/Facade 取得資料，不直接呼叫 Infrastructure 或 Domain。
 - **Aggregate 實作**：檢查是否包含 `reconstruct` 方法，且 Child Entities 使用 Value Object ID。
