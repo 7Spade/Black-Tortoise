@@ -120,26 +120,26 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
       }
       .module-header h2 {
         margin: 0 0 0.5rem 0;
-        color: #1976d2;
+        color: var(--md-sys-color-primary);
       }
       .acceptance-section,
       .completed-section {
-        background: white;
-        border: 1px solid #e0e0e0;
+        background: var(--md-sys-color-surface);
+        border: 1px solid var(--md-sys-color-outline-variant);
         border-radius: 8px;
         padding: 1.5rem;
         margin-top: 1rem;
       }
       .acceptance-card,
       .result-card {
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--md-sys-color-outline-variant);
         border-radius: 4px;
         padding: 1rem;
         margin-bottom: 1rem;
       }
       .result-card.approved {
-        border-color: #4caf50;
-        background: #f1f8f4;
+        border-color: var(--md-sys-color-tertiary);
+        background: var(--md-sys-color-surface-variant);
       }
       .task-header {
         display: flex;
@@ -156,7 +156,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
       .input-field {
         flex: 1;
         padding: 0.5rem;
-        border: 1px solid #ccc;
+        border: 1px solid var(--md-sys-color-outline);
         border-radius: 4px;
       }
       .btn-success,
@@ -168,16 +168,16 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
         font-weight: 500;
       }
       .btn-success {
-        background: #4caf50;
-        color: white;
+        background: var(--md-sys-color-tertiary);
+        color: var(--md-sys-color-on-tertiary);
       }
       .btn-danger {
-        background: #f44336;
-        color: white;
+        background: var(--md-sys-color-error);
+        color: var(--md-sys-color-on-error);
       }
       .empty-state {
         text-align: center;
-        color: #999;
+        color: var(--md-sys-color-on-surface-variant);
         padding: 2rem;
       }
     `,
