@@ -116,12 +116,14 @@ withHooks({
 - [ ] **Context Check**: 功能是否正確依賴 `WorkspaceContextStore`？
 - [ ] **Boundary Check**: 是否引入了跨模組的 Service 直接依賴？(應改用 Event)
 - [ ] **State Check**: 模組狀態是否使用 `signalStore` 且支援 Reset？
+- [ ] **Domain Logic Check**: 業務邏輯是否已封裝進 Entity/ValueObject？(而非散落在 Service)
 - [ ] **Template Syntax**: 視圖層是否全面採用 `@if` / `@for` (含 `track`)？
 - [ ] **View Projection**: 如果是 Task 相關視圖，是否重用了現有的 Entity Map？
 - [ ] **Strict Types**: Event payload 是否有嚴格型別定義？
 
 ## ⚠️ 禁忌清單 (Strict Prohibitions)
 
+- 🚫 **禁止** 貧血模型 (Anemic Model)：業務規則 (如 `canAssign`, `isOverdue`) 必須在 Domain Entity 內實作，Application Service 僅負責編排。
 - 🚫 **禁止** 在 Domain Layer 引用 UI 邏輯。
 - 🚫 **禁止** 使用 `Promise` 或任何 `Async/Await` (必須使用 RxJS/Signals)。
 - 🚫 **禁止** 手動訂閱 (`.subscribe()`)，必須使用 `rxMethod` 或 `toSignal`。
