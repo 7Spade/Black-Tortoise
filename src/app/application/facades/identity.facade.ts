@@ -9,22 +9,61 @@
  * - Manages identity UI state coordination
  * - Provides reactive signals for identity components (ViewModels)
  * - Coordinates between identity components and application/presentation layers
+ * - Orchestrates explicit loading of organizations and workspaces on identity change
  * - No business logic - pure presentation orchestration
  */
 
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IdentityViewModel, UserAvatarViewModel } from '@application/models';
 import { AuthStore } from '@application/stores/auth.store';
 import { IdentityContextStore } from '@application/stores/identity-context.store';
 import { OrganizationStore } from '@application/stores/organization.store';
+import { WorkspaceStore } from '@application/stores/workspace.store';
 
 @Injectable({ providedIn: 'root' })
 export class IdentityFacade {
   private readonly authStore = inject(AuthStore);
   private readonly organizationStore = inject(OrganizationStore);
+  private readonly workspaceStore = inject(WorkspaceStore);
   private readonly identityContext = inject(IdentityContextStore);
   private readonly router = inject(Router);
+
+  constructor() {
+    /**
+     * Orchestration Effect: Trigger data loading when identity context changes.
+     * 
+     * This effect centralizes the orchestration logic in the FACADE layer,
+     * removing reactive coupling from stores. Stores remain passive and only
+     * respond to explicit commands (loadOrganizations/loadWorkspaces).
+     * 
+     * Triggered by:
+     * - Initial user authentication (AuthStore -> IdentityContextStore)
+     * - Manual identity switching (selectIdentity/selectOrganization methods)
+     */
+    effect(() => {
+      const identityId = this.identityContext.currentIdentityId();
+      const identityType = this.identityContext.currentIdentityType();
+      
+      if (identityId && identityType) {
+        this.loadDataForCurrentIdentity(identityType);
+      }
+    });
+  }
+
+  /**
+   * Explicit orchestration method: Load required data for current identity context
+   */
+  private loadDataForCurrentIdentity(identityType: 'user' | 'organization'): void {
+    if (identityType === 'user') {
+      // User context: Load organizations and user workspaces
+      this.organizationStore.loadOrganizations();
+      this.workspaceStore.loadWorkspaces();
+    } else {
+      // Organization context: Load organization workspaces only
+      this.workspaceStore.loadWorkspaces();
+    }
+  }
 
   // Local identity UI state
   private readonly _showIdentityMenu = signal(false);
@@ -128,23 +167,27 @@ export class IdentityFacade {
   }
 
   /**
-   * Handle identity selection
+   * Handle identity selection (switch to personal context)
+   * Orchestration effect will trigger data loading automatically
    */
   selectIdentity(identityType: 'personal'): void {
     this.closeAllMenus();
     const userId = this.authStore.currentUserId();
     if (userId) {
         this.identityContext.setIdentity(userId, 'user');
+        // Data loading orchestrated by constructor effect
     }
   }
 
   /**
-   * Handle organization selection
+   * Handle organization selection (switch to organization context)
+   * Orchestration effect will trigger data loading automatically
    */
   selectOrganization(organizationId: string, organizationName: string): void {
       this.closeAllMenus();
       this.identityContext.setIdentity(organizationId, 'organization');
       this.organizationStore.setCurrentOrganization(organizationId, organizationName);
+      // Data loading orchestrated by constructor effect
   }
 
   /**

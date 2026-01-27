@@ -217,15 +217,12 @@ export const OrganizationStore = signalStore(
   }),
   
   withHooks({
-    onInit(store) {
-      const identityContext = inject(IdentityContextStore);
-      
-      // Auto-load organizations when in user context
-      effect(() => {
-        if (identityContext.isUserContext()) {
-          store.loadOrganizations();
-        }
-      });
+    onInit() {
+      console.log('[OrganizationStore] Initialized');
+    },
+    
+    onDestroy() {
+      console.log('[OrganizationStore] Destroyed');
     },
   }),
 );

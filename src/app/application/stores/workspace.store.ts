@@ -301,20 +301,8 @@ export const WorkspaceStore = signalStore(
   }),
   
   withHooks({
-    onInit(store) {
-      const identityContext = inject(IdentityContextStore);
-      
+    onInit() {
       console.log('[WorkspaceStore] Initialized');
-      
-      // Auto-load workspaces when identity changes
-      effect(() => {
-        const identityId = identityContext.currentIdentityId();
-        const identityType = identityContext.currentIdentityType();
-        
-        if (identityId && identityType) {
-          store.loadWorkspaces();
-        }
-      });
     },
     
     onDestroy() {
