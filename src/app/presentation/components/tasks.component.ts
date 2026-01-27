@@ -651,9 +651,15 @@ export class TasksComponent implements IAppModule, OnInit, OnDestroy {
 
   async createNewTask(): Promise<void> {
     if (!this.newTaskTitle.trim() || !this.eventBus) return;
+    
+    const wsId = this.workspaceId();
+    if (!wsId) {
+      console.error('[TasksModule] Cannot create task: no workspace ID');
+      return;
+    }
 
     const task = createTask({
-      workspaceId: this.workspaceId(),
+      workspaceId: wsId,
       title: this.newTaskTitle,
       description: this.newTaskDescription,
       createdById: this.currentUserId(),
@@ -678,10 +684,16 @@ export class TasksComponent implements IAppModule, OnInit, OnDestroy {
 
   async submitTaskForQC(task: TaskAggregate): Promise<void> {
     if (!this.eventBus) return;
+    
+    const wsId = this.workspaceId();
+    if (!wsId) {
+      console.error('[TasksModule] Cannot submit task for QC: no workspace ID');
+      return;
+    }
 
     await this.submitTaskForQCHandler.execute({
       taskId: task.id,
-      workspaceId: this.workspaceId(),
+      workspaceId: wsId,
       taskTitle: task.title,
       submittedBy: this.currentUserId(),
     });
@@ -698,11 +710,17 @@ export class TasksComponent implements IAppModule, OnInit, OnDestroy {
    */
   async failQC(task: TaskAggregate): Promise<void> {
     if (!this.eventBus) return;
+    
+    const wsId = this.workspaceId();
+    if (!wsId) {
+      console.error('[TasksModule] Cannot fail QC: no workspace ID');
+      return;
+    }
 
     const failureReason = 'Quality standards not met (stub)';
     await this.failQCUseCase.execute({
       taskId: task.id,
-      workspaceId: this.workspaceId(),
+      workspaceId: wsId,
       taskTitle: task.title,
       failureReason,
       reviewedBy: this.currentUserId(),
@@ -714,6 +732,12 @@ export class TasksComponent implements IAppModule, OnInit, OnDestroy {
 
   async resolveIssue(task: TaskAggregate): Promise<void> {
     if (!this.eventBus || task.blockedByIssueIds.length === 0) return;
+    
+    const wsId = this.workspaceId();
+    if (!wsId) {
+      console.error('[TasksModule] Cannot resolve issue: no workspace ID');
+      return;
+    }
 
     const issueId = task.blockedByIssueIds[0];
     if (!issueId) {
@@ -723,7 +747,7 @@ export class TasksComponent implements IAppModule, OnInit, OnDestroy {
     await this.resolveIssueHandler.execute({
       issueId,
       taskId: task.id,
-      workspaceId: this.workspaceId(),
+      workspaceId: wsId,
       resolvedBy: this.currentUserId(),
       resolution: 'Fixed (stub)',
     });
