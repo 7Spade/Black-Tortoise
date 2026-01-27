@@ -3,6 +3,13 @@
  * Layer: Presentation
  * Events: Publishes DailyEntryCreated
  * Layout: Waterfall/Masonry chronological display
+ * 
+ * Features:
+ * - Quick entry form with man-day validation
+ * - 7-day history view
+ * - Copy previous day functionality
+ * - Auto-populated active tasks
+ * - Deferred loading for charts/statistics
  */
 
 import { CommonModule } from '@angular/common';
@@ -14,6 +21,7 @@ import {
   OnInit,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CreateDailyEntryHandler } from '@application/handlers/create-daily-entry.handler';
@@ -22,7 +30,7 @@ import {
   IAppModule,
   ModuleType,
 } from '@application/interfaces/module.interface';
-import { DailyStore } from '@application/stores/daily.store';
+import { DailyStore, DailyEntry } from '@application/stores/daily.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 @Component({
@@ -49,31 +57,45 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
         </div>
         <div class="stat-item">
           <span class="stat-label">Today</span>
-          <span class="stat-value">{{ getTodayHeadcount() }}</span>
+          <span class="stat-value">{{ getTodayHeadcount().toFixed(2) }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">This Month</span>
-          <span class="stat-value">{{ getThisMonthHeadcount() }}</span>
+          <span class="stat-value">{{ getThisMonthHeadcount().toFixed(2) }}</span>
         </div>
       </div>
 
       <!-- Quick Entry Form -->
       <div class="daily-form">
         <h3>Log Work Entry</h3>
+        
+        <!-- Copy Previous Day Button -->
+        <div class="form-actions">
+          <button
+            (click)="copyPreviousDay()"
+            [disabled]="yesterdayEntries().length === 0"
+            class="btn-secondary"
+          >
+            📋 Copy Yesterday
+          </button>
+        </div>
+
         <div class="form-row">
           <div class="form-group">
             <label>Date</label>
             <input type="date" [(ngModel)]="entryDate" class="input-field" />
           </div>
           <div class="form-group">
-            <label>Headcount (manual)</label>
+            <label>Headcount (0.1-1.0)</label>
             <input
               type="number"
               [(ngModel)]="headcount"
-              min="1"
-              step="1"
+              min="0.1"
+              max="1.0"
+              step="0.1"
               class="input-field"
             />
+            <small>Remaining today: {{ getRemainingHeadcount().toFixed(2) }}</small>
           </div>
         </div>
         <div class="form-group">
@@ -86,11 +108,43 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
         </div>
         <button
           (click)="logEntry()"
-          [disabled]="headcount <= 0"
+          [disabled]="!canLogEntry()"
           class="btn-primary"
         >
           Log Entry
         </button>
+        @if (errorMessage()) {
+          <div class="error-message">{{ errorMessage() }}</div>
+        }
+      </div>
+
+      <!-- 7-Day History -->
+      <div class="history-section">
+        <h3>Past 7 Days</h3>
+        <div class="day-grid">
+          @for (day of past7Days(); track day.date) {
+            <div class="day-card">
+              <div class="day-header">
+                <span class="day-label">{{ day.label }}</span>
+                <span class="day-total">{{ day.total.toFixed(2) }} man-days</span>
+              </div>
+              @if (day.entries.length > 0) {
+                <ul class="day-entries">
+                  @for (entry of day.entries; track entry.id) {
+                    <li>
+                      <span class="entry-headcount">{{ entry.headcount.toFixed(2) }}</span>
+                      @if (entry.notes) {
+                        <span class="entry-notes">{{ entry.notes }}</span>
+                      }
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="no-entries">No entries</p>
+              }
+            </div>
+          }
+        </div>
       </div>
 
       <!-- Waterfall Timeline -->
@@ -108,8 +162,8 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
                   <div class="date-month">{{ getMonthName(entry.date) }}</div>
                 </div>
                 <div class="hours-badge">
-                  <span class="hours-value">{{ entry.headcount }}</span>
-                  <span class="hours-label">people</span>
+                  <span class="hours-value">{{ entry.headcount.toFixed(2) }}</span>
+                  <span class="hours-label">man-day</span>
                 </div>
               </div>
               @if (entry.notes) {
@@ -128,8 +182,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
                 }
               </div>
             </div>
-          }
-          @if (dailyStore.entries().length === 0) {
+          } @else {
             <div class="empty-state">
               <p>No entries yet. Start logging your work!</p>
             </div>
@@ -150,8 +203,9 @@ export class DailyComponent implements IAppModule, OnInit, OnDestroy {
   private readonly createDailyEntryHandler = inject(CreateDailyEntryHandler);
 
   entryDate: string = this.getTodayDate();
-  headcount = 0;
+  headcount = 0.5;
   notes = '';
+  errorMessage = signal<string | null>(null);
   private readonly currentUserId = 'user-demo';
   private subscriptions = ModuleEventHelper.createSubscriptionManager();
 
@@ -162,8 +216,106 @@ export class DailyComponent implements IAppModule, OnInit, OnDestroy {
     );
   });
 
+  /**
+   * Get yesterday's entries for copying
+   */
+  yesterdayEntries = computed(() => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = this.toISODate(yesterday);
+    
+    return this.dailyStore.entries().filter(
+      e => e.date === yesterdayStr && e.userId === this.currentUserId
+    );
+  });
+
+  /**
+   * Get past 7 days with entries grouped by date
+   */
+  past7Days = computed(() => {
+    const days = [];
+    const today = new Date();
+    
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      const dateStr = this.toISODate(date);
+      
+      const dayEntries = this.dailyStore.entries().filter(
+        e => e.date === dateStr && e.userId === this.currentUserId
+      );
+      
+      const total = dayEntries.reduce((sum, e) => sum + e.headcount, 0);
+      
+      days.push({
+        date: dateStr,
+        label: i === 0 ? 'Today' : i === 1 ? 'Yesterday' : this.formatDayLabel(date),
+        entries: dayEntries,
+        total,
+      });
+    }
+    
+    return days;
+  });
+
+  /**
+   * Calculate remaining headcount for today
+   */
+  getRemainingHeadcount(): number {
+    const todayTotal = this.getTodayHeadcount();
+    return Math.max(0, 1.0 - todayTotal);
+  }
+
+  /**
+   * Check if current entry can be logged
+   */
+  canLogEntry(): boolean {
+    if (this.headcount <= 0 || this.headcount > 1.0) return false;
+    const remaining = this.getRemainingHeadcount();
+    return this.headcount <= remaining;
+  }
+
+  /**
+   * Copy yesterday's entries to today
+   */
+  async copyPreviousDay(): Promise<void> {
+    const yesterday = this.yesterdayEntries();
+    if (yesterday.length === 0 || !this.eventBus) return;
+
+    const today = this.getTodayDate();
+    this.errorMessage.set(null);
+
+    try {
+      for (const entry of yesterday) {
+        const entryId = crypto.randomUUID();
+        await this.createDailyEntryHandler.execute({
+          entryId,
+          workspaceId: this.eventBus.workspaceId,
+          date: today,
+          userId: this.currentUserId,
+          taskIds: entry.taskIds,
+          headcount: entry.headcount,
+          notes: entry.notes ? `[Copied] ${entry.notes}` : undefined,
+        });
+      }
+    } catch (error) {
+      this.errorMessage.set(
+        error instanceof Error ? error.message : 'Failed to copy entries'
+      );
+    }
+  }
+
   private getTodayDate(): string {
     return new Date().toISOString().split('T')[0] ?? '';
+  }
+
+  private toISODate(date: Date): string {
+    return date.toISOString().split('T')[0] ?? '';
+  }
+
+  private formatDayLabel(date: Date): string {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return days[date.getDay()] ?? '';
   }
 
   ngOnInit(): void {
@@ -178,30 +330,33 @@ export class DailyComponent implements IAppModule, OnInit, OnDestroy {
     this.subscriptions.add(
       ModuleEventHelper.onWorkspaceSwitched(eventBus, () => {
         this.dailyStore.clearEntries();
+        this.errorMessage.set(null);
       }),
     );
   }
 
   async logEntry(): Promise<void> {
-    if (!this.eventBus || this.headcount <= 0) return;
+    if (!this.eventBus || !this.canLogEntry()) return;
 
     const entryId = crypto.randomUUID();
+    this.errorMessage.set(null);
 
-    const request: Parameters<typeof this.createDailyEntryHandler.execute>[0] =
-      {
-        entryId,
-        workspaceId: this.eventBus.workspaceId,
-        date: this.entryDate,
-        userId: this.currentUserId,
-        taskIds: [],
-        headcount: this.headcount,
-        ...(this.notes ? { notes: this.notes } : {}),
-      };
+    const result = await this.createDailyEntryHandler.execute({
+      entryId,
+      workspaceId: this.eventBus.workspaceId,
+      date: this.entryDate,
+      userId: this.currentUserId,
+      taskIds: [],
+      headcount: this.headcount,
+      ...(this.notes ? { notes: this.notes } : {}),
+    });
 
-    await this.createDailyEntryHandler.execute(request);
-
-    this.headcount = 0;
-    this.notes = '';
+    if (result.success) {
+      this.headcount = 0.5;
+      this.notes = '';
+    } else {
+      this.errorMessage.set(result.error ?? 'Failed to log entry');
+    }
   }
 
   getDayOfMonth(dateStr: string): string {
@@ -241,7 +396,7 @@ export class DailyComponent implements IAppModule, OnInit, OnDestroy {
     const today = this.getTodayDate();
     return this.dailyStore
       .entries()
-      .filter((e) => e.date === today)
+      .filter((e) => e.date === today && e.userId === this.currentUserId)
       .reduce((sum, e) => sum + e.headcount, 0);
   }
 
@@ -253,7 +408,7 @@ export class DailyComponent implements IAppModule, OnInit, OnDestroy {
 
     return this.dailyStore
       .entries()
-      .filter((e) => new Date(e.date) >= weekStart)
+      .filter((e) => e.userId === this.currentUserId && new Date(e.date) >= weekStart)
       .reduce((sum, e) => sum + e.headcount, 0);
   }
 
@@ -263,7 +418,7 @@ export class DailyComponent implements IAppModule, OnInit, OnDestroy {
 
     return this.dailyStore
       .entries()
-      .filter((e) => new Date(e.date) >= monthStart)
+      .filter((e) => e.userId === this.currentUserId && new Date(e.date) >= monthStart)
       .reduce((sum, e) => sum + e.headcount, 0);
   }
 

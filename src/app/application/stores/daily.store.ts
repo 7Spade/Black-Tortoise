@@ -21,8 +21,9 @@
  * - Pure signal-based reactivity
  */
 
-import { computed } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { computed, inject } from '@angular/core';
+import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
+import { WorkspaceEventBus } from '@domain/types';
 
 export interface DailyEntry {
   readonly id: string;
@@ -164,5 +165,64 @@ export const DailyStore = signalStore(
     setError(error: string | null): void {
       patchState(store, { error, isLogging: false });
     },
-  }))
+  })),
+
+  withHooks({
+    onInit(store) {
+      const eventBus = inject(WorkspaceEventBus);
+
+      // Subscribe to WorkspaceSwitched - clear all state
+      eventBus.on('WorkspaceSwitched', () => {
+        patchState(store, initialState);
+      });
+
+      // Subscribe to TaskProgressUpdated - auto-create entry based on progress delta
+      eventBus.on('TaskProgressUpdated', (event) => {
+        const { taskId, progress, userId } = event.payload;
+        const today = new Date().toISOString().split('T')[0] ?? '';
+        
+        // Auto-calculate headcount based on progress increment (simple heuristic)
+        const progressIncrement = progress > 0 ? Math.min(progress / 100, 0.25) : 0;
+        
+        if (progressIncrement > 0) {
+          const newEntry: DailyEntry = {
+            id: crypto.randomUUID(),
+            date: today,
+            userId: userId ?? 'unknown',
+            taskIds: [taskId],
+            headcount: progressIncrement,
+            notes: `Auto-logged from task progress update (${progress}%)`,
+            createdAt: new Date(),
+          };
+
+          patchState(store, {
+            entries: [...store.entries(), newEntry],
+          });
+        }
+      });
+
+      // Subscribe to DailyEntryCreated - add entry to state
+      eventBus.on('DailyEntryCreated', (event) => {
+        const { entryId, date, userId, taskIds, headcount, notes } = event.payload;
+        
+        const newEntry: DailyEntry = {
+          id: entryId,
+          date,
+          userId,
+          taskIds: [...taskIds],
+          headcount,
+          notes,
+          createdAt: new Date(event.timestamp),
+        };
+
+        // Check if entry already exists (idempotency)
+        const exists = store.entries().some(e => e.id === entryId);
+        if (!exists) {
+          patchState(store, {
+            entries: [...store.entries(), newEntry],
+          });
+        }
+      });
+    }
+  })
 );

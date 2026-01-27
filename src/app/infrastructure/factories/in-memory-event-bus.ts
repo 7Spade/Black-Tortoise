@@ -59,6 +59,16 @@ export class InMemoryEventBus implements WorkspaceEventBus {
     };
   }
   
+  /**
+   * Convenience method: on() is an alias for subscribe()
+   */
+  on<T extends DomainEvent<TPayload>, TPayload = unknown>(
+    eventType: string,
+    handler: EventHandler<T, TPayload>
+  ): () => void {
+    return this.subscribe(eventType, handler);
+  }
+  
   getWorkspaceId(): string {
     return this.workspaceId;
   }

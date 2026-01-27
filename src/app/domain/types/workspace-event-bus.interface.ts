@@ -34,6 +34,14 @@ export interface WorkspaceEventBus {
   ): () => void;
   
   /**
+   * Convenience method: Subscribe to events (alias for subscribe)
+   */
+  on<T extends DomainEvent<TPayload>, TPayload = unknown>(
+    eventType: string,
+    handler: EventHandler<T, TPayload>
+  ): () => void;
+  
+  /**
    * Get workspace ID this bus is scoped to
    */
   getWorkspaceId(): string;
