@@ -136,9 +136,9 @@ export const AcceptanceStore = signalStore(
     },
 
     /**
-     * Reset State (Clear on Workspace Switch)
+     * Reset (Clear on Workspace Switch)
      */
-    resetState(): void {
+    reset(): void {
       patchState(store, initialState);
     },
 

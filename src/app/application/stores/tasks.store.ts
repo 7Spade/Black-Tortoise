@@ -162,10 +162,18 @@ export const TasksStore = signalStore(
     },
 
     /**
+     * Reset (Clear on Workspace Switch)
+     */
+    reset(): void {
+      patchState(store, initialState);
+    },
+
+    /**
      * Reset State
+     * @deprecated Use reset() instead
      */
     resetState(): void {
-      patchState(store, initialState);
+      this.reset();
     }
   }))
 );
