@@ -5,12 +5,22 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CreateIssueHandler } from '@application/handlers/create-issue.handler';
 import { ResolveIssueHandler } from '@application/handlers/resolve-issue.handler';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
-import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
+import {
+  IAppModule,
+  ModuleType,
+} from '@application/interfaces/module.interface';
 import { IssuesStore } from '@application/stores/issues.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
@@ -25,7 +35,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
         <h2>🐛 Issues</h2>
         <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
-      
+
       <div class="issues-section">
         <h3>Open Issues ({{ issuesStore.openIssues().length }})</h3>
         @if (issuesStore.openIssues().length === 0) {
@@ -43,8 +53,8 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
               <span>Status: {{ issue.status }}</span>
             </div>
             <div class="issue-actions">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 [(ngModel)]="resolution"
                 placeholder="Resolution notes..."
                 class="input-field"
@@ -68,43 +78,92 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
       </div>
     </div>
   `,
-  styles: [`
-    .issues-module { padding: 1.5rem; max-width: 1200px; }
-    .module-header h2 { margin: 0 0 0.5rem 0; color: #1976d2; }
-    .issues-section, .resolved-section { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin-top: 1rem; }
-    .issue-card { border: 1px solid #e0e0e0; border-radius: 4px; padding: 1rem; margin-bottom: 1rem; }
-    .issue-card[data-priority="high"], .issue-card[data-priority="critical"] { border-left: 4px solid #f44336; }
-    .issue-card.resolved { background: #f1f8f4; }
-    .issue-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
-    .issue-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
-    .input-field { flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
-    .btn-success { padding: 0.5rem 1rem; border: none; border-radius: 4px; background: #4caf50; color: white; cursor: pointer; }
-    .empty-state { text-align: center; color: #999; padding: 2rem; }
-  `]
+  styles: [
+    `
+      .issues-module {
+        padding: 1.5rem;
+        max-width: 1200px;
+      }
+      .module-header h2 {
+        margin: 0 0 0.5rem 0;
+        color: #1976d2;
+      }
+      .issues-section,
+      .resolved-section {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+      }
+      .issue-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+      .issue-card[data-priority='high'],
+      .issue-card[data-priority='critical'] {
+        border-left: 4px solid #f44336;
+      }
+      .issue-card.resolved {
+        background: #f1f8f4;
+      }
+      .issue-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+      .issue-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+      .input-field {
+        flex: 1;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .btn-success {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        background: #4caf50;
+        color: white;
+        cursor: pointer;
+      }
+      .empty-state {
+        text-align: center;
+        color: #999;
+        padding: 2rem;
+      }
+    `,
+  ],
 })
 export class IssuesComponent implements IAppModule, OnInit, OnDestroy {
   readonly id = 'issues';
   readonly name = 'Issues';
   readonly type: ModuleType = 'issues';
-  
+
   @Input() eventBus: IModuleEventBus | undefined;
   readonly issuesStore = inject(IssuesStore);
   private readonly createIssueHandler = inject(CreateIssueHandler);
   private readonly resolveIssueHandler = inject(ResolveIssueHandler);
-  
+
   resolution = '';
   private readonly currentUserId = 'user-demo-issues';
   private subscriptions = ModuleEventHelper.createSubscriptionManager();
-  
+
   ngOnInit(): void {
     if (this.eventBus) {
       this.initialize(this.eventBus);
     }
   }
-  
+
   initialize(eventBus: IModuleEventBus): void {
     this.eventBus = eventBus;
-    
+
     this.subscriptions.add(
       eventBus.subscribe('QCFailed', async (event: any) => {
         const issueId = crypto.randomUUID();
@@ -118,26 +177,25 @@ export class IssuesComponent implements IAppModule, OnInit, OnDestroy {
           correlationId: event.correlationId,
           causationId: event.eventId,
         });
-      })
+      }),
     );
-    
+
     this.subscriptions.add(
       ModuleEventHelper.onWorkspaceSwitched(eventBus, () => {
-        this.issuesStore.resetState();
-      })
+        this.issuesStore.reset();
+      }),
     );
-    
   }
-  
+
   async resolveIssue(issueId: string): Promise<void> {
     if (!this.eventBus || !this.resolution.trim()) {
       alert('Please provide resolution notes');
       return;
     }
-    
-    const issue = this.issuesStore.issues().find(i => i.id === issueId);
+
+    const issue = this.issuesStore.issues().find((i) => i.id === issueId);
     if (!issue || !issue.taskId) return;
-    
+
     await this.resolveIssueHandler.execute({
       issueId,
       taskId: issue.taskId,
@@ -145,10 +203,10 @@ export class IssuesComponent implements IAppModule, OnInit, OnDestroy {
       resolvedBy: this.currentUserId,
       resolution: this.resolution,
     });
-    
+
     this.resolution = '';
   }
-  
+
   activate(): void {}
   deactivate(): void {}
   destroy(): void {

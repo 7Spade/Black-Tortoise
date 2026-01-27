@@ -2,7 +2,7 @@ import {
   APP_INITIALIZER,
   ApplicationConfig,
   inject,
-  provideZonelessChangeDetection
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import {
   getAnalytics,
@@ -32,16 +32,52 @@ import { getVertexAI, provideVertexAI } from '@angular/fire/vertexai';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { provideEventHandlers } from '@application/handlers';
-import { AUTH_REPOSITORY, AUTH_STREAM, EVENT_BUS, EVENT_STORE, ORGANIZATION_REPOSITORY } from '@application/interfaces';
+import {
+  ACCEPTANCE_REPOSITORY,
+  AUDIT_LOG_REPOSITORY,
+  AUTH_REPOSITORY,
+  AUTH_STREAM,
+  DAILY_REPOSITORY,
+  DOCUMENT_REPOSITORY,
+  EVENT_BUS,
+  EVENT_STORE,
+  ISSUE_REPOSITORY,
+  MEMBER_REPOSITORY,
+  ORGANIZATION_REPOSITORY,
+  OVERVIEW_REPOSITORY,
+  PERMISSION_REPOSITORY,
+  QUALITY_CONTROL_REPOSITORY,
+  SETTINGS_REPOSITORY,
+  TASK_REPOSITORY,
+} from '@application/interfaces';
 import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
 import { AuthStore } from '@application/stores/auth.store';
 import { InMemoryEventBus } from '@infrastructure/adapters';
 import { WorkspaceRuntimeFactory } from '@infrastructure/factories';
-import { AuthRepositoryImpl, InMemoryEventStore, OrganizationRepositoryImpl, WorkspaceRepositoryImpl } from '@infrastructure/repositories';
+import {
+  AcceptanceRepositoryImpl,
+  AuditLogRepositoryImpl,
+  AuthRepositoryImpl,
+  DailyRepositoryImpl,
+  DocumentRepositoryImpl,
+  InMemoryEventStore,
+  IssueRepositoryImpl,
+  MemberRepositoryImpl,
+  OrganizationRepositoryImpl,
+  OverviewRepositoryImpl,
+  PermissionRepositoryImpl,
+  QualityControlRepositoryImpl,
+  SettingsRepositoryImpl,
+  TaskRepositoryImpl,
+  WorkspaceRepositoryImpl,
+} from '@infrastructure/repositories';
 import { routes } from '@presentation/app.routes';
 import { environment } from '../environments/environment';
-import { TEMPLATE_EVENT_BUS_TOKEN, TEMPLATE_EVENT_STORE_TOKEN } from './template-core/application/tokens/event-infrastructure.tokens';
+import {
+  TEMPLATE_EVENT_BUS_TOKEN,
+  TEMPLATE_EVENT_STORE_TOKEN,
+} from './template-core/application/tokens/event-infrastructure.tokens';
 import { TEMPLATE_REPOSITORY_TOKEN } from './template-core/application/tokens/template-repository.token';
 import { TemplateFirestoreEventStore } from './template-core/infrastructure/event-sourcing/firestore-event-store';
 import { TemplateRxJsEventBus } from './template-core/infrastructure/event-sourcing/rxjs-event-bus';
@@ -63,7 +99,7 @@ import { TemplateFirebaseRepository } from './template-core/infrastructure/repos
  * - Application layer: Use cases, signal stores, abstractions
  * - Infrastructure layer: Event bus implementation with RxJS
  * - Presentation layer: Zone-less components with OnPush
- * 
+ *
  * Clean Architecture Compliance:
  * - Infrastructure implementations registered via DI tokens
  * - Application/Presentation depend on abstractions
@@ -86,54 +122,98 @@ export const appConfig: ApplicationConfig = {
         const authStore = inject(AuthStore);
         return () => authStore.connect();
       },
-      multi: true
+      multi: true,
     },
-    
+
     // DDD/Clean Architecture: Infrastructure Providers
     // Register infrastructure implementations for application abstractions
     {
       provide: WORKSPACE_RUNTIME_FACTORY,
-      useClass: WorkspaceRuntimeFactory
+      useClass: WorkspaceRuntimeFactory,
     },
     {
       provide: AUTH_REPOSITORY,
-      useClass: AuthRepositoryImpl
+      useClass: AuthRepositoryImpl,
     },
     {
       provide: AUTH_STREAM,
-      useClass: AuthRepositoryImpl
+      useClass: AuthRepositoryImpl,
     },
     {
       provide: WORKSPACE_REPOSITORY,
-      useClass: WorkspaceRepositoryImpl
+      useClass: WorkspaceRepositoryImpl,
     },
     {
       provide: ORGANIZATION_REPOSITORY,
-      useClass: OrganizationRepositoryImpl
+      useClass: OrganizationRepositoryImpl,
+    },
+    {
+      provide: TASK_REPOSITORY,
+      useClass: TaskRepositoryImpl,
+    },
+    {
+      provide: ISSUE_REPOSITORY,
+      useClass: IssueRepositoryImpl,
+    },
+    {
+      provide: ACCEPTANCE_REPOSITORY,
+      useClass: AcceptanceRepositoryImpl,
+    },
+    {
+      provide: AUDIT_LOG_REPOSITORY,
+      useClass: AuditLogRepositoryImpl,
+    },
+    {
+      provide: DAILY_REPOSITORY,
+      useClass: DailyRepositoryImpl,
+    },
+    {
+      provide: DOCUMENT_REPOSITORY,
+      useClass: DocumentRepositoryImpl,
+    },
+    {
+      provide: MEMBER_REPOSITORY,
+      useClass: MemberRepositoryImpl,
+    },
+    {
+      provide: OVERVIEW_REPOSITORY,
+      useClass: OverviewRepositoryImpl,
+    },
+    {
+      provide: PERMISSION_REPOSITORY,
+      useClass: PermissionRepositoryImpl,
+    },
+    {
+      provide: QUALITY_CONTROL_REPOSITORY,
+      useClass: QualityControlRepositoryImpl,
+    },
+    {
+      provide: SETTINGS_REPOSITORY,
+      useClass: SettingsRepositoryImpl,
     },
     {
       provide: TEMPLATE_REPOSITORY_TOKEN,
-      useClass: TemplateFirebaseRepository
+      useClass: TemplateFirebaseRepository,
     },
     {
       provide: TEMPLATE_EVENT_STORE_TOKEN,
-      useClass: TemplateFirestoreEventStore
+      useClass: TemplateFirestoreEventStore,
     },
     {
       provide: TEMPLATE_EVENT_BUS_TOKEN,
-      useClass: TemplateRxJsEventBus
+      useClass: TemplateRxJsEventBus,
     },
-    
+
     // Event Infrastructure: Singleton EventBus and EventStore
     // Using InMemory implementations for development/testing
     // Production implementations (e.g., FirestoreEventStore) can be swapped via DI
     {
       provide: EVENT_BUS,
-      useClass: InMemoryEventBus
+      useClass: InMemoryEventBus,
     },
     {
       provide: EVENT_STORE,
-      useClass: InMemoryEventStore
+      useClass: InMemoryEventStore,
     },
 
     // Initialize Domain Event Handlers

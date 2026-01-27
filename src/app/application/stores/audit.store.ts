@@ -21,8 +21,17 @@
  * - Pure signal-based reactivity
  */
 
-import { computed } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { computed, inject } from '@angular/core';
+import { EVENT_BUS } from '@application/interfaces';
+import { DomainEvent } from '@domain/events';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 
 export interface AuditEntry {
   readonly id: string;
@@ -81,23 +90,23 @@ export const AuditStore = signalStore(
       const filter = state.filter();
 
       if (filter.eventType) {
-        entries = entries.filter(e => e.eventType === filter.eventType);
+        entries = entries.filter((e) => e.eventType === filter.eventType);
       }
 
       if (filter.actorId) {
-        entries = entries.filter(e => e.actorId === filter.actorId);
+        entries = entries.filter((e) => e.actorId === filter.actorId);
       }
 
       if (filter.resource) {
-        entries = entries.filter(e => e.resource === filter.resource);
+        entries = entries.filter((e) => e.resource === filter.resource);
       }
 
       if (filter.startDate) {
-        entries = entries.filter(e => e.timestamp >= filter.startDate!);
+        entries = entries.filter((e) => e.timestamp >= filter.startDate!);
       }
 
       if (filter.endDate) {
-        entries = entries.filter(e => e.timestamp <= filter.endDate!);
+        entries = entries.filter((e) => e.timestamp <= filter.endDate!);
       }
 
       return entries;
@@ -106,15 +115,17 @@ export const AuditStore = signalStore(
     /**
      * Entries by event type
      */
-    getEntriesByEventType: computed(() => (eventType: string) =>
-      state.entries().filter(e => e.eventType === eventType)
+    getEntriesByEventType: computed(
+      () => (eventType: string) =>
+        state.entries().filter((e) => e.eventType === eventType),
     ),
 
     /**
      * Entries by actor
      */
-    getEntriesByActor: computed(() => (actorId: string) =>
-      state.entries().filter(e => e.actorId === actorId)
+    getEntriesByActor: computed(
+      () => (actorId: string) =>
+        state.entries().filter((e) => e.actorId === actorId),
     ),
 
     /**
@@ -133,86 +144,136 @@ export const AuditStore = signalStore(
     hasEntries: computed(() => state.entries().length > 0),
   })),
 
-  withMethods((store) => ({
-    /**
-     * Add audit entry
-     */
-    addEntry(entry: Omit<AuditEntry, 'id'>): void {
-      const newEntry: AuditEntry = {
-        ...entry,
-        id: crypto.randomUUID(),
-      };
+  withMethods((store) => {
+    const eventBus = inject(EVENT_BUS);
 
-      patchState(store, {
-        entries: [...store.entries(), newEntry],
+    return {
+      /**
+       * Process incoming domain event
+       */
+      processEvent(event: DomainEvent<any>): void {
+        const payload = event.payload || {};
+        const actorId =
+          payload.createdById ||
+          payload.updatedById ||
+          payload.deletedById ||
+          payload.actorId ||
+          'system';
+
+        const resourceId =
+          payload.taskId ||
+          payload.documentId ||
+          payload.issueId ||
+          payload.workspaceId ||
+          'unknown';
+
+        const newEntry: AuditEntry = {
+          id: crypto.randomUUID(),
+          timestamp: new Date(event.timestamp),
+          eventType: event.type,
+          actorId,
+          actorName: actorId === 'system' ? 'System' : `User ${actorId}`, // In real app, resolve name
+          resource: resourceId,
+          action: event.type, // Simplified mapping
+          details: payload,
+          correlationId: event.correlationId || event.eventId,
+        };
+
+        patchState(store, {
+          entries: [newEntry, ...store.entries()],
+        });
+      },
+
+      /**
+       * Add audit entry
+       */
+      addEntry(entry: Omit<AuditEntry, 'id'>): void {
+        const newEntry: AuditEntry = {
+          ...entry,
+          id: crypto.randomUUID(),
+        };
+
+        patchState(store, {
+          entries: [...store.entries(), newEntry],
+        });
+      },
+
+      /**
+       * Add multiple entries
+       */
+      addEntries(entries: Array<Omit<AuditEntry, 'id'>>): void {
+        const newEntries: AuditEntry[] = entries.map((e) => ({
+          ...e,
+          id: crypto.randomUUID(),
+        }));
+
+        patchState(store, {
+          entries: [...store.entries(), ...newEntries],
+        });
+      },
+
+      /**
+       * Set filter
+       */
+      setFilter(filter: Partial<AuditState['filter']>): void {
+        patchState(store, {
+          filter: { ...store.filter(), ...filter },
+        });
+      },
+
+      /**
+       * Clear filter
+       */
+      clearFilter(): void {
+        patchState(store, {
+          filter: {
+            eventType: null,
+            actorId: null,
+            resource: null,
+            startDate: null,
+            endDate: null,
+          },
+        });
+      },
+
+      /**
+       * Reset (Clear on Workspace Switch)
+       */
+      reset(): void {
+        patchState(store, initialState);
+      },
+
+      /**
+       * Clear all entries (workspace switch)
+       * @deprecated Use reset() instead
+       */
+      clearEntries(): void {
+        this.reset();
+      },
+
+      /**
+       * Set loading
+       */
+      setLoading(isLoading: boolean): void {
+        patchState(store, { isLoading });
+      },
+
+      /**
+       * Set error
+       */
+      setError(error: string | null): void {
+        patchState(store, { error, isLoading: false });
+      },
+    };
+  }),
+
+  withHooks({
+    onInit(store) {
+      const eventBus = inject(EVENT_BUS);
+      // Subscribe to all events and convert to audit entries
+      eventBus.subscribeAll((event) => {
+        store.processEvent(event);
       });
     },
-
-    /**
-     * Add multiple entries
-     */
-    addEntries(entries: Array<Omit<AuditEntry, 'id'>>): void {
-      const newEntries: AuditEntry[] = entries.map(e => ({
-        ...e,
-        id: crypto.randomUUID(),
-      }));
-
-      patchState(store, {
-        entries: [...store.entries(), ...newEntries],
-      });
-    },
-
-    /**
-     * Set filter
-     */
-    setFilter(filter: Partial<AuditState['filter']>): void {
-      patchState(store, {
-        filter: { ...store.filter(), ...filter },
-      });
-    },
-
-    /**
-     * Clear filter
-     */
-    clearFilter(): void {
-      patchState(store, {
-        filter: {
-          eventType: null,
-          actorId: null,
-          resource: null,
-          startDate: null,
-          endDate: null,
-        },
-      });
-    },
-
-    /**
-     * Reset (Clear on Workspace Switch)
-     */
-    reset(): void {
-      patchState(store, initialState);
-    },
-
-    /**
-     * Clear all entries (workspace switch)
-     * @deprecated Use reset() instead
-     */
-    clearEntries(): void {
-      this.reset();
-    },
-
-    /**
-     * Set loading
-     */
-    setLoading(isLoading: boolean): void {
-      patchState(store, { isLoading });
-    },
-
-    /**
-     * Set error
-     */
-    setError(error: string | null): void {
-      patchState(store, { error, isLoading: false });
-    },
-  }))
+  }),
 );
