@@ -1,0 +1,12 @@
+@use '@angular/material' as mat;
+@use './theme' as theme;
+
+@include mat.core();
+
+:root {
+  @include mat.all-component-themes(theme.$xuanwu-light-theme);
+}
+
+body.dark {
+  @include mat.all-component-themes(theme.$xuanwu-dark-theme);
+}

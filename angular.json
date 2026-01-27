@@ -40,7 +40,7 @@
             "browser": "src/main.ts",
             "outputPath": "dist/demo",
             "scripts": [],
-            "styles": ["src/global_styles.scss"],
+            "styles": ["src/styles.scss"],
             "tsConfig": "src/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "optimization": {

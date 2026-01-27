@@ -83,7 +83,7 @@ Detection targets:
 | Method | Detection | Edit Target |
 |--------|-----------|-------------|
 | SCSS (primary) | `src/**/*.scss` (presentation first) | Component SCSS files |
-| Global styles | `src/global_styles.scss` (if present) | Global SCSS |
+| Global styles | `src/styles.scss` (if present) | Global SCSS |
 | M3 tokens | `src/styles/**` (if present) | Token definitions |
 
 ---
