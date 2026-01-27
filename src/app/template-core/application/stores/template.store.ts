@@ -9,14 +9,23 @@ import { AddTemplateSectionCommand, CreateTemplateCommand } from '../commands/te
 import { TemplateDto } from '../dtos/template.dto';
 import { TemplateToDtoMapper } from '../mappers/template.mapper';
 
+import { TemplateEventDto } from '../dtos/template-event.dto';
+import { TemplateEventMapper } from '../mappers/template-event.mapper';
+import { GetTemplateHistoryQuery } from '../queries/get-template-history.query';
+import { GetTemplateHistoryUseCase } from '../use-cases/get-template-history.use-case';
+
 type TemplateState = {
   templateDtos: TemplateDto[]; // Use DTOs for UI State
+  selectedTemplateId: string | null;
+  history: TemplateEventDto[];
   isLoading: boolean;
   error: string | null;
 };
 
 const initialState: TemplateState = {
   templateDtos: [],
+  selectedTemplateId: null,
+  history: [],
   isLoading: false,
   error: null,
 };
@@ -24,7 +33,12 @@ const initialState: TemplateState = {
 export const TemplateStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store, createUseCase = inject(CreateTemplateUseCase), getAllUseCase = inject(GetAllTemplatesUseCase), addSectionUseCase = inject(AddSectionToTemplateUseCase)) => ({
+  withMethods((store, 
+    createUseCase = inject(CreateTemplateUseCase), 
+    getAllUseCase = inject(GetAllTemplatesUseCase), 
+    addSectionUseCase = inject(AddSectionToTemplateUseCase),
+    getHistoryUseCase = inject(GetTemplateHistoryUseCase)
+  ) => ({
     loadAll: rxMethod<void>(
       pipe(
         tap(() => patchState(store, { isLoading: true })),
@@ -40,6 +54,23 @@ export const TemplateStore = signalStore(
         })
       )
     ),
+    loadHistory: rxMethod<string>(
+        pipe(
+            tap(() => patchState(store, { isLoading: true })),
+            switchMap(async (templateId) => {
+                try {
+                    const events = await getHistoryUseCase.execute(new GetTemplateHistoryQuery(templateId));
+                    const historyDtos = TemplateEventMapper.toDtoList(events);
+                    patchState(store, { history: historyDtos, selectedTemplateId: templateId, isLoading: false, error: null });
+                } catch(err: any) {
+                    patchState(store, { error: err.message, isLoading: false });
+                }
+            })
+        )
+    ),
+    clearHistory: () => {
+        patchState(store, { history: [], selectedTemplateId: null });
+    },
     addTemplate: rxMethod<{ name: string; content: string; userId: string }>(
         pipe(
             tap(() => patchState(store, { isLoading: true })),
