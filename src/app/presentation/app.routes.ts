@@ -98,7 +98,7 @@ export const routes: Routes = [
   {
     path: 'templates',
     canActivate: [canActivateAuth],
-    loadChildren: () => import('../core/presentation/template.routes').then(m => m.TEMPLATE_ROUTES)
+    loadChildren: () => import('../template-core/presentation/template.routes').then(m => m.TEMPLATE_ROUTES)
   },
 
   // Workspace page - contains workspace host with nested module routes
