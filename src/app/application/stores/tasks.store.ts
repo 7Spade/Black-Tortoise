@@ -16,6 +16,7 @@ import {
   TaskPriority,
   TaskStatus,
   createTask,
+  computeParentProgress,
 } from '@domain/aggregates';
 import { WorkspaceId } from '@domain/value-objects';
 import { tapResponse } from '@ngrx/operators';
@@ -32,20 +33,32 @@ import { from, pipe, switchMap } from 'rxjs';
 // Re-export domain types for presentation layer use
 export { TaskAggregate, TaskPriority, TaskStatus, createTask };
 
+export type ViewMode = 'list' | 'gantt' | 'kanban' | 'calendar';
+
 /**
  * Tasks State
  */
 export interface TasksState {
-  readonly tasks: ReadonlyArray<TaskAggregate>;
+  readonly tasks: ReadonlyMap<string, TaskAggregate>;
+  readonly viewMode: ViewMode;
   readonly isLoading: boolean;
   readonly error: string | null;
 }
 
 const initialState: TasksState = {
-  tasks: [],
+  tasks: new Map(),
+  viewMode: 'list',
   isLoading: false,
   error: null,
 };
+
+/**
+ * Kanban Column
+ */
+export interface KanbanColumn {
+  readonly status: TaskStatus;
+  readonly tasks: ReadonlyArray<TaskAggregate>;
+}
 
 /**
  * Tasks Store
@@ -59,38 +72,96 @@ export const TasksStore = signalStore(
 
   withComputed((state) => ({
     /**
+     * Task list (array view from map)
+     */
+    taskList: computed(() => Array.from(state.tasks().values())),
+
+    /**
+     * Root tasks (no parent)
+     */
+    rootTasks: computed(() =>
+      Array.from(state.tasks().values()).filter((t) => !t.parentId),
+    ),
+
+    /**
      * Tasks by status
      */
     tasksByStatus: computed(
       () => (status: TaskStatus) =>
-        state.tasks().filter((t) => t.status === status),
+        Array.from(state.tasks().values()).filter((t) => t.status === status),
     ),
+
+    /**
+     * Kanban columns (grouped by status)
+     */
+    kanbanColumns: computed(() => {
+      const columns: KanbanColumn[] = [];
+      const statuses = Object.values(TaskStatus);
+
+      for (const status of statuses) {
+        columns.push({
+          status,
+          tasks: Array.from(state.tasks().values()).filter(
+            (t) => t.status === status,
+          ),
+        });
+      }
+
+      return columns;
+    }),
+
+    /**
+     * Task hierarchy (tree structure)
+     */
+    taskHierarchy: computed(() => {
+      const tasks = Array.from(state.tasks().values());
+      const rootTasks = tasks.filter((t) => !t.parentId);
+
+      const buildTree = (task: TaskAggregate): any => {
+        const children = tasks
+          .filter((t) => t.parentId === task.id)
+          .map(buildTree);
+
+        return {
+          ...task,
+          children,
+        };
+      };
+
+      return rootTasks.map(buildTree);
+    }),
 
     /**
      * Blocked tasks
      */
     blockedTasks: computed(() =>
-      state.tasks().filter((t) => t.status === 'blocked'),
+      Array.from(state.tasks().values()).filter(
+        (t) => t.status === TaskStatus.BLOCKED,
+      ),
     ),
 
     /**
      * Ready tasks
      */
     readyTasks: computed(() =>
-      state.tasks().filter((t) => t.status === 'ready'),
+      Array.from(state.tasks().values()).filter(
+        (t) => t.status === TaskStatus.READY,
+      ),
     ),
 
     /**
      * Tasks in QC
      */
     tasksInQC: computed(() =>
-      state.tasks().filter((t) => t.status === 'in-qc'),
+      Array.from(state.tasks().values()).filter(
+        (t) => t.status === TaskStatus.IN_QC,
+      ),
     ),
 
     /**
      * Task count
      */
-    taskCount: computed(() => state.tasks().length),
+    taskCount: computed(() => state.tasks().size),
   })),
 
   withMethods((store) => {
@@ -108,8 +179,17 @@ export const TasksStore = signalStore(
               repo.findByWorkspaceId(WorkspaceId.create(workspaceId)),
             ).pipe(
               tapResponse({
-                next: (tasks) =>
-                  patchState(store, { tasks, isLoading: false, error: null }),
+                next: (taskArray) => {
+                  const taskMap = new Map<string, TaskAggregate>();
+                  for (const task of taskArray) {
+                    taskMap.set(task.id, task);
+                  }
+                  patchState(store, {
+                    tasks: taskMap,
+                    isLoading: false,
+                    error: null,
+                  });
+                },
                 error: (err: any) =>
                   patchState(store, { error: err.message, isLoading: false }),
               }),
@@ -119,12 +199,22 @@ export const TasksStore = signalStore(
       ),
 
       /**
+       * Set view mode
+       */
+      setViewMode(viewMode: ViewMode): void {
+        patchState(store, { viewMode });
+      },
+
+      /**
        * Add task to local state (Reactive Update)
        * Triggered by: EventBus (TaskCreated)
        */
       addTask(task: TaskAggregate): void {
+        const newTasks = new Map(store.tasks());
+        newTasks.set(task.id, task);
+
         patchState(store, {
-          tasks: [...store.tasks(), task],
+          tasks: newTasks,
           error: null,
         });
       },
@@ -138,13 +228,38 @@ export const TasksStore = signalStore(
         updates: Partial<TaskAggregate>,
         updatedAt: number = Date.now(),
       ): void {
-        const task = store.tasks().find((t) => t.id === taskId);
-        if (!task) return; // Should we log warning?
+        const task = store.tasks().get(taskId);
+        if (!task) return;
 
         const updatedTask = { ...task, ...updates, updatedAt };
+        const newTasks = new Map(store.tasks());
+        newTasks.set(taskId, updatedTask);
 
         patchState(store, {
-          tasks: store.tasks().map((t) => (t.id === taskId ? updatedTask : t)),
+          tasks: newTasks,
+          error: null,
+        });
+      },
+
+      /**
+       * Update parent progress based on subtasks
+       */
+      updateParentProgress(parentId: string): void {
+        const parent = store.tasks().get(parentId);
+        if (!parent) return;
+
+        const subtasks = Array.from(store.tasks().values()).filter(
+          (t) => t.parentId === parentId,
+        );
+
+        const progress = computeParentProgress(subtasks);
+
+        const updatedParent = { ...parent, progress, updatedAt: Date.now() };
+        const newTasks = new Map(store.tasks());
+        newTasks.set(parentId, updatedParent);
+
+        patchState(store, {
+          tasks: newTasks,
           error: null,
         });
       },
@@ -154,8 +269,11 @@ export const TasksStore = signalStore(
        * Triggered by: EventBus (TaskDeleted)
        */
       deleteTask(taskId: string): void {
+        const newTasks = new Map(store.tasks());
+        newTasks.delete(taskId);
+
         patchState(store, {
-          tasks: store.tasks().filter((t) => t.id !== taskId),
+          tasks: newTasks,
           error: null,
         });
       },

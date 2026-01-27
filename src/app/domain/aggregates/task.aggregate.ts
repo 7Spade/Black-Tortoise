@@ -8,6 +8,8 @@
  * Pure TypeScript - no framework dependencies.
  */
 
+import { Money } from '@domain/value-objects/money.vo';
+
 export enum TaskStatus {
   DRAFT = 'draft',
   READY = 'ready',
@@ -44,6 +46,17 @@ export interface TaskAggregate {
   readonly updatedAt: number;
   readonly dueDate: number | null;
   readonly blockedByIssueIds: ReadonlyArray<string>;
+  
+  // Extended fields for v2.0
+  readonly unitPrice: Money | null;
+  readonly quantity: number;
+  readonly totalPrice: Money | null;
+  readonly progress: number;
+  readonly parentId: string | null;
+  readonly subtaskIds: ReadonlyArray<string>;
+  readonly assigneeIds: ReadonlyArray<string>;
+  readonly responsibleId: string | null;
+  readonly collaboratorIds: ReadonlyArray<string>;
 }
 
 /**
@@ -58,6 +71,9 @@ export interface CreateTaskParams {
   readonly priority?: TaskPriority;
   readonly assigneeId?: string | null;
   readonly dueDate?: number | null;
+  readonly unitPrice?: Money | null;
+  readonly quantity?: number;
+  readonly parentId?: string | null;
 }
 
 /**
@@ -65,6 +81,13 @@ export interface CreateTaskParams {
  */
 export function createTask(params: CreateTaskParams): TaskAggregate {
   const now = Date.now();
+  const quantity = params.quantity ?? 1;
+  const unitPrice = params.unitPrice ?? null;
+  
+  // Calculate totalPrice if unitPrice is provided
+  const totalPrice = unitPrice 
+    ? { amount: unitPrice.amount * quantity, currency: unitPrice.currency }
+    : null;
 
   return {
     id: params.id ?? crypto.randomUUID(),
@@ -79,6 +102,15 @@ export function createTask(params: CreateTaskParams): TaskAggregate {
     updatedAt: now,
     dueDate: params.dueDate ?? null,
     blockedByIssueIds: [],
+    unitPrice,
+    quantity,
+    totalPrice,
+    progress: 0,
+    parentId: params.parentId ?? null,
+    subtaskIds: [],
+    assigneeIds: params.assigneeId ? [params.assigneeId] : [],
+    responsibleId: params.assigneeId ?? null,
+    collaboratorIds: [],
   };
 }
 
@@ -137,4 +169,109 @@ export function unblockTask(
  */
 export function restoreTask(state: TaskAggregate): TaskAggregate {
   return { ...state };
+}
+
+/**
+ * Update task progress
+ */
+export function updateProgress(
+  task: TaskAggregate,
+  progress: number,
+): TaskAggregate {
+  if (progress < 0 || progress > 100) {
+    throw new Error('Progress must be between 0 and 100');
+  }
+
+  return {
+    ...task,
+    progress,
+    updatedAt: Date.now(),
+  };
+}
+
+/**
+ * Add subtask ID to parent task
+ */
+export function addSubtask(
+  parent: TaskAggregate,
+  subtaskId: string,
+): TaskAggregate {
+  if (parent.subtaskIds.includes(subtaskId)) {
+    return parent;
+  }
+
+  return {
+    ...parent,
+    subtaskIds: [...parent.subtaskIds, subtaskId],
+    updatedAt: Date.now(),
+  };
+}
+
+/**
+ * Remove subtask ID from parent task
+ */
+export function removeSubtask(
+  parent: TaskAggregate,
+  subtaskId: string,
+): TaskAggregate {
+  return {
+    ...parent,
+    subtaskIds: parent.subtaskIds.filter(id => id !== subtaskId),
+    updatedAt: Date.now(),
+  };
+}
+
+/**
+ * Compute parent progress from subtasks
+ * Formula: Σ(childProgress × childTotalPrice) / Σ(childTotalPrice)
+ */
+export function computeParentProgress(
+  subtasks: ReadonlyArray<TaskAggregate>,
+): number {
+  if (subtasks.length === 0) {
+    return 0;
+  }
+
+  let totalWeightedProgress = 0;
+  let totalWeight = 0;
+
+  for (const subtask of subtasks) {
+    const weight = subtask.totalPrice?.amount ?? 1;
+    totalWeightedProgress += subtask.progress * weight;
+    totalWeight += weight;
+  }
+
+  return totalWeight > 0 ? totalWeightedProgress / totalWeight : 0;
+}
+
+/**
+ * Update assignees
+ */
+export function updateAssignees(
+  task: TaskAggregate,
+  assigneeIds: ReadonlyArray<string>,
+  responsibleId: string | null,
+): TaskAggregate {
+  return {
+    ...task,
+    assigneeIds,
+    responsibleId,
+    // Keep legacy assigneeId for backward compatibility
+    assigneeId: responsibleId,
+    updatedAt: Date.now(),
+  };
+}
+
+/**
+ * Update collaborators
+ */
+export function updateCollaborators(
+  task: TaskAggregate,
+  collaboratorIds: ReadonlyArray<string>,
+): TaskAggregate {
+  return {
+    ...task,
+    collaboratorIds,
+    updatedAt: Date.now(),
+  };
 }

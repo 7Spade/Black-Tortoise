@@ -25,10 +25,10 @@ import {
   OnDestroy,
   OnInit,
   inject,
-  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TasksFacade } from '@application/facades/tasks.facade';
+import { TasksStore } from '@application/stores/tasks.store';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import {
   IAppModule,
@@ -85,21 +85,21 @@ import { TaskAggregate, TaskPriority } from '@domain/aggregates/task.aggregate';
       <!-- View Selector -->
       <div class="view-selector">
         <button
-          (click)="viewMode.set('list')"
+          (click)="tasksStore.setViewMode('list')"
           [class.active]="viewMode() === 'list'"
           class="view-btn"
         >
           List
         </button>
         <button
-          (click)="viewMode.set('kanban')"
+          (click)="tasksStore.setViewMode('kanban')"
           [class.active]="viewMode() === 'kanban'"
           class="view-btn"
         >
           Kanban
         </button>
         <button
-          (click)="viewMode.set('gantt')"
+          (click)="tasksStore.setViewMode('gantt')"
           [class.active]="viewMode() === 'gantt'"
           class="view-btn"
         >
@@ -160,67 +160,75 @@ import { TaskAggregate, TaskPriority } from '@domain/aggregates/task.aggregate';
 
       <!-- Kanban View -->
       @if (viewMode() === 'kanban') {
-        <div class="kanban-view">
-          <div class="kanban-columns">
-            @for (status of kanbanStatuses; track status) {
-              <div class="kanban-column">
-                <div class="column-header">
-                  <h4>{{ status }}</h4>
-                  <span class="count">{{
-                    getTasksByStatus(status).length
-                  }}</span>
-                </div>
-                <div class="column-cards">
-                  @for (task of getTasksByStatus(status); track task.id) {
-                    <div
-                      class="kanban-card"
-                      [class.blocked]="task.status === 'blocked'"
-                    >
-                      <h5>{{ task.title }}</h5>
-                      <p>{{ task.description }}</p>
-                      <span
-                        class="priority-tag"
-                        [attr.data-priority]="task.priority"
+        @defer (on viewport) {
+          <div class="kanban-view">
+            <div class="kanban-columns">
+              @for (status of kanbanStatuses; track status) {
+                <div class="kanban-column">
+                  <div class="column-header">
+                    <h4>{{ status }}</h4>
+                    <span class="count">{{
+                      getTasksByStatus(status).length
+                    }}</span>
+                  </div>
+                  <div class="column-cards">
+                    @for (task of getTasksByStatus(status); track task.id) {
+                      <div
+                        class="kanban-card"
+                        [class.blocked]="task.status === 'blocked'"
                       >
-                        {{ task.priority }}
-                      </span>
-                    </div>
-                  }
+                        <h5>{{ task.title }}</h5>
+                        <p>{{ task.description }}</p>
+                        <span
+                          class="priority-tag"
+                          [attr.data-priority]="task.priority"
+                        >
+                          {{ task.priority }}
+                        </span>
+                      </div>
+                    }
+                  </div>
                 </div>
-              </div>
-            }
+              }
+            </div>
           </div>
-        </div>
+        } @placeholder {
+          <div class="loading-placeholder">Loading Kanban view...</div>
+        }
       }
 
       <!-- Gantt View -->
       @if (viewMode() === 'gantt') {
-        <div class="gantt-view">
-          <div class="gantt-header">
-            <div class="gantt-task-col">Task</div>
-            <div class="gantt-timeline">
-              @for (day of ganttDays; track day) {
-                <div class="gantt-day">{{ day }}</div>
-              }
-            </div>
-          </div>
-          @for (task of tasks(); track task.id) {
-            <div class="gantt-row">
-              <div class="gantt-task-col">
-                <strong>{{ task.title }}</strong>
-                <span class="gantt-status" [attr.data-status]="task.status">{{
-                  task.status
-                }}</span>
-              </div>
+        @defer (on viewport) {
+          <div class="gantt-view">
+            <div class="gantt-header">
+              <div class="gantt-task-col">Task</div>
               <div class="gantt-timeline">
-                <div
-                  class="gantt-bar"
-                  [style.width.%]="getTaskProgress(task)"
-                ></div>
+                @for (day of ganttDays; track day) {
+                  <div class="gantt-day">{{ day }}</div>
+                }
               </div>
             </div>
-          }
-        </div>
+            @for (task of tasks(); track task.id) {
+              <div class="gantt-row">
+                <div class="gantt-task-col">
+                  <strong>{{ task.title }}</strong>
+                  <span class="gantt-status" [attr.data-status]="task.status">{{
+                    task.status
+                  }}</span>
+                </div>
+                <div class="gantt-timeline">
+                  <div
+                    class="gantt-bar"
+                    [style.width.%]="getTaskProgress(task)"
+                  ></div>
+                </div>
+              </div>
+            }
+          </div>
+        } @placeholder {
+          <div class="loading-placeholder">Loading Gantt view...</div>
+        }
       }
 
       <!-- Event Log -->
@@ -248,13 +256,13 @@ export class TasksComponent implements IAppModule, OnInit, OnDestroy {
 
   // Facade Pattern Injection
   private readonly tasksFacade = inject(TasksFacade);
+  private readonly tasksStore = inject(TasksStore);
 
   // Facade Signals Aliases
   workspaceId = this.tasksFacade.workspaceId;
   eventLog = this.tasksFacade.eventLog;
-  tasks = this.tasksFacade.tasks;
-
-  viewMode = signal<'list' | 'kanban' | 'gantt'>('list');
+  tasks = this.tasksStore.taskList; // Use taskList computed from Map
+  viewMode = this.tasksStore.viewMode; // Use store's viewMode signal
 
   newTaskTitle = '';
   newTaskDescription = '';
