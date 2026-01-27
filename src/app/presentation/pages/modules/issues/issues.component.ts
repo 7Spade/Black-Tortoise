@@ -78,68 +78,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
       </div>
     </div>
   `,
-  styles: [
-    `
-      .issues-module {
-        padding: 1.5rem;
-        max-width: 1200px;
-      }
-      .module-header h2 {
-        margin: 0 0 0.5rem 0;
-        color: #1976d2;
-      }
-      .issues-section,
-      .resolved-section {
-        background: white;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-top: 1rem;
-      }
-      .issue-card {
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-      }
-      .issue-card[data-priority='high'],
-      .issue-card[data-priority='critical'] {
-        border-left: 4px solid #f44336;
-      }
-      .issue-card.resolved {
-        background: #f1f8f4;
-      }
-      .issue-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.5rem;
-      }
-      .issue-actions {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 1rem;
-      }
-      .input-field {
-        flex: 1;
-        padding: 0.5rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-      }
-      .btn-success {
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 4px;
-        background: #4caf50;
-        color: white;
-        cursor: pointer;
-      }
-      .empty-state {
-        text-align: center;
-        color: #999;
-        padding: 2rem;
-      }
-    `,
-  ],
+  styleUrls: ['./issues.component.scss'],
 })
 export class IssuesComponent implements IAppModule, OnInit, OnDestroy {
   readonly id = 'issues';
