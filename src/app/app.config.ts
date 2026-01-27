@@ -1,87 +1,18 @@
 import {
-  APP_INITIALIZER,
   ApplicationConfig,
-  inject,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import {
-  getAnalytics,
-  provideAnalytics,
-  ScreenTrackingService,
-  UserTrackingService,
-} from '@angular/fire/analytics';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import {
-  initializeAppCheck,
-  provideAppCheck,
-  ReCaptchaEnterpriseProvider,
-} from '@angular/fire/app-check';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getDataConnect, provideDataConnect } from '@angular/fire/data-connect';
-import { getDatabase, provideDatabase } from '@angular/fire/database';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { getFunctions, provideFunctions } from '@angular/fire/functions';
-import { getMessaging, provideMessaging } from '@angular/fire/messaging';
-import { getPerformance, providePerformance } from '@angular/fire/performance';
-import {
-  getRemoteConfig,
-  provideRemoteConfig,
-} from '@angular/fire/remote-config';
-import { getStorage, provideStorage } from '@angular/fire/storage';
-import { getVertexAI, provideVertexAI } from '@angular/fire/vertexai';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { provideEventHandlers } from '@application/handlers';
-import {
-  ACCEPTANCE_REPOSITORY,
-  AUDIT_LOG_REPOSITORY,
-  AUTH_REPOSITORY,
-  AUTH_STREAM,
-  DAILY_REPOSITORY,
-  DOCUMENT_REPOSITORY,
-  EVENT_BUS,
-  EVENT_STORE,
-  ISSUE_REPOSITORY,
-  MEMBER_REPOSITORY,
-  ORGANIZATION_REPOSITORY,
-  OVERVIEW_REPOSITORY,
-  PERMISSION_REPOSITORY,
-  QUALITY_CONTROL_REPOSITORY,
-  SETTINGS_REPOSITORY,
-  TASK_REPOSITORY,
-} from '@application/interfaces';
-import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
-import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
-import { AuthStore } from '@application/stores/auth.store';
-import { InMemoryEventBus } from '@infrastructure/adapters';
-import { WorkspaceRuntimeFactory } from '@infrastructure/factories';
-import {
-  AcceptanceRepositoryImpl,
-  AuditLogRepositoryImpl,
-  AuthRepositoryImpl,
-  DailyRepositoryImpl,
-  DocumentRepositoryImpl,
-  InMemoryEventStore,
-  IssueRepositoryImpl,
-  MemberRepositoryImpl,
-  OrganizationRepositoryImpl,
-  OverviewRepositoryImpl,
-  PermissionRepositoryImpl,
-  QualityControlRepositoryImpl,
-  SettingsRepositoryImpl,
-  TaskRepositoryImpl,
-  WorkspaceRepositoryImpl,
-} from '@infrastructure/repositories';
 import { routes } from '@presentation/app.routes';
-import { environment } from '../environments/environment';
-import {
-  TEMPLATE_EVENT_BUS_TOKEN,
-  TEMPLATE_EVENT_STORE_TOKEN,
-} from './template-core/application/tokens/event-infrastructure.tokens';
-import { TEMPLATE_REPOSITORY_TOKEN } from './template-core/application/tokens/template-repository.token';
-import { TemplateFirestoreEventStore } from './template-core/infrastructure/event-sourcing/firestore-event-store';
-import { TemplateRxJsEventBus } from './template-core/infrastructure/event-sourcing/rxjs-event-bus';
-import { TemplateFirebaseRepository } from './template-core/infrastructure/repositories/template-firebase.repository';
+import { provideApplication } from './application/providers';
+import { provideAuthInfrastructure } from './infrastructure/config/auth.providers';
+import { provideEventsInfrastructure } from './infrastructure/config/events.providers';
+import { provideFirebaseIntegration } from './infrastructure/config/firebase.providers';
+import { provideModulesInfrastructure } from './infrastructure/config/modules.providers';
+import { provideWorkspaceInfrastructure } from './infrastructure/config/workspace.providers';
+import { provideTemplateCore } from './template-core/template.providers';
 
 /**
  * Application Configuration with Zone-less Change Detection
@@ -114,148 +45,22 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimations(),
 
-    // Application Initializers
-    // 1. Initialize Auth Store (Connect to Firebase Stream)
-    {
-      provide: APP_INITIALIZER,
-      useFactory: () => {
-        const authStore = inject(AuthStore);
-        return () => authStore.connect();
-      },
-      multi: true,
-    },
+    // Application Initialization (AuthStore, etc.)
+    provideApplication(),
 
-    // DDD/Clean Architecture: Infrastructure Providers
-    // Register infrastructure implementations for application abstractions
-    {
-      provide: WORKSPACE_RUNTIME_FACTORY,
-      useClass: WorkspaceRuntimeFactory,
-    },
-    {
-      provide: AUTH_REPOSITORY,
-      useClass: AuthRepositoryImpl,
-    },
-    {
-      provide: AUTH_STREAM,
-      useClass: AuthRepositoryImpl,
-    },
-    {
-      provide: WORKSPACE_REPOSITORY,
-      useClass: WorkspaceRepositoryImpl,
-    },
-    {
-      provide: ORGANIZATION_REPOSITORY,
-      useClass: OrganizationRepositoryImpl,
-    },
-    {
-      provide: TASK_REPOSITORY,
-      useClass: TaskRepositoryImpl,
-    },
-    {
-      provide: ISSUE_REPOSITORY,
-      useClass: IssueRepositoryImpl,
-    },
-    {
-      provide: ACCEPTANCE_REPOSITORY,
-      useClass: AcceptanceRepositoryImpl,
-    },
-    {
-      provide: AUDIT_LOG_REPOSITORY,
-      useClass: AuditLogRepositoryImpl,
-    },
-    {
-      provide: DAILY_REPOSITORY,
-      useClass: DailyRepositoryImpl,
-    },
-    {
-      provide: DOCUMENT_REPOSITORY,
-      useClass: DocumentRepositoryImpl,
-    },
-    {
-      provide: MEMBER_REPOSITORY,
-      useClass: MemberRepositoryImpl,
-    },
-    {
-      provide: OVERVIEW_REPOSITORY,
-      useClass: OverviewRepositoryImpl,
-    },
-    {
-      provide: PERMISSION_REPOSITORY,
-      useClass: PermissionRepositoryImpl,
-    },
-    {
-      provide: QUALITY_CONTROL_REPOSITORY,
-      useClass: QualityControlRepositoryImpl,
-    },
-    {
-      provide: SETTINGS_REPOSITORY,
-      useClass: SettingsRepositoryImpl,
-    },
-    {
-      provide: TEMPLATE_REPOSITORY_TOKEN,
-      useClass: TemplateFirebaseRepository,
-    },
-    {
-      provide: TEMPLATE_EVENT_STORE_TOKEN,
-      useClass: TemplateFirestoreEventStore,
-    },
-    {
-      provide: TEMPLATE_EVENT_BUS_TOKEN,
-      useClass: TemplateRxJsEventBus,
-    },
+    // Infrastructure Providers - Functional Composition
+    provideWorkspaceInfrastructure(),
+    provideAuthInfrastructure(),
+    provideModulesInfrastructure(),
+    provideEventsInfrastructure(),
 
-    // Event Infrastructure: Singleton EventBus and EventStore
-    // Using InMemory implementations for development/testing
-    // Production implementations (e.g., FirestoreEventStore) can be swapped via DI
-    {
-      provide: EVENT_BUS,
-      useClass: InMemoryEventBus,
-    },
-    {
-      provide: EVENT_STORE,
-      useClass: InMemoryEventStore,
-    },
+    // Template Core Providers
+    provideTemplateCore(),
 
-    // Initialize Domain Event Handlers
+    // Domain Event Handlers
     provideEventHandlers(),
 
-    // Firebase App Initialization
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-
-    // Firebase Services
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideAnalytics(() => getAnalytics()),
-    ScreenTrackingService,
-    UserTrackingService,
-
-    // Firebase App Check with reCAPTCHA Enterprise (disabled in non-production)
-    ...(environment.production && environment.appCheckSiteKey
-      ? [
-          provideAppCheck(() => {
-            const provider = new ReCaptchaEnterpriseProvider(
-              environment.appCheckSiteKey,
-            );
-            return initializeAppCheck(undefined, {
-              provider,
-              isTokenAutoRefreshEnabled: true,
-            });
-          }),
-        ]
-      : []),
-    provideDatabase(() => getDatabase()),
-    provideDataConnect(() =>
-      getDataConnect({
-        connector: environment.dataConnect.connector,
-        location: environment.dataConnect.location,
-        service: environment.dataConnect.service,
-      }),
-    ),
-    provideFunctions(() => getFunctions()),
-    provideMessaging(() => getMessaging()),
-    providePerformance(() => getPerformance()),
-    provideStorage(() => getStorage()),
-    provideRemoteConfig(() => getRemoteConfig()),
-    provideVertexAI(() => getVertexAI()),
+    // Firebase Integration
+    provideFirebaseIntegration(),
   ],
 };
