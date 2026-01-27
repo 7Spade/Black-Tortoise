@@ -1,0 +1,57 @@
+.members-module {
+  padding: 1.5rem;
+  max-width: 1000px;
+}
+
+.module-header h2 {
+  margin: 0 0 0.5rem 0;
+  color: #1976d2;
+}
+
+.members-list,
+.invitations-section {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.member-card,
+.invitation-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.member-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #1976d2;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.member-info h4 {
+  margin: 0;
+}
+
+.member-info p {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.empty-state {
+  text-align: center;
+  color: #999;
+  padding: 2rem;
+}
