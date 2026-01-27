@@ -112,76 +112,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
       </div>
     </div>
   `,
-  styles: [
-    `
-      .acceptance-module {
-        padding: 1.5rem;
-        max-width: 1200px;
-      }
-      .module-header h2 {
-        margin: 0 0 0.5rem 0;
-        color: var(--md-sys-color-primary);
-      }
-      .acceptance-section,
-      .completed-section {
-        background: var(--md-sys-color-surface);
-        border: 1px solid var(--md-sys-color-outline-variant);
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-top: 1rem;
-      }
-      .acceptance-card,
-      .result-card {
-        border: 1px solid var(--md-sys-color-outline-variant);
-        border-radius: 4px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-      }
-      .result-card.approved {
-        border-color: var(--md-sys-color-tertiary);
-        background: var(--md-sys-color-surface-variant);
-      }
-      .task-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-      }
-      .acceptance-actions {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-        margin-top: 1rem;
-      }
-      .input-field {
-        flex: 1;
-        padding: 0.5rem;
-        border: 1px solid var(--md-sys-color-outline);
-        border-radius: 4px;
-      }
-      .btn-success,
-      .btn-danger {
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: 500;
-      }
-      .btn-success {
-        background: var(--md-sys-color-tertiary);
-        color: var(--md-sys-color-on-tertiary);
-      }
-      .btn-danger {
-        background: var(--md-sys-color-error);
-        color: var(--md-sys-color-on-error);
-      }
-      .empty-state {
-        text-align: center;
-        color: var(--md-sys-color-on-surface-variant);
-        padding: 2rem;
-      }
-    `,
-  ],
+  styleUrls: ['./acceptance.component.scss'],
 })
 export class AcceptanceComponent implements IAppModule, OnInit, OnDestroy {
   readonly id = 'acceptance';
