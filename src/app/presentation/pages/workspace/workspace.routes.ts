@@ -4,91 +4,91 @@ export const WORKSPACE_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('@presentation/components/overview.component').then(
+      import('@presentation/pages/modules/overview/overview.component').then(
         (m) => m.OverviewComponent,
       ),
   },
   {
     path: 'overview',
     loadComponent: () =>
-      import('@presentation/components/overview.component').then(
+      import('@presentation/pages/modules/overview/overview.component').then(
         (m) => m.OverviewComponent,
       ),
   },
   {
     path: 'documents',
     loadComponent: () =>
-      import('@presentation/components/documents.component').then(
+      import('@presentation/pages/modules/documents/documents.component').then(
         (m) => m.DocumentsComponent,
       ),
   },
   {
     path: 'tasks',
     loadComponent: () =>
-      import('@presentation/components/tasks.component').then(
+      import('@presentation/pages/modules/tasks/tasks.component').then(
         (m) => m.TasksComponent,
       ),
   },
   {
     path: 'calendar',
     loadComponent: () =>
-      import('@presentation/components/calendar.component').then(
+      import('@presentation/pages/modules/calendar/calendar.component').then(
         (m) => m.CalendarComponent,
       ),
   },
   {
     path: 'daily',
     loadComponent: () =>
-      import('@presentation/components/daily.component').then(
+      import('@presentation/pages/modules/daily/daily.component').then(
         (m) => m.DailyComponent,
       ),
   },
   {
     path: 'quality-control',
     loadComponent: () =>
-      import('@presentation/components/quality-control.component').then(
+      import('@presentation/pages/modules/quality-control/quality-control.component').then(
         (m) => m.QualityControlComponent,
       ),
   },
   {
     path: 'acceptance',
     loadComponent: () =>
-      import('@presentation/components/acceptance.component').then(
+      import('@presentation/pages/modules/acceptance/acceptance.component').then(
         (m) => m.AcceptanceComponent,
       ),
   },
   {
     path: 'issues',
     loadComponent: () =>
-      import('@presentation/components/issues.component').then(
+      import('@presentation/pages/modules/issues/issues.component').then(
         (m) => m.IssuesComponent,
       ),
   },
   {
     path: 'members',
     loadComponent: () =>
-      import('@presentation/components/members.component').then(
+      import('@presentation/pages/modules/members/members.component').then(
         (m) => m.MembersComponent,
       ),
   },
   {
     path: 'permissions',
     loadComponent: () =>
-      import('@presentation/components/permissions.component').then(
+      import('@presentation/pages/modules/permissions/permissions.component').then(
         (m) => m.PermissionsComponent,
       ),
   },
   {
     path: 'audit',
     loadComponent: () =>
-      import('@presentation/components/audit.component').then(
+      import('@presentation/pages/modules/audit/audit.component').then(
         (m) => m.AuditComponent,
       ),
   },
   {
     path: 'settings',
     loadComponent: () =>
-      import('@presentation/components/settings.component').then(
+      import('@presentation/pages/modules/settings/settings.component').then(
         (m) => m.SettingsComponent,
       ),
   },
