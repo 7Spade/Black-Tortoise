@@ -1,14 +1,6 @@
-/**
- * Demo Dashboard Component
- * 
- * Layer: Presentation
- * Purpose: Demo implementation of workspace overview dashboard
- * Architecture: Zone-less, OnPush, Angular 20 control flow
- */
-
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { WorkspaceContextStore } from '@application/stores';
+import { WorkspaceStore } from '@application/stores/workspace.store';
 
 @Component({
   selector: 'app-demo-dashboard',
@@ -93,5 +85,5 @@ import { WorkspaceContextStore } from '@application/stores';
   `]
 })
 export class DemoDashboardComponent {
-  readonly workspaceContext = inject(WorkspaceContextStore);
+  readonly workspaceStore = inject(WorkspaceStore);
 }
