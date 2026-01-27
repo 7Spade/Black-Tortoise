@@ -38,7 +38,8 @@ export const routes: Routes = [
   // Auth Routes
   {
     path: 'auth',
-    loadChildren: () => import('@presentation/pages/auth/auth.routes').then(m => m.AUTH_ROUTES)
+    loadChildren: () =>
+      import('@presentation/pages/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
 
   // Profile Page
