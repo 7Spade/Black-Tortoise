@@ -99,6 +99,12 @@ Copilot 在生成代碼時必須嚴格遵守此文件，優先於其他通用規
   - 聚合 TasksModule (到期日) 與 DailyModule (工時紀錄)。
   - **禁止** 重新 fetch 資料，應訂閱原模組的 Store 或使用 Selector。
 
+### 12. 設定模組 (SettingsModule)
+- **職責**：管理 Workspace 及模組的全域設定。
+- **設計**：
+  - 提供統一的設定介面，支援即時更新與版本控制。
+  - 設定變更必須發布 `SettingsChanged` 事件，通知相關模組調整行為。
+
 *(註：若專案擴展至更多模組，如 Chat, Wiki, Meetings 等，皆需遵循上述模組化隔離原則)*
 
 ---
