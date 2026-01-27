@@ -1,0 +1,68 @@
+/* Permission Matrix Styles */
+
+.matrix-container {
+  max-height: 600px;
+  overflow: auto;
+  border: 1px solid var(--mat-table-row-item-outline-color, rgba(0, 0, 0, 0.12));
+  border-radius: 4px;
+}
+
+.permission-matrix {
+  width: 100%;
+  
+  .sticky-column {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--mat-table-background-color, white);
+    font-weight: 500;
+    min-width: 150px;
+  }
+  
+  th.sticky-column {
+    z-index: 3;
+  }
+  
+  .permission-header {
+    text-align: center;
+    min-width: 80px;
+    padding: 8px 4px;
+    
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      
+      .resource {
+        font-weight: 600;
+        font-size: 0.75rem;
+      }
+      
+      .action {
+        font-size: 0.7rem;
+        color: var(--mat-table-row-item-label-text-color, rgba(0, 0, 0, 0.6));
+      }
+    }
+  }
+  
+  .permission-cell {
+    text-align: center;
+    padding: 4px;
+    
+    mat-checkbox {
+      display: flex;
+      justify-content: center;
+    }
+  }
+}
+
+.empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--mat-table-row-item-label-text-color, rgba(0, 0, 0, 0.6));
+  
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+}

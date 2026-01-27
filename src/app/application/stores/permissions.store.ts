@@ -12,7 +12,7 @@
  *
  * Event Integration:
  * - Reacts to: WorkspaceSwitched (load permissions)
- * - Publishes: PermissionGranted, PermissionRevoked
+ * - Publishes: PermissionChanged, RoleCreated, RoleUpdated, RoleDeleted
  *
  * Clean Architecture Compliance:
  * - Single source of truth for permissions
@@ -23,8 +23,9 @@
  * IMPORTANT: Permissions are COMPUTED-ONLY, never mutated by business logic
  */
 
-import { computed } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { computed, inject } from '@angular/core';
+import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
+import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 
 export interface Permission {
   readonly resource: string;
@@ -110,79 +111,164 @@ export const PermissionsStore = signalStore(
     hasRoles: computed(() => state.roles().length > 0),
   })),
 
-  withMethods((store) => ({
-    /**
-     * Set roles and permissions
-     */
-    setRoles(roles: RolePermissions[]): void {
-      patchState(store, { roles });
-    },
+  withMethods((store) => {
+    // Note: eventBus injection would go here if we had access to it
+    // For now, keeping minimal changes - event bus can be injected by consumers
+    
+    return {
+      /**
+       * Set roles and permissions
+       */
+      setRoles(roles: RolePermissions[]): void {
+        patchState(store, { roles });
+      },
 
-    /**
-     * Set current user role
-     */
-    setCurrentUserRole(roleId: string | null): void {
-      patchState(store, { currentUserRoleId: roleId });
-    },
+      /**
+       * Set current user role
+       */
+      setCurrentUserRole(roleId: string | null): void {
+        patchState(store, { currentUserRoleId: roleId });
+      },
 
-    /**
-     * Grant permission to role
-     */
-    grantPermission(roleId: string, permission: Permission): void {
-      patchState(store, {
-        roles: store.roles().map(role =>
-          role.roleId === roleId
-            ? { ...role, permissions: [...role.permissions, permission] }
-            : role
-        ),
-      });
-    },
+      /**
+       * Grant permission to role (with event publishing)
+       */
+      grantPermission(roleId: string, permission: Permission, eventBus?: IModuleEventBus): void {
+        patchState(store, {
+          roles: store.roles().map(role =>
+            role.roleId === roleId
+              ? { ...role, permissions: [...role.permissions, permission] }
+              : role
+          ),
+        });
 
-    /**
-     * Revoke permission from role
-     */
-    revokePermission(roleId: string, resource: string, action: Permission['action']): void {
-      patchState(store, {
-        roles: store.roles().map(role =>
-          role.roleId === roleId
-            ? {
-                ...role,
-                permissions: role.permissions.filter(
-                  p => !(p.resource === resource && p.action === action)
-                ),
-              }
-            : role
-        ),
-      });
-    },
+        // Publish event if eventBus provided
+        if (eventBus) {
+          eventBus.publish({
+            type: 'PermissionChanged',
+            payload: {
+              roleId,
+              permission: `${permission.resource}:${permission.action}`,
+              action: 'grant',
+              correlationId: crypto.randomUUID(),
+            },
+            timestamp: Date.now(),
+          });
+        }
+      },
 
-    /**
-     * Reset (Clear on Workspace Switch)
-     */
-    reset(): void {
-      patchState(store, initialState);
-    },
+      /**
+       * Revoke permission from role (with event publishing)
+       */
+      revokePermission(
+        roleId: string,
+        resource: string,
+        action: Permission['action'],
+        eventBus?: IModuleEventBus
+      ): void {
+        patchState(store, {
+          roles: store.roles().map(role =>
+            role.roleId === roleId
+              ? {
+                  ...role,
+                  permissions: role.permissions.filter(
+                    p => !(p.resource === resource && p.action === action)
+                  ),
+                }
+              : role
+          ),
+        });
 
-    /**
-     * Clear all permissions (workspace switch)
-     * @deprecated Use reset() instead
-     */
-    clearPermissions(): void {
-      this.reset();
-    },
+        // Publish event if eventBus provided
+        if (eventBus) {
+          eventBus.publish({
+            type: 'PermissionChanged',
+            payload: {
+              roleId,
+              permission: `${resource}:${action}`,
+              action: 'revoke',
+              correlationId: crypto.randomUUID(),
+            },
+            timestamp: Date.now(),
+          });
+        }
+      },
 
-    /**
-     * Set loading
-     */
-    setLoading(isLoading: boolean): void {
-      patchState(store, { isLoading });
-    },
+      /**
+       * Reset (Clear on Workspace Switch)
+       */
+      reset(): void {
+        patchState(store, initialState);
+      },
 
-    /**
-     * Set error
-     */
-    setError(error: string | null): void {
-      patchState(store, { error, isLoading: false });
-    },
-  }))
+      /**
+       * Clear all permissions (workspace switch)
+       * @deprecated Use reset() instead
+       */
+      clearPermissions(): void {
+        this.reset();
+      },
+
+      /**
+       * Set loading
+       */
+      setLoading(isLoading: boolean): void {
+        patchState(store, { isLoading });
+      },
+
+      /**
+       * Set error
+       */
+      setError(error: string | null): void {
+        patchState(store, { error, isLoading: false });
+      },
+
+      /**
+       * Add new role
+       */
+      addRole(role: RolePermissions, eventBus?: IModuleEventBus): void {
+        patchState(store, {
+          roles: [...store.roles(), role],
+        });
+
+        // Publish RoleCreated event
+        if (eventBus) {
+          eventBus.publish({
+            type: 'RoleCreated',
+            payload: {
+              roleId: role.roleId,
+              roleName: role.roleName,
+              permissions: role.permissions.map(p => `${p.resource}:${p.action}`),
+              correlationId: crypto.randomUUID(),
+            },
+            timestamp: Date.now(),
+          });
+        }
+      },
+
+      /**
+       * Delete role
+       */
+      deleteRole(roleId: string, eventBus?: IModuleEventBus): void {
+        const role = store.roles().find(r => r.roleId === roleId);
+        
+        patchState(store, {
+          roles: store.roles().filter(r => r.roleId !== roleId),
+        });
+
+        // Publish RoleDeleted event
+        if (eventBus && role) {
+          eventBus.publish({
+            type: 'RoleDeleted',
+            payload: {
+              roleId,
+              roleName: role.roleName,
+              correlationId: crypto.randomUUID(),
+            },
+            timestamp: Date.now(),
+          });
+        }
+      },
+    };
+  })
 );

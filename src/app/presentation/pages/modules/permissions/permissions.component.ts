@@ -4,67 +4,35 @@
  * All permission checks via COMPUTED signals only
  */
 
-import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
-import {
-  IAppModule,
-  ModuleType,
-} from '@application/interfaces/module.interface';
+import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
 import { PermissionsStore } from '@application/stores/permissions.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
+import { PermissionMatrixComponent } from '@presentation/components/permission-matrix/permission-matrix.component';
 
 @Component({
   selector: 'app-permissions-module',
   standalone: true,
-  imports: [CommonModule],
+  imports: [PermissionMatrixComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="permissions-module">
       <div class="module-header">
-        <h2>🔐 Permissions</h2>
-        <p>Workspace: {{ eventBus?.workspaceId }}</p>
+        <h2>🔐 Permissions Management</h2>
+        <p class="workspace-info">Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
 
-      <div class="permissions-matrix">
-        <h3>Roles & Permissions</h3>
-        <table class="matrix-table">
-          <thead>
-            <tr>
-              <th>Role</th>
-              <th>Permissions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (role of permissionsStore.roles(); track role.roleId) {
-              <tr>
-                <td>{{ role.roleName }}</td>
-                <td>
-                  @for (
-                    perm of role.permissions;
-                    track perm.resource + perm.action
-                  ) {
-                    <span class="permission-badge"
-                      >{{ perm.resource }}:{{ perm.action }}</span
-                    >
-                  }
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-
-        @if (!permissionsStore.hasRoles()) {
-          <div class="empty-state">No roles configured</div>
-        }
+      <div class="permissions-content">
+        <h3>Role Permission Matrix</h3>
+        <app-permission-matrix [eventBus]="eventBus" />
       </div>
+
+      @if (!permissionsStore.hasRoles()) {
+        <div class="empty-state">
+          <p>No roles configured for this workspace</p>
+        </div>
+      }
     </div>
   `,
   styleUrls: ['./permissions.component.scss'],
@@ -91,11 +59,23 @@ export class PermissionsComponent implements IAppModule, OnInit, OnDestroy {
     // Initialize with demo roles
     this.permissionsStore.setRoles([
       {
+        roleId: 'owner',
+        roleName: 'Owner',
+        permissions: [
+          { resource: 'tasks', action: 'admin' },
+          { resource: 'qc', action: 'admin' },
+          { resource: 'code', action: 'admin' },
+          { resource: 'bugs', action: 'admin' },
+          { resource: 'reports', action: 'admin' },
+        ],
+      },
+      {
         roleId: 'admin',
         roleName: 'Administrator',
         permissions: [
           { resource: 'tasks', action: 'admin' },
-          { resource: 'users', action: 'admin' },
+          { resource: 'qc', action: 'admin' },
+          { resource: 'bugs', action: 'admin' },
         ],
       },
       {
@@ -104,6 +84,17 @@ export class PermissionsComponent implements IAppModule, OnInit, OnDestroy {
         permissions: [
           { resource: 'tasks', action: 'create' },
           { resource: 'tasks', action: 'read' },
+          { resource: 'tasks', action: 'update' },
+          { resource: 'qc', action: 'create' },
+          { resource: 'qc', action: 'read' },
+        ],
+      },
+      {
+        roleId: 'viewer',
+        roleName: 'Viewer',
+        permissions: [
+          { resource: 'tasks', action: 'read' },
+          { resource: 'reports', action: 'read' },
         ],
       },
     ]);

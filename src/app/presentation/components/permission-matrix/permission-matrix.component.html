@@ -1,0 +1,44 @@
+<!-- Permission Matrix Template -->
+<!-- Angular 20+ control flow with sticky headers -->
+
+<div class="matrix-container">
+  <table mat-table [dataSource]="store.roles()" class="permission-matrix">
+    <!-- Role Name Column (Sticky) -->
+    <ng-container matColumnDef="roleName">
+      <th mat-header-cell *matHeaderCellDef class="sticky-column">Role</th>
+      <td mat-cell *matCellDef="let role" class="sticky-column">
+        {{ role.roleName }}
+      </td>
+    </ng-container>
+
+    <!-- Permission Columns -->
+    @for (resource of resources; track resource) {
+      @for (action of actions; track action) {
+        <ng-container [matColumnDef]="resource + ':' + action">
+          <th mat-header-cell *matHeaderCellDef class="permission-header">
+            <div class="header-content">
+              <span class="resource">{{ resource }}</span>
+              <span class="action">{{ action }}</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let role" class="permission-cell">
+            <mat-checkbox
+              [checked]="hasPermission(role.roleId, resource, action)"
+              [disabled]="isSystemRole(role.roleId)"
+              (change)="togglePermission(role.roleId, resource, action)"
+            />
+          </td>
+        </ng-container>
+      }
+    }
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
+  </table>
+
+  @if (!store.hasRoles()) {
+    <div class="empty-state">
+      <p>No roles configured</p>
+    </div>
+  }
+</div>
