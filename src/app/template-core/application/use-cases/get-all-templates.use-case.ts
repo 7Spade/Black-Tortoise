@@ -1,16 +1,15 @@
 import { Inject, Injectable } from '@angular/core';
 import { Template } from '../../domain/aggregates/template.aggregate';
 import { ITemplateRepository } from '../../domain/repositories/template.repository';
-import { GetTemplateByIdQuery } from '../queries/get-template.query';
 import { TEMPLATE_REPOSITORY_TOKEN } from '../tokens/template-repository.token';
 
 @Injectable({ providedIn: 'root' })
-export class GetTemplateUseCase {
+export class GetAllTemplatesUseCase {
   constructor(
     @Inject(TEMPLATE_REPOSITORY_TOKEN) private repository: ITemplateRepository
   ) {}
 
-  async execute(query: GetTemplateByIdQuery): Promise<Template | null> {
-    return this.repository.findById(query.id);
+  async execute(): Promise<Template[]> {
+    return this.repository.findAll();
   }
 }

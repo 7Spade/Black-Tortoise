@@ -1,15 +1,16 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { TEMPLATE_REPOSITORY_TOKEN } from '../interfaces/template.repository';
+import { GetTemplateByIdQuery } from '../queries/get-template.query';
+import { GetTemplateUseCase } from '../use-cases/get-template.use-case';
 
 export const canActivateTemplate: CanActivateFn = async (route, state) => {
-  const repository = inject(TEMPLATE_REPOSITORY_TOKEN);
+  const getTemplateUseCase = inject(GetTemplateUseCase);
   const router = inject(Router);
   const id = route.params['id'];
 
   if (!id) return false;
 
-  const template = await repository.findById(id);
+  const template = await getTemplateUseCase.execute(new GetTemplateByIdQuery(id));
   
   if (template) {
     return true;
