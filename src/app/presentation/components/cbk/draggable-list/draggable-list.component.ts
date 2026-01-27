@@ -27,24 +27,7 @@ export interface DraggableItem {
       }
     </div>
   `,
-  styles: [`
-    .draggable-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .draggable-list-item {
-      padding: 12px;
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-      cursor: move;
-      user-select: none;
-    }
-    .draggable-list-item.dragging {
-      opacity: 0.5;
-    }
-  `]
+  styleUrls: ['./draggable-list.component.scss']
 })
 export class DraggableListComponent {
   readonly items = input<DraggableItem[]>([]);

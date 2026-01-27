@@ -1,0 +1,11 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--mat-sys-surface-container-lowest, #f5f5f5);
+}
+
+.shell-content {
+  flex: 1;
+  overflow: auto;
+}

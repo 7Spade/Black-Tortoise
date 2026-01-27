@@ -34,51 +34,7 @@ import { CommonModule } from '@angular/common';
       </span>
     </button>
   `,
-  styles: [`
-    .workspace-trigger {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      border: 1px solid var(--mat-sys-outline-variant, #c4c7c5);
-      border-radius: 0.5rem;
-      background: var(--mat-sys-surface, #fef7ff);
-      color: var(--mat-sys-on-surface, #1d1b20);
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      min-width: 180px;
-    }
-
-    .workspace-trigger:hover {
-      background: var(--mat-sys-surface-container-high, #ece6f0);
-      border-color: var(--mat-sys-outline, #79747e);
-    }
-
-    .workspace-trigger:focus {
-      outline: 2px solid var(--mat-sys-primary, #6750a4);
-      outline-offset: 2px;
-    }
-
-    .workspace-icon {
-      font-size: 1.25rem;
-      color: var(--mat-sys-primary, #6750a4);
-    }
-
-    .workspace-name {
-      flex: 1;
-      text-align: left;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .expand-icon {
-      font-size: 1.25rem;
-      color: var(--mat-sys-on-surface-variant, #49454f);
-    }
-  `]
+  styleUrls: ['./workspace-trigger.component.scss']
 })
 export class WorkspaceTriggerComponent {
   // Inputs

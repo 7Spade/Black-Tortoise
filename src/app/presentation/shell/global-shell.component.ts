@@ -31,18 +31,6 @@ import {  HeaderComponent  } from '@presentation/layouts';;
       </main>
     </div>
   `,
-  styles: [`
-    .shell {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      background: var(--mat-sys-surface-container-lowest, #f5f5f5);
-    }
-    
-    .shell-content {
-      flex: 1;
-      overflow: auto;
-    }
-  `]
+  styleUrls: ['./global-shell.component.scss']
 })
 export class GlobalShellComponent {}

@@ -1,0 +1,22 @@
+.virtual-scroll-container {
+  overflow-y: auto;
+  position: relative;
+}
+
+.virtual-scroll-content {
+  position: relative;
+}
+
+.virtual-scroll-viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.virtual-scroll-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e0e0e0;
+}

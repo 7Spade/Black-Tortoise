@@ -43,40 +43,7 @@ export interface TreeNode {
       }
     </div>
   `,
-  styles: [`
-    .draggable-tree {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .tree-node {
-      user-select: none;
-    }
-    .tree-node-content {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px;
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-      cursor: move;
-    }
-    .tree-node.dragging .tree-node-content {
-      opacity: 0.5;
-    }
-    .tree-expand-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      width: 20px;
-      height: 20px;
-    }
-    .tree-node-children {
-      margin-left: 24px;
-    }
-  `]
+  styleUrls: ['./draggable-tree.component.scss']
 })
 export class DraggableTreeComponent {
   readonly nodes = input<TreeNode[]>([]);

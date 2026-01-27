@@ -25,24 +25,7 @@ import { OverlayService } from './overlay.service';
       }
     </div>
   `,
-  styles: [`
-    .overlay-host {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-    }
-    .overlay-backdrop {
-      position: absolute;
-      inset: 0;
-      pointer-events: auto;
-      background: rgba(0, 0, 0, 0.5);
-    }
-    .overlay-content {
-      position: relative;
-      background: white;
-      padding: 1rem;
-    }
-  `]
+  styleUrls: ['./overlay-host.component.scss']
 })
 export class OverlayHostComponent {
   protected readonly overlayService = inject(OverlayService);
