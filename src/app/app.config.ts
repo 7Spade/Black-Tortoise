@@ -39,6 +39,8 @@ import { AuthStore } from '@application/stores/auth.store';
 import { InMemoryEventBus } from '@infrastructure/adapters';
 import { WorkspaceRuntimeFactory } from '@infrastructure/factories';
 import { AuthRepositoryImpl, InMemoryEventStore, OrganizationRepositoryImpl, WorkspaceRepositoryImpl } from '@infrastructure/repositories';
+import { TEMPLATE_REPOSITORY_TOKEN } from './core/application/interfaces/template.repository';
+import { TemplateFirebaseRepository } from './core/infrastructure/repositories/template-firebase.repository';
 import { routes } from '@presentation/app.routes';
 import { environment } from '../environments/environment';
 
@@ -103,7 +105,11 @@ export const appConfig: ApplicationConfig = {
       useClass: WorkspaceRepositoryImpl
     },
     {
-      provide: ORGANIZATION_REPOSITORY,
+      
+    {
+      provide: TEMPLATE_REPOSITORY_TOKEN,
+      useClass: TemplateFirebaseRepository
+    },provide: ORGANIZATION_REPOSITORY,
       useClass: OrganizationRepositoryImpl
     },
     

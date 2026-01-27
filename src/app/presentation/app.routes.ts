@@ -94,6 +94,13 @@ export const routes: Routes = [
       ),
   },
   
+  // Templates (Strict DDD Demo)
+  {
+    path: 'templates',
+    canActivate: [canActivateAuth],
+    loadChildren: () => import('../core/presentation/template.routes').then(m => m.TEMPLATE_ROUTES)
+  },
+
   // Workspace page - contains workspace host with nested module routes
   {
     path: 'workspace',
