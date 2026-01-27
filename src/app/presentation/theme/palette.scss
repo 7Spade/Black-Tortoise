@@ -1,6 +1,9 @@
 @use '@angular/material' as mat;
 
-$xuanwu-primary: mat.$azure-palette;
-$xuanwu-secondary: mat.$cyan-palette;
-$xuanwu-tertiary: mat.$blue-palette;
+$xuanwu-base: mat.$blue-palette;
+$xuanwu-neutral: mat.$violet-palette;
+$xuanwu-semantic: mat.$cyan-palette;
 $xuanwu-error: mat.$red-palette;
+
+$xuanwu-primary: $xuanwu-base;
+$xuanwu-tertiary: $xuanwu-semantic;
