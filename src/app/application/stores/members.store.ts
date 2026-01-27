@@ -195,16 +195,18 @@ export const MembersStore = signalStore(
     },
 
     /**
+     * Reset (Clear on Workspace Switch)
+     */
+    reset(): void {
+      patchState(store, initialState);
+    },
+
+    /**
      * Clear all members (workspace switch)
+     * @deprecated Use reset() instead
      */
     clearMembers(): void {
-      patchState(store, {
-        members: [],
-        invitations: [],
-        selectedMemberId: null,
-        isProcessing: false,
-        error: null,
-      });
+      this.reset();
     },
 
     /**

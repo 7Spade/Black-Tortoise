@@ -207,16 +207,18 @@ export const DocumentsStore = signalStore(
     },
 
     /**
+     * Reset (Clear on Workspace Switch)
+     */
+    reset(): void {
+      patchState(store, initialState);
+    },
+
+    /**
      * Clear all documents (workspace switch)
+     * @deprecated Use reset() instead
      */
     clearDocuments(): void {
-      patchState(store, {
-        documents: [],
-        uploadProgress: [],
-        selectedDocumentId: null,
-        isUploading: false,
-        error: null,
-      });
+      this.reset();
     },
 
     /**

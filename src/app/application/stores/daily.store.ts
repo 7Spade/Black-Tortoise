@@ -144,15 +144,18 @@ export const DailyStore = signalStore(
     },
 
     /**
+     * Reset (Clear on Workspace Switch)
+     */
+    reset(): void {
+      patchState(store, initialState);
+    },
+
+    /**
      * Clear all entries (workspace switch)
+     * @deprecated Use reset() instead
      */
     clearEntries(): void {
-      patchState(store, {
-        entries: [],
-        selectedDate: null,
-        isLogging: false,
-        error: null,
-      });
+      this.reset();
     },
 
     /**

@@ -14,8 +14,19 @@ import { CreateWorkspaceHandler } from '@application/handlers/create-workspace.h
 import { SwitchWorkspaceHandler } from '@application/handlers/switch-workspace.handler';
 import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
 import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
+import { AcceptanceStore } from '@application/stores/acceptance.store';
+import { AuditStore } from '@application/stores/audit.store';
+import { DailyStore } from '@application/stores/daily.store';
+import { DocumentsStore } from '@application/stores/documents.store';
 import { IdentityContextStore } from '@application/stores/identity-context.store';
+import { IssuesStore } from '@application/stores/issues.store';
+import { MembersStore } from '@application/stores/members.store';
 import { OrganizationStore } from '@application/stores/organization.store';
+import { OverviewStore } from '@application/stores/overview.store';
+import { PermissionsStore } from '@application/stores/permissions.store';
+import { QualityControlStore } from '@application/stores/quality-control.store';
+import { SettingsStore } from '@application/stores/settings.store';
+import { TasksStore } from '@application/stores/tasks.store';
 import { WorkspaceEntity } from '@domain/aggregates';
 import { tapResponse } from '@ngrx/operators';
 import {
@@ -115,6 +126,19 @@ export const WorkspaceStore = signalStore(
     const identityContext = inject(IdentityContextStore);
     const organizationStore = inject(OrganizationStore);
     
+    // Module stores for cleanup
+    const tasksStore = inject(TasksStore);
+    const documentsStore = inject(DocumentsStore);
+    const issuesStore = inject(IssuesStore);
+    const membersStore = inject(MembersStore);
+    const permissionsStore = inject(PermissionsStore);
+    const auditStore = inject(AuditStore);
+    const settingsStore = inject(SettingsStore);
+    const overviewStore = inject(OverviewStore);
+    const qualityControlStore = inject(QualityControlStore);
+    const acceptanceStore = inject(AcceptanceStore);
+    const dailyStore = inject(DailyStore);
+    
     return {
       /**
        * Create new workspace
@@ -176,13 +200,38 @@ export const WorkspaceStore = signalStore(
         
         const previousWorkspaceId = store.currentWorkspace()?.id || null;
         
+        // Set loading state
+        patchState(store, { 
+          isLoading: true, 
+          currentWorkspace: null,
+          error: null 
+        });
+        
+        // Reset all module stores
+        tasksStore.reset();
+        documentsStore.reset();
+        issuesStore.reset();
+        membersStore.reset();
+        permissionsStore.reset();
+        auditStore.reset();
+        settingsStore.reset();
+        overviewStore.reset();
+        qualityControlStore.reset();
+        acceptanceStore.reset();
+        dailyStore.reset();
+        
+        // Stop all module runtimes and dispose workspace-scoped event bus
+        if (previousWorkspaceId) {
+          runtimeFactory.destroyRuntime(previousWorkspaceId);
+        }
+        
         // Execute use case
         switchWorkspaceHandler.execute({
           previousWorkspaceId,
           targetWorkspaceId: workspaceId,
         });
         
-        // Ensure runtime exists
+        // Create new workspace runtime (with new event bus)
         runtimeFactory.createRuntime(workspace);
         
         // Update organization context if workspace is org-owned
@@ -199,10 +248,11 @@ export const WorkspaceStore = signalStore(
           organizationStore.clearCurrentOrganization();
         }
         
-        // Update state
+        // Update state - set ready
         patchState(store, {
           currentWorkspace: workspace,
           activeModuleId: null,
+          isLoading: false,
           error: null,
         });
       },

@@ -187,21 +187,18 @@ export const AuditStore = signalStore(
     },
 
     /**
+     * Reset (Clear on Workspace Switch)
+     */
+    reset(): void {
+      patchState(store, initialState);
+    },
+
+    /**
      * Clear all entries (workspace switch)
+     * @deprecated Use reset() instead
      */
     clearEntries(): void {
-      patchState(store, {
-        entries: [],
-        filter: {
-          eventType: null,
-          actorId: null,
-          resource: null,
-          startDate: null,
-          endDate: null,
-        },
-        isLoading: false,
-        error: null,
-      });
+      this.reset();
     },
 
     /**

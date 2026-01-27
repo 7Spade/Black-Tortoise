@@ -146,15 +146,18 @@ export const QualityControlStore = signalStore(
     },
 
     /**
+     * Reset (Clear on Workspace Switch)
+     */
+    reset(): void {
+      patchState(store, initialState);
+    },
+
+    /**
      * Clear all tasks (workspace switch)
+     * @deprecated Use reset() instead
      */
     clearTasks(): void {
-      patchState(store, {
-        tasks: [],
-        selectedTaskId: null,
-        isReviewing: false,
-        error: null,
-      });
+      this.reset();
     },
 
     /**

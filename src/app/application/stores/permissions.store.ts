@@ -157,15 +157,18 @@ export const PermissionsStore = signalStore(
     },
 
     /**
+     * Reset (Clear on Workspace Switch)
+     */
+    reset(): void {
+      patchState(store, initialState);
+    },
+
+    /**
      * Clear all permissions (workspace switch)
+     * @deprecated Use reset() instead
      */
     clearPermissions(): void {
-      patchState(store, {
-        roles: [],
-        currentUserRoleId: null,
-        isLoading: false,
-        error: null,
-      });
+      this.reset();
     },
 
     /**

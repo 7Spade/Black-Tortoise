@@ -25,6 +25,9 @@ import { computed } from '@angular/core';
 import { TaskPriority } from '@domain/aggregates';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 
+// Re-export domain types for presentation layer use
+export { TaskPriority };
+
 export interface WorkspaceSettings {
   readonly workingHours: {
     readonly start: string; // HH:MM
@@ -139,14 +142,18 @@ export const SettingsStore = signalStore(
     },
 
     /**
+     * Reset (Clear on Workspace Switch)
+     */
+    reset(): void {
+      patchState(store, initialState);
+    },
+
+    /**
      * Clear all settings (workspace switch)
+     * @deprecated Use reset() instead
      */
     clearSettings(): void {
-      patchState(store, {
-        workspaceSettings: null,
-        isSaving: false,
-        error: null,
-      });
+      this.reset();
     },
 
     /**

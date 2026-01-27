@@ -19,6 +19,8 @@ export class WorkspaceHostFacade {
   readonly activeModuleId = computed(() =>
     this.workspaceStore.activeModuleId()
   );
+  readonly isLoading = computed(() => this.workspaceStore.isLoading());
+  readonly hasWorkspace = computed(() => this.workspaceStore.hasWorkspace());
 
   /**
    * Toggle sidebar collapsed state

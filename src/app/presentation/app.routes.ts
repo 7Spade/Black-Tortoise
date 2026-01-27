@@ -19,7 +19,7 @@
  */
 
 import { Routes } from '@angular/router';
-import { canActivateAuth, canActivatePublic } from '@application/guards';
+import { canActivateAuth, canActivatePublic, canActivateWorkspace } from '@application/guards';
 
 export const routes: Routes = [
   // Landing Page (Public Home)
@@ -104,7 +104,7 @@ export const routes: Routes = [
   // Workspace page - contains workspace host with nested module routes
   {
     path: 'workspace',
-    canActivate: [canActivateAuth],
+    canActivate: [canActivateAuth, canActivateWorkspace],
     loadComponent: () =>
       import('@presentation/pages/workspace').then(
         m => m.WorkspacePage
