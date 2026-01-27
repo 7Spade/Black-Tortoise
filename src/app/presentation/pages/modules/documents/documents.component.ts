@@ -1,10 +1,10 @@
 /**
- * Documents Module - File Management
+ * Documents Module - File Management with Tree Structure
  * Layer: Presentation
- * Events: Publishes DocumentUploaded
+ * Events: Publishes DocumentUploaded, FolderCreated, DocumentMoved
+ * Architecture: OnPush, Signals only, Angular 20 control flow
  */
 
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -13,6 +13,11 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import {
   IAppModule,
@@ -20,11 +25,19 @@ import {
 } from '@application/interfaces/module.interface';
 import { DocumentsStore } from '@application/stores/documents.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
+import { FileTreeComponent } from '../../../documents/components/file-tree/file-tree.component';
 
 @Component({
   selector: 'app-documents-module',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatInputModule,
+    MatFormFieldModule,
+    FileTreeComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="documents-module">
@@ -36,45 +49,77 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
         </p>
       </div>
 
-      <div class="upload-section">
-        <h3>Upload Document</h3>
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <mat-form-field appearance="outline">
+          <mat-label>Search</mat-label>
+          <input matInput 
+                 [value]="documentsStore.searchQuery()"
+                 (input)="onSearchChange($event)" />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="onCreateFolder()">
+          <mat-icon>create_new_folder</mat-icon>
+          New Folder
+        </button>
+
+        <button mat-raised-button color="accent" (click)="fileInput.click()">
+          <mat-icon>upload_file</mat-icon>
+          Upload File
+        </button>
         <input
           type="file"
           #fileInput
           (change)="onFileSelected($event)"
-          class="file-input"
+          style="display: none"
+          multiple
         />
-        <button (click)="fileInput.click()" class="btn-primary">
-          Choose File
-        </button>
       </div>
 
+      <!-- Upload Progress -->
       @if (documentsStore.hasActiveUploads()) {
         <div class="upload-progress">
           <h3>Uploading...</h3>
           @for (upload of documentsStore.activeUploads(); track upload.fileId) {
             <div class="progress-item">
               <span>{{ upload.fileName }}</span>
-              <div class="progress-bar">
-                <div
-                  class="progress-fill"
-                  [style.width.%]="upload.progress"
-                ></div>
-              </div>
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="upload.progress">
+              </mat-progress-bar>
               <span>{{ upload.progress }}%</span>
             </div>
           }
         </div>
       }
 
-      <div class="documents-list">
-        <h3>Documents ({{ documentsStore.documents().length }})</h3>
-        @if (documentsStore.documents().length === 0) {
-          <div class="empty-state">No documents uploaded</div>
+      <!-- File Tree -->
+      <div class="file-tree-container">
+        @if (documentsStore.rootNodes().length > 0) {
+          <app-file-tree 
+            [nodes]="documentsStore.rootNodes()"
+            (nodeSelected)="onNodeSelected($event)">
+          </app-file-tree>
+        } @else {
+          <div class="empty-state">
+            <mat-icon>folder_open</mat-icon>
+            <p>No files or folders</p>
+            <p>Upload a file or create a folder to get started</p>
+          </div>
         }
-        @for (doc of documentsStore.documents(); track doc.id) {
-          <div class="document-card">
-            <div class="doc-icon">📄</div>
+      </div>
+
+      <!-- Documents List -->
+      <div class="documents-list">
+        <h3>Documents ({{ documentsStore.documentCount() }})</h3>
+        @if (documentsStore.visibleDocuments().length === 0) {
+          <div class="empty-state">No documents match your search</div>
+        }
+        @for (doc of documentsStore.visibleDocuments(); track doc.id) {
+          <div class="document-card" 
+               [class.selected]="documentsStore.selectedNode()?.id === doc.id">
+            <mat-icon>description</mat-icon>
             <div class="doc-info">
               <h4>{{ doc.name }}</h4>
               <p>
@@ -111,43 +156,62 @@ export class DocumentsComponent implements IAppModule, OnInit, OnDestroy {
 
     this.subscriptions.add(
       ModuleEventHelper.onWorkspaceSwitched(eventBus, () => {
-        this.documentsStore.clearDocuments();
+        this.documentsStore.reset();
       }),
     );
+  }
+
+  onSearchChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.documentsStore.setSearchQuery(input.value);
+  }
+
+  onCreateFolder(): void {
+    const name = prompt('Enter folder name:');
+    if (name) {
+      this.documentsStore.createFolder(name, null);
+    }
+  }
+
+  onNodeSelected(nodeId: string): void {
+    this.documentsStore.selectNode(nodeId);
   }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
 
-    const file = input.files[0];
-    if (!file) return; // Guard against undefined
+    Array.from(input.files).forEach(file => {
+      const fileId = crypto.randomUUID();
 
-    const fileId = crypto.randomUUID();
+      // Start upload
+      this.documentsStore.startUpload(fileId, file.name);
 
-    // Start upload
-    this.documentsStore.startUpload(fileId, file.name);
+      // Simulate upload progress
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        this.documentsStore.updateUploadProgress(fileId, progress);
 
-    // Simulate upload progress
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-      this.documentsStore.updateUploadProgress(fileId, progress);
+        if (progress >= 100) {
+          clearInterval(interval);
+          this.documentsStore.completeUpload(fileId);
 
-      if (progress >= 100) {
-        clearInterval(interval);
-        this.documentsStore.completeUpload(fileId);
+          // Add document
+          this.documentsStore.addDocument({
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            url: URL.createObjectURL(file),
+            uploadedBy: this.currentUserId,
+            parentId: this.documentsStore.selectedNode()?.id || null,
+          });
+        }
+      }, 200);
+    });
 
-        // Add document (file is guaranteed to exist here due to guard)
-        this.documentsStore.addDocument({
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          url: URL.createObjectURL(file),
-          uploadedBy: this.currentUserId,
-        });
-      }
-    }, 200);
+    // Reset input
+    input.value = '';
   }
 
   activate(): void {}

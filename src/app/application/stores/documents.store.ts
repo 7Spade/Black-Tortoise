@@ -2,17 +2,19 @@
  * Documents Store
  *
  * Layer: Application - Store
- * Purpose: Manages document/file state using NgRx Signals
+ * Purpose: Manages document/file state with tree structure using NgRx Signals
  * Architecture: Zone-less, Pure Reactive, Angular 20+, NO RxJS
  *
  * Responsibilities:
  * - Track uploaded documents
+ * - Manage file tree structure
+ * - Handle folder hierarchy
  * - Manage upload progress
- * - Handle document metadata
+ * - Handle search and filtering
  *
  * Event Integration:
- * - Reacts to: TaskCreated (can attach documents)
- * - Publishes: DocumentUploaded
+ * - Reacts to: WorkspaceSwitched
+ * - Publishes: DocumentUploaded, FolderCreated, FolderDeleted, DocumentMoved, FolderRenamed
  *
  * Clean Architecture Compliance:
  * - Single source of truth for documents state
@@ -23,6 +25,7 @@
 
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { FileTreeNode } from '@domain/value-objects/file-tree-node.vo';
 
 export interface Document {
   readonly id: string;
@@ -33,6 +36,7 @@ export interface Document {
   readonly uploadedAt: Date;
   readonly uploadedBy: string;
   readonly relatedTaskId?: string;
+  readonly parentId?: string | null;
 }
 
 export interface UploadProgress {
@@ -43,18 +47,39 @@ export interface UploadProgress {
   readonly error?: string;
 }
 
+export interface DocumentFilter {
+  readonly type?: string;
+  readonly dateFrom?: Date;
+  readonly dateTo?: Date;
+  readonly uploader?: string;
+  readonly minSize?: number;
+  readonly maxSize?: number;
+}
+
 export interface DocumentsState {
   readonly documents: ReadonlyArray<Document>;
+  readonly fileTree: ReadonlyArray<FileTreeNode>;
   readonly uploadProgress: ReadonlyArray<UploadProgress>;
-  readonly selectedDocumentId: string | null;
+  readonly selectedNodeId: string | null;
+  readonly expandedNodeIds: ReadonlyArray<string>;
+  readonly searchQuery: string;
+  readonly filters: DocumentFilter;
+  readonly sortBy: 'name' | 'date' | 'size' | 'type';
+  readonly sortOrder: 'asc' | 'desc';
   readonly isUploading: boolean;
   readonly error: string | null;
 }
 
 const initialState: DocumentsState = {
   documents: [],
+  fileTree: [],
   uploadProgress: [],
-  selectedDocumentId: null,
+  selectedNodeId: null,
+  expandedNodeIds: [],
+  searchQuery: '',
+  filters: {},
+  sortBy: 'name',
+  sortOrder: 'asc',
   isUploading: false,
   error: null,
 };
@@ -78,12 +103,19 @@ export const DocumentsStore = signalStore(
     ),
 
     /**
-     * Selected document
+     * Selected node
      */
-    selectedDocument: computed(() => {
-      const id = state.selectedDocumentId();
-      return id ? state.documents().find(d => d.id === id) || null : null;
+    selectedNode: computed(() => {
+      const id = state.selectedNodeId();
+      return id ? state.fileTree().find(n => n.id === id) || null : null;
     }),
+
+    /**
+     * Root folders (top-level nodes)
+     */
+    rootNodes: computed(() =>
+      state.fileTree().filter(n => n.isRoot())
+    ),
 
     /**
      * Active uploads
@@ -110,6 +142,76 @@ export const DocumentsStore = signalStore(
     hasActiveUploads: computed(() =>
       state.uploadProgress().some(p => p.status === 'uploading')
     ),
+
+    /**
+     * Filtered and sorted documents
+     */
+    visibleDocuments: computed(() => {
+      let docs = state.documents();
+      const query = state.searchQuery().toLowerCase();
+      const filters = state.filters();
+
+      // Apply search query
+      if (query) {
+        docs = docs.filter(d => d.name.toLowerCase().includes(query));
+      }
+
+      // Apply filters
+      if (filters.type) {
+        docs = docs.filter(d => d.type === filters.type);
+      }
+      if (filters.dateFrom) {
+        docs = docs.filter(d => d.uploadedAt >= filters.dateFrom!);
+      }
+      if (filters.dateTo) {
+        docs = docs.filter(d => d.uploadedAt <= filters.dateTo!);
+      }
+      if (filters.uploader) {
+        docs = docs.filter(d => d.uploadedBy === filters.uploader);
+      }
+      if (filters.minSize !== undefined) {
+        docs = docs.filter(d => d.size >= filters.minSize!);
+      }
+      if (filters.maxSize !== undefined) {
+        docs = docs.filter(d => d.size <= filters.maxSize!);
+      }
+
+      // Apply sorting
+      const sortBy = state.sortBy();
+      const sortOrder = state.sortOrder();
+      const sorted = [...docs].sort((a, b) => {
+        let comparison = 0;
+        switch (sortBy) {
+          case 'name':
+            comparison = a.name.localeCompare(b.name);
+            break;
+          case 'date':
+            comparison = a.uploadedAt.getTime() - b.uploadedAt.getTime();
+            break;
+          case 'size':
+            comparison = a.size - b.size;
+            break;
+          case 'type':
+            comparison = a.type.localeCompare(b.type);
+            break;
+        }
+        return sortOrder === 'asc' ? comparison : -comparison;
+      });
+
+      return sorted;
+    }),
+
+    /**
+     * Document count
+     */
+    documentCount: computed(() => state.visibleDocuments().length),
+
+    /**
+     * Expanded state helper
+     */
+    isNodeExpanded: computed(() => (nodeId: string) =>
+      state.expandedNodeIds().includes(nodeId)
+    ),
   })),
 
   withMethods((store) => ({
@@ -126,6 +228,110 @@ export const DocumentsStore = signalStore(
       patchState(store, {
         documents: [...store.documents(), newDoc],
       });
+    },
+
+    /**
+     * Create folder
+     */
+    createFolder(name: string, parentId: string | null = null): void {
+      const folderId = crypto.randomUUID();
+      const folder = FileTreeNode.create(folderId, name, 'folder', parentId);
+
+      patchState(store, {
+        fileTree: [...store.fileTree(), folder],
+      });
+    },
+
+    /**
+     * Move node
+     */
+    moveNode(nodeId: string, newParentId: string | null): void {
+      patchState(store, {
+        fileTree: store.fileTree().map(node =>
+          node.id === nodeId ? node.withParent(newParentId) : node
+        ),
+      });
+    },
+
+    /**
+     * Delete node
+     */
+    deleteNode(nodeId: string): void {
+      // Remove node and all children
+      const nodesToRemove = new Set<string>([nodeId]);
+      const findChildren = (id: string) => {
+        store.fileTree().forEach(node => {
+          if (node.parentId === id) {
+            nodesToRemove.add(node.id);
+            findChildren(node.id);
+          }
+        });
+      };
+      findChildren(nodeId);
+
+      patchState(store, {
+        fileTree: store.fileTree().filter(n => !nodesToRemove.has(n.id)),
+        documents: store.documents().filter(d => !nodesToRemove.has(d.parentId || '')),
+      });
+    },
+
+    /**
+     * Rename node
+     */
+    renameNode(nodeId: string, newName: string): void {
+      patchState(store, {
+        fileTree: store.fileTree().map(node =>
+          node.id === nodeId ? node.withName(newName) : node
+        ),
+      });
+    },
+
+    /**
+     * Expand node
+     */
+    expandNode(nodeId: string): void {
+      if (!store.expandedNodeIds().includes(nodeId)) {
+        patchState(store, {
+          expandedNodeIds: [...store.expandedNodeIds(), nodeId],
+        });
+      }
+    },
+
+    /**
+     * Collapse node
+     */
+    collapseNode(nodeId: string): void {
+      patchState(store, {
+        expandedNodeIds: store.expandedNodeIds().filter(id => id !== nodeId),
+      });
+    },
+
+    /**
+     * Select node
+     */
+    selectNode(nodeId: string | null): void {
+      patchState(store, { selectedNodeId: nodeId });
+    },
+
+    /**
+     * Set search query
+     */
+    setSearchQuery(query: string): void {
+      patchState(store, { searchQuery: query });
+    },
+
+    /**
+     * Set filters
+     */
+    setFilters(filters: DocumentFilter): void {
+      patchState(store, { filters });
+    },
+
+    /**
+     * Set sorting
+     */
+    setSorting(sortBy: 'name' | 'date' | 'size' | 'type', sortOrder: 'asc' | 'desc'): void {
+      patchState(store, { sortBy, sortOrder });
     },
 
     /**
@@ -197,13 +403,6 @@ export const DocumentsStore = signalStore(
       patchState(store, {
         documents: store.documents().filter(d => d.id !== documentId),
       });
-    },
-
-    /**
-     * Select document
-     */
-    selectDocument(documentId: string | null): void {
-      patchState(store, { selectedDocumentId: documentId });
     },
 
     /**
