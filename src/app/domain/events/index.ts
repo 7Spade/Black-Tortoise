@@ -23,6 +23,7 @@ export * from './permission-granted.event';
 export * from './permission-revoked.event';
 export * from './qc-failed.event';
 export * from './qc-passed.event';
+export * from './qc-started.event';
 export * from './settings-updated.event';
 export * from './task-completed.event';
 export * from './task-created.event';

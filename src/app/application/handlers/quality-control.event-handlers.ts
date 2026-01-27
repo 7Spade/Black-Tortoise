@@ -5,9 +5,10 @@
  * Purpose: Register event handlers for QC domain events
  * 
  * Responsibilities:
- * - Subscribe to TaskSubmittedForQC, QCPassed, QCFailed events
+ * - Subscribe to TaskSubmittedForQC, IssueResolved, QCStarted, QCPassed, QCFailed events
  * - Delegate to QualityControlStore for state mutations
- * - Handle QCFailed ??IssueCreated causality chain
+ * - Handle QCFailed → IssueCreated causality chain
+ * - Handle IssueResolved → QC restart workflow
  * - Event-driven state management (react pattern)
  * 
  * Constitution Compliance:
@@ -20,7 +21,9 @@ import { inject } from '@angular/core';
 import { CreateIssueHandler } from '@application/handlers/create-issue.handler';
 import { QCFailedEvent } from '@domain/events';
 import { QCPassedEvent } from '@domain/events';
+import { QCStartedEvent } from '@domain/events';
 import { TaskSubmittedForQCEvent } from '@domain/events';
+import { IssueResolvedEvent } from '@domain/events';
 import { EventBus } from '@domain/types';
 import { QualityControlStore } from '../stores/quality-control.store';
 
@@ -28,6 +31,7 @@ export function registerQualityControlEventHandlers(eventBus: EventBus): void {
   const qcStore = inject(QualityControlStore);
   const createIssueHandler = inject(CreateIssueHandler);
   
+  // Subscribe to TaskSubmittedForQC (TaskReadyForQC equivalent)
   eventBus.subscribe<TaskSubmittedForQCEvent['payload']>(
     'TaskSubmittedForQC',
     (event) => {
@@ -36,9 +40,35 @@ export function registerQualityControlEventHandlers(eventBus: EventBus): void {
         taskId: event.aggregateId,
         taskTitle: event.payload.taskTitle,
         taskDescription: '',
+        taskType: 'default', // TODO: Get from task metadata
         submittedAt: new Date(event.timestamp),
         submittedBy: event.payload.submittedById,
+        checklistItems: [], // Will be populated when QC starts
       });
+    }
+  );
+
+  // Subscribe to IssueResolved (restart QC after issue fixed)
+  eventBus.subscribe<IssueResolvedEvent['payload']>(
+    'IssueResolved',
+    (event) => {
+      console.log('[QCEventHandlers] IssueResolved:', event);
+      
+      // Check if this issue was created from QC failure
+      // If so, restart QC for the task
+      const taskId = event.payload.taskId;
+      if (taskId) {
+        qcStore.restartQCAfterIssueResolved(taskId);
+      }
+    }
+  );
+
+  // Subscribe to QCStarted (track QC initiation)
+  eventBus.subscribe<QCStartedEvent['payload']>(
+    'QCStarted',
+    (event) => {
+      console.log('[QCEventHandlers] QCStarted:', event);
+      // QC started event handled for analytics/notifications
     }
   );
   
@@ -73,7 +103,7 @@ export function registerQualityControlEventHandlers(eventBus: EventBus): void {
         issueId,
         taskId: event.aggregateId,
         workspaceId: event.payload.workspaceId,
-        title: `QC Failed: ${event.payload.taskTitle}`,
+        title: `[QC Failed] ${event.payload.taskTitle}`,
         description: event.payload.failureReason,
         createdBy: event.payload.reviewedById,
         correlationId: event.correlationId, // Inherited from parent
@@ -84,6 +114,5 @@ export function registerQualityControlEventHandlers(eventBus: EventBus): void {
   
   console.log('[QCEventHandlers] Registered event handlers for workspace');
 }
-
 
 
