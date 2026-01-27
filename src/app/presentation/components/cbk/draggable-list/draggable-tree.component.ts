@@ -1,7 +1,7 @@
 /**
  * Draggable Tree Component
  * Presentation Layer - CBK
- * 
+ *
  * Hierarchical tree with drag-and-drop reordering
  * Signal-based tree state
  */
@@ -22,13 +22,14 @@ export interface TreeNode {
   template: `
     <div class="draggable-tree">
       @for (node of nodes(); track node.id) {
-        <div class="tree-node"
-             [attr.data-node-id]="node.id"
-             [class.dragging]="draggedNodeId() === node.id">
+        <div
+          class="tree-node"
+          [attr.data-node-id]="node.id"
+          [class.dragging]="draggedNodeId() === node.id"
+        >
           <div class="tree-node-content">
             @if (node.children && node.children.length > 0) {
-              <button class="tree-expand-button"
-                      (click)="toggleNode(node)">
+              <button class="tree-expand-button" (click)="toggleNode(node)">
                 {{ node.expanded ? '▼' : '▶' }}
               </button>
             }
@@ -43,7 +44,7 @@ export interface TreeNode {
       }
     </div>
   `,
-  styleUrls: ['./draggable-tree.component.scss']
+  styleUrls: ['./draggable-tree.component.scss'],
 })
 export class DraggableTreeComponent {
   readonly nodes = input<TreeNode[]>([]);

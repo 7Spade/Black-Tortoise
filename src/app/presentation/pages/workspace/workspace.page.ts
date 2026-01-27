@@ -19,6 +19,6 @@ import { WorkspaceHostComponent } from '@presentation/components/workspace-host.
   imports: [WorkspaceHostComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<app-workspace-host />`,
-  styleUrls: ['./workspace.page.scss']
+  styleUrls: ['./workspace.page.scss'],
 })
 export class WorkspacePage {}

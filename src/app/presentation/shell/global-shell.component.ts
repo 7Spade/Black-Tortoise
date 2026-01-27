@@ -1,13 +1,13 @@
 /**
  * Global Shell Component
- * 
+ *
  * Layer: Presentation - Shell
  * Architecture: Angular 20 Standalone, Zone-less, OnPush
- * 
+ *
  * The global shell is the top-level layout containing:
  * - Global header (identity/workspace switchers, search, notifications)
  * - Main content area (router-outlet for pages)
- * 
+ *
  * Responsibilities:
  * - Pure layout composition (header + content area)
  * - Contains the single stable router-outlet
@@ -16,8 +16,7 @@
 
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {  HeaderComponent  } from '@presentation/layouts';;
-
+import { HeaderComponent } from '@presentation/layouts';
 @Component({
   selector: 'app-shell',
   standalone: true,
@@ -31,6 +30,6 @@ import {  HeaderComponent  } from '@presentation/layouts';;
       </main>
     </div>
   `,
-  styleUrls: ['./global-shell.component.scss']
+  styleUrls: ['./global-shell.component.scss'],
 })
 export class GlobalShellComponent {}

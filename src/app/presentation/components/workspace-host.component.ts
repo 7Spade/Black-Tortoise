@@ -11,11 +11,17 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { WorkspaceHostFacade } from '@application/facades';
-import {  ModuleContentComponent  } from '@presentation/components';;
-import {  ModuleNavigationComponent  } from '@presentation/components';;
-
+import {
+  ModuleContentComponent,
+  ModuleNavigationComponent,
+} from '@presentation/components';
 @Component({
   selector: 'app-workspace-host',
   standalone: true,
@@ -28,7 +34,10 @@ import {  ModuleNavigationComponent  } from '@presentation/components';;
         <p>Loading workspace...</p>
       </div>
     } @else if (facade.hasWorkspace()) {
-      <div class="workspace-host" [class.collapsed]="facade.isSidebarCollapsed()">
+      <div
+        class="workspace-host"
+        [class.collapsed]="facade.isSidebarCollapsed()"
+      >
         <app-module-navigation />
         <app-module-content />
       </div>
@@ -38,7 +47,7 @@ import {  ModuleNavigationComponent  } from '@presentation/components';;
       </div>
     }
   `,
-  styleUrls: ['./workspace-host.component.scss']
+  styleUrls: ['./workspace-host.component.scss'],
 })
 export class WorkspaceHostComponent implements OnInit {
   readonly facade = inject(WorkspaceHostFacade);

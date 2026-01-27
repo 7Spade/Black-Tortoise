@@ -1,7 +1,7 @@
 /**
  * Overlay Host Component
  * Presentation Layer - CBK Infrastructure
- * 
+ *
  * Container component for rendering overlay instances
  * Consumes OverlayService state via signals
  */
@@ -15,8 +15,7 @@ import { OverlayService } from './overlay.service';
   template: `
     <div class="overlay-host">
       @for (overlay of overlayService.overlays(); track overlay.id) {
-        <div class="overlay-backdrop" 
-             [attr.data-overlay-id]="overlay.id">
+        <div class="overlay-backdrop" [attr.data-overlay-id]="overlay.id">
           <!-- Overlay content placeholder -->
           <div class="overlay-content">
             {{ overlay.id }}
@@ -25,7 +24,7 @@ import { OverlayService } from './overlay.service';
       }
     </div>
   `,
-  styleUrls: ['./overlay-host.component.scss']
+  styleUrls: ['./overlay-host.component.scss'],
 })
 export class OverlayHostComponent {
   protected readonly overlayService = inject(OverlayService);

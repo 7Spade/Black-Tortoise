@@ -1,7 +1,7 @@
 /**
  * Context Menu Component
  * Presentation Layer - CBK Infrastructure
- * 
+ *
  * Renders context menu UI
  * Consumes ContextMenuService state via signals
  */
@@ -14,16 +14,20 @@ import { ContextMenuService } from './context-menu.service';
   standalone: true,
   template: `
     @if (menuService.menuState().visible) {
-      <div class="context-menu"
-           [style.left.px]="menuService.menuState().x"
-           [style.top.px]="menuService.menuState().y">
+      <div
+        class="context-menu"
+        [style.left.px]="menuService.menuState().x"
+        [style.top.px]="menuService.menuState().y"
+      >
         @for (item of menuService.menuState().items; track $index) {
           @if (item.divider) {
             <div class="context-menu-divider"></div>
           } @else {
-            <button class="context-menu-item"
-                    [disabled]="item.disabled"
-                    (click)="onItemClick(item)">
+            <button
+              class="context-menu-item"
+              [disabled]="item.disabled"
+              (click)="onItemClick(item)"
+            >
               @if (item.icon) {
                 <span class="context-menu-icon">{{ item.icon }}</span>
               }
@@ -34,7 +38,7 @@ import { ContextMenuService } from './context-menu.service';
       </div>
     }
   `,
-  styleUrls: ['./context-menu.component.scss']
+  styleUrls: ['./context-menu.component.scss'],
 })
 export class ContextMenuComponent {
   protected readonly menuService = inject(ContextMenuService);

@@ -12,8 +12,13 @@
  * - Single responsibility: workspace trigger button
  */
 
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+} from '@angular/core';
 
 @Component({
   selector: 'app-workspace-trigger',
@@ -26,7 +31,8 @@ import { CommonModule } from '@angular/common';
       (click)="triggerClick.emit()"
       [attr.aria-expanded]="isOpen()"
       aria-label="Switch workspace"
-      type="button">
+      type="button"
+    >
       <span class="material-icons workspace-icon">folder</span>
       <span class="workspace-name">{{ workspaceName() }}</span>
       <span class="material-icons expand-icon">
@@ -34,7 +40,7 @@ import { CommonModule } from '@angular/common';
       </span>
     </button>
   `,
-  styleUrls: ['./workspace-trigger.component.scss']
+  styleUrls: ['./workspace-trigger.component.scss'],
 })
 export class WorkspaceTriggerComponent {
   // Inputs
