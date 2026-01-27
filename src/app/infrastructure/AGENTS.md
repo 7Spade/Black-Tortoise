@@ -2,24 +2,30 @@
 
 > **Context**: `src/app/infrastructure`
 > **Role**: Anti-Corruption Layer (ACL) & Implementation
+> **Dependency**: Depends on `Domain` (Interfaces) & `Application` (Ports).
+
+## 🪒 Occam's Razor Principle
+*   **Pragmatism**: If Firestore provides a feature (e.g., auto-generated IDs), adapt it simply. Don't fight the platform unless it violates Domain Purity.
+*   **Direct Mapping**: Mappers should be simple pure functions. Don't build complex "Mapping Services" with state.
 
 ## ⚙️ Implementation Standards
 
 ### 1. Repository Implementation
-*   **Adapters**: Implements Domain Interfaces (`@domain/repositories`).
-*   **Mappers**: **MANDATORY** separate Mapper classes to convert:
-    *   `Domain Entity` <-> `Firestore Document`
-    *   *Note*: Never leak Firestore timestamps or types into the Domain.
-*   **Fetching**: Return `Promise` for single-shot actions.
+*   **Adapters**: THIS is where the code meets the metal. Implement `Domain Repository Interfaces`.
+*   **Separation**:
+    *   `Domain Entity`: The clean business object.
+    *   `Firestore DTO`: The uglier database shape (timestamps, foreign keys).
+*   **Mappers**: **MANDATORY** bidirectional mappers (`toDomain`, `toDto`).
+    *   *Constraint*: Do not leak Firestore types (Timestamp) into Domain Entities. Use `Date` or `ISO String`.
 
 ### 2. Firebase/External Integration
-*   **Isolation**: All `@angular/fire` imports MUST stay within this layer.
-*   **Stream Adaptation**: Convert Firebase `Observable` streams into structures consumable by Application Handlers (usually handled via `rxMethod` in Stores).
+*   **Lockdown**: `@angular/fire` imports live here. Nowhere else.
+*   **Stream Adaptation**: Convert Firebase `Observable` streams into `Promise` or signals compatible with Application Handlers.
 
 ### 3. Error Handling
-*   **Translation**: Catch infrastructure errors (Network, Auth, Firebase) and throw typed **Domain Errors**.
-*   **Strictness**: Do not let `unknown` errors bubble up to Application layer.
+*   **Anti-Corruption**: Catch infrastructure specific errors (`permission-denied`, `network-error`).
+*   **Translation**: Throw typed `Domain Errors` (`UserPermissionError`) so the Application layer can handle them semantically.
 
 ### 4. DTOs
 *   Define Data Transfer Objects here.
-*   Use `readonly` interfaces for DTO definitions.
+*   Use `readonly` interfaces for DTO definitions to match the actual DB schema.

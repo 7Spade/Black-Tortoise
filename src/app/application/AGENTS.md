@@ -2,30 +2,34 @@
 
 > **Context**: `src/app/application`
 > **Role**: State Orchestration & Event Management
+> **Dependency**: Depends on `Domain`. Used by `Presentation` & `Infrastructure`.
+
+## 🪒 Occam's Razor Principle
+*   **Direct Stores**: If a component simply needs a list of items, expose it from the Store. Do not create a specific "Service" just to wrap a Store method unless orchestration is complex.
+*   **YAGNI**: "You Ain't Gonna Need It". Don't pre-optimize for "switching state management later". Use `signalStore` methods directly.
 
 ## 🧠 Signal State Management (NgRx Signals)
 
 ### 1. SignalStore is King
 *   **Standard**: All state must reside in `signalStore`.
-*   **Pattern**:
-    *   `withState()`: For the core data.
-    *   `withComputed()`: For derived data (Selectors).
-    *   `withMethods()`: For Actions/Reducers.
-    *   `rxMethod()`: For bridging Async/Observable streams (Effects).
-*   **FORBIDDEN**: Functional `input()`/`output()` in Stores. `BehaviorSubject` based services.
+*   **Structure**:
+    *   `withState()`: The Single Source of Truth.
+    *   `withComputed()`: Efficient derived selectors.
+    *   `withMethods()`: Actions (Mutations) & Effects (Async Orchestration).
+    *   `rxMethod()`: The **ONLY** place where RxJS streams (Observables) are managed. Use `tapResponse` for safety.
+*   **FORBIDDEN**: `BehaviorSubject`-based services. Functional `input()` in stores.
 
 ### 2. The "Event Chain" Protocol
-Strict adherence to the constitution's flow:
+Strict adherence to Event Sourcing flow:
 1.  **Append**: Store method calls `eventStore.append(event)`. (Persist the fact)
 2.  **Publish**: Store publishes to `EventBus`. (Notify system)
 3.  **React**: Other Stores/Effects respond to the event via `rxMethod`.
 
 ### 3. Facade Pattern (The ViewModel Factory)
-*   **Role**: Prepare data for the Presentation layer.
-*   **Rule**: **Output Signals ONLY**.
-*   **Conversion**: Maps Domain Entities -> UI ViewModels.
-*   **Isolation**: Components should not inject Stores directly if transformation is needed. Provide a clean `vm` (ViewModel) signal.
+*   **Pattern**: If UI needs complex combination of 2+ Stores (e.g., User + Workspace), create a Facade.
+*   **Rule**: Returns **Read-Only Signals**.
+*   **Isolation**: Transforms `Domain Entities` -> `UI ViewModels` to prevent Domain leakage into templates.
 
 ### 4. Zone-less Reactivity
-*   **Avoid**: Manual `subscribe()`.
-*   **Use**: `tapResponse` operator within `rxMethod` to handle side effects and lifecycle safety.
+*   **Avoid**: Manual `.subscribe()`.
+*   **Use**: `tapResponse` operator to safely handle side effects without breaking the reactive graph.
