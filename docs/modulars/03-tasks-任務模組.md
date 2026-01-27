@@ -213,24 +213,345 @@
 
 ---
 
-## 八、DDD 實作規範
+## 八、跨模組整合 (Cross-Module Integration)
 
-### Aggregate Root
-- 支援 Creation (create()) 與 Reconstruction (reconstruct())
-- 所有業務變更方法必須產生 Domain Event
-- reconstruct 不產生 Domain Event
+### 本模組發布 (Published by This Module)
 
-### Child Entities
-- 使用 Value Object ID
-- 禁止直接暴露陣列，必須透過方法操作
+#### Context Provider
+```typescript
+// Application Layer: tasks/application/providers/task-context.provider.ts
+export abstract class TaskContextProvider {
+  abstract getTaskStatus(taskId: string): string | null;
+  abstract getTaskProgress(taskId: string): number;
+  abstract canSubmitForQC(taskId: string): boolean;
+  abstract hasBlockingIssues(taskId: string): boolean;
+}
+```
 
-### 型別安全
-- 禁止使用 any 或 as unknown
-- Mapper 必須明確處理深層嵌套物件
+#### 發布事件 (Published Events)
+- **TaskCreated**: 任務建立時
+- **TaskUpdated**: 任務更新時
+- **TaskReadyForQC**: 任務進度達 100% 並準備質檢
+- **TaskReadyForAcceptance**: QC 通過後準備驗收
+- **TaskCompleted**: 任務完成
+- **TaskAssigneeChanged**: 任務指派變更
+
+### 本模組訂閱 (Consumed by This Module)
+
+#### 訂閱事件 (Subscribed Events)
+- **QCPassed**: 質檢通過，更新任務狀態為 ReadyForAcceptance
+- **QCFailed**: 質檢失敗，標記任務為 Blocked
+- **AcceptanceApproved**: 驗收通過，標記任務為 Completed
+- **AcceptanceRejected**: 驗收失敗，標記任務為 Blocked
+- **IssueCreated**: 新問題單建立，檢查是否影響此任務
+- **IssueResolved**: 問題單解決，檢查是否解除 Blocked 狀態
+- **WorkspaceSwitched**: Workspace 切換，重置任務狀態
+
+#### 使用的 Context Providers
+- **WorkspaceContextProvider**: 查詢當前 Workspace ID
+- **IssueContextProvider**: 查詢任務是否有阻塞問題
+
+### 整合範例
+
+```typescript
+// Application Layer: tasks/application/stores/task.store.ts
+export const TaskStore = signalStore(
+  { providedIn: 'root' },
+  withState<TaskState>(initialState),
+  withMethods((store) => {
+    const eventBus = inject(WorkspaceEventBus);
+    const workspaceContext = inject(WorkspaceContextProvider);
+    const issueContext = inject(IssueContextProvider);
+    
+    return {
+      submitForQC(taskId: string): void {
+        const task = store.entities().find(t => t.id === taskId);
+        if (!task) return;
+        
+        // 檢查進度
+        if (task.progress < 100) {
+          throw new Error('Task must be 100% complete');
+        }
+        
+        // 檢查阻塞問題
+        if (issueContext.hasBlockingIssues(taskId)) {
+          throw new Error('Task has blocking issues');
+        }
+        
+        // 更新狀態
+        patchState(store, { /* ... */ });
+        
+        // 發布事件
+        eventBus.emit({
+          type: 'TaskReadyForQC',
+          payload: { taskId, workspaceId: workspaceContext.getCurrentWorkspaceId() }
+        });
+      }
+    };
+  }),
+  withHooks({
+    onInit(store) {
+      const eventBus = inject(WorkspaceEventBus);
+      
+      // 訂閱 QCPassed
+      eventBus.on('QCPassed', (event) => {
+        const taskId = event.payload.taskId;
+        // 更新任務狀態為 ReadyForAcceptance
+        patchState(store, { /* ... */ });
+      });
+      
+      // 訂閱 QCFailed
+      eventBus.on('QCFailed', (event) => {
+        const taskId = event.payload.taskId;
+        // 標記任務為 Blocked
+        patchState(store, { /* ... */ });
+      });
+      
+      // 訂閱 WorkspaceSwitched
+      eventBus.on('WorkspaceSwitched', () => {
+        patchState(store, initialState);
+      });
+    }
+  })
+);
+```
+
+### 禁止的整合方式
+
+❌ **禁止**：直接注入其他模組的 Store
+```typescript
+// ❌ 錯誤
+export class TaskStore {
+  private qcStore = inject(QCStore); // 緊密耦合
+  private issueStore = inject(IssueStore); // 緊密耦合
+}
+```
+
+✅ **正確**：使用 Context Provider 或 Event Bus
+```typescript
+export class TaskStore {
+  private issueContext = inject(IssueContextProvider); // 鬆散耦合
+  private eventBus = inject(WorkspaceEventBus); // 事件驅動
+}
+```
 
 ---
 
-## 九、開發檢查清單
+## 九、DDD 實作規範
+
+### Aggregate Root: TaskEntity
+
+#### Creation Pattern (產生 Domain Event)
+```typescript
+// Domain Layer: tasks/domain/aggregates/task.aggregate.ts
+export class TaskEntity {
+  private constructor(
+    public readonly id: string,
+    public readonly title: string,
+    private _status: TaskStatus,
+    private _progress: number,
+    private _subtasks: TaskEntity[] = []
+  ) {}
+  
+  public static create(
+    title: string,
+    workspaceId: string,
+    eventMetadata?: EventMetadata
+  ): TaskEntity {
+    const id = generateId();
+    const task = new TaskEntity(id, title, TaskStatus.Draft, 0);
+    
+    // 產生 Domain Event
+    task.addDomainEvent(
+      new TaskCreatedEvent(id, { title, workspaceId }, eventMetadata)
+    );
+    
+    return task;
+  }
+  
+  public static reconstruct(props: TaskProps): TaskEntity {
+    // 從 Snapshot 重建，不產生 Event
+    return new TaskEntity(
+      props.id,
+      props.title,
+      props.status,
+      props.progress,
+      props.subtasks
+    );
+  }
+  
+  // 業務方法：更新進度
+  public updateProgress(progress: number, metadata?: EventMetadata): void {
+    if (progress < 0 || progress > 100) {
+      throw new DomainError('Progress must be between 0-100');
+    }
+    
+    this._progress = progress;
+    
+    // 產生 Domain Event
+    this.addDomainEvent(
+      new TaskProgressUpdatedEvent(this.id, { progress }, metadata)
+    );
+    
+    // 進度達 100% 時，自動觸發 ReadyForQC
+    if (progress === 100 && this._status === TaskStatus.InProgress) {
+      this.submitForQC(metadata);
+    }
+  }
+  
+  // 業務方法：提交質檢
+  public submitForQC(metadata?: EventMetadata): void {
+    if (this._progress < 100) {
+      throw new DomainError('Task must be 100% complete to submit for QC');
+    }
+    
+    this._status = TaskStatus.ReadyForQC;
+    
+    this.addDomainEvent(
+      new TaskReadyForQCEvent(this.id, { taskId: this.id }, metadata)
+    );
+  }
+}
+```
+
+#### Factory Pattern (強制執行 Policy)
+```typescript
+// Domain Layer: tasks/domain/factories/task.factory.ts
+import { TaskNamingPolicy } from '../policies/task-naming.policy';
+import { TaskHierarchyPolicy } from '../policies/task-hierarchy.policy';
+
+export class TaskFactory {
+  public static create(
+    title: string,
+    workspaceId: string,
+    metadata?: EventMetadata
+  ): TaskEntity {
+    // 執行命名策略
+    TaskNamingPolicy.assertIsValid(title);
+    
+    // 透過 Aggregate 創建
+    return TaskEntity.create(title, workspaceId, metadata);
+  }
+  
+  public static createSubtask(
+    parent: TaskEntity,
+    title: string,
+    metadata?: EventMetadata
+  ): TaskEntity {
+    // 執行層級策略
+    TaskHierarchyPolicy.assertCanAddSubtask(parent);
+    
+    const subtask = TaskEntity.create(title, parent.workspaceId, metadata);
+    parent.addSubtask(subtask, metadata);
+    
+    return subtask;
+  }
+}
+```
+
+#### Policy Pattern (封裝業務規則)
+```typescript
+// Domain Layer: tasks/domain/policies/task-naming.policy.ts
+export class TaskNamingPolicy {
+  private static readonly MIN_LENGTH = 3;
+  private static readonly MAX_LENGTH = 200;
+  
+  public static isSatisfiedBy(title: string): boolean {
+    if (!title) return false;
+    
+    const trimmed = title.trim();
+    return trimmed.length >= this.MIN_LENGTH && trimmed.length <= this.MAX_LENGTH;
+  }
+  
+  public static assertIsValid(title: string): void {
+    if (!this.isSatisfiedBy(title)) {
+      throw new DomainError(
+        `Task title must be ${this.MIN_LENGTH}-${this.MAX_LENGTH} characters`
+      );
+    }
+  }
+}
+
+// Domain Layer: tasks/domain/policies/task-hierarchy.policy.ts
+export class TaskHierarchyPolicy {
+  private static readonly MAX_DEPTH = 10;
+  
+  public static assertCanAddSubtask(parent: TaskEntity): void {
+    if (parent.depth >= this.MAX_DEPTH) {
+      throw new DomainError(`Maximum task depth (${this.MAX_DEPTH}) exceeded`);
+    }
+  }
+}
+```
+
+#### Specification Pattern (複雜查詢邏輯)
+```typescript
+// Domain Layer: tasks/domain/specifications/task-ready-for-qc.specification.ts
+export class TaskReadyForQCSpecification {
+  public isSatisfiedBy(task: TaskEntity): boolean {
+    return (
+      task.status === TaskStatus.InProgress &&
+      task.progress === 100 &&
+      task.hasRequiredDocuments() &&
+      !task.hasBlockingIssues()
+    );
+  }
+  
+  public whyNotSatisfied(task: TaskEntity): string[] {
+    const reasons: string[] = [];
+    
+    if (task.status !== TaskStatus.InProgress) {
+      reasons.push('Task must be In Progress');
+    }
+    if (task.progress < 100) {
+      reasons.push(`Progress must be 100% (current: ${task.progress}%)`);
+    }
+    if (!task.hasRequiredDocuments()) {
+      reasons.push('Required documents are missing');
+    }
+    if (task.hasBlockingIssues()) {
+      reasons.push('Task has blocking issues');
+    }
+    
+    return reasons;
+  }
+}
+```
+
+### Dependency Inversion (Repository Pattern)
+
+#### Application Layer: 定義介面與 Token
+```typescript
+// Application Layer: tasks/application/ports/task-repository.port.ts
+export interface ITaskRepository {
+  findById(id: string): Promise<TaskEntity | null>;
+  save(task: TaskEntity): Promise<void>;
+  findByWorkspaceId(workspaceId: string): Promise<TaskEntity[]>;
+  findByStatus(status: TaskStatus): Promise<TaskEntity[]>;
+}
+
+// Application Layer: tasks/application/tokens/task-repository.token.ts
+export const TASK_REPOSITORY_TOKEN = new InjectionToken<ITaskRepository>(
+  'TASK_REPOSITORY_TOKEN'
+);
+```
+
+### Mapper Pattern (Domain <-> DTO/Firestore)
+- Application Layer: TaskToDtoMapper (Entity -> DTO)
+- Infrastructure Layer: TaskFirestoreMapper (Entity <-> Firestore Document)
+
+### Child Entities: 子任務
+- 使用 Value Object ID (TaskId)
+- 禁止直接暴露 `_subtasks` 陣列，透過 `addSubtask()`, `removeSubtask()` 方法操作
+- 父任務的進度 = 加權平均子任務進度
+
+### 型別安全
+- 禁止使用 any 或 as unknown
+- Mapper 必須明確處理深層嵌套物件（子任務樹狀結構）
+
+---
+
+## 十、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -246,10 +567,15 @@
 - [ ] 支援鍵盤導航與螢幕閱讀器
 - [ ] 撰寫 Unit / Integration / E2E 測試
 - [ ] 遵循奧卡姆剃刀原則，避免過度設計
+- [ ] 實作 TaskContextProvider 供其他模組查詢
+- [ ] 使用 InjectionToken 進行依賴注入
+- [ ] 使用 Factory/Policy/Specification 封裝創建與業務規則
+- [ ] 使用 Mapper 分離 Domain Entity 與 DTO
+- [ ] 避免直接注入其他模組的 Store
 
 ---
 
-## 十、參考資料
+## 十一、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md

@@ -146,16 +146,298 @@
 
 ---
 
-## 八、DDD 實作規範
+## 八、跨模組整合 (Cross-Module Integration)
 
-### Aggregate Root
-- 支援 Creation (create()) 與 Reconstruction (reconstruct())
-- 所有業務變更方法必須產生 Domain Event
-- reconstruct 不產生 Domain Event
+### 本模組發布 (Published by This Module)
 
-### Child Entities
-- 使用 Value Object ID
-- 禁止直接暴露陣列，必須透過方法操作
+#### Context Provider
+```typescript
+// Application Layer: permissions/application/providers/permission-context.provider.ts
+export abstract class PermissionContextProvider {
+  abstract hasPermission(userId: string, permission: string): boolean;
+  abstract getUserRole(userId: string): string | null;
+  abstract getRolePermissions(roleId: string): string[];
+}
+```
+
+#### 發布事件 (Published Events)
+- **PermissionChanged**: 當角色權限被修改時
+- **RoleCreated**: 當建立新角色時
+- **RoleUpdated**: 當角色資訊被更新時
+- **RoleDeleted**: 當角色被刪除時
+
+### 本模組訂閱 (Consumed by This Module)
+
+#### 訂閱事件 (Subscribed Events)
+- **MemberRoleChanged**: 成員角色變更時，更新權限快取
+- **WorkspaceSwitched**: Workspace 切換時，重置權限狀態
+
+#### 使用的 Context Providers
+- **WorkspaceContextProvider**: 查詢當前 Workspace ID
+- **MemberContextProvider** (Optional): 查詢成員列表
+
+### 整合範例
+
+```typescript
+// Application Layer: permissions/application/stores/permission.store.ts
+export const PermissionStore = signalStore(
+  { providedIn: 'root' },
+  withState<PermissionState>(initialState),
+  withMethods((store) => {
+    const eventBus = inject(WorkspaceEventBus);
+    const workspaceContext = inject(WorkspaceContextProvider);
+    
+    return {
+      grantPermission(roleId: string, permission: string): void {
+        const workspaceId = workspaceContext.getCurrentWorkspaceId();
+        if (!workspaceId) throw new Error('No workspace selected');
+        
+        // 更新狀態
+        patchState(store, { /* ... */ });
+        
+        // 發布事件
+        eventBus.emit({
+          type: 'PermissionChanged',
+          payload: { roleId, permission, action: 'grant' }
+        });
+      }
+    };
+  }),
+  withHooks({
+    onInit(store) {
+      const eventBus = inject(WorkspaceEventBus);
+      
+      // 訂閱 WorkspaceSwitched
+      eventBus.on('WorkspaceSwitched', () => {
+        patchState(store, initialState);
+      });
+    }
+  })
+);
+```
+
+### 禁止的整合方式
+
+❌ **禁止**：直接注入其他模組的 Store
+```typescript
+// ❌ 錯誤
+export class PermissionStore {
+  private memberStore = inject(MemberStore); // 緊密耦合
+}
+```
+
+❌ **禁止**：共享 Entity 類別
+```typescript
+// ❌ 錯誤
+export class RoleEntity {
+  member: MemberEntity; // 跨模組 Entity 依賴
+}
+```
+
+✅ **正確**：使用 ID 引用 + Context Provider 查詢
+```typescript
+export class RoleEntity {
+  memberId: string; // 僅 ID 引用
+}
+
+// 需要時透過 Context Provider 查詢
+const memberName = memberContext.getMemberName(role.memberId);
+```
+
+---
+
+## 九、DDD 實作規範
+
+### Aggregate Root: RoleEntity
+
+#### Creation Pattern (產生 Domain Event)
+```typescript
+// Domain Layer: permissions/domain/aggregates/role.aggregate.ts
+export class RoleEntity {
+  private constructor(
+    public readonly id: string,
+    public readonly name: string,
+    private _permissions: Set<string>,
+    public readonly metadata: RoleMetadata
+  ) {}
+  
+  public static create(
+    name: string,
+    permissions: string[],
+    eventMetadata?: EventMetadata
+  ): RoleEntity {
+    const id = generateId();
+    const role = new RoleEntity(
+      id,
+      name,
+      new Set(permissions),
+      { createdAt: Date.now(), updatedAt: Date.now() }
+    );
+    
+    // 產生 Domain Event
+    role.addDomainEvent(
+      new RoleCreatedEvent(id, { name, permissions }, eventMetadata)
+    );
+    
+    return role;
+  }
+  
+  public static reconstruct(props: RoleProps): RoleEntity {
+    // 從 Snapshot 重建，不產生 Event
+    return new RoleEntity(
+      props.id,
+      props.name,
+      new Set(props.permissions),
+      props.metadata
+    );
+  }
+}
+```
+
+#### Factory Pattern (強制執行 Policy)
+```typescript
+// Domain Layer: permissions/domain/factories/role.factory.ts
+import { RoleNamingPolicy } from '../policies/role-naming.policy';
+
+export class RoleFactory {
+  public static createCustomRole(
+    name: string,
+    permissions: string[],
+    metadata?: EventMetadata
+  ): RoleEntity {
+    // 執行命名策略
+    RoleNamingPolicy.assertIsValid(name);
+    
+    // 執行權限策略
+    PermissionPolicy.assertValidPermissions(permissions);
+    
+    // 透過 Aggregate 創建
+    return RoleEntity.create(name, permissions, metadata);
+  }
+}
+```
+
+#### Policy Pattern (封裝業務規則)
+```typescript
+// Domain Layer: permissions/domain/policies/role-naming.policy.ts
+export class RoleNamingPolicy {
+  private static readonly MIN_LENGTH = 3;
+  private static readonly MAX_LENGTH = 30;
+  private static readonly RESERVED_NAMES = ['owner', 'admin', 'member', 'viewer'];
+  
+  public static isSatisfiedBy(name: string): boolean {
+    if (!name) return false;
+    
+    const trimmed = name.trim();
+    if (trimmed.length < this.MIN_LENGTH) return false;
+    if (trimmed.length > this.MAX_LENGTH) return false;
+    
+    const lower = trimmed.toLowerCase();
+    return !this.RESERVED_NAMES.includes(lower);
+  }
+  
+  public static assertIsValid(name: string): void {
+    if (!this.isSatisfiedBy(name)) {
+      throw new DomainError(
+        `Invalid role name: "${name}". Must be ${this.MIN_LENGTH}-${this.MAX_LENGTH} chars and not reserved.`
+      );
+    }
+  }
+}
+```
+
+### Mapper Pattern (Domain <-> DTO/Firestore)
+
+#### Application Layer: Domain -> DTO
+```typescript
+// Application Layer: permissions/application/mappers/role-to-dto.mapper.ts
+export class RoleToDtoMapper {
+  public static toDto(entity: RoleEntity): RoleDto {
+    return {
+      id: entity.id,
+      name: entity.name,
+      permissions: Array.from(entity.permissions),
+      createdAt: entity.metadata.createdAt,
+      updatedAt: entity.metadata.updatedAt,
+    };
+  }
+}
+```
+
+#### Infrastructure Layer: Domain <-> Firestore
+```typescript
+// Infrastructure Layer: permissions/infrastructure/mappers/role-firestore.mapper.ts
+export class RoleFirestoreMapper {
+  public static toDomain(doc: FirestoreRoleDocument): RoleEntity {
+    return RoleEntity.reconstruct({
+      id: doc.id,
+      name: doc.name,
+      permissions: doc.permissions,
+      metadata: {
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+      },
+    });
+  }
+  
+  public static toFirestore(entity: RoleEntity): FirestoreRoleDocument {
+    return {
+      id: entity.id,
+      name: entity.name,
+      permissions: Array.from(entity.permissions),
+      createdAt: entity.metadata.createdAt,
+      updatedAt: entity.metadata.updatedAt,
+      workspaceId: entity.workspaceId,
+    };
+  }
+}
+```
+
+### Dependency Inversion (Repository Pattern)
+
+#### Application Layer: 定義介面與 Token
+```typescript
+// Application Layer: permissions/application/ports/role-repository.port.ts
+export interface IRoleRepository {
+  findById(id: string): Promise<RoleEntity | null>;
+  save(role: RoleEntity): Promise<void>;
+  findByWorkspaceId(workspaceId: string): Promise<RoleEntity[]>;
+  delete(id: string): Promise<void>;
+}
+
+// Application Layer: permissions/application/tokens/role-repository.token.ts
+export const ROLE_REPOSITORY_TOKEN = new InjectionToken<IRoleRepository>(
+  'ROLE_REPOSITORY_TOKEN'
+);
+```
+
+#### Infrastructure Layer: 實作介面
+```typescript
+// Infrastructure Layer: permissions/infrastructure/repositories/role-firebase.repository.ts
+@Injectable()
+export class RoleFirebaseRepository implements IRoleRepository {
+  private firestore = inject(Firestore);
+  
+  async findById(id: string): Promise<RoleEntity | null> {
+    const docRef = doc(this.firestore, 'roles', id);
+    const snapshot = await getDoc(docRef);
+    
+    if (!snapshot.exists()) return null;
+    
+    return RoleFirestoreMapper.toDomain(snapshot.data() as FirestoreRoleDocument);
+  }
+  
+  async save(role: RoleEntity): Promise<void> {
+    const docRef = doc(this.firestore, 'roles', role.id);
+    const dto = RoleFirestoreMapper.toFirestore(role);
+    await setDoc(docRef, dto);
+  }
+}
+```
+
+### Child Entities: Permission Assignments
+- 使用 Value Object ID (PermissionId)
+- 禁止直接暴露 `_permissions: Set<string>`，透過方法操作
 
 ### 型別安全
 - 禁止使用 any 或 as unknown
@@ -163,7 +445,7 @@
 
 ---
 
-## 九、開發檢查清單
+## 十、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -179,10 +461,15 @@
 - [ ] 支援鍵盤導航與螢幕閱讀器
 - [ ] 撰寫 Unit / Integration / E2E 測試
 - [ ] 遵循奧卡姆剃刀原則，避免過度設計
+- [ ] 實作 Context Provider 供其他模組查詢權限
+- [ ] 使用 InjectionToken 進行依賴注入
+- [ ] 使用 Factory/Policy 封裝創建與驗證邏輯
+- [ ] 使用 Mapper 分離 Domain Entity 與 DTO
+- [ ] 避免直接注入其他模組的 Store
 
 ---
 
-## 十、參考資料
+## 十一、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md

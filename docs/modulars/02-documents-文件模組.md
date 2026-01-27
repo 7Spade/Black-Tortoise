@@ -182,24 +182,161 @@ Workspace 檔案資產管理，包含檔案樹結構與資料夾組織
 
 ---
 
-## 八、DDD 實作規範
+## 八、跨模組整合 (Cross-Module Integration)
 
-### Aggregate Root
-- 支援 Creation (create()) 與 Reconstruction (reconstruct())
-- 所有業務變更方法必須產生 Domain Event
-- reconstruct 不產生 Domain Event
+### 本模組發布 (Published by This Module)
 
-### Child Entities
-- 使用 Value Object ID
-- 禁止直接暴露陣列，必須透過方法操作
+#### Context Provider
+```typescript
+// Application Layer: 02-documents/application/providers/documents-context.provider.ts
+export abstract class DocumentContextProvider {
+  abstract getDocumentCount(workspaceId: string): number;
+  abstract hasDocument(documentId: string): boolean;
+  abstract getDocumentPath(documentId: string): string | null;
+}
+```
+
+#### 發布事件 (Published Events)
+- **DocumentUploaded**
+- **DocumentUpdated**
+- **DocumentDeleted**
+- **FolderCreated**
+
+### 本模組訂閱 (Consumed by This Module)
+
+#### 訂閱事件 (Subscribed Events)
+- **WorkspaceSwitched**
+
+#### 使用的 Context Providers
+- **WorkspaceContextProvider**: 查詢當前 Workspace ID
+
+### 整合範例
+
+```typescript
+// Application Layer: 02-documents/application/stores/documents.store.ts
+export const DocumentsStore = signalStore(
+  { providedIn: 'root' },
+  withState<DocumentsState>(initialState),
+  withMethods((store) => {
+    const eventBus = inject(WorkspaceEventBus);
+    const workspaceContext = inject(WorkspaceContextProvider);
+    
+    return {
+      // 業務方法範例
+    };
+  }),
+  withHooks({
+    onInit(store) {
+      const eventBus = inject(WorkspaceEventBus);
+      
+      // 訂閱 WorkspaceSwitched
+      eventBus.on('WorkspaceSwitched', () => {
+        patchState(store, initialState);
+      });
+    }
+  })
+);
+```
+
+### 禁止的整合方式
+
+❌ **禁止**：直接注入其他模組的 Store
+```typescript
+// ❌ 錯誤
+export class DocumentsStore {
+  private taskStore = inject(TaskStore); // 緊密耦合
+}
+```
+
+✅ **正確**：使用 Context Provider 或 Event Bus
+```typescript
+export class DocumentsStore {
+  private workspaceContext = inject(WorkspaceContextProvider); // 鬆散耦合
+  private eventBus = inject(WorkspaceEventBus);
+}
+```
+
+---
+
+## 九、DDD 實作規範
+
+### Aggregate Root: DocumentEntity
+
+#### Creation Pattern (產生 Domain Event)
+```typescript
+// Domain Layer: 02-documents/domain/aggregates/documents.aggregate.ts
+export class DocumentEntity {
+  private constructor(...) {}
+  
+  public static create(..., eventMetadata?: EventMetadata): DocumentEntity {
+    // 產生 Domain Event
+    // ...
+  }
+  
+  public static reconstruct(props): DocumentEntity {
+    // 從 Snapshot 重建，不產生 Event
+    return new DocumentEntity(...);
+  }
+}
+```
+
+#### Factory Pattern (強制執行 Policy)
+```typescript
+// Domain Layer: 02-documents/domain/factories/documents.factory.ts
+export class DocumentFactory {
+  public static create(..., metadata?: EventMetadata): DocumentEntity {
+    // 執行 Policy 檢查
+    DocumentNamingPolicy.assertIsValid(...);
+    
+    // 透過 Aggregate 創建
+    return DocumentEntity.create(..., metadata);
+  }
+}
+```
+
+#### Policy Pattern (封裝業務規則)
+```typescript
+// Domain Layer: 02-documents/domain/policies/documents.policy.ts
+export class DocumentNamingPolicy {
+  public static isSatisfiedBy(...): boolean {
+    // 業務規則檢查
+  }
+  
+  public static assertIsValid(...): void {
+    if (!this.isSatisfiedBy(...)) {
+      throw new DomainError('...');
+    }
+  }
+}
+```
+
+### Dependency Inversion (Repository Pattern)
+
+#### Application Layer: 定義介面與 Token
+```typescript
+// Application Layer: 02-documents/application/ports/documents-repository.port.ts
+export interface IDocumentRepository {
+  findById(id: string): Promise<DocumentEntity | null>;
+  save(entity: DocumentEntity): Promise<void>;
+}
+
+// Application Layer: 02-documents/application/tokens/documents-repository.token.ts
+export const DOCUMENT_REPOSITORY_TOKEN = new InjectionToken<IDocumentRepository>(
+  'DOCUMENT_REPOSITORY_TOKEN'
+);
+```
+
+### Mapper Pattern (Domain <-> DTO/Firestore)
+- Application Layer: DocumentToDtoMapper
+- Infrastructure Layer: DocumentFirestoreMapper
 
 ### 型別安全
 - 禁止使用 any 或 as unknown
 - Mapper 必須明確處理深層嵌套物件
 
----
+------
 
-## 九、開發檢查清單
+## 十、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -215,10 +352,15 @@ Workspace 檔案資產管理，包含檔案樹結構與資料夾組織
 - [ ] 支援鍵盤導航與螢幕閱讀器
 - [ ] 撰寫 Unit / Integration / E2E 測試
 - [ ] 遵循奧卡姆剃刀原則，避免過度設計
+- [ ] 實作 Context Provider 供其他模組查詢
+- [ ] 使用 InjectionToken 進行依賴注入
+- [ ] 使用 Factory/Policy 封裝創建與驗證邏輯
+- [ ] 使用 Mapper 分離 Domain Entity 與 DTO
+- [ ] 避免直接注入其他模組的 Store
 
 ---
 
-## 十、參考資料
+## 十一、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md

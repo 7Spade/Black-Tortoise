@@ -154,24 +154,99 @@
 
 ---
 
-## 八、DDD 實作規範
+## 八、跨模組整合 (Cross-Module Integration)
 
-### Aggregate Root
-- 支援 Creation (create()) 與 Reconstruction (reconstruct())
-- 所有業務變更方法必須產生 Domain Event
-- reconstruct 不產生 Domain Event
+### 本模組發布 (Published by This Module)
 
-### Child Entities
-- 使用 Value Object ID
-- 禁止直接暴露陣列，必須透過方法操作
+#### Context Provider
+```typescript
+// Application Layer: 11-calendar/application/providers/calendar-context.provider.ts
+export abstract class CalendarContextProvider {
+  abstract getTasksForDate(date: Date): TaskSummary[];
+  abstract getWorkHoursForDate(date: Date): number;
+}
+```
+
+#### 發布事件 (Published Events)
+- 無 (此模組僅訂閱事件)
+
+### 本模組訂閱 (Consumed by This Module)
+
+#### 訂閱事件 (Subscribed Events)
+- **TaskCreated**
+- **TaskUpdated**
+- **DailyEntryCreated**
+- **WorkspaceSwitched**
+
+#### 使用的 Context Providers
+- **WorkspaceContextProvider**: 查詢當前 Workspace ID
+
+### 整合範例
+
+```typescript
+// Application Layer: 11-calendar/application/stores/calendar.store.ts
+export const CalendarStore = signalStore(
+  { providedIn: 'root' },
+  withState<CalendarState>(initialState),
+  withMethods((store) => {
+    const eventBus = inject(WorkspaceEventBus);
+    const workspaceContext = inject(WorkspaceContextProvider);
+    
+    return {
+      // 業務方法範例
+    };
+  }),
+  withHooks({
+    onInit(store) {
+      const eventBus = inject(WorkspaceEventBus);
+      
+      // 訂閱 WorkspaceSwitched
+      eventBus.on('WorkspaceSwitched', () => {
+        patchState(store, initialState);
+      });
+    }
+  })
+);
+```
+
+### 禁止的整合方式
+
+❌ **禁止**：直接注入其他模組的 Store
+```typescript
+// ❌ 錯誤
+export class CalendarStore {
+  private taskStore = inject(TaskStore); // 緊密耦合
+}
+```
+
+✅ **正確**：使用 Context Provider 或 Event Bus
+```typescript
+export class CalendarStore {
+  private workspaceContext = inject(WorkspaceContextProvider); // 鬆散耦合
+  private eventBus = inject(WorkspaceEventBus);
+}
+```
+
+---
+
+## 九、DDD 實作規範
+
+### 特殊說明
+本模組為 **特殊模組 (Aggregator)**，不需要完整的 Aggregate/Factory/Policy 結構。
+
+### 實作重點
+- 使用 signalStore 管理狀態
+- 訂閱其他模組的事件進行資料聚合
+- 使用 computed signal 計算派生資料
+- 使用 Mapper 轉換來源資料格式
 
 ### 型別安全
 - 禁止使用 any 或 as unknown
 - Mapper 必須明確處理深層嵌套物件
 
----
+------
 
-## 九、開發檢查清單
+## 十、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -187,10 +262,15 @@
 - [ ] 支援鍵盤導航與螢幕閱讀器
 - [ ] 撰寫 Unit / Integration / E2E 測試
 - [ ] 遵循奧卡姆剃刀原則，避免過度設計
+- [ ] 實作 Context Provider 供其他模組查詢
+- [ ] 使用 InjectionToken 進行依賴注入
+- [ ] 使用 Factory/Policy 封裝創建與驗證邏輯
+- [ ] 使用 Mapper 分離 Domain Entity 與 DTO
+- [ ] 避免直接注入其他模組的 Store
 
 ---
 
-## 十、參考資料
+## 十一、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md

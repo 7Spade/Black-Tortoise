@@ -1000,6 +1000,432 @@ Copilot 生成代碼時必須遵循「如無必要，勿增實體」的原則。
 
 ---
 
+## 六之一、跨模組整合與解耦規範 (Cross-Module Integration & Decoupling Rules)
+
+本節定義模組間的通訊契約與解耦策略，確保高內聚、低耦合的模組化架構。
+
+### 1. 模組間通訊矩陣 (Cross-Module Communication Matrix)
+
+#### 通訊方式定義
+模組間僅允許以下三種通訊方式：
+
+1. **Event Bus (事件總線)** - 異步、單向、發布-訂閱模式
+   - 用於：狀態變更通知、跨模組流程觸發
+   - 範例：`WorkspaceSwitched`, `TaskStatusChanged`, `QCPassed`
+   
+2. **Context Provider (上下文提供者)** - 同步、只讀查詢介面
+   - 用於：跨模組查詢當前狀態、存在性檢查
+   - 範例：`WorkspaceContextProvider.getCurrentWorkspaceId()`
+   
+3. **Shared Kernel (共享核心)** - 原始型別、常數、工具函數
+   - 用於：型別定義、ID 型別、通用工具
+   - 範例：`WorkspaceId`, `TaskStatus`, `DateUtils`
+
+#### ❌ 禁止的通訊方式
+- **直接 Store 注入**：模組 A 不得 `inject(ModuleBStore)`
+- **直接 Service 呼叫**：模組 A 不得 `inject(ModuleBService)`
+- **共享可變狀態**：模組間不得共享 Signal 或陣列參考
+
+### 2. Context Provider 模式 (Anti-Corruption Layer)
+
+每個需要被其他模組查詢的模組，必須提供 **抽象 Context Provider**。
+
+#### 實作範例：Workspace Context Provider
+```typescript
+// Application Layer: workspace/application/providers/workspace-context.provider.ts
+export abstract class WorkspaceContextProvider {
+  abstract getCurrentWorkspaceId(): string | null;
+  abstract getWorkspaceName(id: string): string | null;
+  abstract hasWorkspace(): boolean;
+  abstract hasModule(moduleId: string): boolean;
+}
+
+// Implementation: workspace/application/providers/workspace-context.impl.ts
+@Injectable({ providedIn: 'root' })
+export class WorkspaceContextProviderImpl implements WorkspaceContextProvider {
+  private store = inject(WorkspaceStore);
+  
+  getCurrentWorkspaceId(): string | null {
+    return this.store.currentWorkspaceId();
+  }
+  
+  getWorkspaceName(id: string): string | null {
+    const workspace = this.store.findById(id);
+    return workspace?.name ?? null;
+  }
+  
+  hasWorkspace(): boolean {
+    return this.store.currentWorkspaceId() !== null;
+  }
+  
+  hasModule(moduleId: string): boolean {
+    const workspace = this.store.currentWorkspace();
+    return workspace?.enabledModuleIds.includes(moduleId) ?? false;
+  }
+}
+
+// Provide in app.config.ts
+providers: [
+  {
+    provide: WorkspaceContextProvider,
+    useClass: WorkspaceContextProviderImpl
+  }
+]
+```
+
+#### 其他模組使用 Context Provider
+```typescript
+// tasks/application/use-cases/create-task.use-case.ts
+export class CreateTaskUseCase {
+  private workspaceContext = inject(WorkspaceContextProvider);
+  
+  execute(command: CreateTaskCommand): void {
+    const workspaceId = this.workspaceContext.getCurrentWorkspaceId();
+    
+    if (!workspaceId) {
+      throw new DomainError('No workspace selected');
+    }
+    
+    // 使用 workspaceId 創建 Task，不依賴 WorkspaceStore
+    const task = TaskFactory.create(command.title, workspaceId);
+  }
+}
+```
+
+### 3. 依賴反轉原則 (Dependency Inversion Principle)
+
+#### Application Layer 定義介面
+所有 Repository 與外部依賴的介面必須定義在 **Application Layer**，由 Infrastructure Layer 實作。
+
+```typescript
+// Application Layer: tasks/application/ports/task-repository.port.ts
+export interface ITaskRepository {
+  findById(id: string): Promise<TaskEntity | null>;
+  save(task: TaskEntity): Promise<void>;
+  findByWorkspaceId(workspaceId: string): Promise<TaskEntity[]>;
+}
+
+// Application Layer: tasks/application/tokens/task-repository.token.ts
+import { InjectionToken } from '@angular/core';
+import { ITaskRepository } from '../ports/task-repository.port';
+
+export const TASK_REPOSITORY_TOKEN = new InjectionToken<ITaskRepository>(
+  'TASK_REPOSITORY_TOKEN'
+);
+```
+
+#### Infrastructure Layer 實作介面
+```typescript
+// Infrastructure Layer: tasks/infrastructure/repositories/task-firebase.repository.ts
+@Injectable()
+export class TaskFirebaseRepository implements ITaskRepository {
+  private firestore = inject(Firestore);
+  
+  async findById(id: string): Promise<TaskEntity | null> {
+    const docRef = doc(this.firestore, 'tasks', id);
+    const snapshot = await getDoc(docRef);
+    
+    if (!snapshot.exists()) return null;
+    
+    // 使用 Mapper 轉換 DTO -> Entity
+    return TaskFirestoreMapper.toDomain(snapshot.data());
+  }
+  
+  async save(task: TaskEntity): Promise<void> {
+    const docRef = doc(this.firestore, 'tasks', task.id);
+    
+    // 使用 Mapper 轉換 Entity -> DTO
+    const dto = TaskFirestoreMapper.toFirestore(task);
+    await setDoc(docRef, dto);
+  }
+}
+```
+
+#### Application Layer 使用 Token
+```typescript
+// Application Layer: tasks/application/stores/task.store.ts
+export const TaskStore = signalStore(
+  { providedIn: 'root' },
+  withState<TaskState>(initialState),
+  withMethods((store) => {
+    const repo = inject(TASK_REPOSITORY_TOKEN); // ✅ 依賴抽象
+    
+    return {
+      async loadTasks(workspaceId: string): Promise<void> {
+        patchState(store, { loading: true });
+        
+        try {
+          const tasks = await repo.findByWorkspaceId(workspaceId);
+          patchState(store, { entities: tasks, loading: false });
+        } catch (error) {
+          patchState(store, { error, loading: false });
+        }
+      }
+    };
+  })
+);
+```
+
+### 4. DDD 戰術模式 (DDD Tactical Patterns)
+
+參考 `template-core` 範例，所有模組必須實作以下戰術模式：
+
+#### Factory Pattern (工廠模式)
+用於封裝複雜的創建邏輯，並強制執行 Policy。
+
+```typescript
+// Domain Layer: permissions/domain/factories/role.factory.ts
+export class RoleFactory {
+  public static createCustomRole(
+    name: string,
+    permissions: string[],
+    metadata?: EventMetadata
+  ): RoleEntity {
+    // 執行命名策略
+    RoleNamingPolicy.assertIsValid(name);
+    
+    // 執行權限策略
+    PermissionPolicy.assertValidPermissions(permissions);
+    
+    // 透過 Aggregate 的靜態方法創建（會產生 Domain Event）
+    return RoleEntity.create(name, permissions, metadata);
+  }
+}
+```
+
+#### Policy Pattern (策略模式)
+用於封裝業務規則，支援複用與測試。
+
+```typescript
+// Domain Layer: permissions/domain/policies/role-naming.policy.ts
+export class RoleNamingPolicy {
+  private static readonly MIN_LENGTH = 3;
+  private static readonly MAX_LENGTH = 30;
+  private static readonly RESERVED_NAMES = ['owner', 'admin', 'member', 'viewer'];
+  
+  public static isSatisfiedBy(name: string): boolean {
+    if (!name) return false;
+    
+    const trimmed = name.trim();
+    if (trimmed.length < this.MIN_LENGTH) return false;
+    if (trimmed.length > this.MAX_LENGTH) return false;
+    
+    const lower = trimmed.toLowerCase();
+    return !this.RESERVED_NAMES.includes(lower);
+  }
+  
+  public static assertIsValid(name: string): void {
+    if (!this.isSatisfiedBy(name)) {
+      throw new DomainError(
+        `Invalid role name: "${name}". Must be ${this.MIN_LENGTH}-${this.MAX_LENGTH} chars and not reserved.`
+      );
+    }
+  }
+}
+```
+
+#### Specification Pattern (規格模式)
+用於封裝複雜的業務查詢邏輯。
+
+```typescript
+// Domain Layer: tasks/domain/specifications/task-ready-for-qc.specification.ts
+export class TaskReadyForQCSpecification {
+  public isSatisfiedBy(task: TaskEntity): boolean {
+    return (
+      task.status === TaskStatus.InProgress &&
+      task.progress === 100 &&
+      task.hasRequiredDocuments() &&
+      !task.hasBlockingIssues()
+    );
+  }
+  
+  public whyNotSatisfied(task: TaskEntity): string[] {
+    const reasons: string[] = [];
+    
+    if (task.status !== TaskStatus.InProgress) {
+      reasons.push('Task must be In Progress');
+    }
+    if (task.progress < 100) {
+      reasons.push(`Progress must be 100% (current: ${task.progress}%)`);
+    }
+    if (!task.hasRequiredDocuments()) {
+      reasons.push('Required documents are missing');
+    }
+    if (task.hasBlockingIssues()) {
+      reasons.push('Task has blocking issues');
+    }
+    
+    return reasons;
+  }
+}
+```
+
+#### Mapper Pattern (映射器模式)
+用於嚴格分離 Domain Entity 與 DTO/Firestore Document。
+
+```typescript
+// Application Layer: tasks/application/mappers/task-to-dto.mapper.ts
+export class TaskToDtoMapper {
+  public static toDto(entity: TaskEntity): TaskDto {
+    return {
+      id: entity.id,
+      title: entity.title,
+      status: entity.status,
+      progress: entity.progress,
+      assigneeId: entity.assigneeId,
+      dueDate: entity.dueDate?.toISOString() ?? null,
+      // DTO 不包含 Domain 方法，僅純數據
+    };
+  }
+}
+
+// Infrastructure Layer: tasks/infrastructure/mappers/task-firestore.mapper.ts
+export class TaskFirestoreMapper {
+  public static toDomain(doc: FirestoreTaskDocument): TaskEntity {
+    return TaskEntity.reconstruct({
+      id: doc.id,
+      title: doc.title,
+      status: doc.status as TaskStatus,
+      progress: doc.progress,
+      assigneeId: doc.assigneeId,
+      dueDate: doc.dueDate ? new Date(doc.dueDate) : null,
+      workspaceId: doc.workspaceId,
+    });
+  }
+  
+  public static toFirestore(entity: TaskEntity): FirestoreTaskDocument {
+    return {
+      id: entity.id,
+      title: entity.title,
+      status: entity.status,
+      progress: entity.progress,
+      assigneeId: entity.assigneeId,
+      dueDate: entity.dueDate?.toISOString() ?? null,
+      workspaceId: entity.workspaceId,
+      updatedAt: Timestamp.now(),
+    };
+  }
+}
+```
+
+### 5. 禁止的耦合反模式 (Forbidden Coupling Anti-Patterns)
+
+#### ❌ 反模式 1: 直接 Store 注入
+```typescript
+// ❌ 錯誤：Tasks Module 直接注入 Workspace Store
+export class TaskStore {
+  private workspaceStore = inject(WorkspaceStore); // 緊密耦合
+  
+  createTask(title: string) {
+    const workspaceId = this.workspaceStore.currentWorkspaceId();
+    // ...
+  }
+}
+```
+
+#### ✅ 正確：使用 Context Provider
+```typescript
+export class TaskStore {
+  private workspaceContext = inject(WorkspaceContextProvider); // 鬆散耦合
+  
+  createTask(title: string) {
+    const workspaceId = this.workspaceContext.getCurrentWorkspaceId();
+    // ...
+  }
+}
+```
+
+#### ❌ 反模式 2: 跨模組共享 Entity
+```typescript
+// ❌ 錯誤：Task Entity 直接引用 Workspace Entity
+export class TaskEntity {
+  constructor(
+    public workspace: WorkspaceEntity // 跨模組 Entity 依賴
+  ) {}
+}
+```
+
+#### ✅ 正確：僅引用 ID
+```typescript
+export class TaskEntity {
+  constructor(
+    public workspaceId: string // 僅 ID 引用
+  ) {}
+}
+```
+
+#### ❌ 反模式 3: Component 直接呼叫 Infrastructure
+```typescript
+// ❌ 錯誤：Component 直接注入 Repository
+@Component({ ... })
+export class TaskListComponent {
+  private taskRepo = inject(TaskFirebaseRepository); // 跨層依賴
+  
+  async loadTasks() {
+    const tasks = await this.taskRepo.findAll();
+  }
+}
+```
+
+#### ✅ 正確：Component 僅使用 Store
+```typescript
+@Component({ ... })
+export class TaskListComponent {
+  private taskStore = inject(TaskStore); // 僅依賴 Application Layer
+  
+  tasks = this.taskStore.entities;
+  
+  ngOnInit() {
+    this.taskStore.loadTasks();
+  }
+}
+```
+
+#### ❌ 反模式 4: 循環依賴
+```typescript
+// ❌ 錯誤：A 依賴 B，B 依賴 A
+export class WorkspaceStore {
+  private taskStore = inject(TaskStore);
+}
+
+export class TaskStore {
+  private workspaceStore = inject(WorkspaceStore); // 循環依賴
+}
+```
+
+#### ✅ 正確：使用 Event Bus 或 Mediator
+```typescript
+export class WorkspaceStore {
+  private eventBus = inject(WorkspaceEventBus);
+  
+  switchWorkspace(id: string) {
+    this.eventBus.emit({ type: 'WorkspaceSwitched', payload: { id } });
+  }
+}
+
+export class TaskStore {
+  constructor() {
+    const eventBus = inject(WorkspaceEventBus);
+    eventBus.on('WorkspaceSwitched', () => this.reset());
+  }
+}
+```
+
+### 6. 模組間整合檢查清單
+
+實作任何跨模組整合時，必須確認：
+
+- [ ] 是否使用 Event Bus 進行異步通知？
+- [ ] 是否提供 Context Provider 供其他模組查詢？
+- [ ] 是否避免直接注入其他模組的 Store/Service？
+- [ ] 是否使用 InjectionToken 進行依賴注入？
+- [ ] 是否使用 Mapper 分離 Domain Entity 與 DTO？
+- [ ] 是否使用 Factory/Policy 封裝創建與驗證邏輯？
+- [ ] 是否避免跨模組共享 Entity 類別？
+- [ ] 是否確保事件包含完整 Metadata (correlationId)?
+
+---
+
 ## 七、事件架構實作規範 (Event Architecture Implementation Specs)
 
 ### 1. 事件定義 (Event Definition)

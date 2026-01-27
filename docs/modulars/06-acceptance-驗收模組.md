@@ -170,24 +170,160 @@
 
 ---
 
-## 八、DDD 實作規範
+## 八、跨模組整合 (Cross-Module Integration)
 
-### Aggregate Root
-- 支援 Creation (create()) 與 Reconstruction (reconstruct())
-- 所有業務變更方法必須產生 Domain Event
-- reconstruct 不產生 Domain Event
+### 本模組發布 (Published by This Module)
 
-### Child Entities
-- 使用 Value Object ID
-- 禁止直接暴露陣列，必須透過方法操作
+#### Context Provider
+```typescript
+// Application Layer: 06-acceptance/application/providers/acceptance-context.provider.ts
+export abstract class AcceptanceContextProvider {
+  abstract getAcceptanceStatus(taskId: string): string | null;
+  abstract canStartAcceptance(taskId: string): boolean;
+}
+```
+
+#### 發布事件 (Published Events)
+- **AcceptanceApproved**
+- **AcceptanceRejected**
+- **AcceptanceInProgress**
+
+### 本模組訂閱 (Consumed by This Module)
+
+#### 訂閱事件 (Subscribed Events)
+- **QCPassed**
+- **WorkspaceSwitched**
+
+#### 使用的 Context Providers
+- **WorkspaceContextProvider**: 查詢當前 Workspace ID
+
+### 整合範例
+
+```typescript
+// Application Layer: 06-acceptance/application/stores/acceptance.store.ts
+export const AcceptanceStore = signalStore(
+  { providedIn: 'root' },
+  withState<AcceptanceState>(initialState),
+  withMethods((store) => {
+    const eventBus = inject(WorkspaceEventBus);
+    const workspaceContext = inject(WorkspaceContextProvider);
+    
+    return {
+      // 業務方法範例
+    };
+  }),
+  withHooks({
+    onInit(store) {
+      const eventBus = inject(WorkspaceEventBus);
+      
+      // 訂閱 WorkspaceSwitched
+      eventBus.on('WorkspaceSwitched', () => {
+        patchState(store, initialState);
+      });
+    }
+  })
+);
+```
+
+### 禁止的整合方式
+
+❌ **禁止**：直接注入其他模組的 Store
+```typescript
+// ❌ 錯誤
+export class AcceptanceStore {
+  private taskStore = inject(TaskStore); // 緊密耦合
+}
+```
+
+✅ **正確**：使用 Context Provider 或 Event Bus
+```typescript
+export class AcceptanceStore {
+  private workspaceContext = inject(WorkspaceContextProvider); // 鬆散耦合
+  private eventBus = inject(WorkspaceEventBus);
+}
+```
+
+---
+
+## 九、DDD 實作規範
+
+### Aggregate Root: AcceptanceRecordEntity
+
+#### Creation Pattern (產生 Domain Event)
+```typescript
+// Domain Layer: 06-acceptance/domain/aggregates/acceptance.aggregate.ts
+export class AcceptanceRecordEntity {
+  private constructor(...) {}
+  
+  public static create(..., eventMetadata?: EventMetadata): AcceptanceRecordEntity {
+    // 產生 Domain Event
+    // ...
+  }
+  
+  public static reconstruct(props): AcceptanceRecordEntity {
+    // 從 Snapshot 重建，不產生 Event
+    return new AcceptanceRecordEntity(...);
+  }
+}
+```
+
+#### Factory Pattern (強制執行 Policy)
+```typescript
+// Domain Layer: 06-acceptance/domain/factories/acceptance.factory.ts
+export class AcceptanceRecordFactory {
+  public static create(..., metadata?: EventMetadata): AcceptanceRecordEntity {
+    // 執行 Policy 檢查
+    AcceptanceCriteriaPolicy.assertIsValid(...);
+    
+    // 透過 Aggregate 創建
+    return AcceptanceRecordEntity.create(..., metadata);
+  }
+}
+```
+
+#### Policy Pattern (封裝業務規則)
+```typescript
+// Domain Layer: 06-acceptance/domain/policies/acceptance.policy.ts
+export class AcceptanceCriteriaPolicy {
+  public static isSatisfiedBy(...): boolean {
+    // 業務規則檢查
+  }
+  
+  public static assertIsValid(...): void {
+    if (!this.isSatisfiedBy(...)) {
+      throw new DomainError('...');
+    }
+  }
+}
+```
+
+### Dependency Inversion (Repository Pattern)
+
+#### Application Layer: 定義介面與 Token
+```typescript
+// Application Layer: 06-acceptance/application/ports/acceptance-repository.port.ts
+export interface IAcceptanceRecordRepository {
+  findById(id: string): Promise<AcceptanceRecordEntity | null>;
+  save(entity: AcceptanceRecordEntity): Promise<void>;
+}
+
+// Application Layer: 06-acceptance/application/tokens/acceptance-repository.token.ts
+export const ACCEPTANCERECORD_REPOSITORY_TOKEN = new InjectionToken<IAcceptanceRecordRepository>(
+  'ACCEPTANCERECORD_REPOSITORY_TOKEN'
+);
+```
+
+### Mapper Pattern (Domain <-> DTO/Firestore)
+- Application Layer: AcceptanceRecordToDtoMapper
+- Infrastructure Layer: AcceptanceRecordFirestoreMapper
 
 ### 型別安全
 - 禁止使用 any 或 as unknown
 - Mapper 必須明確處理深層嵌套物件
 
----
+------
 
-## 九、開發檢查清單
+## 十、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -203,10 +339,15 @@
 - [ ] 支援鍵盤導航與螢幕閱讀器
 - [ ] 撰寫 Unit / Integration / E2E 測試
 - [ ] 遵循奧卡姆剃刀原則，避免過度設計
+- [ ] 實作 Context Provider 供其他模組查詢
+- [ ] 使用 InjectionToken 進行依賴注入
+- [ ] 使用 Factory/Policy 封裝創建與驗證邏輯
+- [ ] 使用 Mapper 分離 Domain Entity 與 DTO
+- [ ] 避免直接注入其他模組的 Store
 
 ---
 
-## 十、參考資料
+## 十一、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md
