@@ -6,8 +6,7 @@ test('App starts without critical errors', async ({ page }) => {
   page.on('pageerror', (err) => messages.push(err.toString()));
 
   try {
-    const response = await page.goto('http://localhost:4200', {
-      timeout: 15000,
+    const response = await page.goto('http://localhost:63338', { timeout: 15000 });
     });
     // Wait for app root
     await page.waitForSelector('app-root', { timeout: 10000 });
