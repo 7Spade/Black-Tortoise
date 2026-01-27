@@ -23,8 +23,7 @@ import { FormsModule } from '@angular/forms';
 import { CreateTaskHandler, FailQCHandler, ResolveIssueHandler, SubmitTaskForQCHandler } from '@application/handlers';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule, ModuleType } from '@application/interfaces/module.interface';
-import { TasksStore } from '@application/stores';
-import { TaskAggregate, TaskPriority, createTask } from '@domain/aggregates';
+import { TasksStore, TaskAggregate, TaskPriority, createTask } from '@application/stores';
 
 @Component({
   selector: 'app-tasks-module',

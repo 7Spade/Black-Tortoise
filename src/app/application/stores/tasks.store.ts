@@ -11,12 +11,15 @@
 
 import { computed, inject } from '@angular/core';
 import { TASK_REPOSITORY } from '@application/interfaces';
-import { TaskAggregate, TaskStatus } from '@domain/aggregates';
+import { TaskAggregate, TaskPriority, TaskStatus, createTask } from '@domain/aggregates';
 import { TaskId, WorkspaceId } from '@domain/value-objects';
 import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { from, pipe, switchMap } from 'rxjs';
+
+// Re-export domain types for presentation layer use
+export { TaskAggregate, TaskPriority, TaskStatus, createTask };
 
 /**
  * Tasks State

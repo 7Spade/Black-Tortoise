@@ -25,6 +25,9 @@ import { computed } from '@angular/core';
 import { TaskPriority } from '@domain/aggregates';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 
+// Re-export domain types for presentation layer use
+export { TaskPriority };
+
 export interface WorkspaceSettings {
   readonly workingHours: {
     readonly start: string; // HH:MM
