@@ -3,26 +3,27 @@
  *
  * Layer: Application - Store
  * Purpose: Manages workspace overview/dashboard state using NgRx Signals
- * Architecture: Zone-less, Pure Reactive, Angular 20+, NO RxJS
+ * Architecture: Zone-less, Pure Reactive, Angular 20+, Event-driven
  *
  * Responsibilities:
- * - Aggregate statistics from all modules
+ * - Aggregate statistics from all modules via Event Bus subscriptions
  * - Provide dashboard metrics
  * - Track workspace health
  *
  * Event Integration:
- * - Reacts to: ALL module events (to update metrics)
+ * - Reacts to: TaskCreated, TaskCompleted, IssueCreated, IssueResolved,
+ *   DocumentUploaded, MemberAdded, DailyEntryCreated, WorkspaceSwitched
  * - Publishes: None (read-only aggregation)
  *
  * Clean Architecture Compliance:
- * - Composes data from other stores
+ * - Uses Event Bus for module communication (no direct store injection)
  * - All state updates via patchState
- * - No RxJS subscriptions
  * - Pure signal-based reactivity
  */
 
-import { computed } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { computed, inject } from '@angular/core';
+import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
+import { EVENT_BUS } from '@application/interfaces';
 
 export interface WorkspaceMetrics {
   readonly totalTasks: number;
@@ -202,5 +203,128 @@ export const OverviewStore = signalStore(
     setError(error: string | null): void {
       patchState(store, { error, isLoading: false });
     },
-  }))
+  })),
+
+  /**
+   * Event Bus Integration
+   * 
+   * Subscribe to workspace events to update metrics and activity feed.
+   * Follows the pattern: Event Bus → Store → Component (signal propagation)
+   */
+  withHooks({
+    onInit(store) {
+      const eventBus = inject(EVENT_BUS);
+      const methods = store as unknown as ReturnType<typeof withMethods>;
+
+      // Subscribe to TaskCreated
+      eventBus.subscribe('TaskCreated', (event: any) => {
+        methods.incrementMetric('totalTasks');
+        methods.addActivity({
+          type: 'TaskCreated',
+          description: `Task created: ${event.payload?.title || 'New Task'}`,
+          timestamp: new Date(event.timestamp || Date.now()),
+          actorId: event.metadata?.userId || 'system',
+        });
+      });
+
+      // Subscribe to TaskCompleted
+      eventBus.subscribe('TaskCompleted', (event: any) => {
+        methods.incrementMetric('completedTasks');
+        methods.addActivity({
+          type: 'TaskCompleted',
+          description: `Task completed: ${event.payload?.title || 'Task'}`,
+          timestamp: new Date(event.timestamp || Date.now()),
+          actorId: event.metadata?.userId || 'system',
+        });
+      });
+
+      // Subscribe to IssueCreated
+      eventBus.subscribe('IssueCreated', (event: any) => {
+        methods.incrementMetric('openIssues');
+        methods.addActivity({
+          type: 'IssueCreated',
+          description: `Issue created: ${event.payload?.title || 'New Issue'}`,
+          timestamp: new Date(event.timestamp || Date.now()),
+          actorId: event.metadata?.userId || 'system',
+        });
+      });
+
+      // Subscribe to IssueResolved
+      eventBus.subscribe('IssueResolved', (event: any) => {
+        methods.decrementMetric('openIssues');
+        methods.addActivity({
+          type: 'IssueResolved',
+          description: `Issue resolved: ${event.payload?.title || 'Issue'}`,
+          timestamp: new Date(event.timestamp || Date.now()),
+          actorId: event.metadata?.userId || 'system',
+        });
+      });
+
+      // Subscribe to DocumentUploaded
+      eventBus.subscribe('DocumentUploaded', (event: any) => {
+        methods.incrementMetric('totalDocuments');
+        methods.addActivity({
+          type: 'DocumentUploaded',
+          description: `Document uploaded: ${event.payload?.name || 'Document'}`,
+          timestamp: new Date(event.timestamp || Date.now()),
+          actorId: event.metadata?.userId || 'system',
+        });
+      });
+
+      // Subscribe to MemberAdded
+      eventBus.subscribe('MemberAdded', (event: any) => {
+        methods.incrementMetric('totalMembers');
+        methods.addActivity({
+          type: 'MemberAdded',
+          description: `Member added: ${event.payload?.email || 'New Member'}`,
+          timestamp: new Date(event.timestamp || Date.now()),
+          actorId: event.metadata?.userId || 'system',
+        });
+      });
+
+      // Subscribe to DailyEntryCreated
+      eventBus.subscribe('DailyEntryCreated', (event: any) => {
+        methods.addActivity({
+          type: 'DailyEntryCreated',
+          description: `Daily entry created`,
+          timestamp: new Date(event.timestamp || Date.now()),
+          actorId: event.metadata?.userId || 'system',
+        });
+      });
+
+      // Subscribe to WorkspaceSwitched - reset all state
+      eventBus.subscribe('WorkspaceSwitched', () => {
+        methods.reset();
+      });
+
+      // Subscribe to QC events for activity feed
+      eventBus.subscribe('QCPassed', (event: any) => {
+        methods.addActivity({
+          type: 'QCPassed',
+          description: `QC passed: ${event.payload?.taskTitle || 'Task'}`,
+          timestamp: new Date(event.timestamp || Date.now()),
+          actorId: event.metadata?.userId || 'system',
+        });
+      });
+
+      eventBus.subscribe('QCFailed', (event: any) => {
+        methods.addActivity({
+          type: 'QCFailed',
+          description: `QC failed: ${event.payload?.taskTitle || 'Task'}`,
+          timestamp: new Date(event.timestamp || Date.now()),
+          actorId: event.metadata?.userId || 'system',
+        });
+      });
+
+      // Subscribe to Acceptance events for activity feed
+      eventBus.subscribe('AcceptanceApproved', (event: any) => {
+        methods.addActivity({
+          type: 'AcceptanceApproved',
+          description: `Acceptance approved: ${event.payload?.taskTitle || 'Task'}`,
+          timestamp: new Date(event.timestamp || Date.now()),
+          actorId: event.metadata?.userId || 'system',
+        });
+      });
+    },
+  })
 );

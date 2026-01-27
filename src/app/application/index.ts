@@ -11,5 +11,6 @@ export * from './guards';
 export * from './handlers';
 export * from './interfaces';
 export * from './models';
+export * from './providers';
 export * from './stores';
 

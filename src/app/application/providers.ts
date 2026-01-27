@@ -5,6 +5,7 @@ import {
   provideAppInitializer,
 } from '@angular/core';
 import { AuthStore } from './stores/auth.store';
+import { OVERVIEW_CONTEXT, OverviewContextProviderImpl } from './providers';
 
 export function provideApplication(): (Provider | EnvironmentProviders)[] {
   return [
@@ -12,5 +13,9 @@ export function provideApplication(): (Provider | EnvironmentProviders)[] {
       const authStore = inject(AuthStore);
       authStore.connect();
     }),
+    {
+      provide: OVERVIEW_CONTEXT,
+      useClass: OverviewContextProviderImpl,
+    },
   ];
 }
