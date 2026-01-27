@@ -5,10 +5,10 @@ import {
   TaskStatus,
   createTask,
 } from '../../domain/aggregates/task.aggregate';
-import { ResolveIssueHandler } from '../handlers/resolve-issue.handler';
-import { FailQCHandler } from '../handlers/fail-qc.handler';
-import { SubmitTaskForQCHandler } from '../handlers/submit-task-for-qc.handler';
 import { CreateTaskHandler } from '../handlers/create-task.handler';
+import { FailQCHandler } from '../handlers/fail-qc.handler';
+import { ResolveIssueHandler } from '../handlers/resolve-issue.handler';
+import { SubmitTaskForQCHandler } from '../handlers/submit-task-for-qc.handler';
 import { IModuleEventBus } from '../interfaces/module-event-bus.interface';
 import { TasksStore } from '../stores/tasks.store';
 
@@ -110,7 +110,11 @@ export class TasksFacade {
     });
   }
 
-  async resolveIssue(task: TaskAggregate, issueId: string, resolution: string): Promise<void> {
+  async resolveIssue(
+    task: TaskAggregate,
+    issueId: string,
+    resolution: string,
+  ): Promise<void> {
     const wsId = this.workspaceId();
     if (!wsId || !this.eventBus) return;
 

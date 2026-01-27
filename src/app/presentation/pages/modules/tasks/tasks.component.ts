@@ -34,8 +34,7 @@ import {
   IAppModule,
   ModuleType,
 } from '@application/interfaces/module.interface';
-import { TaskAggregate } from '@domain/aggregates/task.aggregate';
-import { TaskPriority } from '@domain/aggregates/task.aggregate';
+import { TaskAggregate, TaskPriority } from '@domain/aggregates/task.aggregate';
 
 @Component({
   selector: 'app-tasks-module',
@@ -679,7 +678,8 @@ export class TasksComponent implements IAppModule, OnInit, OnDestroy {
   }
 
   async resolveIssue(task: TaskAggregate): Promise<void> {
-    const issueId = (task.blockedByIssueIds && task.blockedByIssueIds[0]) || 'stub-issue-id';
+    const issueId =
+      (task.blockedByIssueIds && task.blockedByIssueIds[0]) || 'stub-issue-id';
     const resolution = 'Resolved via UI stub';
     await this.tasksFacade.resolveIssue(task, issueId, resolution);
   }
