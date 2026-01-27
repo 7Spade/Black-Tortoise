@@ -8,81 +8,16 @@ import { WorkspaceStore } from '@application/stores/workspace.store';
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-<div class="dashboard-container">
-  <div class="dashboard-scroll">
-    <div class="module-card">
-      <h3>Workspace</h3>
-      <p>Ready</p>
+    <div class="dashboard-container">
+      <div class="dashboard-scroll">
+        <div class="module-card">
+          <h3>Workspace</h3>
+          <p>Ready</p>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
   `,
-  styles: [`
-/**
- * Demo Dashboard Styles - Horizontal Layout
- */
-
-.dashboard-container {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  padding: 1.5rem;
-}
-
-.dashboard-scroll {
-  display: flex;
-  gap: 1.5rem;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 1rem;
-  scroll-snap-type: x proximity;
-  
-  &::-webkit-scrollbar {
-    height: 8px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: var(--md-sys-color-surface-variant, #e7e0ec);
-    border-radius: 4px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: var(--md-sys-color-primary, #6750a4);
-    border-radius: 4px;
-  }
-}
-
-.module-card {
-  flex: 0 0 280px;
-  min-width: 280px;
-  height: 200px;
-  padding: 2rem;
-  background: var(--md-sys-color-surface-container-low, #f7f2fa);
-  border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  scroll-snap-align: start;
-  
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-  }
-  
-  h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.5rem;
-    color: var(--md-sys-color-on-surface, #1d1b20);
-  }
-  
-  p {
-    margin: 0;
-    color: var(--md-sys-color-on-surface-variant, #49454f);
-    font-size: 0.875rem;
-  }
-}
-  `]
+  styleUrls: ['./demo-dashboard.component.scss'],
 })
 export class DemoDashboardComponent {
   readonly workspaceStore = inject(WorkspaceStore);

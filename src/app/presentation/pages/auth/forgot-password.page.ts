@@ -10,21 +10,21 @@ import { AuthStore } from '@application/stores';
   template: `
     <div class="auth-container">
       <h2>Forgot Password</h2>
-      
+
       @if (message) {
         <div class="success">{{ message }}</div>
       }
-      
+
       @if (authStore.error()) {
         <div class="error">{{ authStore.error() }}</div>
       }
-      
+
       <form (ngSubmit)="onSubmit()">
         <div class="form-group">
           <label>Email</label>
-          <input type="email" [(ngModel)]="email" name="email" required>
+          <input type="email" [(ngModel)]="email" name="email" required />
         </div>
-        
+
         <button type="submit" [disabled]="authStore.loading()">
           @if (authStore.loading()) {
             Sending...
@@ -33,26 +33,17 @@ import { AuthStore } from '@application/stores';
           }
         </button>
       </form>
-      
+
       <p>
         <a routerLink="/auth/login">Back to Login</a>
       </p>
     </div>
   `,
-  styles: [`
-    .auth-container { max-width: 400px; margin: 2rem auto; padding: 2rem; border: 1px solid #ccc; border-radius: 8px; }
-    .form-group { margin-bottom: 1rem; }
-    label { display: block; margin-bottom: 0.5rem; }
-    input { width: 100%; padding: 0.5rem; }
-    .error { color: red; margin-bottom: 1rem; }
-    .success { color: green; margin-bottom: 1rem; }
-    button { width: 100%; padding: 0.75rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    button:disabled { background: #ccc; }
-  `]
+  styleUrls: ['./forgot-password.page.scss'],
 })
 export class ForgotPasswordPage {
   readonly authStore = inject(AuthStore);
-  
+
   email = '';
   message = '';
 
