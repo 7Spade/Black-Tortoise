@@ -1,16 +1,16 @@
 /**
  * Workspace Create Trigger Component
- * 
+ *
  * Layer: Presentation - Components
  * Purpose: Sole place that opens workspace creation dialog and emits results
  * Architecture: Zone-less, OnPush, Pure Reactive, Signal-based, NO RxJS
- * 
+ *
  * Responsibilities:
  * - Opens MatDialog with WorkspaceCreateDialogComponent
  * - Emits dialog result via signal output
  * - NO result interpretation or business logic
  * - NO knowledge of workspace/org/auth
- * 
+ *
  * Constitution Compliance:
  * - No RxJS imports (removed Subject, filter)
  * - No manual subscribe calls
@@ -18,7 +18,12 @@
  * - Framework boundary (MatDialog) converted to signal via toSignal
  */
 
-import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  output,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -39,13 +44,7 @@ import { WorkspaceCreateDialogComponent } from './workspace-create-dialog.compon
       <span>Create Workspace</span>
     </button>
   `,
-  styles: [`
-    .create-workspace-btn {
-      width: 100%;
-      justify-content: flex-start;
-      margin: 4px 0;
-    }
-  `],
+  styleUrls: ['./workspace-create-trigger.component.scss'],
 })
 export class WorkspaceCreateTriggerComponent {
   private readonly dialog = inject(MatDialog);
@@ -61,18 +60,20 @@ export class WorkspaceCreateTriggerComponent {
    */
   readonly openDialog = rxMethod<void>(
     pipe(
-      exhaustMap(() => 
-        this.dialog.open(WorkspaceCreateDialogComponent, {
-          width: '500px',
-          disableClose: false,
-          autoFocus: true,
-        }).afterClosed()
+      exhaustMap(() =>
+        this.dialog
+          .open(WorkspaceCreateDialogComponent, {
+            width: '500px',
+            disableClose: false,
+            autoFocus: true,
+          })
+          .afterClosed(),
       ),
       tap((result) => {
         if (result && isWorkspaceCreateResult(result)) {
           this.dialogResult.emit(result);
         }
-      })
-    )
+      }),
+    ),
   );
 }

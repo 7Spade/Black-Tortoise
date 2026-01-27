@@ -1,6 +1,6 @@
 /**
  * Team Placeholder Component
- * 
+ *
  * Layer: Presentation
  * Purpose: Placeholder component for team-related UI
  * Architecture: Zone-less, OnPush, Standalone
@@ -18,13 +18,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       <p>Team Component - Under construction</p>
     </div>
   `,
-  styles: [`
-    .team-placeholder {
-      padding: 1rem;
-      color: var(--mat-sys-on-surface-variant, #49454f);
-      font-size: 0.875rem;
-    }
-  `],
+  styleUrls: ['./team-placeholder.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TeamPlaceholderComponent {
