@@ -28,14 +28,17 @@ import { TemplateStore } from '../../../application/stores/template.store';
       }
 
       <div class="grid">
-        @for (template of store.templates(); track template.id.value) {
+        @for (template of store.templateDtos(); track template.id) {
           <mat-card>
             <mat-card-header>
-              <mat-card-title>{{ template.name }}</mat-card-title>
-              <mat-card-subtitle>{{ template.createdAt | date }}</mat-card-subtitle>
+              <mat-card-title>
+                {{ template.displayName }}
+                @if (template.isNew) { <span class="badge">NEW</span> }
+              </mat-card-title>
+              <mat-card-subtitle>Modified: {{ template.lastModified }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <p>{{ template.content }}</p>
+              <p>{{ template.previewContent }}</p>
             </mat-card-content>
           </mat-card>
         }
@@ -47,6 +50,7 @@ import { TemplateStore } from '../../../application/stores/template.store';
     .actions { margin-bottom: 2rem; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
     .error { color: red; margin: 1rem 0; }
+    .badge { background: #4caf50; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; margin-left: 8px; }
   `]
 })
 export class TemplateListPageComponent implements OnInit {
@@ -60,7 +64,7 @@ export class TemplateListPageComponent implements OnInit {
     const name = prompt('Template Name:');
     const content = prompt('Template Content:');
     if (name && content) {
-      this.store.addTemplate({ name, content });
+      this.store.addTemplate({ name, content, userId: 'demo-user' });
     }
   }
 }

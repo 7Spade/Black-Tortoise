@@ -2,17 +2,21 @@ import { inject } from '@angular/core';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap } from 'rxjs';
-import { TEMPLATE_REPOSITORY_TOKEN } from '../../application/interfaces/template.repository';
-import { Template } from '../../domain/aggregates/template.aggregate';
+import { AddSectionToTemplateUseCase } from '../../application/use-cases/add-section.use-case';
+import { CreateTemplateUseCase } from '../../application/use-cases/create-template.use-case';
+import { AddTemplateSectionCommand, CreateTemplateCommand } from '../commands/template.commands';
+import { TemplateDto } from '../dtos/template.dto';
+import { TEMPLATE_REPOSITORY_TOKEN } from '../interfaces/template.repository';
+import { TemplateToDtoMapper } from '../mappers/template.mapper';
 
 type TemplateState = {
-  templates: Template[];
+  templateDtos: TemplateDto[]; // Use DTOs for UI State
   isLoading: boolean;
   error: string | null;
 };
 
 const initialState: TemplateState = {
-  templates: [],
+  templateDtos: [],
   isLoading: false,
   error: null,
 };
@@ -20,35 +24,57 @@ const initialState: TemplateState = {
 export const TemplateStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withMethods((store, repository = inject(TEMPLATE_REPOSITORY_TOKEN)) => ({
+  withMethods((store, createUseCase = inject(CreateTemplateUseCase), addSectionUseCase = inject(AddSectionToTemplateUseCase), repository = inject(TEMPLATE_REPOSITORY_TOKEN)) => ({
     loadAll: rxMethod<void>(
       pipe(
         tap(() => patchState(store, { isLoading: true })),
-        switchMap(() => {
-          return repository.findAll().then((templates) => {
-             patchState(store, { templates, isLoading: false });
-          }).catch(err => {
-             patchState(store, { error: err.message, isLoading: false });
-          });
+        switchMap(async () => {
+          try {
+            const templates = await repository.findAll();
+            // Map Domain Entities to View Models (DTOs)
+            const dtos = TemplateToDtoMapper.toDtoList(templates);
+            patchState(store, { templateDtos: dtos, isLoading: false, error: null });
+          } catch(err: any) {
+            patchState(store, { error: err.message || 'Unknown error', isLoading: false });
+          }
         })
       )
     ),
-    addTemplate: rxMethod<{ name: string; content: string }>(
+    addTemplate: rxMethod<{ name: string; content: string; userId: string }>(
         pipe(
             tap(() => patchState(store, { isLoading: true })),
             switchMap(async (props) => {
-                const newTemplate = Template.create(props.name, props.content);
+                // Use Case ensures Causality Tracking (generates correlationId)
+                const command = new CreateTemplateCommand(props.name, props.content, props.userId);
+                
                 try {
-                    await repository.save(newTemplate);
-                    patchState(store, (state) => ({
-                        templates: [...state.templates, newTemplate],
-                        isLoading: false
-                    }));
-                } catch (err: any) {
+                    await createUseCase.execute(command);
+                    // Reload or Optimistic Update
+                    // For simplicity, we just reload all to show the new item
+                    const templates = await repository.findAll();
+                    const dtos = TemplateToDtoMapper.toDtoList(templates);
+                    patchState(store, { templateDtos: dtos, isLoading: false, error: null });
+                } catch(err: any) {
                     patchState(store, { error: err.message, isLoading: false });
                 }
             })
         )
+    ),
+    addSection: rxMethod<{ templateId: string; title: string; content: string; userId: string }>(
+      pipe(
+        tap(() => patchState(store, { isLoading: true })),
+        switchMap(async (props) => {
+            const command = new AddTemplateSectionCommand(props.templateId, props.title, props.content, props.userId);
+            try {
+                await addSectionUseCase.execute(command);
+                const templates = await repository.findAll();
+                const dtos = TemplateToDtoMapper.toDtoList(templates);
+                patchState(store, { templateDtos: dtos, isLoading: false, error: null });
+            } catch(err: any) {
+                patchState(store, { error: err.message, isLoading: false });
+            }
+        })
+      )
     )
   }))
 );

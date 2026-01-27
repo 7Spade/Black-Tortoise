@@ -1,4 +1,4 @@
-export abstract class Entity<T> {
+export abstract class TemplateEntity<T> {
   protected readonly _id: T;
   
   constructor(id: T) {
@@ -9,7 +9,7 @@ export abstract class Entity<T> {
     return this._id;
   }
   
-  equals(object?: Entity<T>): boolean {
+  equals(object?: TemplateEntity<T>): boolean {
     if (object == null || object == undefined) {
       return false;
     }

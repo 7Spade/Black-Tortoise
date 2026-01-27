@@ -8,18 +8,26 @@ export class TemplateFirestoreMapper {
       id: TemplateId.from(data.id),
       name: data.name,
       content: data.content,
+      sections: (data.sections || []).map((s: any) => ({
+          id: s.id,
+          title: s.title,
+          content: s.content,
+          orderIndex: s.orderIndex
+      })),
       createdAt: (data.createdAt as Timestamp).toDate(),
       updatedAt: (data.updatedAt as Timestamp).toDate()
     });
   }
 
   static toPersistence(template: Template): any {
+    const primitives = template.toPrimitives();
     return {
-      id: template.id.value,
-      name: template.name,
-      content: template.content,
-      createdAt: template.createdAt,
-      updatedAt: template.updatedAt
+      id: primitives.id.value,
+      name: primitives.name,
+      content: primitives.content,
+      sections: primitives.sections,
+      createdAt: primitives.createdAt,
+      updatedAt: primitives.updatedAt
     };
   }
 }

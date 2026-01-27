@@ -1,20 +1,20 @@
 import {
-    APP_INITIALIZER,
-    ApplicationConfig,
-    inject,
-    provideZonelessChangeDetection
+  APP_INITIALIZER,
+  ApplicationConfig,
+  inject,
+  provideZonelessChangeDetection
 } from '@angular/core';
 import {
-    getAnalytics,
-    provideAnalytics,
-    ScreenTrackingService,
-    UserTrackingService,
+  getAnalytics,
+  provideAnalytics,
+  ScreenTrackingService,
+  UserTrackingService,
 } from '@angular/fire/analytics';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import {
-    initializeAppCheck,
-    provideAppCheck,
-    ReCaptchaEnterpriseProvider,
+  initializeAppCheck,
+  provideAppCheck,
+  ReCaptchaEnterpriseProvider,
 } from '@angular/fire/app-check';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getDataConnect, provideDataConnect } from '@angular/fire/data-connect';
@@ -24,8 +24,8 @@ import { getFunctions, provideFunctions } from '@angular/fire/functions';
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { getPerformance, providePerformance } from '@angular/fire/performance';
 import {
-    getRemoteConfig,
-    provideRemoteConfig,
+  getRemoteConfig,
+  provideRemoteConfig,
 } from '@angular/fire/remote-config';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { getVertexAI, provideVertexAI } from '@angular/fire/vertexai';
@@ -39,10 +39,13 @@ import { AuthStore } from '@application/stores/auth.store';
 import { InMemoryEventBus } from '@infrastructure/adapters';
 import { WorkspaceRuntimeFactory } from '@infrastructure/factories';
 import { AuthRepositoryImpl, InMemoryEventStore, OrganizationRepositoryImpl, WorkspaceRepositoryImpl } from '@infrastructure/repositories';
-import { TEMPLATE_REPOSITORY_TOKEN } from './core/application/interfaces/template.repository';
-import { TemplateFirebaseRepository } from './core/infrastructure/repositories/template-firebase.repository';
 import { routes } from '@presentation/app.routes';
 import { environment } from '../environments/environment';
+import { TEMPLATE_REPOSITORY_TOKEN } from './template-core/application/interfaces/template.repository';
+import { TEMPLATE_EVENT_BUS_TOKEN, TEMPLATE_EVENT_STORE_TOKEN } from './template-core/application/tokens/event-infrastructure.tokens';
+import { TemplateFirestoreEventStore } from './template-core/infrastructure/event-sourcing/firestore-event-store';
+import { TemplateRxJsEventBus } from './template-core/infrastructure/event-sourcing/rxjs-event-bus';
+import { TemplateFirebaseRepository } from './template-core/infrastructure/repositories/template-firebase.repository';
 
 /**
  * Application Configuration with Zone-less Change Detection
@@ -105,12 +108,20 @@ export const appConfig: ApplicationConfig = {
       useClass: WorkspaceRepositoryImpl
     },
     {
-      
+      provide: ORGANIZATION_REPOSITORY,
+      useClass: OrganizationRepositoryImpl
+    },
     {
       provide: TEMPLATE_REPOSITORY_TOKEN,
       useClass: TemplateFirebaseRepository
-    },provide: ORGANIZATION_REPOSITORY,
-      useClass: OrganizationRepositoryImpl
+    },
+    {
+      provide: TEMPLATE_EVENT_STORE_TOKEN,
+      useClass: TemplateFirestoreEventStore
+    },
+    {
+      provide: TEMPLATE_EVENT_BUS_TOKEN,
+      useClass: TemplateRxJsEventBus
     },
     
     // Event Infrastructure: Singleton EventBus and EventStore

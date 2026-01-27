@@ -1,95 +1,65 @@
-# Template Architecture Guide: Angular 20 Strict DDD + Signals
+# Template Module: Event Sourcing + Causality Tracking Edition
 
-This document explains the architecture of the Template feature, demonstrating how strict DDD, NgRx Signals, and Firebase interact in a Zone-less Angular 20 application.
+> **Strict DDD / Angular 20 Signals / Event Sourcing / Firebase**
+
+This module implements a REFERENCE ARCHITECTURE for a **Zone-less Angular 20** application using **Event Sourcing** and **Causality Tracking** with strict DDD boundaries.
+
+It is designed to be a "Live Spec" where every folder has a strict purpose.
 
 ## 1. Architectural Layers & Dependency Rule
 
 **Strict Direction:** `Presentation` -> `Application` -> `Domain` <- `Infrastructure`
 
-- **Domain (`core/domain`)**: Pure TypeScript. Contains Business Logic (Entities, Aggregates, Value Objects, Policies). NO dependencies on Angular, Firebase, or other layers.
-- **Application (`core/application`)**: Orchestration. orchestrates data flow using `NgRx SignalStores`. Depends ONLY on Domain. Defines Interfaces (Ports) for Infrastructure.
-- **Infrastructure (`infrastructure`)**: implementation. Implements Domain/Application interfaces using Firebase/HTTP.
-- **Presentation (`presentation`)**: UI. "Passive View". Depends on Application Facades/ViewModels.
+- **Domain (`template-core/domain`)**: Pure TypeScript. Contains Aggregates, Domain Events, Policies, Factories, Specifications. **NO Framework Dependencies.**
+- **Application (`template-core/application`)**: Orchestration & State. Uses DTOs for UI, Mappers for strict separation, and Commands for write operations.
+- **Infrastructure (`template-core/infrastructure`)**: Adapters. Implements Persistence and Event Sourcing mechanics.
+- **Presentation (`template-core/presentation`)**: UI. Signal-driven "Passive View".
 
-## 2. Interaction Flow: "The Reactive Loop"
+## 2. Event Sourcing Workflow ("The Event Loop")
 
-### Step 1: User Action (Presentation)
-Current user interacts with `TemplateListPageComponent`.
-- **Component**: Zone-less, `OnPush`.
-- **Action**: Calls `TemplateFacade.createTemplate('New Title')`.
-- **View**: Consumes `facade.viewModels()` (Computed Signal).
+### Phase 1: Command & Domain Logic
+1.  **UI** calls `TemplateStore.addTemplate()`.
+2.  **Store** calls `TemplateFactory.createValidTemplate()` (enforcing `TemplateNamingPolicy`).
+3.  **Aggregate** (`Template`) generates a `TemplateCreatedEvent` internally.
+    *   State is mutated locally via `apply()`.
 
-```typescript
-// Component interacts ONLY with Facade
-<button (click)="facade.createTemplate('Title')">Create</button>
-<div *ngFor="let item of facade.viewModels()">{{ item.uiTitle }}</div>
-```
+### Phase 2: Persistence (Infrastructure)
+4.  **Repository** (`TemplateFirebaseRepository`) is called with the Aggregate.
+5.  **Event Store** (`TemplateFirestoreEventStore`):
+    *   Persists the event to `events` collection.
+    *   **Metadata**: Includes `correlationId`, `causationId`, `timestamp`, `version`.
+6.  **Event Bus** (`TemplateRxJsEventBus`):
+    *   Publishes the event to subscribers.
+7.  **Projection** (Read Model):
+    *   Updates the `templates` collection (Snapshot).
 
-### Step 2: Application Orchestration (Facade -> Store -> Handler)
-The Facade delegates to `TemplateStore`. The Store manages global state using Signals.
+### Phase 3: Presentation (Read)
+8.  **Store** loads entities via `Repository.findAll()`.
+9.  **Mapper** (`TemplateToDtoMapper`) converts Domain Entities to **DTOs** (`TemplateDto`).
+10. **UI** renders primitives from DTOs. **Zero leakage of Domain Objects to the View.**
 
-- **Facade**: `template.facade.ts` abstracts the Store.
-- **Store**: `template.store.ts` uses `rxMethod` to handle side-effects (async operations).
-- **Handler**: `CreateTemplateHandler` implements CQRS Command pattern.
+## 3. Directory Structure Explain
 
-```typescript
-// template.store.ts
-create: rxMethod<{ title: string }>(
-  pipe(
-     switchMap(req => createHandler.execute(new CreateTemplateCommand(req.title)))
-  )
-)
-```
+- `domain/policies`: Enforce granular business rules (e.g., `TemplateNamingPolicy`).
+- `domain/factories`: Encapsulate complex creation logic.
+- `domain/specifications`: Encapsulate business rules into boolean logic classes.
+- `application/dtos`: Define the "Read Model" contract for the UI.
+- `application/mappers`: Strictly convert Domain -> DTO.
+- `application/commands`: Define the "Write Model" intent.
 
-### Step 3: Domain Logic (Application Handler -> Domain Factory)
-The Handler invokes Domain logic to validly construct the Aggregate.
+## 4. Key Concepts Implementation
 
-- **Factory**: `TemplateFactory` ensures invariants (e.g., Title cannot be empty).
-- **Aggregate**: `TemplateAggregate` is a rich model with behavior.
+### Strict DDD Hierarchy
+- **Aggregate Root**: `Template` (Consistency Boundary).
+- **Entities**: `TemplateSection` (Child entity managed by Root).
+- **Value Objects**: `TemplateId`, `SectionId` (Immutable identity).
 
-```typescript
-// create-template.handler.ts
-const aggregate = TemplateFactory.createNew(command.title); // Returns Result<Aggregate, Error>
-```
+### Causality Tracking (Metadata)
+Every `TemplateDomainEvent` inherits from the base class which strictly enforces metadata.
+- **Correlation ID**: Tracks a business transaction across multiple steps.
+- **Causation ID**: Tracks the direct parent (Command or Event) that triggered this event.
 
-### Step 4: Infrastructure Persistence (Handler -> Repository)
-The Handler persists the valid Aggregate using the Repository Interface.
+## 5. Usage
 
-- **Interface**: `ITemplateRepository` (defined in Domain).
-- **Implementation**: `TemplateFirebaseRepository` (defined in Infrastructure).
-- **Dependency Injection**: Wired in `app.config.ts`.
-
-```typescript
-// Handler depends on Interface (DIP)
-private repository = inject(TEMPLATE_REPOSITORY_TOKEN);
-await this.repository.save(aggregate);
-```
-
-### Step 5: State Update (Infrastructure -> Store -> Presentation)
-1. Repository saves to Firestore.
-2. Handler returns `Result.ok(id)`.
-3. **Store** updates its signal state (optimistically or re-fetches).
-4. **Signals** verify change.
-5. **Presentation** (UI) automatically updates fine-grained DOM due to Signal tracking.
-
-## 3. Key Patterns
-
-### NgRx Signals for State
-We use `@ngrx/signals` instead of `BehaviorSubject`.
-- `withState`: Holds the raw `TemplateDTO[]`.
-- `withComputed`: Derives `count`, `filteredList`.
-- `patchState`: The ONLY way to mutate state.
-
-### Result Pattern
-We use `Result<T, E>` types instead of throwing Exceptions for control flow.
-- Forces consumers to handle failure cases.
-
-### View Models
-Presentation layer never sees Domain Entities directly (Rule of Strict Separation).
-- Mappers convert `Entity` -> `DTO` (Application).
-- Computed Signals convert `DTO` -> `ViewModel` (Presentation).
-
-### @angular/fire Integration
-Infrastructure repositories use modular SDK (`doc`, `setDoc`, `collection`).
-- Wrapped in `try/catch` -> converts to `Result<T, E>`.
-- Mappers convert `FirestoreDTO` <-> `DomainEntity`.
+Events are automatically generated, persisted, and tracked. 
+Check browser console for `[TemplateRxJsEventBus]` logs or Firestore `events` collection for the Audit Log.
