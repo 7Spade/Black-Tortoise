@@ -26,7 +26,7 @@ export function registerDailyEventHandlers(eventBus: EventBus): void {
         date: event.payload.date,
         userId: event.payload.userId,
         taskIds: event.payload.taskIds,
-        hoursLogged: event.payload.hoursLogged,
+        headcount: event.payload.headcount,
         ...(event.payload.notes !== undefined ? { notes: event.payload.notes } : {}),
       };
       dailyStore.createEntry(entry);

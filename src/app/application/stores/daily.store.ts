@@ -29,7 +29,7 @@ export interface DailyEntry {
   readonly date: string; // ISO date string (YYYY-MM-DD)
   readonly userId: string;
   readonly taskIds: string[];
-  readonly hoursLogged: number;
+  readonly headcount: number;
   readonly notes?: string;
   readonly createdAt: Date;
 }
@@ -68,13 +68,13 @@ export const DailyStore = signalStore(
     }),
 
     /**
-     * Total hours for selected date
+     * Total headcount for selected date
      */
-    selectedDateHours: computed(() => {
+    selectedDateHeadcount: computed(() => {
       const date = state.selectedDate();
       return state.entries()
         .filter(e => e.date === date)
-        .reduce((sum, e) => sum + e.hoursLogged, 0);
+        .reduce((sum, e) => sum + e.headcount, 0);
     }),
 
     /**
@@ -85,12 +85,12 @@ export const DailyStore = signalStore(
     ),
 
     /**
-     * Total hours by user
+     * Total headcount by user
      */
-    getTotalHoursByUser: computed(() => (userId: string) =>
+    getTotalHeadcountByUser: computed(() => (userId: string) =>
       state.entries()
         .filter(e => e.userId === userId)
-        .reduce((sum, e) => sum + e.hoursLogged, 0)
+        .reduce((sum, e) => sum + e.headcount, 0)
     ),
 
     /**

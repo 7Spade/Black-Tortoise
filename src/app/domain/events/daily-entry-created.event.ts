@@ -14,7 +14,7 @@ export interface DailyEntryCreatedPayload {
   readonly date: string;
   readonly userId: string;
   readonly taskIds: string[];
-  readonly hoursLogged: number;
+  readonly headcount: number;
   readonly notes?: string;
 }
 
@@ -28,7 +28,7 @@ export function createDailyEntryCreatedEvent(
   date: string,
   userId: string,
   taskIds: string[],
-  hoursLogged: number,
+  headcount: number,
   notes?: string,
   correlationId?: string,
   causationId?: string | null
@@ -42,7 +42,7 @@ export function createDailyEntryCreatedEvent(
     date,
     userId,
     taskIds,
-    hoursLogged,
+    headcount,
     ...(notes !== undefined ? { notes } : {}),
   };
   

@@ -34,11 +34,15 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
         </div>
         <div class="stat-item">
           <span class="stat-label">This Week</span>
-          <span class="stat-value">{{ getThisWeekHours() }}h</span>
+          <span class="stat-value">{{ getThisWeekHeadcount() }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">Today</span>
-          <span class="stat-value">{{ getTodayHours() }}h</span>
+          <span class="stat-value">{{ getTodayHeadcount() }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">This Month</span>
+          <span class="stat-value">{{ getThisMonthHeadcount() }}</span>
         </div>
       </div>
       
@@ -51,15 +55,15 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
             <input type="date" [(ngModel)]="entryDate" class="input-field" />
           </div>
           <div class="form-group">
-            <label>Hours Logged</label>
-            <input type="number" [(ngModel)]="hoursLogged" min="0" max="24" step="0.5" class="input-field" />
+            <label>Headcount (manual)</label>
+            <input type="number" [(ngModel)]="headcount" min="1" step="1" class="input-field" />
           </div>
         </div>
         <div class="form-group">
           <label>Notes</label>
           <textarea [(ngModel)]="notes" class="input-field" placeholder="What did you work on?"></textarea>
         </div>
-        <button (click)="logEntry()" [disabled]="hoursLogged <= 0" class="btn-primary">Log Entry</button>
+        <button (click)="logEntry()" [disabled]="headcount <= 0" class="btn-primary">Log Entry</button>
       </div>
 
       <!-- Waterfall Timeline -->
@@ -74,8 +78,8 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
                   <div class="date-month">{{ getMonthName(entry.date) }}</div>
                 </div>
                 <div class="hours-badge">
-                  <span class="hours-value">{{ entry.hoursLogged }}</span>
-                  <span class="hours-label">hours</span>
+                  <span class="hours-value">{{ entry.headcount }}</span>
+                  <span class="hours-label">people</span>
                 </div>
               </div>
               @if (entry.notes) {
@@ -112,7 +116,8 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
     }
     
     .stats-bar {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       gap: 1rem;
       margin: 1rem 0;
     }
@@ -321,7 +326,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
     
     @media (max-width: 768px) {
       .stats-bar {
-        flex-direction: column;
+        grid-template-columns: 1fr 1fr;
       }
       
       .form-row {
@@ -344,7 +349,7 @@ export class DailyComponent implements IAppModule, OnInit, OnDestroy {
   private readonly createDailyEntryHandler = inject(CreateDailyEntryHandler);
   
   entryDate: string = this.getTodayDate();
-  hoursLogged = 0;
+  headcount = 0;
   notes = '';
   private readonly currentUserId = 'user-demo';
   private subscriptions = ModuleEventHelper.createSubscriptionManager();
@@ -377,7 +382,7 @@ export class DailyComponent implements IAppModule, OnInit, OnDestroy {
   }
   
   async logEntry(): Promise<void> {
-    if (!this.eventBus || this.hoursLogged <= 0) return;
+    if (!this.eventBus || this.headcount <= 0) return;
     
     const entryId = crypto.randomUUID();
     
@@ -387,13 +392,13 @@ export class DailyComponent implements IAppModule, OnInit, OnDestroy {
       date: this.entryDate,
       userId: this.currentUserId,
       taskIds: [],
-      hoursLogged: this.hoursLogged,
+      headcount: this.headcount,
       ...(this.notes ? { notes: this.notes } : {}),
     };
     
     await this.createDailyEntryHandler.execute(request);
     
-    this.hoursLogged = 0;
+    this.headcount = 0;
     this.notes = '';
   }
   
@@ -417,14 +422,14 @@ export class DailyComponent implements IAppModule, OnInit, OnDestroy {
     return 'Just now';
   }
   
-  getTodayHours(): number {
+  getTodayHeadcount(): number {
     const today = this.getTodayDate();
     return this.dailyStore.entries()
       .filter(e => e.date === today)
-      .reduce((sum, e) => sum + e.hoursLogged, 0);
+      .reduce((sum, e) => sum + e.headcount, 0);
   }
   
-  getThisWeekHours(): number {
+  getThisWeekHeadcount(): number {
     const now = new Date();
     const weekStart = new Date(now);
     weekStart.setDate(now.getDate() - now.getDay());
@@ -432,7 +437,16 @@ export class DailyComponent implements IAppModule, OnInit, OnDestroy {
     
     return this.dailyStore.entries()
       .filter(e => new Date(e.date) >= weekStart)
-      .reduce((sum, e) => sum + e.hoursLogged, 0);
+      .reduce((sum, e) => sum + e.headcount, 0);
+  }
+
+  getThisMonthHeadcount(): number {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    return this.dailyStore.entries()
+      .filter(e => new Date(e.date) >= monthStart)
+      .reduce((sum, e) => sum + e.headcount, 0);
   }
   
   activate(): void {}
