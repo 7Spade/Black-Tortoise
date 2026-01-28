@@ -1,3 +1,7 @@
+---
+description: "Architecture rules and guidelines for Workspace context and lifecycle management."
+applyTo: "**"
+---
 
 ---
 

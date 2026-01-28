@@ -1,3 +1,7 @@
+---
+description: "Architecture rules and guidelines for Modules as Workspace capabilities, state isolation, and event-driven collaboration."
+applyTo: "**"
+---
 
 ---
 

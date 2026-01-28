@@ -1,3 +1,7 @@
+---
+description: "Architecture rules for Organization governance over Workspaces."
+applyTo: "**"
+---
 
 ---
 

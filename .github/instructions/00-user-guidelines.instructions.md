@@ -1,3 +1,7 @@
+---
+description: "Architecture rules and guidelines for User as the system's identity and permission subject."
+applyTo: "**"
+---
 
 ---
 

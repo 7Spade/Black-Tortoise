@@ -1,4 +1,9 @@
 ---
+description: "Architecture rules and best practices for event-driven modules, event sourcing, and causality tracking."
+applyTo: "**"
+---
+
+---
 
 1️⃣ 核心元素與角色
 
