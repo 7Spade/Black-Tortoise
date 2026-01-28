@@ -1,5 +1,5 @@
 import { computed, inject, Injectable } from '@angular/core';
-import { SettingsStore } from '@application/stores/settings.store';
+import { SettingsStore } from '@settings/application/stores/settings.store';
 
 @Injectable({ providedIn: 'root' })
 export class SettingsFacade {

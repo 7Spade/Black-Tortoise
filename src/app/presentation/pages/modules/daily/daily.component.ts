@@ -22,7 +22,7 @@ import {
   IAppModule,
   ModuleType,
 } from '@application/interfaces/module.interface';
-import { DailyStore } from '@application/stores/daily.store';
+import { DailyStore } from '@daily/application/stores/daily.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 @Component({
@@ -33,7 +33,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
   template: `
     <div class="daily-module">
       <div class="module-header">
-        <h2>📅 Daily Log</h2>
+        <h2>?? Daily Log</h2>
         <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
 

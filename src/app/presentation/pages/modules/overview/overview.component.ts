@@ -18,11 +18,11 @@ import {
   IAppModule,
   ModuleType,
 } from '@application/interfaces/module.interface';
-import { AcceptanceStore } from '@application/stores/acceptance.store';
-import { IssuesStore } from '@application/stores/issues.store';
-import { OverviewStore } from '@application/stores/overview.store';
-import { QualityControlStore } from '@application/stores/quality-control.store';
-import { TasksStore } from '@application/stores/tasks.store';
+import { AcceptanceStore } from '@acceptance/application/stores/acceptance.store';
+import { IssuesStore } from '@issues/application/stores/issues.store';
+import { OverviewStore } from '@overview/application/stores/overview.store';
+import { QualityControlStore } from '@quality-control/application/stores/quality-control.store';
+import { TasksStore } from '@tasks/application/stores/tasks.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 @Component({
@@ -33,7 +33,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
   template: `
     <div class="overview-module">
       <div class="module-header">
-        <h2>📈 Overview</h2>
+        <h2>?? Overview</h2>
         <p>Workspace Dashboard</p>
       </div>
 

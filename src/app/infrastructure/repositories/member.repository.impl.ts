@@ -10,7 +10,7 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { MemberAggregate, MemberRepository } from '@domain/members';
+import { MemberAggregate, MemberRepository } from '@members/domain';
 
 @Injectable({ providedIn: 'root' })
 export class MemberRepositoryImpl implements MemberRepository {

@@ -11,7 +11,7 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { DocumentAggregate, DocumentRepository, DocumentId } from '@domain/documents';
+import { DocumentAggregate, DocumentRepository, DocumentId } from '@documents/domain';
 import { WorkspaceId } from '@domain/value-objects';
 
 @Injectable({ providedIn: 'root' })

@@ -18,7 +18,7 @@ import {
   IAppModule,
   ModuleType,
 } from '@application/interfaces/module.interface';
-import { DocumentsStore } from '@application/stores/documents.store';
+import { DocumentsStore } from '@documents/application/stores/documents.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 @Component({
@@ -29,7 +29,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
   template: `
     <div class="documents-module">
       <div class="module-header">
-        <h2>📄 Documents</h2>
+        <h2>?? Documents</h2>
         <p>
           Workspace: {{ eventBus?.workspaceId }} | Total:
           {{ documentsStore.totalStorageSize() | number }} bytes
@@ -74,7 +74,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
         }
         @for (doc of documentsStore.documents(); track doc.id) {
           <div class="document-card">
-            <div class="doc-icon">📄</div>
+            <div class="doc-icon">??</div>
             <div class="doc-info">
               <h4>{{ doc.name }}</h4>
               <p>

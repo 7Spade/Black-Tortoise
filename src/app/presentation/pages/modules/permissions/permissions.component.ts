@@ -18,7 +18,7 @@ import {
   IAppModule,
   ModuleType,
 } from '@application/interfaces/module.interface';
-import { PermissionsStore } from '@application/stores/permissions.store';
+import { PermissionsStore } from '@permissions/application/stores/permissions.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 @Component({
@@ -29,7 +29,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
   template: `
     <div class="permissions-module">
       <div class="module-header">
-        <h2>🔐 Permissions</h2>
+        <h2>?? Permissions</h2>
         <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
 

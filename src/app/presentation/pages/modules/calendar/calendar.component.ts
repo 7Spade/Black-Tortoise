@@ -20,7 +20,7 @@ import {
   IAppModule,
   ModuleType,
 } from '@application/interfaces/module.interface';
-import { TasksStore } from '@application/stores/tasks.store';
+import { TasksStore } from '@tasks/application/stores/tasks.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 interface CalendarDay {
@@ -38,14 +38,14 @@ interface CalendarDay {
   template: `
     <div class="calendar-module">
       <div class="module-header">
-        <h2>📅 Calendar</h2>
+        <h2>?? Calendar</h2>
         <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
 
       <div class="calendar-controls">
-        <button (click)="previousMonth()" class="nav-btn">‹</button>
+        <button (click)="previousMonth()" class="nav-btn">??/button>
         <h3>{{ currentMonthName() }} {{ currentYear() }}</h3>
-        <button (click)="nextMonth()" class="nav-btn">›</button>
+        <button (click)="nextMonth()" class="nav-btn">??/button>
       </div>
 
       <div class="calendar-grid">

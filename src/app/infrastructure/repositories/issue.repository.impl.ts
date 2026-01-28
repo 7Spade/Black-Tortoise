@@ -10,7 +10,7 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { IssueAggregate, IssueRepository } from '@domain/issues';
+import { IssueAggregate, IssueRepository } from '@issues/domain';
 
 @Injectable({
   providedIn: 'root',

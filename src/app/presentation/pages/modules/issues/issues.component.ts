@@ -21,7 +21,7 @@ import {
   IAppModule,
   ModuleType,
 } from '@application/interfaces/module.interface';
-import { IssuesStore } from '@application/stores/issues.store';
+import { IssuesStore } from '@issues/application/stores/issues.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 @Component({
@@ -32,7 +32,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
   template: `
     <div class="issues-module">
       <div class="module-header">
-        <h2>🐛 Issues</h2>
+        <h2>?? Issues</h2>
         <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
 

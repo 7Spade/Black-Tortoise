@@ -29,8 +29,8 @@ import {
   IAppModule,
   ModuleType,
 } from '@application/interfaces/module.interface';
-import { AcceptanceStore } from '@application/stores/acceptance.store';
-import { TasksStore } from '@application/stores/tasks.store';
+import { AcceptanceStore } from '@acceptance/application/stores/acceptance.store';
+import { TasksStore } from '@tasks/application/stores/tasks.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 @Component({
@@ -41,7 +41,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
   template: `
     <div class="acceptance-module">
       <div class="module-header">
-        <h2>✅ Acceptance</h2>
+        <h2>??Acceptance</h2>
         <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
 
@@ -75,13 +75,13 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
                 (click)="approveTask(item.check.taskId, item.taskTitle)"
                 class="btn-success"
               >
-                ✓ Approve
+                ??Approve
               </button>
               <button
                 (click)="rejectTask(item.check.taskId, item.taskTitle)"
                 class="btn-danger"
               >
-                ✗ Reject
+                ??Reject
               </button>
             </div>
           </div>

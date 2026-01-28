@@ -12,15 +12,15 @@ export * from './services';
 export * from './types';
 
 // Functional Modules
-export * from './acceptance';
-export * from './audit';
-export * from './calendar';
-export * from './daily';
-export * from './documents';
-export * from './issues';
-export * from './members';
-export * from './overview';
-export * from './permissions';
-export * from './quality-control';
-export * from './settings';
-export * from './tasks';
+export * from '@acceptance/domain';
+export * from '@audit/domain';
+export * from '@calendar/domain';
+export * from '@daily/domain';
+export * from '@documents/domain';
+export * from '@issues/domain';
+export * from '@members/domain';
+export * from '@overview/domain';
+export * from '@permissions/domain';
+export * from '@quality-control/domain';
+export * from '@settings/domain';
+export * from '@tasks/domain';

@@ -9,7 +9,7 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { DailyEntryEntity, DailyRepository } from '@domain/daily';
+import { DailyEntryEntity, DailyRepository } from '@daily/domain';
 
 @Injectable({ providedIn: 'root' })
 export class DailyRepositoryImpl implements DailyRepository {

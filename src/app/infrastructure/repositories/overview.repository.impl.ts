@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
-import { OverviewDashboard, OverviewRepository } from '@domain/overview';
+import { OverviewDashboard, OverviewRepository } from '@overview/domain';
 
 @Injectable({ providedIn: 'root' })
 export class OverviewRepositoryImpl implements OverviewRepository {

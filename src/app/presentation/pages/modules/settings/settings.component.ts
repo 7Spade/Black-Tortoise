@@ -23,7 +23,7 @@ import {
 import {
   SettingsStore,
   TaskPriority,
-} from '@application/stores/settings.store';
+} from '@settings/application/stores/settings.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 @Component({

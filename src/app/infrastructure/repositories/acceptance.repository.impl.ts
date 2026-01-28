@@ -8,7 +8,7 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { AcceptanceCheckEntity, AcceptanceRepository } from '@domain/acceptance';
+import { AcceptanceCheckEntity, AcceptanceRepository } from '@acceptance/domain';
 
 @Injectable({ providedIn: 'root' })
 export class AcceptanceRepositoryImpl implements AcceptanceRepository {

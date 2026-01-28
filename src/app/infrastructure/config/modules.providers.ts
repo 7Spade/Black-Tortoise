@@ -12,7 +12,7 @@ import {
   QUALITY_CONTROL_REPOSITORY,
   TASK_REPOSITORY,
 } from '@application/interfaces';
-import { WORKSPACE_SETTINGS_REPOSITORY } from '@domain/settings';
+import { WORKSPACE_SETTINGS_REPOSITORY } from '@settings/domain';
 import {
   AcceptanceRepositoryImpl,
   AuditLogRepositoryImpl,
@@ -26,7 +26,7 @@ import {
   QualityControlRepositoryImpl,
   TaskRepositoryImpl,
 } from '@infrastructure/repositories';
-import { SettingsRepositoryImpl } from '@infrastructure/settings';
+import { SettingsRepositoryImpl } from '@settings/infrastructure';
 
 export function provideModulesInfrastructure(): Provider[] {
   return [

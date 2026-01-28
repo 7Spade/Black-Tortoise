@@ -18,7 +18,7 @@ import {
   IAppModule,
   ModuleType,
 } from '@application/interfaces/module.interface';
-import { AuditStore } from '@application/stores/audit.store';
+import { AuditStore } from '@audit/application/stores/audit.store';
 import { ModuleEventHelper } from '@presentation/components/module-event-helper';
 
 @Component({
@@ -29,7 +29,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
   template: `
     <div class="audit-module">
       <div class="module-header">
-        <h2>📊 Audit Log</h2>
+        <h2>?? Audit Log</h2>
         <p>
           Workspace: {{ eventBus?.workspaceId }} | Total Entries:
           {{ auditStore.totalEntries() }}
