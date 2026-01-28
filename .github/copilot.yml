@@ -1,0 +1,41 @@
+# .github/copilot.yml
+version: 1
+
+# 全域設定
+suggestion:
+  enable: true      # 是否啟用 Copilot 建議
+  autoprompt: true  # 自動提示建議
+  frequency: medium # 建議出現頻率: low, medium, high
+
+# 檔案級別配置
+files:
+  # Domain 層和 Application 層：優先增強
+  - pattern: "src/app/domain/**/*.ts"
+    suggestion:
+      enable: true
+      frequency: high
+  - pattern: "src/app/application/**/*.ts"
+    suggestion:
+      enable: true
+      frequency: high
+
+  # Infrastructure / Presentation 層：中等增強
+  - pattern: "src/app/infrastructure/**/*.ts"
+    suggestion:
+      enable: true
+      frequency: medium
+  - pattern: "src/app/presentation/**/*.ts"
+    suggestion:
+      enable: true
+      frequency: medium
+
+  # Component / UI：低增強
+  - pattern: "src/app/**/*.component.ts"
+    suggestion:
+      enable: true
+      frequency: low
+
+  # 測試檔案與其他工具檔案禁用
+  - pattern: "**/*.spec.ts"
+    suggestion:
+      enable: false
