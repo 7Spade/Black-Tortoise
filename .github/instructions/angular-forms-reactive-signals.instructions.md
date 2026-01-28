@@ -1,53 +1,53 @@
 ---
-description: 'Angular 20 響應式表單與 Signals 整合最佳實踐'
+description: 'Angular 20 Reactive Forms and Signals Integration Best Practices'
 applyTo: '**/*.component.ts,**/forms/*.ts,**/services/*.ts'
 ---
 
-# Angular 20 響應式表單 + Signals 整合
+# Angular 20 Reactive Forms + Signals Integration
 
-## 核心概念
+## Core Concepts
 
-Angular 的響應式表單系統基於 RxJS Observables，而 Signals 是 Angular 16+ 引入的新響應式原語。整合兩者需要理解資料流轉換和狀態同步機制。
+Angular's reactive forms system is based on RxJS Observables, while Signals are a new reactive primitive introduced in Angular 16+. Integrating both requires understanding data flow transformation and state synchronization mechanisms.
 
-## 整合模式
+## Integration Patterns
 
-### Observable 到 Signal 轉換
-使用 `toSignal()` 將表單的 Observable 串流轉換為 Signal:
-- `valueChanges` → 表單值變更 Signal
-- `statusChanges` → 表單狀態 Signal
-- 自訂驗證器的非同步結果 → Signal
+### Observable to Signal Conversion
+Use `toSignal()` to convert form Observable streams to Signals:
+- `valueChanges` → Form value change Signal
+- `statusChanges` → Form status Signal
+- Custom validator async results → Signal
 
-### Signal 驅動的表單邏輯
-- 使用 `computed()` 衍生表單狀態
-- 使用 `effect()` 同步表單與外部狀態
-- 保持單向資料流
+### Signal-driven Form Logic
+- Use `computed()` to derive form state
+- Use `effect()` to synchronize form with external state
+- Maintain unidirectional data flow
 
-### 與 @ngrx/signals 整合
-- 使用 SignalStore 統一管理表單狀態
-- 使用 `rxMethod` 處理表單提交等非同步操作
-- 使用 `withMethods` 封裝表單邏輯
+### Integration with @ngrx/signals
+- Use SignalStore to manage form-related state uniformly
+- Use `rxMethod` to handle form submission and other async operations
+- Use `withMethods` to encapsulate form logic
 
-## 架構分層原則
+## Architectural Layering Principles
 
-### Component 層
-- 持有 FormControl/FormGroup 實例
-- 將 Observable 轉換為 Signal
-- 僅處理 UI 互動邏輯
-- 委派業務邏輯給 Service/Store
+### Component Layer
+- Hold FormControl/FormGroup instances
+- Convert Observables to Signals
+- Handle only UI interaction logic
+- Delegate business logic to Service/Store
 
-### Service/Store 層
-- 管理表單相關的全域狀態
-- 處理表單提交、驗證等業務邏輯
-- 與後端 API 互動
-- 提供 Signal 介面給 Component
+### Service/Store Layer
+- Manage global state related to forms
+- Handle form submission, validation, and other business logic
+- Interact with backend APIs
+- Provide Signal interface to Component
 
-### 資料流方向
+### Data Flow Direction
 ```
-使用者輸入 → FormControl → Observable → Signal → UI 更新
+User Input → FormControl → Observable → Signal → UI Update
                               ↓
-                         Service/Store (業務邏輯)
+                         Service/Store (Business Logic)
                               ↓
-                          API 呼叫
+                          API Call
 ```
 
 ## 表單驗證策略

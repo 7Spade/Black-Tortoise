@@ -1,50 +1,50 @@
 ---
-description: 'Angular 20 + @ngrx/signals 現代化狀態管理模式'
+description: 'Angular 20 + @ngrx/signals Modern State Management Patterns'
 applyTo: '**/*.store.ts,**/*.signal.ts,**/services/*.ts'
 ---
 
-# @ngrx/signals 現代化狀態管理模式
+# @ngrx/signals Modern State Management Patterns
 
-## 核心概念
+## Core Concepts
 
-@ngrx/signals 是 NgRx 團隊推出的輕量級、響應式狀態管理解決方案，專為 Angular Signals 生態系統設計。相比傳統的 @ngrx/store，它提供更簡潔的 API、更好的 TypeScript 支援，以及與 Angular Signals 的原生整合。
+@ngrx/signals is a lightweight, reactive state management solution released by the NgRx team, designed specifically for the Angular Signals ecosystem. Compared to traditional @ngrx/store, it provides a more concise API, better TypeScript support, and native integration with Angular Signals.
 
-## 為什麼選擇 @ngrx/signals
+## Why Choose @ngrx/signals
 
-### 相較於傳統 @ngrx/store 的優勢
-- **更簡潔的語法**: 不需要 Actions、Reducers、Effects 的繁瑣樣板代碼
-- **原生 Signals 整合**: 與 Angular 20 的 Signal-based 架構完美配合
-- **更好的 TypeScript 推斷**: 自動推斷狀態類型，減少手動型別定義
-- **更小的 Bundle 大小**: 只引入需要的功能
-- **更容易學習**: 學習曲線平緩，適合團隊快速上手
-- **Local 和 Global 狀態統一處理**: 同一套 API 處理不同範圍的狀態
+### Advantages over Traditional @ngrx/store
+- **More Concise Syntax**: No need for boilerplate code with Actions, Reducers, and Effects
+- **Native Signals Integration**: Works perfectly with Angular 20's Signal-based architecture
+- **Better TypeScript Inference**: Automatically infers state types, reducing manual type definitions
+- **Smaller Bundle Size**: Only import needed functionality
+- **Easier to Learn**: Gentle learning curve, enables teams to get up to speed quickly
+- **Unified Local and Global State Handling**: Same API for handling state of different scopes
 
-### 適用場景
-- 新專案或重構專案
-- 需要細粒度響應式更新的應用
-- 團隊偏好函數式和組合式 API
-- 需要與 Angular Signals 深度整合的場景
+### Applicable Scenarios
+- New projects or refactoring projects
+- Applications requiring fine-grained reactive updates
+- Teams preferring functional and compositional APIs
+- Scenarios requiring deep integration with Angular Signals
 
-## 安裝與設定
+## Installation and Configuration
 
-### 安裝依賴
+### Install Dependencies
 ```bash
 yarn add @ngrx/signals
 ```
 
-### 基本配置
-不需要在 `app.config.ts` 中進行全域配置，@ngrx/signals 採用 Injectable 方式使用。
+### Basic Configuration
+No global configuration needed in `app.config.ts`. @ngrx/signals uses an Injectable approach.
 
-## Signal Store 基礎
+## Signal Store Basics
 
-### 建立 Signal Store
+### Creating a Signal Store
 
-#### Local Store (元件級)
+#### Local Store (Component-level)
 ```typescript
 import { signalStore, withState, withMethods, withComputed } from '@ngrx/signals';
 import { computed } from '@angular/core';
 
-// 定義狀態型別
+// Define state type
 interface TodosState {
   todos: Todo[];
   filter: 'all' | 'active' | 'completed';

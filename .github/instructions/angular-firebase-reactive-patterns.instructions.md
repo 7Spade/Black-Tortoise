@@ -1,39 +1,39 @@
 ---
-description: 'Angular Fire 現代化響應式整合模式與最佳實踐指南'
+description: 'AngularFire Modern Reactive Integration Patterns and Best Practices Guide'
 applyTo: '**/*.ts,**/*.service.ts,**/store/*.ts'
 ---
 
-# Angular Fire 響應式整合規範
+# AngularFire Reactive Integration Standards
 
-## 適用範圍
-本規範適用於所有使用 @angular/fire 的 TypeScript 服務層與狀態管理代碼。
+## Scope of Application
+This guideline applies to all TypeScript service layers and state management code using @angular/fire.
 
-## 核心原則
+## Core Principles
 
-### 1. 使用 Modular API (必須)
-- ✅ 使用 `@angular/fire/*` modular imports
-- ❌ 禁止使用 `@angular/fire/compat/*`
+### 1. Use Modular API (Required)
+- ✅ Use `@angular/fire/*` modular imports
+- ❌ Forbidden: Use `@angular/fire/compat/*`
 
-### 2. 響應式資料流模式
-**優先順序**: Signals > RxJS Observables > Promise
+### 2. Reactive Data Flow Pattern
+**Priority Order**: Signals > RxJS Observables > Promise
 ```typescript
-// ✅ 推薦: 轉換為 Signal
+// ✅ Recommended: Convert to Signal
 users = toSignal(collectionData(query), { initialValue: [] });
 
-// ⚠️ 備選: 保留 Observable (需要複雜 RxJS 操作時)
+// ⚠️ Alternative: Keep Observable (when complex RxJS operations are needed)
 users$ = collectionData(query);
 
-// ❌ 避免: 手動訂閱
+// ❌ Avoid: Manual subscription
 collectionData(query).subscribe(...);
 ```
 
-### 3. 狀態管理策略
+### 3. State Management Strategy
 
-#### 區域狀態 (Component-level)
-直接使用 `toSignal()` 轉換
+#### Local State (Component-level)
+Use `toSignal()` conversion directly
 
-#### 全域狀態 (App-level)
-使用 `@ngrx/signals` + `signalStore`:
+#### Global State (App-level)
+Use `@ngrx/signals` + `signalStore`:
 ```typescript
 export const UserStore = signalStore(
   withState({ users: [] }),

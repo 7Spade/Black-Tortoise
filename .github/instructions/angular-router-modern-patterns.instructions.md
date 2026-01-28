@@ -1,280 +1,280 @@
 ---
-description: 'Angular 20 Router 現代化模式 - Functional Guards & Resolvers'
+description: 'Angular 20 Router Modern Patterns - Functional Guards & Resolvers'
 applyTo: '**/*.routes.ts,**/guards/*.ts,**/resolvers/*.ts'
 ---
 
-# Angular 20 Router 現代化模式
+# Angular 20 Router Modern Patterns
 
-## 核心概念
+## Core Concepts
 
-Angular 路由系統在版本 15+ 引入函數式 API，取代傳統的類別式 Guards 和 Resolvers。Angular 20 進一步強化 Standalone Components 整合和 Signals 支援。
+The Angular routing system introduced functional API in version 15+, replacing traditional class-based Guards and Resolvers. Angular 20 further enhances Standalone Components integration and Signals support.
 
-## 路由配置現代化
+## Route Configuration Modernization
 
 ### Standalone Routes
-- 使用 `provideRouter()` 取代 RouterModule
-- 直接在 routes 配置中載入 Standalone Components
-- 支援 lazy loading 和 code splitting
-- 簡化模組依賴結構
+- Use `provideRouter()` instead of RouterModule
+- Load Standalone Components directly in routes configuration
+- Support for lazy loading and code splitting
+- Simplify module dependency structure
 
-### 檔案組織
-推薦結構:
-- `app.routes.ts` - 主路由配置
-- `feature.routes.ts` - 功能模組路由
-- `guards/` - 函數式 guards
-- `resolvers/` - 函數式 resolvers
+### File Organization
+Recommended structure:
+- `app.routes.ts` - Main route configuration
+- `feature.routes.ts` - Feature module routes
+- `guards/` - Functional guards
+- `resolvers/` - Functional resolvers
 
 ## Functional Guards
 
-### 取代 Class-based Guards
-傳統的類別式 Guards (CanActivate, CanDeactivate 等) 已被函數式替代:
-- 更簡潔的語法
-- 更好的可測試性
-- 支援 `inject()` 函數
-- 更容易組合和重用
+### Replacing Class-based Guards
+Traditional class-based Guards (CanActivate, CanDeactivate, etc.) have been replaced with functional alternatives:
+- More concise syntax
+- Better testability
+- Support for `inject()` function
+- Easier composition and reuse
 
-### Guard 類型
-- **CanActivateFn**: 保護路由啟動
-- **CanDeactivateFn**: 保護路由離開
-- **CanMatchFn**: 保護路由匹配
-- **CanLoadFn**: 保護延遲載入 (已整合至 CanMatch)
+### Guard Types
+- **CanActivateFn**: Protect route activation
+- **CanDeactivateFn**: Protect route deactivation
+- **CanMatchFn**: Protect route matching
+- **CanLoadFn**: Protect lazy loading (integrated into CanMatch)
 
-### 使用 inject() 注入依賴
-- 在 Guard 函數內使用 `inject()`
-- 注入 Services, Stores, Router 等
-- 保持函數式純粹性
+### Using inject() for Dependency Injection
+- Use `inject()` within Guard functions
+- Inject Services, Stores, Router, etc.
+- Maintain functional purity
 
-### 組合 Guards
-- 多個 guards 以陣列形式組合
-- Guards 依序執行
-- 任一 guard 返回 false 則阻止導航
-- 支援非同步 guards (返回 Observable 或 Promise)
+### Combining Guards
+- Multiple guards combined as arrays
+- Guards execute in sequence
+- Any guard returning false blocks navigation
+- Supports async guards (returning Observable or Promise)
 
 ## Functional Resolvers
 
-### 資料預載模式
-- 使用 `ResolveFn` 取代 `Resolve` 介面
-- 在路由啟動前載入資料
-- 避免閃爍和載入狀態
-- 提供更好的使用者體驗
+### Data Preloading Pattern
+- Use `ResolveFn` instead of `Resolve` interface
+- Load data before route activation
+- Avoid flickering and loading states
+- Provide better user experience
 
-### Resolver 設計原則
-- 只載入關鍵資料
-- 考慮使用 `defer` 或懶載入非關鍵資料
-- 處理錯誤情況 (返回預設值或導航到錯誤頁)
-- 保持 resolver 輕量
+### Resolver Design Principles
+- Only load critical data
+- Consider using `defer` or lazy loading for non-critical data
+- Handle error cases (return default value or navigate to error page)
+- Keep resolvers lightweight
 
-### 與 Signals 整合
-- Resolver 返回的資料可轉換為 Signal
-- 使用 `toSignal()` 整合到元件
-- 保持響應式資料流
+### Integration with Signals
+- Resolver-returned data can be converted to Signal
+- Use `toSignal()` to integrate into component
+- Maintain reactive data flow
 
-## 路由參數處理
+## Route Parameter Handling
 
 ### Input Binding
-使用 `withComponentInputBinding()`:
-- 路由參數自動綁定到元件 Input
-- 減少 boilerplate 程式碼
-- 支援 query parameters 和 route data
-- 更好的型別安全
+Use `withComponentInputBinding()`:
+- Route parameters automatically bind to component Input
+- Reduce boilerplate code
+- Support query parameters and route data
+- Better type safety
 
-### 參數變更監聽
-- 使用 `input()` Signal 函數接收路由參數
-- 自動響應參數變更
-- 搭配 `effect()` 或 `computed()` 處理副作用
+### Parameter Change Listening
+- Use `input()` Signal function to receive route parameters
+- Automatically respond to parameter changes
+- Combine with `effect()` or `computed()` for side effects
 
-## 路由狀態管理
+## Route State Management
 
 ### Router State as Signal
-- 使用 `toSignal(router.events)` 追蹤路由事件
-- 使用 Signal 管理當前路由狀態
-- 與 @ngrx/signals 整合
+- Use `toSignal(router.events)` to track route events
+- Use Signal to manage current route state
+- Integrate with @ngrx/signals
 
-### 導航狀態
-- 使用 `NavigationExtras` 傳遞狀態
-- 在目標元件中使用 `Router.getCurrentNavigation()` 接收
-- 適合傳遞暫態資料 (如確認訊息)
+### Navigation State
+- Use `NavigationExtras` to pass state
+- Receive in target component using `Router.getCurrentNavigation()`
+- Suitable for passing transient data (like confirmation messages)
 
-## 延遲載入策略
+## Lazy Loading Strategy
 
-### 路由層級 Lazy Loading
-- 使用 `loadComponent` 載入 Standalone Component
-- 使用 `loadChildren` 載入子路由
-- 自動 code splitting
-- 減少初始包大小
+### Route-level Lazy Loading
+- Use `loadComponent` to load Standalone Component
+- Use `loadChildren` to load child routes
+- Automatic code splitting
+- Reduce initial bundle size
 
-### 預載策略
-- `PreloadAllModules`: 預載所有延遲路由
-- `NoPreloading`: 不預載
-- 自訂預載策略: 實作 `PreloadingStrategy`
-- 根據網路狀況或使用者行為調整
+### Preloading Strategy
+- `PreloadAllModules`: Preload all lazy routes
+- `NoPreloading`: No preloading
+- Custom preloading strategy: Implement `PreloadingStrategy`
+- Adjust based on network conditions or user behavior
 
-### 資料預取
-- 使用 Resolvers 預取關鍵資料
-- 使用 `@defer` 延遲載入次要內容
-- 平衡首次載入和使用者體驗
+### Data Prefetching
+- Use Resolvers to prefetch critical data
+- Use `@defer` to lazy load secondary content
+- Balance initial load and user experience
 
-## 路由動畫
+## Route Animation
 
-### 過場動畫配置
-- 使用 `@angular/animations` 定義路由過場
-- 在路由配置中設定 `data: { animation: '...' }`
-- 使用 `RouterOutlet` 的動畫觸發器
-- 提供流暢的頁面切換體驗
+### Transition Animation Configuration
+- Use `@angular/animations` to define route transitions
+- Set `data: { animation: '...' }` in route configuration
+- Use animation trigger on `RouterOutlet`
+- Provide smooth page switching experience
 
-### 效能考量
-- 避免過於複雜的動畫
-- 使用 CSS transforms 和 opacity
-- 考慮使用者裝置效能
-- 提供關閉動畫選項 (無障礙考量)
+### Performance Considerations
+- Avoid overly complex animations
+- Use CSS transforms and opacity
+- Consider user device performance
+- Provide animation disable option (accessibility consideration)
 
-## 導航處理
+## Navigation Handling
 
-### 程式化導航
-- 使用 `Router.navigate()` 或 `Router.navigateByUrl()`
-- 返回 Promise<boolean> 指示導航成功與否
-- 處理導航失敗情況
-- 使用相對或絕對路徑
+### Programmatic Navigation
+- Use `Router.navigate()` or `Router.navigateByUrl()`
+- Returns Promise<boolean> indicating navigation success
+- Handle navigation failure cases
+- Use relative or absolute paths
 
-### 導航取消
-- 監聽 `NavigationCancel` 事件
-- 處理使用者取消或 Guard 阻止的情況
-- 提供適當的使用者回饋
+### Navigation Cancellation
+- Listen to `NavigationCancel` event
+- Handle cases where user cancels or Guard blocks
+- Provide appropriate user feedback
 
-### 錯誤處理
-- 監聽 `NavigationError` 事件
-- 全域錯誤處理器
-- 導航到錯誤頁面
-- 記錄錯誤用於除錯
+### Error Handling
+- Listen to `NavigationError` event
+- Global error handler
+- Navigate to error page
+- Log errors for debugging
 
-## 進階模式
+## Advanced Patterns
 
-### 多層路由 (Nested Routes)
-- 使用 `children` 定義子路由
-- 多個 `<router-outlet>` 支援
-- 共享 layout 元件
-- 麵包屑導航支援
+### Multi-level Routes (Nested Routes)
+- Use `children` to define child routes
+- Multiple `<router-outlet>` support
+- Shared layout component
+- Breadcrumb navigation support
 
-### 命名路由出口 (Named Outlets)
-- 使用 `outlet` 屬性定義命名出口
-- 支援並行顯示多個路由
-- 適用於 modal、sidebar 等場景
-- 獨立的導航歷史
+### Named Route Outlets (Named Outlets)
+- Use `outlet` property to define named outlet
+- Support parallel display of multiple routes
+- Suitable for modal, sidebar scenarios
+- Independent navigation history
 
-### 路由重用策略
-- 實作 `RouteReuseStrategy`
-- 控制元件是否重用
-- 優化效能和使用者體驗
-- 保持表單狀態或滾動位置
+### Route Reuse Strategy
+- Implement `RouteReuseStrategy`
+- Control whether component is reused
+- Optimize performance and user experience
+- Maintain form state or scroll position
 
-## 安全性考量
+## Security Considerations
 
-### 認證 Guards
-- 檢查使用者登入狀態
-- 重導向到登入頁面
-- 保存原始 URL 用於登入後返回
-- 處理 token 過期
+### Authentication Guards
+- Check user login status
+- Redirect to login page
+- Save original URL for return after login
+- Handle token expiration
 
-### 授權 Guards
-- 檢查使用者權限或角色
-- 阻止未授權訪問
-- 顯示適當的錯誤訊息
-- 記錄未授權嘗試
+### Authorization Guards
+- Check user permissions or roles
+- Block unauthorized access
+- Display appropriate error messages
+- Log unauthorized attempts
 
-### 資料保護
-- 避免在 URL 中傳遞敏感資料
-- 使用 POST 請求傳遞大量或敏感資料
-- 驗證路由參數輸入
-- 防止 URL 操縱攻擊
+### Data Protection
+- Avoid passing sensitive data in URL
+- Use POST request for large or sensitive data
+- Validate route parameter input
+- Prevent URL manipulation attacks
 
-## 測試策略
+## Testing Strategy
 
-### Guards 測試
-- 使用 `TestBed` 設定測試環境
-- Mock 依賴的 Services
-- 測試各種授權情況
-- 驗證重導向邏輯
+### Guards Testing
+- Use `TestBed` to set up test environment
+- Mock dependent Services
+- Test various authorization scenarios
+- Verify redirect logic
 
-### Resolvers 測試
-- 測試資料載入邏輯
-- Mock HTTP 請求
-- 測試錯誤處理
-- 驗證返回值型別
+### Resolvers Testing
+- Test data loading logic
+- Mock HTTP requests
+- Test error handling
+- Verify return value type
 
-### 路由導航測試
-- 使用 `RouterTestingModule` 或 `provideRouter()`
-- 模擬導航事件
-- 驗證路由狀態
-- 測試參數傳遞
+### Route Navigation Testing
+- Use `RouterTestingModule` or `provideRouter()`
+- Simulate navigation events
+- Verify route state
+- Test parameter passing
 
-## 效能最佳化
+## Performance Optimization
 
-### Bundle 大小優化
-- 最大化延遲載入使用
-- 移除未使用的路由
-- 分析 bundle 大小
-- 使用 webpack-bundle-analyzer
+### Bundle Size Optimization
+- Maximize lazy loading usage
+- Remove unused routes
+- Analyze bundle size
+- Use webpack-bundle-analyzer
 
-### 首次載入優化
-- 只載入首屏必需路由
-- 使用 PreloadingStrategy 智慧預載
-- 優化 Guards 和 Resolvers 效能
-- 減少初始依賴
+### Initial Load Optimization
+- Load only essential routes for first screen
+- Use PreloadingStrategy for intelligent preloading
+- Optimize Guards and Resolvers performance
+- Reduce initial dependencies
 
-### 記憶體管理
-- 確保元件正確銷毀
-- 取消訂閱 (使用 `toSignal()` 自動管理)
-- 避免記憶體洩漏
-- 使用 RouteReuseStrategy 謹慎
+### Memory Management
+- Ensure components are properly destroyed
+- Unsubscribe (automatic management with `toSignal()`)
+- Avoid memory leaks
+- Use RouteReuseStrategy carefully
 
-## 無障礙性
+## Accessibility
 
-### 鍵盤導航
-- 確保所有路由可通過鍵盤訪問
-- 適當的 focus 管理
-- 跳過內容連結
-- Tab 順序合理
+### Keyboard Navigation
+- Ensure all routes are accessible via keyboard
+- Appropriate focus management
+- Skip content link
+- Reasonable tab order
 
-### 螢幕閱讀器支援
-- 路由變更時宣告頁面標題
-- 使用 `<title>` 或 ARIA live regions
-- 提供導航地標 (landmarks)
-- 適當的語意化 HTML
+### Screen Reader Support
+- Announce page title on route change
+- Use `<title>` or ARIA live regions
+- Provide navigation landmarks
+- Appropriate semantic HTML
 
-## 常見模式與反模式
+## Common Patterns and Anti-patterns
 
-### ✅ 良好模式
-- 使用函數式 Guards 和 Resolvers
-- 充分利用延遲載入
-- 使用 `withComponentInputBinding()`
-- 集中錯誤處理
-- 保持路由配置扁平和清晰
+### ✅ Good Patterns
+- Use functional Guards and Resolvers
+- Maximize lazy loading usage
+- Use `withComponentInputBinding()`
+- Centralize error handling
+- Keep route configuration flat and clear
 
-### ❌ 應避免
-- 使用過時的類別式 Guards
-- 過度嵌套的路由結構
-- 在 URL 中傳遞敏感資料
-- 忽略導航錯誤
-- 沒有適當的 loading 狀態
+### ❌ Avoid
+- Using outdated class-based Guards
+- Overly nested route structure
+- Passing sensitive data in URL
+- Ignoring navigation errors
+- Lack of appropriate loading states
 
-## 遷移指南
+## Migration Guide
 
-### 從類別式遷移到函數式
-1. 識別所有類別式 Guards 和 Resolvers
-2. 轉換為函數式實作
-3. 使用 `inject()` 取代建構函數注入
-4. 更新路由配置
-5. 更新測試
+### Migrating from Class-based to Functional
+1. Identify all class-based Guards and Resolvers
+2. Convert to functional implementation
+3. Use `inject()` instead of constructor injection
+4. Update route configuration
+5. Update tests
 
-### 引入 Signals
-1. 使用 `input()` 接收路由參數
-2. 使用 `toSignal()` 轉換路由事件
-3. 整合 @ngrx/signals 管理路由狀態
-4. 漸進式重構
+### Introducing Signals
+1. Use `input()` to receive route parameters
+2. Use `toSignal()` to convert route events
+3. Integrate @ngrx/signals to manage route state
+4. Progressive refactoring
 
-## 學習資源
+## Learning Resources
 
-- Angular 官方路由文件
-- Functional Guards 和 Resolvers 指南
-- Standalone Components 最佳實踐
-- 路由效能優化建議
+- Angular official routing documentation
+- Functional Guards and Resolvers guide
+- Standalone Components best practices
+- Route performance optimization recommendations

@@ -1,289 +1,289 @@
 ---
-description: 'Angular Material 最佳實踐 - 現代化元件使用指南'
+description: 'Angular Material Best Practices - Modern Component Usage Guide'
 applyTo: '**/*.component.ts,**/*.component.html,**/*.theme.scss'
 ---
 
-# Angular Material 最佳實踐
+# Angular Material Best Practices
 
-## 核心概念
+## Core Concepts
 
-Angular Material 是官方的 Material Design 元件庫，提供一致、高品質的 UI 元件。在 Angular 20+ 中，需要特別注意與 Standalone Components 和 Signals 的整合。
+Angular Material is the official Material Design component library, providing consistent and high-quality UI components. In Angular 20+, special attention must be paid to integration with Standalone Components and Signals.
 
-## 模組導入策略
+## Module Import Strategy
 
-### Standalone Components 時代
-- 直接導入需要的 Material 元件
-- 避免建立大型共享模組
-- 按需導入減少 bundle 大小
-- 使用 tree-shaking 移除未使用元件
+### Standalone Components Era
+- Import required Material components directly
+- Avoid creating large shared modules
+- On-demand imports reduce bundle size
+- Use tree-shaking to remove unused components
 
-### 導入最佳實踐
-- 只導入實際使用的元件
-- 使用明確的導入語句
-- 避免通配符導入
-- 在 component imports 陣列中聲明
+### Import Best Practices
+- Only import components actually used
+- Use explicit import statements
+- Avoid wildcard imports
+- Declare in component imports array
 
-## 主題系統
+## Theme System
 
 ### 自訂主題
 - 使用 Material 3 主題系統
-- 定義自訂調色盤 (primary, accent, warn)
-- 支援深色模式切換
-- 使用 CSS 變數實現動態主題
+- Define custom color palette (primary, accent, warn)
+- Support dark mode switching
+- Use CSS variables to implement dynamic theming
 
-### 主題架構
-- 在 styles.scss 中定義全域主題
-- 元件層級自訂樣式使用 `::ng-deep` (謹慎使用)
-- 使用 Material typography 系統
-- 保持與 Material Design 規範一致
+### Theme Architecture
+- Define global theme in styles.scss
+- Component-level custom styles use `::ng-deep` (use carefully)
+- Use Material typography system
+- Maintain alignment with Material Design specifications
 
-### 響應式主題
-- 根據系統偏好自動切換
-- 提供使用者手動切換選項
-- 使用 Signal 管理主題狀態
-- 持久化使用者偏好
+### Responsive Theming
+- Auto-switch based on system preference
+- Provide manual switching option for users
+- Use Signal to manage theme state
+- Persist user preference
 
-## 常用元件模式
+## Common Component Patterns
 
-### 表單元件
-- MatFormField 與 FormControl 整合
-- 正確使用 mat-label, mat-hint, mat-error
-- 驗證錯誤顯示策略
-- 使用 Signals 管理表單狀態
+### Form Components
+- MatFormField integration with FormControl
+- Proper use of mat-label, mat-hint, mat-error
+- Validation error display strategy
+- Use Signals to manage form state
 
-### 對話框 (Dialog)
-- 使用 inject(MAT_DIALOG_DATA) 接收資料
-- 使用 MatDialogRef 控制關閉
-- 定義清晰的資料介面
-- 處理關閉結果
+### Dialog
+- Use `inject(MAT_DIALOG_DATA)` to receive data
+- Use MatDialogRef to control closing
+- Define clear data interfaces
+- Handle close results
 
-### 表格 (Table)
-- 使用 MatTableDataSource 管理資料
-- 整合排序、分頁、篩選功能
-- 響應式欄位設定
-- 虛擬滾動處理大型資料集
+### Table
+- Use MatTableDataSource to manage data
+- Integrate sorting, pagination, filtering
+- Responsive column configuration
+- Virtual scrolling for large datasets
 
-### 選單與導航
-- MatMenu 用於下拉選單
-- MatSidenav 用於側邊欄
-- MatToolbar 用於頂部導航
-- 保持一致的導航體驗
+### Menu and Navigation
+- MatMenu for dropdown menus
+- MatSidenav for sidebars
+- MatToolbar for top navigation
+- Maintain consistent navigation experience
 
-## 與 Signals 整合
+## Integration with Signals
 
-### 狀態管理
-- 使用 Signal 控制元件狀態 (開啟/關閉、展開/收合)
-- MatDialog 結果轉換為 Signal
-- 使用 computed() 衍生 UI 狀態
-- 避免不必要的變更檢測
+### State Management
+- Use Signal to control component state (open/close, expand/collapse)
+- Convert MatDialog results to Signal
+- Use `computed()` for derived UI state
+- Avoid unnecessary change detection
 
-### 資料綁定
-- 使用 Signal inputs 接收資料
-- MatTable dataSource 可以是 Signal
-- 動態更新元件屬性
-- 保持資料流單向性
+### Data Binding
+- Use Signal inputs to receive data
+- MatTable dataSource can be a Signal
+- Dynamically update component properties
+- Maintain unidirectional data flow
 
-## 無障礙性 (Accessibility)
+## Accessibility
 
-### ARIA 標籤
-- 使用內建的 ARIA 支援
-- 自訂元件時補充必要標籤
-- 確保鍵盤導航可用
-- 提供適當的角色和屬性
+### ARIA Labels
+- Use built-in ARIA support
+- Supplement necessary labels for custom components
+- Ensure keyboard navigation is available
+- Provide appropriate roles and attributes
 
-### 鍵盤支援
-- 所有互動元件支援鍵盤操作
-- 適當的 Tab 順序
-- Enter/Space 觸發動作
-- Escape 關閉對話框或選單
+### Keyboard Support
+- All interactive components support keyboard operation
+- Appropriate Tab order
+- Enter/Space triggers action
+- Escape closes dialogs or menus
 
-### 螢幕閱讀器
-- 動態內容變更通知
-- 使用 LiveAnnouncer 服務
-- 表單錯誤即時回饋
-- 提供文字替代方案
+### Screen Reader
+- Notify on dynamic content changes
+- Use LiveAnnouncer service
+- Provide real-time form error feedback
+- Provide text alternatives
 
-## 效能最佳化
+## Performance Optimization
 
-### 虛擬滾動
-- 大型列表使用 `cdk-virtual-scroll-viewport`
-- 設定適當的 itemSize
-- 優化渲染效能
-- 減少 DOM 節點數量
+### Virtual Scrolling
+- Use `cdk-virtual-scroll-viewport` for large lists
+- Set appropriate itemSize
+- Optimize rendering performance
+- Reduce DOM node count
 
-### 延遲載入
-- 使用 `@defer` 延遲載入重型元件
-- Dialog 內容延遲載入
-- Tab 內容按需載入
-- 減少初始載入時間
+### Lazy Loading
+- Use `@defer` to lazy load heavy components
+- Lazy load dialog content
+- Load tab content on demand
+- Reduce initial load time
 
-### 變更檢測
-- 使用 OnPush 策略
-- Signals 自動優化檢測
-- 避免不必要的重渲染
-- 使用 trackBy 函數
+### Change Detection
+- Use OnPush strategy
+- Signals automatically optimize detection
+- Avoid unnecessary re-rendering
+- Use trackBy function
 
-## 響應式設計
+## Responsive Design
 
 ### Breakpoint Observer
-- 使用 BreakpointObserver 服務
-- 根據螢幕大小調整佈局
-- 定義自訂斷點
-- 轉換為 Signal 使用
+- Use BreakpointObserver service
+- Adjust layout based on screen size
+- Define custom breakpoints
+- Convert to Signal for use
 
 ### Flex Layout
-- 使用 CSS Flexbox 和 Grid
-- Material 不再提供 @angular/flex-layout
-- 使用現代 CSS 特性
-- 保持跨瀏覽器相容性
+- Use CSS Flexbox and Grid
+- Material no longer provides @angular/flex-layout
+- Use modern CSS features
+- Maintain cross-browser compatibility
 
-### 行動優先
-- 優先設計行動版介面
-- 漸進增強桌面體驗
-- 觸控友善的元件大小
-- 考慮手勢操作
+### Mobile First
+- Prioritize designing mobile interface
+- Progressively enhance desktop experience
+- Touch-friendly component sizes
+- Consider gesture interactions
 
-## 自訂與擴展
+## Customization and Extension
 
-### 元件包裝
-- 建立自訂包裝元件
-- 封裝常用配置
-- 保持 Material 元件 API
-- 提供額外功能
+### Component Wrapper
+- Create custom wrapper components
+- Encapsulate common configurations
+- Maintain Material component API
+- Provide additional features
 
-### 樣式自訂
-- 使用 Material 提供的 mixin
-- 遵循 Material Design 規範
-- 保持視覺一致性
-- 避免破壞元件結構
+### Style Customization
+- Use mixins provided by Material
+- Follow Material Design specifications
+- Maintain visual consistency
+- Avoid breaking component structure
 
-### 主題 Token
-- 使用設計 token 系統
-- 定義語意化顏色
-- 支援多品牌主題
-- 便於維護和更新
+### Design Tokens
+- Use design token system
+- Define semantic colors
+- Support multi-brand theming
+- Facilitate maintenance and updates
 
-## 常見元件使用
+## Common Component Usage
 
-### 按鈕 (Button)
-- 使用適當的按鈕類型 (mat-button, mat-raised-button, mat-fab)
-- 提供無障礙標籤
-- 載入狀態顯示
-- 禁用狀態處理
+### Button
+- Use appropriate button types (mat-button, mat-raised-button, mat-fab)
+- Provide accessible labels
+- Display loading state
+- Handle disabled state
 
-### 卡片 (Card)
-- 結構化內容組織
-- 一致的間距和陰影
-- 互動式卡片處理
-- 響應式佈局
+### Card
+- Structure content organization
+- Consistent spacing and shadows
+- Interactive card handling
+- Responsive layout
 
-### 輸入框 (Input)
-- 與 FormControl 整合
-- 顯示驗證錯誤
-- 前綴和後綴圖示
-- 自動完成支援
+### Input
+- Integration with FormControl
+- Display validation errors
+- Prefix and suffix icons
+- Autocomplete support
 
-### 選擇器 (Select)
-- 單選和多選模式
-- 選項群組
-- 搜尋過濾
-- 自訂觸發器
+### Select
+- Single and multi-select modes
+- Option groups
+- Search filtering
+- Custom trigger
 
-## 測試策略
+## Testing Strategy
 
-### 元件測試
-- 使用 ComponentHarness 測試 Material 元件
-- 模擬使用者互動
-- 驗證 ARIA 屬性
-- 測試響應式行為
+### Component Testing
+- Use ComponentHarness to test Material components
+- Simulate user interaction
+- Verify ARIA attributes
+- Test responsive behavior
 
-### 整合測試
-- 測試對話框開啟和關閉
-- 驗證表單提交流程
-- 測試導航互動
-- 確保無障礙性
+### Integration Testing
+- Test dialog opening and closing
+- Verify form submission flow
+- Test navigation interaction
+- Ensure accessibility
 
-## 常見陷阱
+## Common Pitfalls
 
-### ❌ 應避免
-- 過度自訂導致偏離 Material Design
-- 忽略無障礙性
-- 不適當的 ::ng-deep 使用
-- 混用多個 UI 框架
-- 忘記導入必要模組
+### ❌ Avoid
+- Excessive customization deviating from Material Design
+- Ignoring accessibility
+- Inappropriate use of `::ng-deep`
+- Mixing multiple UI frameworks
+- Forgetting to import necessary modules
 
-### ⚠️ 注意事項
-- MatFormField 需要包裹表單控制項
-- Dialog 關閉時要處理返回值
-- Table 需要定義 displayedColumns
-- 主題變更需要強制更新某些元件
+### ⚠️ Notes
+- MatFormField needs to wrap form controls
+- Handle return value when Dialog closes
+- Table needs displayedColumns definition
+- Theme changes may require forcing certain components to update
 
-## 版本升級
+## Version Upgrade
 
-### Material 版本對應
-- 確保 Material 版本與 Angular 版本對應
-- 查閱升級指南
-- 使用 `ng update` 自動升級
-- 測試破壞性變更
+### Material Version Correspondence
+- Ensure Material version matches Angular version
+- Consult upgrade guide
+- Use `ng update` for automatic upgrade
+- Test breaking changes
 
-### 遷移到 Material 3
-- 更新主題配置
-- 調整元件樣式
-- 檢查 API 變更
-- 更新自訂元件
+### Migration to Material 3
+- Update theme configuration
+- Adjust component styles
+- Check API changes
+- Update custom components
 
-## CDK 整合
+## CDK Integration
 
-### 使用 CDK 基礎功能
-- Overlay 服務建立浮層
-- Portal 動態內容投影
-- A11y 無障礙工具
-- 拖放功能
+### Using CDK Base Features
+- Overlay service creates floating layers
+- Portal dynamic content projection
+- A11y accessibility tools
+- Drag and drop functionality
 
-### 自訂元件基礎
-- 使用 CDK 建立自訂元件
-- 複用 Material 行為
-- 保持一致性
-- 減少重複程式碼
+### Custom Component Foundation
+- Use CDK to create custom components
+- Reuse Material behavior
+- Maintain consistency
+- Reduce code duplication
 
-## 國際化 (i18n)
+## Internationalization (i18n)
 
-### 多語言支援
-- 使用 Angular i18n 系統
-- Material 元件內建多語言
-- 自訂標籤翻譯
-- 日期和數字格式化
+### Multi-language Support
+- Use Angular i18n system
+- Material components have built-in multi-language
+- Translate custom labels
+- Format dates and numbers
 
-### RTL 支援
-- 啟用 RTL 佈局
-- 測試雙向文字
-- 圖示和動畫鏡像
-- 保持可讀性
+### RTL Support
+- Enable RTL layout
+- Test bidirectional text
+- Mirror icons and animations
+- Maintain readability
 
-## 文件與學習
+## Documentation and Learning
 
-### 官方資源
-- Material 元件文件
-- API 參考
-- 設計指南
-- 範例和 playground
+### Official Resources
+- Material component documentation
+- API reference
+- Design guidelines
+- Examples and playground
 
-### 社群資源
-- GitHub 討論區
+### Community Resources
+- GitHub discussions
 - Stack Overflow
-- 部落格文章
-- 視訊教學
+- Blog articles
+- Video tutorials
 
-## 專案結構建議
+## Project Structure Recommendations
 
-### 元件組織
-- 按功能模組組織 Material 元件
-- 建立可重用的元件包裝器
-- 統一的樣式目錄
-- 共享的主題配置
+### Component Organization
+- Organize Material components by feature module
+- Create reusable component wrappers
+- Unified style directory
+- Shared theme configuration
 
-### 程式碼規範
-- 一致的命名慣例
-- 統一的導入順序
-- 註釋自訂樣式原因
-- 文件化特殊配置
+### Code Standards
+- Consistent naming conventions
+- Unified import order
+- Document reasons for custom styles
+- Document special configurations

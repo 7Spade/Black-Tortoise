@@ -1,21 +1,21 @@
 ---
-description: 'Angular 20 + Firebase 整合指南 (@angular/fire)'
+description: 'Angular 20 + Firebase Integration Guide (@angular/fire)'
 applyTo: '**/firebase/**/*.ts,**/services/*firebase*.ts'
 ---
 
-# Angular 20 + Firebase 整合指南
+# Angular 20 + Firebase Integration Guide
 
-## 核心概念
+## Core Concepts
 
-@angular/fire 是 Angular 應用與 Firebase 服務整合的官方函式庫。本指南假設專案已完成基礎配置，包括 `app.config.ts`、環境變數檔案等設定。
+@angular/fire is the official library for integrating Angular applications with Firebase services. This guide assumes the project has already completed basic configuration, including `app.config.ts`, environment files, and other settings.
 
-## 前置要求確認
+## Prerequisites Confirmation
 
-### ✅ 已完成的配置
+### ✅ Completed Configuration
 
-本指南假設以下配置已就緒：
+This guide assumes the following configuration is ready:
 
-#### 1. `src/app/app.config.ts` 已配置
+#### 1. `src/app/app.config.ts` is configured
 ```typescript
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -42,7 +42,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-#### 2. `src/environments/environment.ts` 已配置
+#### 2. `src/environments/environment.ts` is Configured
 ```typescript
 export const environment = {
   production: false,
@@ -53,12 +53,12 @@ export const environment = {
     storageBucket: "your-app.appspot.com",
     messagingSenderId: "123456789",
     appId: "1:123456789:web:abcdef",
-    measurementId: "G-XXXXXXXXXX" // 選用
+    measurementId: "G-XXXXXXXXXX" // Optional
   }
 };
 ```
 
-#### 3. `src/environments/environment.prod.ts` 已配置
+#### 3. `src/environments/environment.prod.ts` is Configured
 ```typescript
 export const environment = {
   production: true,
@@ -74,16 +74,16 @@ export const environment = {
 };
 ```
 
-### 安裝依賴（如尚未安裝）
+### Install Dependencies (if not already installed)
 ```bash
 yarn add @angular/fire firebase
 ```
 
-## Firestore 資料庫操作
+## Firestore Database Operations
 
-### 基本 CRUD 操作
+### Basic CRUD Operations
 
-#### 建立 Firestore Service
+#### Create Firestore Service
 ```typescript
 import { Injectable, inject } from '@angular/core';
 import {
@@ -118,12 +118,12 @@ export class TodosFirestoreService {
   private firestore = inject(Firestore);
   private todosCollection = collection(this.firestore, 'todos') as CollectionReference<Todo>;
   
-  // 取得所有待辦事項（Observable）
+  // Get all todos (Observable)
   getTodos$(): Observable<Todo[]> {
     return collectionData(this.todosCollection, { idField: 'id' });
   }
   
-  // 取得特定使用者的待辦事項
+  // Get todos for a specific user
   getUserTodos$(userId: string): Observable<Todo[]> {
     const q = query(
       this.todosCollection,
@@ -133,13 +133,13 @@ export class TodosFirestoreService {
     return collectionData(q, { idField: 'id' });
   }
   
-  // 取得單一待辦事項
+  // Get a single todo
   getTodo$(id: string): Observable<Todo | undefined> {
     const todoDoc = doc(this.firestore, `todos/${id}`) as DocumentReference<Todo>;
     return docData(todoDoc, { idField: 'id' });
   }
   
-  // 新增待辦事項
+  // Add a todo
   async addTodo(todo: Omit<Todo, 'id'>): Promise<string> {
     const docRef = await addDoc(this.todosCollection, {
       ...todo,
@@ -148,25 +148,25 @@ export class TodosFirestoreService {
     return docRef.id;
   }
   
-  // 更新待辦事項
+  // Update a todo
   async updateTodo(id: string, changes: Partial<Todo>): Promise<void> {
     const todoDoc = doc(this.firestore, `todos/${id}`);
     await updateDoc(todoDoc, changes);
   }
   
-  // 設定/覆寫待辦事項
+  // Set/overwrite a todo
   async setTodo(id: string, todo: Omit<Todo, 'id'>): Promise<void> {
     const todoDoc = doc(this.firestore, `todos/${id}`);
     await setDoc(todoDoc, todo);
   }
   
-  // 刪除待辦事項
+  // Delete a todo
   async deleteTodo(id: string): Promise<void> {
     const todoDoc = doc(this.firestore, `todos/${id}`);
     await deleteDoc(todoDoc);
   }
   
-  // 取得有限數量的待辦事項
+  // Get limited todos
   getLimitedTodos$(limitCount: number): Observable<Todo[]> {
     const q = query(
       this.todosCollection,
@@ -178,9 +178,9 @@ export class TodosFirestoreService {
 }
 ```
 
-### 與 @ngrx/signals 整合
+### Integration with @ngrx/signals
 
-#### 建立 Firestore + Signals Store
+#### Create Firestore + Signals Store
 ```typescript
 import { Injectable, inject } from '@angular/core';
 import { signalStore, withState, withMethods, withHooks } from '@ngrx/signals';

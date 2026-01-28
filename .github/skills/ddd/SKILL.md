@@ -6,106 +6,106 @@ license: MIT
 
 # DDD Standard Architecture Rules
 
-## 一、總體架構與分層定義
+## 1. Overall Architecture and Layer Definition
 
-1. 系統必須明確劃分為 **Domain、Application、Infrastructure、Presentation** 四個層級。  
-2. 每個檔案只能屬於一個層級，不得同時承擔多層責任。  
-3. 分層的目的是隔離「業務意圖」與「技術細節」，不得為方便而合併層級。  
-4. 架構設計必須以長期演進與替換成本最小化為目標。  
+1. The system must be clearly divided into **Domain, Application, Infrastructure, and Presentation** four layers.  
+2. Each file can only belong to one layer and must not assume multiple layer responsibilities simultaneously.  
+3. The purpose of layering is to isolate "business intent" from "technical details", and layers must not be merged for convenience.  
+4. Architecture design must be guided by long-term evolution and minimization of replacement costs.  
 
-## 二、依賴方向（不可違反）
+## 2. Dependency Direction (Must Not Violate)
 
-5. 只允許以下單向依賴：  
+5. Only the following unidirectional dependencies are allowed:  
    **Domain → Application → Infrastructure → Presentation**  
-6. 任何反向依賴一律視為架構錯誤。  
-7. 不得以型別、工具函式、barrel export 或 side-effect 間接形成反向依賴。  
-8. 依賴方向必須在 TypeScript `import` 層級即可被靜態分析出來。  
+6. Any reverse dependency is considered an architecture error.  
+7. Reverse dependencies must not be formed indirectly through types, utility functions, barrel exports, or side-effects.  
+8. The direction of dependencies must be statically analyzable at the TypeScript `import` level.  
 
-## 三、Domain 層規則（業務核心）
+## 3. Domain Layer Rules (Business Core)
 
-9. Domain 層必須是純 TypeScript。  
-10. Domain 層不得依賴 Angular、RxJS、Signals、HTTP、Storage 或任何 framework。  
-11. Domain 層不得有 `async / await`、`Promise` 或 I/O 行為。  
-12. Domain 層只描述「業務是什麼」，不描述「怎麼做到」。  
-13. Domain 層只能包含：  
+9. The Domain layer must be pure TypeScript.  
+10. The Domain layer must not depend on Angular, RxJS, Signals, HTTP, Storage, or any framework.  
+11. The Domain layer must not have `async / await`, `Promise`, or I/O behavior.  
+12. The Domain layer only describes "what the business is", not "how to do it".  
+13. The Domain layer can only contain:  
     - Entity  
     - Value Object  
     - Domain Service  
     - Domain Interface  
-14. Entity 必須具有明確身分識別（identity）。  
-15. Value Object 必須是不可變（immutable）。  
-16. Domain Service 只能表達無法自然歸屬於單一 Entity 的業務規則。  
-17. Domain Interface 只描述能力，不描述實作方式。  
-18. Domain 層不得知道資料來自哪裡、如何儲存、如何顯示。  
+14. Entities must have explicit identity.  
+15. Value Objects must be immutable.  
+16. Domain Services can only express business rules that cannot naturally belong to a single Entity.  
+17. Domain Interfaces only describe capabilities, not implementation.  
+18. The Domain layer must not know where data comes from, how it is stored, or how it is displayed.  
 
-## 四、Application 層規則（業務流程與狀態協調）
+## 4. Application Layer Rules (Business Process and State Coordination)
 
-19. Application 層負責「用例（Use Case）」與業務流程編排。  
-20. Application 層是整個系統唯一的業務狀態真相持有者。  
-21. Application 層可以依賴 Domain，但不得反向依賴 Presentation 或 Infrastructure 實作。  
-22. Application 層只能依賴 Infrastructure **定義的 interface**，而非 concrete class。  
-23. Application 層負責交易邊界（transaction boundary）與流程順序。  
-24. Application 層不得包含 UI、DOM、Component、Template 相關概念。  
-25. Application 層不得包含資料存取細節。  
-26. Application 層不得將 framework 型別外洩給其他層。  
-27. **Application Facade** 是 Presentation 唯一允許接觸的入口。  
+19. The Application layer is responsible for "Use Cases" and business process orchestration.  
+20. The Application layer is the single source of truth for all business state in the system.  
+21. The Application layer can depend on Domain, but must not reversely depend on Presentation or Infrastructure implementations.  
+22. The Application layer can only depend on Infrastructure **interface definitions**, not concrete classes.  
+23. The Application layer is responsible for transaction boundaries and process sequencing.  
+24. The Application layer must not contain UI, DOM, Component, or Template-related concepts.  
+25. The Application layer must not contain data access details.  
+26. The Application layer must not leak framework types to other layers.  
+27. **Application Facade** is the only entry point that Presentation is allowed to access.  
 
-## 五、Infrastructure 層規則（技術實作）
+## 5. Infrastructure Layer Rules (Technical Implementation)
 
-28. Infrastructure 層只負責實作 Domain 或 Application 定義的 interface。  
-29. Infrastructure 層可以依賴 framework 與第三方套件。  
-30. Infrastructure 層不得包含業務規則或決策邏輯。  
-31. Infrastructure 層不得自行成為狀態真相。  
-32. Infrastructure 層不得要求上層（Application / Domain）調整設計以配合技術細節。  
-33. Infrastructure 層不得向外暴露 framework-specific 型別。  
-34. Infrastructure 層可以被替換而不影響 Domain 與 Application。  
+28. The Infrastructure layer is only responsible for implementing interfaces defined by Domain or Application.  
+29. The Infrastructure layer can depend on frameworks and third-party libraries.  
+30. The Infrastructure layer must not contain business rules or decision logic.  
+31. The Infrastructure layer must not independently become the source of truth for state.  
+32. The Infrastructure layer must not require upper layers (Application / Domain) to adjust their design to accommodate technical details.  
+33. The Infrastructure layer must not expose framework-specific types externally.  
+34. The Infrastructure layer can be replaced without affecting Domain and Application.  
 
-## 六、Presentation 層規則（UI 與互動）
+## 6. Presentation Layer Rules (UI and Interaction)
 
-35. Presentation 層只負責顯示與使用者互動。  
-36. Presentation 層不得包含業務規則。  
-37. Presentation 層不得自行定義業務狀態真相。  
-38. Presentation 層只能依賴 Application Facade。  
-39. Presentation 層不得直接呼叫 Infrastructure。  
-40. Presentation 層不得繞過 Application 直接操作 Domain。  
-41. Presentation 層的狀態只能是短生命週期的 UI state。  
+35. The Presentation layer is only responsible for display and user interaction.  
+36. The Presentation layer must not contain business rules.  
+37. The Presentation layer must not independently define business state truth.  
+38. The Presentation layer can only depend on Application Facade.  
+39. The Presentation layer must not directly call Infrastructure.  
+40. The Presentation layer must not bypass Application to directly manipulate Domain.  
+41. Presentation layer state can only be short-lived UI state.  
 
-## 七、狀態與責任邊界
+## 7. State and Responsibility Boundaries
 
-42. Domain 層不持有應用狀態。  
-43. Application 層集中管理所有業務狀態。  
-44. Infrastructure 層不得持有長生命週期業務狀態。  
-45. Presentation 層不得持有跨頁或跨流程的業務狀態。  
-46. 任一狀態只能有單一權威來源（Single Source of Truth）。  
+42. The Domain layer does not hold application state.  
+43. The Application layer centrally manages all business state.  
+44. The Infrastructure layer must not hold long-lived business state.  
+45. The Presentation layer must not hold business state across pages or flows.  
+46. Any state can only have a single source of truth.  
 
-## 八、Interface 與抽象規則
+## 8. Interface and Abstraction Rules
 
-47. Interface 的定義位置必須屬於需求方，而非實作方。  
-48. Application 需要的能力，其 interface 必須定義在 Application 或 Domain。  
-49. Infrastructure 只能實作 interface，不得反向定義需求。  
-50. Interface 不得洩漏技術細節。  
+47. The interface definition location must belong to the consumer, not the implementer.  
+48. Interfaces required by Application must be defined in Application or Domain.  
+49. Infrastructure can only implement interfaces, must not reverse-define requirements.  
+50. Interfaces must not leak technical details.  
 
-## 九、Shared 與共用模組規則
+## 9. Shared and Common Module Rules
 
-51. `shared` 不得成為業務核心。  
-52. `shared` 不得包含業務狀態或決策。  
-53. 若 `shared` 被多個 feature 視為業務依賴，則其層級必須上移至 Application 或 Domain。  
-54. `shared` 僅允許存在：  
-    - 純工具  
-    - 純 UI  
-    - 純 stateless 元件  
+51. `shared` must not become the business core.  
+52. `shared` must not contain business state or decisions.  
+53. If `shared` is viewed as a business dependency by multiple features, its level must be moved up to Application or Domain.  
+54. `shared` is only allowed to contain:  
+    - Pure utilities  
+    - Pure UI  
+    - Pure stateless components  
 
-## 十、結構與命名一致性
+## 10. Structure and Naming Consistency
 
-55. 資料夾結構必須反映分層與責任。  
-56. 檔名與資料夾名稱必須能直接推斷其所屬層級。  
-57. 不得出現語意與實際責任不符的命名。  
-58. Barrel export 不得模糊層級邊界。  
+55. Folder structure must reflect layering and responsibility.  
+56. File names and folder names must directly suggest which layer they belong to.  
+57. Naming must not appear semantically inconsistent with actual responsibility.  
+58. Barrel exports must not obscure layer boundaries.  
 
-## 十一、驗證與演進規則
+## 11. Validation and Evolution Rules
 
-59. Domain 必須能獨立於任何 framework 編譯與測試。  
-60. Application 必須能在無 UI 的情況下運行與測試。  
-61. Infrastructure 必須可被 mock 或替換。  
-62. Presentation 的替換不得影響業務邏輯。  
-63. 架構規則必須能透過 lint、test 或 CI 檢查。  
+59. Domain must be compilable and testable independently of any framework.  
+60. Application must be runnable and testable without a UI.  
+61. Infrastructure must be mockable or replaceable.  
+62. Replacement of Presentation must not affect business logic.  
+63. Architecture rules must be verifiable through linting, testing, or CI.  
