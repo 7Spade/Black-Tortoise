@@ -3,7 +3,7 @@ PS D:\GitHub\7s\Black-Tortoise> pnpm start
 > stackblitz-starters-vxcrzm@0.0.0 start D:\GitHub\7s\Black-Tortoise
 > ng serve
 
-Application bundle generation failed. [4.236 seconds]
+Application bundle generation failed. [4.227 seconds]
 
 ✘ [ERROR] TS2305: Module '"@application/handlers"' has no exported member 'provideEventHandlers'. [plugin angular-compiler]
 
@@ -850,51 +850,35 @@ Application bundle generation failed. [4.236 seconds]
          ╵              ~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@quality-control/domain"' has no exported member 'TaskStatus'. [plugin angular-compiler]
+✘ [ERROR] TS2724: '"@tasks/domain"' has no exported member named 'TASK_REPOSITORY'. Did you mean 'TaskRepository'? [plugin angular-compiler]
 
-    src/app/modules/quality-control/application/handlers/fail-qc.handler.ts:4:9:
-      4 │ import { TaskStatus, updateTaskStatus } from '@quality-control/doma...
-        ╵          ~~~~~~~~~~
-
-
-✘ [ERROR] TS2305: Module '"@quality-control/domain"' has no exported member 'updateTaskStatus'. [plugin angular-compiler]
-
-    src/app/modules/quality-control/application/handlers/fail-qc.handler.ts:4:21:
-      4 │ import { TaskStatus, updateTaskStatus } from '@quality-control/doma...
-        ╵                      ~~~~~~~~~~~~~~~~
+    src/app/modules/quality-control/application/handlers/fail-qc.handler.ts:3:9:
+      3 │ import { TASK_REPOSITORY } from '@tasks/domain';
+        ╵          ~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/value-objects"' has no exported member 'TaskId'. [plugin angular-compiler]
+✘ [ERROR] TS2571: Object is of type 'unknown'. [plugin angular-compiler]
 
-    src/app/modules/quality-control/application/handlers/fail-qc.handler.ts:6:9:
-      6 │ import { TaskId } from '@domain/value-objects';
-        ╵          ~~~~~~
-
-
-✘ [ERROR] TS2554: Expected 2-3 arguments, but got 1. [plugin angular-compiler]
-
-    src/app/modules/quality-control/application/handlers/fail-qc.handler.ts:43:20:
-      43 │       const event = createQCFailedEvent({
-         ╵                     ~~~~~~~~~~~~~~~~~~~
-
-  An argument for 'correlationId' was not provided.
-
-    src/app/events/quality/quality.events.ts:62:98:
-      62 │ ...reasons: string[] }, correlationId: string, causationId?: strin...
-         ╵                         ~~~~~~~~~~~~~~~~~~~~~
+    src/app/modules/quality-control/application/handlers/fail-qc.handler.ts:30:25:
+      30 │       const task = await this.repo.findById(new TaskId(request.tas...
+         ╵                          ~~~~~~~~~
 
 
-✘ [ERROR] TS2554: Expected 2-3 arguments, but got 1. [plugin angular-compiler]
+✘ [ERROR] TS2571: Object is of type 'unknown'. [plugin angular-compiler]
 
-    src/app/modules/quality-control/application/handlers/pass-qc.handler.ts:38:20:
-      38 │       const event = createQCPassedEvent({
-         ╵                     ~~~~~~~~~~~~~~~~~~~
+    src/app/modules/quality-control/application/handlers/fail-qc.handler.ts:41:12:
+      41 │       await this.repo.save(updatedTask);
+         ╵             ~~~~~~~~~
 
-  An argument for 'correlationId' was not provided.
 
-    src/app/events/quality/quality.events.ts:42:95:
-      42 │ ...g; notes?: string }, correlationId: string, causationId?: strin...
-         ╵                         ~~~~~~~~~~~~~~~~~~~~~
+✘ [ERROR] TS2379: Argument of type '{ taskId: string; qcId: `${string}-${string}-${string}-${string}-${string}`; notes: string | undefined; }' is not assignable to parameter of type '{ taskId: string; qcId: string; notes?: string; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'notes' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'. [plugin angular-compiler]
+
+    src/app/modules/quality-control/application/handlers/pass-qc.handler.ts:39:8:
+      39 │         {
+         ╵         ^
 
 
 ✘ [ERROR] TS2307: Cannot find module '@application/handlers/create-issue.handler' or its corresponding type declarations. [plugin angular-compiler]
@@ -1320,13 +1304,6 @@ Application bundle generation failed. [4.236 seconds]
     src/app/modules/tasks/application/handlers/submit-task-for-qc.handler.ts:5:46:
       5 │ ...rQCEvent } from '@tasks/domain/events/task-submitted-for-qc.event';
         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'create' does not exist on type 'typeof TaskId'. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/handlers/submit-task-for-qc.handler.ts:32:34:
-      32 │             const taskId = TaskId.create(request.taskId);
-         ╵                                   ~~~~~~
 
 
 ✘ [ERROR] TS2305: Module '"@events"' has no exported member 'TaskSubmittedForQC'. [plugin angular-compiler]
