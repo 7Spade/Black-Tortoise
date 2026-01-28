@@ -3,52 +3,50 @@ description: "Architecture rules for Organization governance over Workspaces."
 applyTo: "**"
 ---
 
----
+### Organization Complete Definition
 
-### Organization（組織）之完整表述
+The Organization is the upper-level unit in the system carrying user governance and Workspace attribution,
+responsible for defining "who is qualified to create and manage Workspaces," and the attribution relationship of Workspaces.
 
-Organization 為系統中承載使用者治理與工作區歸屬之上層單位，
-負責定義「誰有資格建立與管理工作區」，以及工作區之歸屬關係。
+The Organization itself does not carry any business context within the Workspace,
+nor does it participate in capability operation, process control, or state management within the Workspace.
 
-Organization 本身不承載任何工作區內之業務語境，
-亦不參與工作區內之能力運作、流程控制或狀態管理。
+A Workspace must be created by a User or an Organization,
+and every Workspace must explicitly belong to a single User or a single Organization.
+There must be no Workspace in the system that does not belong to a User or an Organization.
 
-工作區（Workspace）必須由使用者或組織建立，
-且每一個 Workspace 必須明確隸屬於單一 User 或單一 Organization。
-系統中不得存在未隸屬於 User 或 Organization 之 Workspace。
-
-Organization 僅定義工作區建立與存續的治理前提，
-一旦 Workspace 建立完成，其內部行為即完全由 Workspace 語境與模組能力自行負責。
+The Organization only defines the governance prerequisites for Workspace creation and existence;
+once a Workspace is established, its internal behavior is entirely the responsibility of the Workspace context and module capabilities.
 
 ---
 
-### Organization Architecture Rules（最終規則句）
+### Organization Architecture Rules
 
-1. User 與 Organization 為系統中**唯一允許建立 Workspace（工作區邏輯容器）之主體**。
+1. User and Organization are the **only subjects in the system permitted to create a Workspace (logical container for work)**.
 
-2. 任一 Workspace 必須隸屬於且僅隸屬於一個 User 或一個 Organization，不得同時隸屬於多個主體。
+2. Any Workspace must belong to and only belong to one User or one Organization; it must not belong to multiple subjects simultaneously.
 
-3. 系統中嚴格禁止建立不隸屬於 User 或 Organization 之 Workspace。
+3. It is strictly prohibited in the system to create a Workspace that does not belong to a User or an Organization.
 
-4. Organization 僅負責工作區之治理與歸屬關係，不得參與任何 Workspace 內部之業務語境、能力實作或流程控制。
+4. The Organization is only responsible for Workspace governance and attribution relationships and must not participate in any internal business context, capability implementation, or process control of the Workspace.
 
-5. Organization 不得直接讀取、寫入或影響 Workspace 內任何模組之狀態或資料。
+5. The Organization must not directly read, write, or influence the state or data of any module within the Workspace.
 
-6. Workspace 建立完成後，其內部生命週期與行為不得回溯依賴 Organization 之狀態或流程。
+6. After a Workspace is created, its internal lifecycle and behavior must not retroactively rely on the state or processes of the Organization.
 
-7. Organization 與 Workspace 之關係為「治理者」與「被治理之語境單位」，不得反轉其責任方向。
+7. The relationship between Organization and Workspace is that of "governor" and "governed context unit," and the direction of responsibility must not be reversed.
 
-8. Organization 不得作為多個 Workspace 之狀態聚合中心或跨 Workspace 的協調者。
+8. The Organization must not serve as a state aggregation center for multiple Workspaces or a coordinator across Workspaces.
 
-9. 使用者對 Workspace 的操作權限，必須經由 Organization 或 User 與 Workspace 之關係明確定義，不得隱含推導。
+9. A User's operation permissions for a Workspace must be explicitly defined via the Organization or the User-Workspace relationship and must not be implicitly deduced.
 
-10. 任一系統進入點在建立 Workspace 前，必須先確立其所屬之 User 或 Organization 身分。
+10. Before creating a Workspace, any system entry point must first establish its belonging User or Organization identity.
 
 ---
 
-### 一句不可誤會的總結句
+### One Unambiguous Concluding Sentence
 
-> User / Organization 決定「誰能建立工作區」，
-> Workspace 決定「在此工作區中如何運作」，
-> **組織治理不進入工作區，工作區行為不回流組織。**
+> User / Organization decides "who can create a Workspace,"
+> Workspace decides "how to operate within this Workspace,"
+> **Organization governance does not enter the Workspace, and Workspace behavior does not flow back to the Organization.**
 

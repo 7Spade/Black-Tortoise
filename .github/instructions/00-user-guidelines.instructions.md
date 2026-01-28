@@ -3,8 +3,6 @@ description: "Architecture rules and guidelines for User as the system's identit
 applyTo: "**"
 ---
 
----
-
 ### User Complete Definition
 
 The User is the most basic operating unit and permission subject in the system.
