@@ -9,7 +9,7 @@ import { inject } from '@angular/core';
 import { createIssue, IssuePriority, IssueStatus, IssueType } from '@domain/aggregates';
 import { IssueCreatedEvent, IssueResolvedEvent } from '@domain/events';
 import { EventBus } from '@domain/types';
-import { WorkspaceId } from '@domain/value-objects';
+import { WorkspaceId } from '@workspace/domain';
 import { IssuesStore } from '../stores/issues.store';
 
 export function registerIssuesEventHandlers(eventBus: EventBus): void {
@@ -50,3 +50,4 @@ export function registerIssuesEventHandlers(eventBus: EventBus): void {
 
   console.log('[IssuesEventHandlers] Registered event handlers for workspace');
 }
+

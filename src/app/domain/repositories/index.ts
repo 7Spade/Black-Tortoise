@@ -13,6 +13,8 @@ export * from './member.repository';
 export * from './overview.repository';
 export * from './permission.repository';
 export * from './quality-control.repository';
-export * from './settings.repository';
+// export * from './settings.repository'; (Moved to @workspace)
+export { SettingsRepository } from '@workspace/domain';
 export * from './task.repository';
-export * from './workspace.repository';
+// WorkspaceRepository moved to @workspace
+

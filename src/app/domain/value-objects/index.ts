@@ -15,5 +15,5 @@ export * from './qc-check-id.vo';
 export * from './task-id.vo';
 export * from './timestamp.vo';
 // UserId moved to @account
-export * from './workspace-id.vo';
+
 

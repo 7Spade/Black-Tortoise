@@ -14,6 +14,5 @@ export * from './member.repository.impl';
 export * from './overview.repository.impl';
 export * from './permission.repository.impl';
 export * from './quality-control.repository.impl';
-export * from './settings.repository.impl';
 export * from './task.repository.impl';
-export * from './workspace.repository.impl';
+

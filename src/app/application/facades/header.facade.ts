@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { WorkspaceCreateResult } from '@application/models/workspace-create-result.model';
-import { WorkspaceStore } from '@application/stores/workspace.store';
+import { WorkspaceCreateResult } from '@workspace/application';
+import { WorkspaceStore } from '@workspace/application';
 
 @Injectable({ providedIn: 'root' })
 export class HeaderFacade {
@@ -31,3 +31,4 @@ export class HeaderFacade {
     // this.router.navigate(['/workspace']); 
   }
 }
+

@@ -5,9 +5,10 @@
  * DDD Pattern: Command
  */
 
-import { WorkspaceSettingsEntity } from '@domain/aggregates';
+import { WorkspaceSettingsEntity } from '@workspace/domain';
 
 export interface UpdateSettingsCommand {
   workspaceId: string;
   settings: Partial<WorkspaceSettingsEntity>;
 }
+

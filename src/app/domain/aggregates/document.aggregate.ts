@@ -8,7 +8,7 @@
  * It enforces business rules around document lifecycle and permissions.
  */
 
-import { WorkspaceId } from '@domain/value-objects';
+import { WorkspaceId } from '@workspace/domain';
 import { DocumentId } from '../value-objects';
 
 export type DocumentType = 'text' | 'spreadsheet' | 'presentation' | 'pdf' | 'image' | 'other';
@@ -150,3 +150,4 @@ export function restoreDocument(
     version: document.version + 1,
   };
 }
+

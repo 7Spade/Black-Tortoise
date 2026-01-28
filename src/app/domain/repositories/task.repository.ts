@@ -9,7 +9,7 @@
  * This interface is pure TypeScript with no framework dependencies.
  */
 
-import { WorkspaceId } from '@domain/value-objects';
+import { WorkspaceId } from '@workspace/domain';
 import { TaskAggregate } from '../aggregates';
 import { TaskId } from '../value-objects';
 
@@ -75,3 +75,4 @@ export interface TaskRepository {
    */
   countByStatus(workspaceId: WorkspaceId, status: string): Promise<number>;
 }
+

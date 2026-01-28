@@ -13,7 +13,8 @@ import {
 } from '@angular/fire/firestore';
 import { TaskAggregate, TaskStatus } from '@domain/aggregates';
 import { TaskRepository } from '@domain/repositories';
-import { TaskId, WorkspaceId } from '@domain/value-objects';
+import { TaskId } from '@domain/value-objects';
+import { WorkspaceId } from '@workspace/domain';
 
 @Injectable({
   providedIn: 'root',
@@ -157,3 +158,4 @@ export class TaskRepositoryImpl implements TaskRepository {
     return snapshot.data().count;
   }
 }
+

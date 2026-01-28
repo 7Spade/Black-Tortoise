@@ -5,7 +5,7 @@
  * DDD Pattern: Command
  */
 
-import { WorkspaceId } from '@domain/value-objects';
+import { WorkspaceId } from '@workspace/domain';
 import { IssuePriority, IssueType } from '@domain/aggregates';
 
 export interface CreateIssueCommand {
@@ -18,3 +18,4 @@ export interface CreateIssueCommand {
   reportedByUserId: string;
   assigneeId?: string;
 }
+

@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
-import { WorkspaceStore } from '@application/stores/workspace.store';
+import { WorkspaceStore } from '@workspace/application';
 import { filter, map, startWith } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -69,3 +69,4 @@ export class ShellFacade {
     });
   }
 }
+

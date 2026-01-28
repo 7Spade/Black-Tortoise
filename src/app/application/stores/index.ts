@@ -16,5 +16,5 @@ export * from './presentation.store';
 export * from './quality-control.store';
 export * from './settings.store';
 export * from './tasks.store';
-export * from './workspace.store';
+
 

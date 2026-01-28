@@ -14,9 +14,5 @@ export * from './notification.component';
 export * from './search.component';
 // Team components moved to @account
 export * from './theme-toggle.component';
+export { WorkspaceHostComponent } from '@workspace/presentation';
 export * from './types';
-export * from './workspace-create-dialog.component';
-export * from './workspace-create-trigger.component';
-export * from './workspace-host.component';
-export * from './workspace-switcher.component';
-export * from './workspace-trigger.component';

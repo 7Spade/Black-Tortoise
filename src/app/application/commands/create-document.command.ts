@@ -5,7 +5,7 @@
  * DDD Pattern: Command
  */
 
-import { WorkspaceId } from '@domain/value-objects';
+import { WorkspaceId } from '@workspace/domain';
 import { DocumentType } from '@domain/aggregates';
 import { DocumentId } from '@domain/value-objects';
 
@@ -19,3 +19,4 @@ export interface CreateDocumentCommand {
   storageUrl: string;
   uploadedByUserId: string;
 }
+

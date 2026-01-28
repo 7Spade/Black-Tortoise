@@ -11,7 +11,7 @@
  * - Each module is independent and self-contained
  */
 
-import { WorkspaceEventBus } from '@domain/types';
+import { WorkspaceEventBus } from '@workspace/domain';
 
 /**
  * Module Lifecycle Interface
@@ -21,32 +21,32 @@ export interface Module {
    * Unique module identifier
    */
   readonly id: string;
-  
+
   /**
    * Module display name
    */
   readonly name: string;
-  
+
   /**
    * Module type/category
    */
   readonly type: ModuleType;
-  
+
   /**
    * Initialize module with workspace event bus
    */
   initialize(eventBus: WorkspaceEventBus): void;
-  
+
   /**
    * Activate module (when user navigates to it)
    */
   activate(): void;
-  
+
   /**
    * Deactivate module (when user navigates away)
    */
   deactivate(): void;
-  
+
   /**
    * Cleanup module resources
    */
@@ -57,10 +57,10 @@ export interface Module {
  * Module Types
  * Extended to include all standard workspace modules
  */
-export type ModuleType = 
-  | 'overview' 
-  | 'documents' 
-  | 'tasks' 
+export type ModuleType =
+  | 'overview'
+  | 'documents'
+  | 'tasks'
   | 'daily'
   | 'quality-control'
   | 'acceptance'
@@ -68,7 +68,7 @@ export type ModuleType =
   | 'members'
   | 'permissions'
   | 'audit'
-  | 'calendar' 
+  | 'calendar'
   | 'settings';
 
 /**

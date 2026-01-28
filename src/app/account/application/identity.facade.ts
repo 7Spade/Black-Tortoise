@@ -19,7 +19,7 @@ import { IdentityViewModel, UserAvatarViewModel } from '@application/models';
 import { AuthStore } from '@application/stores/auth.store';
 import { IdentityContextStore } from './identity-context.store';
 import { OrganizationStore } from './organization.store';
-import { WorkspaceStore } from '@application/stores/workspace.store';
+import { WorkspaceStore } from '@workspace/application';
 
 @Injectable({ providedIn: 'root' })
 export class IdentityFacade {
@@ -243,3 +243,4 @@ export class IdentityFacade {
     return '#' + '00000'.substring(0, 6 - c.length) + c;
   }
 }
+

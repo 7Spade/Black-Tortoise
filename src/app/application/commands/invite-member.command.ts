@@ -5,7 +5,7 @@
  * DDD Pattern: Command
  */
 
-import { WorkspaceId } from '@domain/value-objects';
+import { WorkspaceId } from '@workspace/domain';
 import { MemberRole } from '@domain/aggregates';
 
 export interface InviteMemberCommand {
@@ -14,3 +14,4 @@ export interface InviteMemberCommand {
   role: MemberRole;
   invitedByUserId: string;
 }
+

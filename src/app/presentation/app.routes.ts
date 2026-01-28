@@ -19,11 +19,8 @@
  */
 
 import { Routes } from '@angular/router';
-import {
-  canActivateAuth,
-  canActivatePublic,
-  canActivateWorkspace,
-} from '@application/guards';
+import { canActivateAuth, canActivatePublic } from '@application/guards';
+import { canActivateWorkspace } from '@workspace/application';
 
 export const routes: Routes = [
   // Landing Page (Public Home)
@@ -81,11 +78,9 @@ export const routes: Routes = [
     path: 'workspace',
     canActivate: [canActivateAuth, canActivateWorkspace],
     loadComponent: () =>
-      import('@presentation/pages/workspace').then((m) => m.WorkspacePage),
+      import('@workspace/presentation').then((m) => m.WorkspacePage),
     loadChildren: () =>
-      import('@presentation/pages/workspace/workspace.routes').then(
-        (m) => m.WORKSPACE_ROUTES,
-      ),
+      import('@workspace/presentation').then((m) => m.WORKSPACE_ROUTES),
   },
 
   // Default: redirect to demo

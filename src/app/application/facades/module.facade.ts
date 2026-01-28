@@ -19,15 +19,15 @@
  */
 
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { WorkspaceEventBusAdapter } from '../facades/workspace-event-bus.adapter';
+import { WorkspaceEventBusAdapter } from '@workspace/application';
 import { IAppModule } from '../interfaces/module.interface';
 import { IModuleEventBus } from '../interfaces/module-event-bus.interface';
-import { WORKSPACE_RUNTIME_FACTORY } from '../interfaces/workspace-runtime.token';
+import { WORKSPACE_RUNTIME_FACTORY } from '@workspace/application';
 
 @Injectable({ providedIn: 'root' })
 export class ModuleFacade {
   private readonly runtimeFactory = inject(WORKSPACE_RUNTIME_FACTORY);
-  
+
   // Module state signals
   private readonly _activeModules = signal<IAppModule[]>([]);
   private readonly _currentModule = signal<IAppModule | null>(null);
@@ -44,16 +44,16 @@ export class ModuleFacade {
    */
   getEventBus(workspaceId: string): IModuleEventBus | null {
     const runtime = this.runtimeFactory.getRuntime(workspaceId);
-    
+
     if (!runtime) {
       console.warn(`[ModuleFacade] Runtime not found for workspace: ${workspaceId}`);
       return null;
     }
-    
+
     // Wrap domain event bus in application adapter
     return new WorkspaceEventBusAdapter(runtime.eventBus);
   }
-  
+
   /**
    * Check if runtime exists for workspace
    */
@@ -103,7 +103,7 @@ export class ModuleFacade {
     unsubscribeAll: () => void;
   } {
     const subscriptions: (() => void)[] = [];
-    
+
     return {
       subscriptions,
       add: (unsubscribeFn: () => void) => {

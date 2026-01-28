@@ -13,7 +13,8 @@ import {
 } from '@angular/fire/firestore';
 import { DocumentAggregate } from '@domain/aggregates';
 import { DocumentRepository } from '@domain/repositories';
-import { DocumentId, WorkspaceId } from '@domain/value-objects';
+import { DocumentId } from '@domain/value-objects';
+import { WorkspaceId } from '@workspace/domain';
 
 @Injectable({ providedIn: 'root' })
 export class DocumentRepositoryImpl implements DocumentRepository {
@@ -153,3 +154,4 @@ export class DocumentRepositoryImpl implements DocumentRepository {
     return docs.reduce((sum, d) => sum + (d.size || 0), 0);
   }
 }
+

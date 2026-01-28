@@ -8,7 +8,7 @@
  * It enforces business rules around issue lifecycle and assignment.
  */
 
-import { WorkspaceId } from '@domain/value-objects';
+import { WorkspaceId } from '@workspace/domain';
 
 export enum IssueStatus {
   OPEN = 'open',
@@ -228,3 +228,4 @@ export function reopenIssue(issue: IssueAggregate): IssueAggregate {
   const { resolvedAt, closedAt, ...rest } = result;
   return rest as IssueAggregate;
 }
+

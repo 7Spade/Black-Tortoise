@@ -8,7 +8,7 @@
  * It enforces business rules around member invitation, activation, and role management.
  */
 
-import { WorkspaceId } from '@domain/value-objects';
+import { WorkspaceId } from '@workspace/domain';
 
 export type MemberRole = 'owner' | 'admin' | 'member' | 'guest';
 export type MemberStatus = 'pending' | 'active' | 'suspended' | 'removed';
@@ -196,3 +196,4 @@ export function demoteFromOwner(member: MemberAggregate): MemberAggregate {
     version: member.version + 1,
   };
 }
+

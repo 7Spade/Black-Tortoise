@@ -34,7 +34,7 @@ import {
 import { ModuleFacade } from '@application/facades/module.facade';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule } from '@application/interfaces/module.interface';
-import { WorkspaceStore } from '@application/stores/workspace.store';
+import { WorkspaceStore } from '@workspace/application';
 
 @Component({
   selector: 'app-module-host-container',
@@ -98,7 +98,7 @@ export class ModuleHostContainerComponent implements OnInit, OnDestroy {
     effect(() => {
       const workspace = this.workspaceStore.currentWorkspace();
       if (workspace) {
-        const eventBus = this.moduleFacade.getEventBus(workspace.id);
+        const eventBus = this.moduleFacade.getEventBus(workspace.id.getValue());
         this.eventBus = eventBus !== null ? eventBus : undefined;
         if (this.eventBus) {
           this.reloadModule();
@@ -130,7 +130,7 @@ export class ModuleHostContainerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const eventBus = this.moduleFacade.getEventBus(workspace.id);
+    const eventBus = this.moduleFacade.getEventBus(workspace.id.getValue());
     this.eventBus = eventBus !== null ? eventBus : undefined;
     if (!this.eventBus) {
       this.error.set('Workspace event bus not found');
@@ -196,3 +196,4 @@ export class ModuleHostContainerComponent implements OnInit, OnDestroy {
     }
   }
 }
+

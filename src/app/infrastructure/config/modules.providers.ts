@@ -23,9 +23,9 @@ import {
   OverviewRepositoryImpl,
   PermissionRepositoryImpl,
   QualityControlRepositoryImpl,
-  SettingsRepositoryImpl,
   TaskRepositoryImpl,
 } from '@infrastructure/repositories';
+import { SettingsFirestoreRepository } from '@workspace/infrastructure';
 
 export function provideModulesInfrastructure(): Provider[] {
   return [
@@ -75,7 +75,7 @@ export function provideModulesInfrastructure(): Provider[] {
     },
     {
       provide: SETTINGS_REPOSITORY,
-      useClass: SettingsRepositoryImpl,
+      useClass: SettingsFirestoreRepository,
     },
   ];
 }

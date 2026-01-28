@@ -30,7 +30,7 @@ export interface TreeNode {
           <div class="tree-node-content">
             @if (node.children && node.children.length > 0) {
               <button class="tree-expand-button" (click)="toggleNode(node)">
-                {{ node.expanded ? '▼' : '▶' }}
+                {{ node.expanded ? '\u25BC' : '\u25B6' }}
               </button>
             }
             <span class="tree-node-label">{{ node.label }}</span>

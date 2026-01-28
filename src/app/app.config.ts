@@ -11,7 +11,7 @@ import { provideAuthInfrastructure } from './infrastructure/config/auth.provider
 import { provideEventsInfrastructure } from './infrastructure/config/events.providers';
 import { provideFirebaseIntegration } from './infrastructure/config/firebase.providers';
 import { provideModulesInfrastructure } from './infrastructure/config/modules.providers';
-import { provideWorkspaceInfrastructure } from './infrastructure/config/workspace.providers';
+import { provideWorkspaceInfrastructure } from '@workspace/infrastructure';
 import { provideTemplateCore } from './template-core/template.providers';
 
 /**
@@ -64,3 +64,4 @@ export const appConfig: ApplicationConfig = {
     provideFirebaseIntegration(),
   ],
 };
+

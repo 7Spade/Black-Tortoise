@@ -4,4 +4,4 @@
  */
 
 export * from './in-memory-event-bus';
-export * from './workspace-runtime.factory';
+// export * from './workspace-runtime.factory';

@@ -30,7 +30,7 @@ export interface AuthRepository {
    * Send password reset email
    */
   resetPassword(email: string): Promise<void>;
-  
+
   /**
    * Get the current user snapshot
    */

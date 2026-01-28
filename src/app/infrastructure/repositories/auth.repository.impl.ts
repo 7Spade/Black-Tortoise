@@ -60,16 +60,16 @@ export class AuthRepositoryImpl implements AuthRepository, AuthStream {
     if (!firebaseUser) {
       return null;
     }
-    
+
     // Construct VOs
     const id = UserId.create(firebaseUser.uid);
     const email = Email.create(firebaseUser.email || `missing-${firebaseUser.uid}@example.com`);
-    
+
     return User.create(
-        id,
-        email,
-        firebaseUser.displayName || 'Unknown User',
-        firebaseUser.photoURL || null
+      id,
+      email,
+      firebaseUser.displayName || 'Unknown User',
+      firebaseUser.photoURL || null
     );
   }
 }

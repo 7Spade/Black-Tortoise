@@ -10,6 +10,5 @@ export * from './search.facade';
 export * from './settings.facade';
 export * from './shell.facade';
 export * from './tasks.facade';
-export * from './workspace-event-bus.adapter';
-export * from './workspace-host.facade';
-export * from './workspace.facade';
+export { WorkspaceFacade, WorkspaceHostFacade } from '@workspace/application';
+

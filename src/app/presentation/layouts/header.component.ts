@@ -21,8 +21,8 @@ import {
   NotificationComponent,
   SearchComponent,
   ThemeToggleComponent,
-  WorkspaceSwitcherComponent,
 } from '@presentation/components';
+import { WorkspaceSwitcherComponent } from '@workspace/presentation';
 @Component({
   selector: 'app-header',
   standalone: true,

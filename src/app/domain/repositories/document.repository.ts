@@ -9,7 +9,7 @@
  * This interface is pure TypeScript with no framework dependencies.
  */
 
-import { WorkspaceId } from '@domain/value-objects';
+import { WorkspaceId } from '@workspace/domain';
 import { DocumentAggregate } from '../aggregates';
 import { DocumentId } from '../value-objects';
 
@@ -85,3 +85,4 @@ export interface DocumentRepository {
    */
   getTotalStorageSize(workspaceId: WorkspaceId): Promise<number>;
 }
+

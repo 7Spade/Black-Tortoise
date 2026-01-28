@@ -3,5 +3,6 @@
  * Technical Barrel File
  */
 
-export * from './workspace.entity';
+// Workspace entities moved to @workspace/domain
+
 

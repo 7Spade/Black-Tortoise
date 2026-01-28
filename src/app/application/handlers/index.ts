@@ -13,7 +13,7 @@ export * from './create-document.handler';
 export * from './create-issue.handler';
 export * from './create-role.handler';
 export * from './create-task.handler';
-export * from './create-workspace.handler';
+export { CreateWorkspaceHandler, SwitchWorkspaceHandler } from '@workspace/application';
 export * from './daily.event-handlers';
 export * from './event-handler.registry';
 export * from './fail-qc.handler';
@@ -32,7 +32,7 @@ export * from './submit-acceptance-review.handler';
 export * from './submit-daily-entry.handler';
 export * from './submit-qc-check.handler';
 export * from './submit-task-for-qc.handler';
-export * from './switch-workspace.handler';
+// export * from './switch-workspace.handler'; (Moved to @workspace)
 export * from './tasks.event-handlers';
 export * from './update-issue.handler';
 export * from './update-member-role.handler';

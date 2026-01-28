@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { WorkspaceStore } from '@application/stores/workspace.store';
+import { WorkspaceStore } from '@workspace/application';
 
 @Component({
   selector: 'app-demo-dashboard',
@@ -22,3 +22,4 @@ import { WorkspaceStore } from '@application/stores/workspace.store';
 export class DemoDashboardComponent {
   readonly workspaceStore = inject(WorkspaceStore);
 }
+

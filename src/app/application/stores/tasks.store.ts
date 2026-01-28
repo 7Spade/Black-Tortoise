@@ -17,7 +17,7 @@ import {
   TaskStatus,
   createTask,
 } from '@domain/aggregates';
-import { WorkspaceId } from '@domain/value-objects';
+import { WorkspaceId } from '@workspace/domain';
 import { tapResponse } from '@ngrx/operators';
 import {
   patchState,
@@ -177,3 +177,4 @@ export const TasksStore = signalStore(
     };
   }),
 );
+

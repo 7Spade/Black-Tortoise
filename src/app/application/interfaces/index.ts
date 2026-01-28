@@ -17,7 +17,7 @@ export * from './module.interface';
 export * from './overview-repository.token';
 export * from './permission-repository.token';
 export * from './quality-control-repository.token';
-export * from './settings-repository.token';
+// export * from './settings-repository.token';
+export { SETTINGS_REPOSITORY } from '@workspace/application';
 export * from './task-repository.token';
-// Organization moved to @account
-export * from './workspace-repository.token';
+export { WORKSPACE_REPOSITORY, WORKSPACE_RUNTIME_FACTORY } from '@workspace/application';

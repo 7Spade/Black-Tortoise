@@ -29,5 +29,3 @@ export * from './task-created.event';
 export * from './task-deleted.event';
 export * from './task-submitted-for-qc.event';
 export * from './task-updated.event';
-export * from './workspace-created.event';
-export * from './workspace-switched.event';
