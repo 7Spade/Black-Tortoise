@@ -10,71 +10,22 @@
 *   **Minimalism**: Do not add layers, files, or abstractions "just in case". Every line of code must fight for its existence.
 *   **Efficiency**: If a standard Angular feature solves it without violating DDD, use it. Do not reinvent the wheel.
 
-## 🎯 Architecture Constitution
+# Black-Tortoise Core Agent Directives — Summary
 
-This project adheres to a strict **Zone-less, Pure Reactive** architecture.
+This is the concise project-level AGENTS summary. Detailed, layer-specific directives live under `src/app/*/AGENTS.md`.
 
-### Core Principles (The 5 Laws)
+Purpose: provide a single, short authoritative summary that other AGENTS files reference. For full rules, consult the layer AGENTS files.
 
-1.  **Zone-less is Law**:
-    *   Application bootstraps with `provideExperimentalZonelessChangeDetection()`.
-    *   **FORBIDDEN**: `Zone.js` dependencies, `ngZone.run()`.
-    *   **REQUIRED**: Logic must trigger Signal updates to drive View refresh.
+Key Principles (one-liners):
+- Zone-less, Signal-first UI: convert Observables to Signals at the Application/Facade boundary.
+- Strict dependency direction: Presentation → Application → Domain; Infrastructure implements Application ports.
+- Event-first flow: Append (persist) → Publish (event bus) → React (stores/effects).
+- Prefer small, intention-revealing APIs; follow Occam's razor — minimal abstractions.
+- Templates bind only to Signals and use Angular 20 control-flow syntax (`@if`, `@for track`, `@switch`, `@defer`).
 
-2.  **Pure Signals in View**:
-    *   Templates consumes **Signals ONLY**.
-    *   **FORBIDDEN**: `AsyncPipe` (`| async`), `BehaviorSubject` in components.
-    *   Observables must be converted to Signals (`toSignal`) at the **Application/Facade** boundary.
+Where to go next:
+- Layer rules: [src/app/domain/AGENTS.md](src/app/domain/AGENTS.md), [src/app/application/AGENTS.md](src/app/application/AGENTS.md), [src/app/infrastructure/AGENTS.md](src/app/infrastructure/AGENTS.md), [src/app/presentation/AGENTS.md](src/app/presentation/AGENTS.md)
+- Project-level index for AGENTS: [src/app/AGENTS_INDEX.md](src/app/AGENTS_INDEX.md)
 
-3.  **Strict DDD Layers & Dependency Direction**:
-    *   **Dependency Flow**: `Domain` ⬅️ `Application` ⬅️ `Infrastructure` & `Presentation`.
-    *   **Violation**: A layer referencing a layer "above" or "parallel" to it where forbidden.
-
-4.  **Event-Driven Consistency**:
-    *   Flow: **Append** (Store) → **Publish** (Bus) → **React** (Effects).
-    *   Modules interact **ONLY** via the Workspace Event Bus.
-
-5.  **Modern Control Flow**:
-    *   **REQUIRED**: `@if`, `@for` (w/ track), `@switch`, `@defer`.
-    *   **FORBIDDEN**: `*ngIf`, `*ngFor`, `*ngSwitch`.
-
-## 📦 Core Dependencies (Fast Context)
-*Based on `package.json`*
-
-*   **Framework**: `@angular/core@~20.0.0` (Signals, Standalone, Zone-less)
-*   **State**: `@ngrx/signals@~20.0.0` (SignalStore, patchState, rxMethod)
-*   **UI Library**: `@angular/material@~20.0.0`, `@angular/cdk`
-*   **Backend**: `@angular/fire@~20.0.0` (Firestore, Auth)
-*   **Utilities**: `rxjs@~7.8` (Streams only), `date-fns` (if inst.)
-*   **Testing**: `@playwright/test`
-
-## 📂 Project Cartography (Strict DDD)
-
-```text
-src/app/
-├── domain/                    🔒 PURE TS (No Angular/Fire imports except Injectable)
-│   ├── entities/              (Rich Models, Logic included)
-│   ├── value-objects/         (Immutable, Self-validating)
-│   └── repositories/          (Interfaces returning Promise/Observable)
-│
-├── application/               🎯 STATE ORCHESTRATION (Angular Aware)
-│   ├── stores/                (SignalStores)
-│   ├── facades/               (ViewModel factories)
-│   └── use-cases/             (Complex orchestration specific logic)
-│
-├── infrastructure/            ⚙️ IMPLEMENTATION (Everything External)
-│   ├── firebase/              (Firestore Impls, Converters)
-│   ├── adapters/              (Date, Browser APIs)
-│   └── mappers/               (Domain <-> DTO)
-│
-└── presentation/              👁️ PASSIVE VIEW (Materials + Signals)
-    ├── components/            (Dumb/Smart Components)
-    ├── pages/                 (Route Entry Points)
-    └── styles/                (Tailwind/SCSS Variables)
-```
-
-## 🤖 Navigation & Context
-- [Domain Rules](src/app/domain/AGENTS.md) - Business Rules & Entities.
-- [Application Rules](src/app/application/AGENTS.md) - Stores, State, & Events.
-- [Infrastructure Rules](src/app/infrastructure/AGENTS.md) - Repositories & ACL.
-- [Presentation Rules](src/app/presentation/AGENTS.md) - Components & UI.
+Update process:
+- Edit the layer AGENTS for details; keep this root file a <8-point> checklist. Use `src/app/AGENTS_INDEX.md` to publish update notes and version.

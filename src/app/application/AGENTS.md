@@ -1,35 +1,13 @@
-# Application Layer Agent Directives
+# Application Layer Agent Directives — Summary
 
-> **Context**: `src/app/application`
-> **Role**: State Orchestration & Event Management
-> **Dependency**: Depends on `Domain`. Used by `Presentation` & `Infrastructure`.
+Context: `src/app/application` — Role: orchestrate domain use cases, manage Signal stores, and expose facades for Presentation.
 
-## 🪒 Occam's Razor Principle
-*   **Direct Stores**: If a component simply needs a list of items, expose it from the Store. Do not create a specific "Service" just to wrap a Store method unless orchestration is complex.
-*   **YAGNI**: "You Ain't Gonna Need It". Don't pre-optimize for "switching state management later". Use `signalStore` methods directly.
+Short rules (refer to root AGENTS and `src/app/AGENTS_INDEX.md` for index):
+- State lives in `signalStore()` only; use `withState`, `withComputed`, `withMethods`.
+- Use `rxMethod()` for async streams; prefer `tapResponse` for error handling; avoid plain `.subscribe()`.
+- Event Chain: Append to `eventStore` → Publish to `EventBus` → React in stores/effects.
+- Facades produce read-only ViewModel Signals (map Domain → UI DTOs here; no domain logic in Presentation).
+- Keep handlers simple: Command/Handler orchestrates domain and calls repository interfaces; side effects via stores/events.
 
-## 🧠 Signal State Management (NgRx Signals)
+Edit process: Update this file for application-level rules only; keep architecture policy in root `AGENTS.md` and operational index in `src/app/AGENTS_INDEX.md`.
 
-### 1. SignalStore is King
-*   **Standard**: All state must reside in `signalStore`.
-*   **Structure**:
-    *   `withState()`: The Single Source of Truth.
-    *   `withComputed()`: Efficient derived selectors.
-    *   `withMethods()`: Actions (Mutations) & Effects (Async Orchestration).
-    *   `rxMethod()`: The **ONLY** place where RxJS streams (Observables) are managed. Use `tapResponse` for safety.
-*   **FORBIDDEN**: `BehaviorSubject`-based services. Functional `input()` in stores.
-
-### 2. The "Event Chain" Protocol
-Strict adherence to Event Sourcing flow:
-1.  **Append**: Store method calls `eventStore.append(event)`. (Persist the fact)
-2.  **Publish**: Store publishes to `EventBus`. (Notify system)
-3.  **React**: Other Stores/Effects respond to the event via `rxMethod`.
-
-### 3. Facade Pattern (The ViewModel Factory)
-*   **Pattern**: If UI needs complex combination of 2+ Stores (e.g., User + Workspace), create a Facade.
-*   **Rule**: Returns **Read-Only Signals**.
-*   **Isolation**: Transforms `Domain Entities` -> `UI ViewModels` to prevent Domain leakage into templates.
-
-### 4. Zone-less Reactivity
-*   **Avoid**: Manual `.subscribe()`.
-*   **Use**: `tapResponse` operator to safely handle side effects without breaking the reactive graph.
