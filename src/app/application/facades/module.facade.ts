@@ -19,10 +19,10 @@
  */
 
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { WorkspaceEventBusAdapter } from '../facades/workspace-event-bus.adapter';
-import { IAppModule } from '../interfaces/module.interface';
-import { IModuleEventBus } from '../interfaces/module-event-bus.interface';
-import { WORKSPACE_RUNTIME_FACTORY } from '../interfaces/workspace-runtime.token';
+import { WorkspaceEventBusAdapter } from '@application/facades/workspace-event-bus.adapter';
+import { IAppModule } from '@application/interfaces/module.interface';
+import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
+import { WORKSPACE_RUNTIME_FACTORY } from '@application/interfaces/workspace-runtime.token';
 
 @Injectable({ providedIn: 'root' })
 export class ModuleFacade {

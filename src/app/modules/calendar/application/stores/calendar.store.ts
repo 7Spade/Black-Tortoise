@@ -1,5 +1,5 @@
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { CalendarEventViewModel } from '../models/calendar-event-view.model';
+import { CalendarEventViewModel } from '@calendar/application/models/calendar-event-view.model';
 import { inject, computed } from '@angular/core';
 import { CalendarRepository } from '@domain/repositories/calendar.repository';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';

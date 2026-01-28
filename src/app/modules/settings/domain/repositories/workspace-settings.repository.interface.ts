@@ -1,6 +1,6 @@
 
-import { WorkspaceSettingsAggregate } from '../aggregates/workspace-settings.aggregate';
-import { SettingsId } from '../value-objects/settings-id.vo';
+import { WorkspaceSettingsAggregate } from '@settings/domain/aggregates/workspace-settings.aggregate';
+import { SettingsId } from '@settings/domain/value-objects/settings-id.vo';
 import { InjectionToken } from '@angular/core';
 
 export interface WorkspaceSettingsRepository {

@@ -1,8 +1,8 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
-import { AcceptanceItemId } from '../value-objects/acceptance-item-id.vo';
-import { AcceptanceStatus } from '../value-objects/acceptance-status.vo';
-import { AcceptanceResult } from '../value-objects/acceptance-result.vo';
-import { AcceptanceCriteriaItem } from '../entities/acceptance-criteria-item.entity';
+import { AcceptanceItemId } from '@acceptance/domain/value-objects/acceptance-item-id.vo';
+import { AcceptanceStatus } from '@acceptance/domain/value-objects/acceptance-status.vo';
+import { AcceptanceResult } from '@acceptance/domain/value-objects/acceptance-result.vo';
+import { AcceptanceCriteriaItem } from '@acceptance/domain/entities/acceptance-criteria-item.entity';
 import { TaskId } from '@domain/value-objects/task-id.vo';
 
 /**

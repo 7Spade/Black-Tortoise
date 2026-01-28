@@ -6,7 +6,7 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { RefreshDashboardCommand } from '../commands/refresh-dashboard.command';
+import { RefreshDashboardCommand } from '@overview/application/commands/refresh-dashboard.command';
 // import { OverviewRepository } from '@overview/domain';
 
 @Injectable({ providedIn: 'root' })

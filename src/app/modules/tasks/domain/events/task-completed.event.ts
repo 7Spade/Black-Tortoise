@@ -8,7 +8,7 @@
  * Contains all information needed to track task completion in the event store.
  */
 
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@tasks/events/domain-event';
 
 export interface TaskCompletedPayload {
   readonly workspaceId: string;

@@ -1,6 +1,6 @@
 
-import { IssueAggregate } from '../aggregates/issue.aggregate';
-import { IssueId } from '../value-objects/issue-id.vo';
+import { IssueAggregate } from '@issues/domain/aggregates/issue.aggregate';
+import { IssueId } from '@issues/domain/value-objects/issue-id.vo';
 import { InjectionToken } from '@angular/core';
 
 export interface IssueRepository {

@@ -1,4 +1,4 @@
-import { Template } from '../../domain/aggregates/template.aggregate';
+import { Template } from '@template-core/domain/aggregates/template.aggregate';
 import { TemplateDto } from '../dtos/template.dto';
 
 export class TemplateToDtoMapper {

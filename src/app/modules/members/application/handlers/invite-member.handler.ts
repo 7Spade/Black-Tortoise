@@ -6,7 +6,7 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { InviteMemberCommand } from '../commands/invite-member.command';
+import { InviteMemberCommand } from '@members/application/commands/invite-member.command';
 // import { MemberRepository } from '@members/domain';
 
 @Injectable({ providedIn: 'root' })

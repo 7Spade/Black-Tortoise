@@ -5,7 +5,7 @@
  * DDD Pattern: Policy
  */
 
-import { Role } from '../entities/role.entity';
+import { Role } from '@permissions/domain/entities/role.entity';
 
 /**
  * Validate role modification

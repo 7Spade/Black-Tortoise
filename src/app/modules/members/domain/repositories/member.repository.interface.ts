@@ -1,6 +1,6 @@
 
-import { MemberAggregate } from '../aggregates/member.aggregate';
-import { MemberId } from '../value-objects/member-id.vo';
+import { MemberAggregate } from '@members/domain/aggregates/member.aggregate';
+import { MemberId } from '@members/domain/value-objects/member-id.vo';
 import { InjectionToken } from '@angular/core';
 
 export interface MemberRepository {

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, Timestamp, collection, doc, getDocs, orderBy, query, setDoc, where } from '@angular/fire/firestore';
-import { ITemplateEventStore } from '../../application/ports/event-store.port';
-import { TemplateDomainEvent } from '../../domain/base/domain-event';
+import { ITemplateEventStore } from '@template-core/application/ports/event-store.port';
+import { TemplateDomainEvent } from '@template-core/domain/base/domain-event';
 
 @Injectable()
 export class TemplateFirestoreEventStore implements ITemplateEventStore {

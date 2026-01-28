@@ -1,6 +1,6 @@
 
-import { Folder } from '../entities/folder.entity';
-import { Document } from '../entities/document.entity';
+import { Folder } from '@documents/domain/entities/folder.entity';
+import { Document } from '@documents/domain/entities/document.entity';
 import { InjectionToken } from '@angular/core';
 
 export interface FileTreeRepository {

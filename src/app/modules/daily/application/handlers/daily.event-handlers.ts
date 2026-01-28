@@ -13,7 +13,7 @@
 import { inject } from '@angular/core';
 import { DailyEntryCreatedEvent } from '@domain/events';
 import { EventBus } from '@domain/types';
-import { DailyEntry, DailyStore } from '../stores/daily.store';
+import { DailyEntry, DailyStore } from '@daily/application/stores/daily.store';
 
 export function registerDailyEventHandlers(eventBus: EventBus): void {
   const dailyStore = inject(DailyStore);

@@ -1,8 +1,8 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
-import { DashboardConfigId } from '../value-objects/dashboard-config-id.vo';
-import { WidgetId } from '../value-objects/widget-id.vo';
-import { WidgetPosition } from '../value-objects/widget-position.vo';
-import { WidgetType } from '../value-objects/widget-type.vo';
+import { DashboardConfigId } from '@overview/domain/value-objects/dashboard-config-id.vo';
+import { WidgetId } from '@overview/domain/value-objects/widget-id.vo';
+import { WidgetPosition } from '@overview/domain/value-objects/widget-position.vo';
+import { WidgetType } from '@overview/domain/value-objects/widget-type.vo';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
 import { UserId } from '@domain/value-objects/user-id.vo';
 

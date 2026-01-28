@@ -1,6 +1,6 @@
-import { AggregateRoot } from '../base/aggregate-root';
-import { OrganizationId } from '../value-objects/organization-id.vo';
-import { UserId } from '../value-objects/user-id.vo';
+import { AggregateRoot } from '@domain/base/aggregate-root';
+import { OrganizationId } from '@domain/value-objects/organization-id.vo';
+import { UserId } from '@domain/value-objects/user-id.vo';
 
 /**
  * Organization Entity (Minimal)

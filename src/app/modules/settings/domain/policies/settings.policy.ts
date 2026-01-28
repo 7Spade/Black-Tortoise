@@ -5,7 +5,7 @@
  * DDD Pattern: Policy
  */
 
-import { WorkspaceSettingsEntity } from '../aggregates';
+import { WorkspaceSettingsEntity } from '@settings/domain/aggregates';
 
 const SUPPORTED_THEMES = ['light', 'dark', 'system'];
 const SUPPORTED_LANGUAGES = ['en', 'zh-TW', 'zh-CN', 'ja'];

@@ -1,9 +1,9 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
-import { DailyEntryId } from '../value-objects/daily-entry-id.vo';
+import { DailyEntryId } from '@daily/domain/value-objects/daily-entry-id.vo';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
 import { UserId } from '@domain/value-objects/user-id.vo';
-import { WorkDate } from '../value-objects/work-date.vo';
-import { ManDay } from '../value-objects/man-day.vo';
+import { WorkDate } from '@daily/domain/value-objects/work-date.vo';
+import { ManDay } from '@daily/domain/value-objects/man-day.vo';
 
 /**
  * Daily Entry Aggregate

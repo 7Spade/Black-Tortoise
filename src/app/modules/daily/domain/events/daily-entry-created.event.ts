@@ -6,7 +6,7 @@
  * Emitted by: Daily module
  */
 
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@daily/events/domain-event';
 
 export interface DailyEntryCreatedPayload {
   readonly workspaceId: string;

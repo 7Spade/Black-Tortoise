@@ -6,7 +6,7 @@
  * Emitted by: Acceptance module
  */
 
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@acceptance/events/domain-event';
 
 export interface AcceptanceApprovedPayload {
   readonly workspaceId: string;

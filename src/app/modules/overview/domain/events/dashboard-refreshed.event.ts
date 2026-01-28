@@ -1,5 +1,5 @@
 
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@overview/events/domain-event';
 
 export interface DashboardRefreshedPayload {
   readonly viewMode: string;

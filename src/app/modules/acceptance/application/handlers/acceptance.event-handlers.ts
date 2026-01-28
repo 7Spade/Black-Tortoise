@@ -9,7 +9,7 @@ import { inject } from '@angular/core';
 import { AcceptanceCheckEntity, AcceptanceStatus } from '@acceptance/domain';
 import { AcceptanceApprovedEvent, AcceptanceRejectedEvent, QCPassedEvent } from '@domain/events';
 import { EventBus } from '@domain/types';
-import { AcceptanceStore } from '../stores/acceptance.store';
+import { AcceptanceStore } from '@acceptance/application/stores/acceptance.store';
 
 export function registerAcceptanceEventHandlers(eventBus: EventBus): void {
   const acceptanceStore = inject(AcceptanceStore);

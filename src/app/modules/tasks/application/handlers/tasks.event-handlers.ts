@@ -7,7 +7,7 @@ import {
   TaskSubmittedForQCEvent,
 } from '@domain/events';
 import { EventBus } from '@domain/types';
-import { TasksStore } from '../stores/tasks.store';
+import { TasksStore } from '@tasks/application/stores/tasks.store';
 
 export function registerTasksEventHandlers(eventBus: EventBus): void {
   const tasksStore = inject(TasksStore);

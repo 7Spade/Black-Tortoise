@@ -6,7 +6,7 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { CreateAuditEntryCommand } from '../commands/create-audit-entry.command';
+import { CreateAuditEntryCommand } from '@audit/application/commands/create-audit-entry.command';
 // import { AuditLogRepository } from '@audit/domain';
 
 @Injectable({ providedIn: 'root' })

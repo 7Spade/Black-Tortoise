@@ -1,7 +1,7 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
-import { MemberId } from '../value-objects/member-id.vo';
-import { MemberRole } from '../value-objects/member-role.vo';
-import { MemberStatus } from '../value-objects/member-status.vo';
+import { MemberId } from '@members/domain/value-objects/member-id.vo';
+import { MemberRole } from '@members/domain/value-objects/member-role.vo';
+import { MemberStatus } from '@members/domain/value-objects/member-status.vo';
 import { UserId } from '@domain/value-objects/user-id.vo';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
 

@@ -14,7 +14,7 @@
  */
 
 import { WorkspaceEventBus } from '@domain/types';
-import { EventHandler, IModuleEventBus } from '../interfaces/module-event-bus.interface';
+import { EventHandler, IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 
 /**
  * Event Bus Adapter

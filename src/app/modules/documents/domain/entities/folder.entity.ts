@@ -1,5 +1,5 @@
 import { Entity } from '@domain/base/entity';
-import { FolderId } from '../value-objects/folder-id.vo';
+import { FolderId } from '@documents/domain/value-objects/folder-id.vo';
 
 /**
  * Folder Entity

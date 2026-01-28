@@ -1,8 +1,8 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
-import { IssueId } from '../value-objects/issue-id.vo';
-import { IssueStatus } from '../value-objects/issue-status.vo';
-import { IssueType } from '../value-objects/issue-type.vo';
-import { IssuePriority } from '../value-objects/issue-priority.vo';
+import { IssueId } from '@issues/domain/value-objects/issue-id.vo';
+import { IssueStatus } from '@issues/domain/value-objects/issue-status.vo';
+import { IssueType } from '@issues/domain/value-objects/issue-type.vo';
+import { IssuePriority } from '@issues/domain/value-objects/issue-priority.vo';
 import { TaskId } from '@domain/value-objects/task-id.vo';
 import { UserId } from '@domain/value-objects/user-id.vo';
 

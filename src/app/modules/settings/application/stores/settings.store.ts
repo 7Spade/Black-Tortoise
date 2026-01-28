@@ -4,7 +4,7 @@ import { SettingsRepository } from '@domain/repositories/settings.repository';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap } from 'rxjs';
 import { tapResponse } from '@ngrx/operators';
-import { WorkspaceSettingsViewModel } from '../models/workspace-settings-view.model';
+import { WorkspaceSettingsViewModel } from '@settings/application/models/workspace-settings-view.model';
 import { WorkspaceSettingsAggregate } from '@settings/domain/aggregates/workspace-settings.aggregate';
 
 type SettingsState = {

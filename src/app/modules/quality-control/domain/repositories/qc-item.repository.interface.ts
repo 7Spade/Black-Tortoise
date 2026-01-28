@@ -1,6 +1,6 @@
 
-import { QcItemAggregate } from '../aggregates/qc-item.aggregate';
-import { QcItemId } from '../value-objects/qc-item-id.vo';
+import { QcItemAggregate } from '@quality-control/domain/aggregates/qc-item.aggregate';
+import { QcItemId } from '@quality-control/domain/value-objects/qc-item-id.vo';
 import { InjectionToken } from '@angular/core';
 
 export interface QcItemRepository {

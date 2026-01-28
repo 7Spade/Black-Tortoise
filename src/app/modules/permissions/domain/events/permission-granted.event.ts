@@ -6,7 +6,7 @@
  * Emitted by: Permissions module
  */
 
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@permissions/events/domain-event';
 
 export interface PermissionGrantedPayload {
   readonly workspaceId: string;

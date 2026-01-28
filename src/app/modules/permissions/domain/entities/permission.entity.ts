@@ -1,6 +1,6 @@
 import { Entity } from '@domain/base/entity';
-import { PermissionId } from '../value-objects/permission-id.vo';
-import { ResourceAction } from '../value-objects/resource-action.vo';
+import { PermissionId } from '@permissions/domain/value-objects/permission-id.vo';
+import { ResourceAction } from '@permissions/domain/value-objects/resource-action.vo';
 
 /**
  * Permission Entity

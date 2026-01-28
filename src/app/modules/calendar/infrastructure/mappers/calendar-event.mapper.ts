@@ -1,5 +1,5 @@
 import { ActionDate } from '@domain/value-objects/action-date.vo';
-import { CalendarEventDto } from '../models/calendar-event.dto';
+import { CalendarEventDto } from '@calendar/infrastructure/models/calendar-event.dto';
 import { CalendarEventAggregate } from '@calendar/domain/aggregates/calendar-event.aggregate';
 import { Timestamp } from '@angular/fire/firestore';
 

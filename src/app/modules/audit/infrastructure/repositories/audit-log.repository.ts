@@ -11,8 +11,8 @@ import {
 } from '@angular/fire/firestore';
 import { AuditLogEntity } from '@domain/aggregates/audit-log.aggregate';
 import { AuditLogRepository } from '@domain/repositories/audit-log.repository';
-import { AuditLogMapper } from '../mappers/audit-log.mapper';
-import { AuditLogDto } from '../models/audit-log.dto';
+import { AuditLogMapper } from '@audit/infrastructure/mappers/audit-log.mapper';
+import { AuditLogDto } from '@audit/infrastructure/models/audit-log.dto';
 
 @Injectable({ providedIn: 'root' })
 export class AuditLogRepositoryImpl implements AuditLogRepository {

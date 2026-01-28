@@ -1,6 +1,6 @@
 
-import { DailyEntryAggregate } from '../aggregates/daily-entry.aggregate';
-import { DailyEntryId } from '../value-objects/daily-entry-id.vo';
+import { DailyEntryAggregate } from '@daily/domain/aggregates/daily-entry.aggregate';
+import { DailyEntryId } from '@daily/domain/value-objects/daily-entry-id.vo';
 import { InjectionToken } from '@angular/core';
 
 export interface DailyEntryRepository {

@@ -1,6 +1,6 @@
 
-import { TaskAggregate } from '../aggregates/task.aggregate';
-import { TaskId } from '../value-objects/task-id.vo';
+import { TaskAggregate } from '@tasks/domain/aggregates/task.aggregate';
+import { TaskId } from '@tasks/domain/value-objects/task-id.vo';
 import { InjectionToken } from '@angular/core';
 
 export interface TaskRepository {

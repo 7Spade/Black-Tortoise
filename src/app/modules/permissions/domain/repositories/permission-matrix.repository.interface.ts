@@ -1,6 +1,6 @@
 
 import { InjectionToken } from '@angular/core';
-import { PermissionMatrix } from '../aggregates/permission-matrix.aggregate';
+import { PermissionMatrix } from '@permissions/domain/aggregates/permission-matrix.aggregate';
 
 export interface PermissionMatrixRepository {
     get(): Promise<PermissionMatrix>;

@@ -1,6 +1,6 @@
 import { Entity } from '@domain/base/entity';
-import { SettingKey } from '../value-objects/setting-key.vo';
-import { SettingValue } from '../value-objects/setting-value.vo';
+import { SettingKey } from '@settings/domain/value-objects/setting-key.vo';
+import { SettingValue } from '@settings/domain/value-objects/setting-value.vo';
 
 /**
  * Module Config Entity

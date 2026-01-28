@@ -1,6 +1,6 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
-import { AuditLogId } from '../value-objects/audit-log-id.vo';
-import { OperationType } from '../value-objects/operation-type.vo';
+import { AuditLogId } from '@audit/domain/value-objects/audit-log-id.vo';
+import { OperationType } from '@audit/domain/value-objects/operation-type.vo';
 import { UserId } from '@domain/value-objects/user-id.vo';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
 

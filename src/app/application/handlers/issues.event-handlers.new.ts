@@ -10,7 +10,7 @@ import { createIssue, IssuePriority, IssueStatus, IssueType } from '@domain/aggr
 import { IssueCreatedEvent, IssueResolvedEvent } from '@domain/events';
 import { EventBus } from '@domain/types';
 import { WorkspaceId } from '@domain/value-objects';
-import { IssuesStore } from '../stores/issues.store';
+import { IssuesStore } from '@application/stores/issues.store';
 
 export function registerIssuesEventHandlers(eventBus: EventBus): void {
   const issuesStore = inject(IssuesStore);

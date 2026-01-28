@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { ITemplateEventBus } from '../../application/ports/event-bus.port';
-import { TemplateDomainEvent } from '../../domain/base/domain-event';
+import { ITemplateEventBus } from '@template-core/application/ports/event-bus.port';
+import { TemplateDomainEvent } from '@template-core/domain/base/domain-event';
 
 @Injectable()
 export class TemplateRxJsEventBus implements ITemplateEventBus {

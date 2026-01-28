@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
-import { Template } from '../../domain/aggregates/template.aggregate';
-import { ITemplateRepository } from '../../domain/repositories/template.repository';
+import { Template } from '@template-core/domain/aggregates/template.aggregate';
+import { ITemplateRepository } from '@template-core/domain/repositories/template.repository';
 import { TEMPLATE_REPOSITORY_TOKEN } from '../tokens/template-repository.token';
 
 @Injectable({ providedIn: 'root' })

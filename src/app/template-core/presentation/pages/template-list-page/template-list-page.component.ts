@@ -3,7 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TemplateStore } from '../../../application/stores/template.store';
+import { TemplateStore } from '@template-core/application/stores/template.store';
 
 @Component({
   selector: 'app-template-list-page',
@@ -71,8 +71,8 @@ import { TemplateStore } from '../../../application/stores/template.store';
       @if (store.selectedTemplateId()) {
         <div class="col-4 history-panel">
           <div class="history-header">
-            <h2>📜 Causality Audit Log</h2>
-            <button mat-icon-button (click)="store.clearHistory()">✕</button>
+            <h2>?? Causality Audit Log</h2>
+            <button mat-icon-button (click)="store.clearHistory()">??/button>
           </div>
           
           <div class="timeline">

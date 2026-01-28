@@ -15,7 +15,7 @@
 
 import { inject, Injectable } from '@angular/core';
 import { DomainEvent } from '@domain/events';
-import { EVENT_STORE } from '../interfaces/event-infrastructure.tokens';
+import { EVENT_STORE } from '@application/interfaces/event-infrastructure.tokens';
 
 export interface QueryEventsRequest {
   readonly aggregateId?: string;

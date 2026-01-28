@@ -1,4 +1,4 @@
-import { TemplateDomainEvent } from '../../domain/base/domain-event';
+import { TemplateDomainEvent } from '@template-core/domain/base/domain-event';
 
 export interface ITemplateEventStore {
   save(events: TemplateDomainEvent[]): Promise<void>;

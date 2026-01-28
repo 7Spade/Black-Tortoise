@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, collection, deleteDoc, doc, getDocs, setDoc } from '@angular/fire/firestore';
-import { TEMPLATE_EVENT_BUS_TOKEN, TEMPLATE_EVENT_STORE_TOKEN } from '../../application/tokens/event-infrastructure.tokens';
-import { Template } from '../../domain/aggregates/template.aggregate';
-import { ITemplateRepository } from '../../domain/repositories/template.repository';
-import { TemplateId } from '../../domain/value-objects/template-id.vo';
+import { TEMPLATE_EVENT_BUS_TOKEN, TEMPLATE_EVENT_STORE_TOKEN } from '@template-core/application/tokens/event-infrastructure.tokens';
+import { Template } from '@template-core/domain/aggregates/template.aggregate';
+import { ITemplateRepository } from '@template-core/domain/repositories/template.repository';
+import { TemplateId } from '@template-core/domain/value-objects/template-id.vo';
 import { TemplateFirestoreMapper } from '../mappers/template-firestore.mapper';
 
 @Injectable()

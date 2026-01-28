@@ -1,9 +1,9 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
-import { Document } from '../entities/document.entity';
-import { Folder } from '../entities/folder.entity';
-import { DocumentId } from '../value-objects/document-id.vo';
-import { FolderId } from '../value-objects/folder-id.vo';
+import { Document } from '@documents/domain/entities/document.entity';
+import { Folder } from '@documents/domain/entities/folder.entity';
+import { DocumentId } from '@documents/domain/value-objects/document-id.vo';
+import { FolderId } from '@documents/domain/value-objects/folder-id.vo';
 
 /**
  * File Tree Aggregate

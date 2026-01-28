@@ -7,7 +7,7 @@
  * Emitted when a new task is created.
  */
 
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@tasks/events/domain-event';
 import { TaskPriority } from '@tasks/domain';
 
 export interface TaskCreatedPayload {

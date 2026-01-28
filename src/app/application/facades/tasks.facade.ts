@@ -4,13 +4,13 @@ import {
   TaskPriority,
   TaskStatus,
   createTask,
-} from '../../domain/aggregates/task.aggregate';
-import { CreateTaskHandler } from '../handlers/create-task.handler';
-import { FailQCHandler } from '../handlers/fail-qc.handler';
-import { ResolveIssueHandler } from '../handlers/resolve-issue.handler';
-import { SubmitTaskForQCHandler } from '../handlers/submit-task-for-qc.handler';
-import { IModuleEventBus } from '../interfaces/module-event-bus.interface';
-import { TasksStore } from '../stores/tasks.store';
+} from '@domain/aggregates/task.aggregate';
+import { CreateTaskHandler } from '@application/handlers/create-task.handler';
+import { FailQCHandler } from '@application/handlers/fail-qc.handler';
+import { ResolveIssueHandler } from '@application/handlers/resolve-issue.handler';
+import { SubmitTaskForQCHandler } from '@application/handlers/submit-task-for-qc.handler';
+import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
+import { TasksStore } from '@application/stores/tasks.store';
 
 @Injectable({
   providedIn: 'root',

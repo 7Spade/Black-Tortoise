@@ -8,7 +8,7 @@
  */
 
 import { TaskAggregate } from '@tasks/domain';
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@tasks/events/domain-event';
 import { EventType } from '@domain/events/event-type';
 
 export interface TaskUpdatedPayload {

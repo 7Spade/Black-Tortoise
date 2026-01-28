@@ -6,7 +6,7 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { UpdateRolePermissionsCommand } from '../commands/update-role-permissions.command';
+import { UpdateRolePermissionsCommand } from '@permissions/application/commands/update-role-permissions.command';
 // import { PermissionRepository } from '@permissions/domain';
 
 @Injectable({ providedIn: 'root' })

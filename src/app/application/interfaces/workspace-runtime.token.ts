@@ -9,7 +9,7 @@
  */
 
 import { InjectionToken } from '@angular/core';
-import { IWorkspaceRuntimeFactory } from '../interfaces/workspace-runtime-factory.interface';
+import { IWorkspaceRuntimeFactory } from '@application/interfaces/workspace-runtime-factory.interface';
 
 /**
  * Workspace Runtime Factory Token

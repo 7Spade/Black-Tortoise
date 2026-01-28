@@ -6,7 +6,7 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { CreateDocumentCommand } from '../commands/create-document.command';
+import { CreateDocumentCommand } from '@documents/application/commands/create-document.command';
 // import { DocumentRepository } from '@documents/domain';
 
 @Injectable({ providedIn: 'root' })

@@ -1,5 +1,5 @@
 import { WorkspaceSettingsAggregate, ModuleConfig, NotificationConfig } from '@settings/domain';
-import { WorkspaceSettingsDto } from '../models/workspace-settings.dto';
+import { WorkspaceSettingsDto } from '@settings/infrastructure/models/workspace-settings.dto';
 import { Timestamp } from '@angular/fire/firestore';
 
 /**

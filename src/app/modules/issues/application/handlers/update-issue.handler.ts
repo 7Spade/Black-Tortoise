@@ -6,7 +6,7 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { UpdateIssueCommand } from '../commands/update-issue.command';
+import { UpdateIssueCommand } from '@issues/application/commands/update-issue.command';
 // import { IssueRepository } from '@issues/domain';
 
 @Injectable({ providedIn: 'root' })

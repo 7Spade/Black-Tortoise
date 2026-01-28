@@ -1,6 +1,6 @@
 
-import { DomainEvent } from '../../events/domain-event';
-import { EventType } from '../../events/event-type';
+import { DomainEvent } from '@audit/events/domain-event';
+import { EventType } from '@audit/events/event-type';
 
 export interface AuditLogCreatedPayload {
   readonly auditLogId: string;

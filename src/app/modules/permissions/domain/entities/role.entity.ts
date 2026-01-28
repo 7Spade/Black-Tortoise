@@ -1,6 +1,6 @@
 import { Entity } from '@domain/base/entity';
-import { RoleId } from '../value-objects/role-id.vo';
-import { PermissionId } from '../value-objects/permission-id.vo';
+import { RoleId } from '@permissions/domain/value-objects/role-id.vo';
+import { PermissionId } from '@permissions/domain/value-objects/permission-id.vo';
 
 /**
  * Role Entity

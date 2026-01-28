@@ -5,7 +5,7 @@
  * DDD Pattern: Policy
  */
 
-import { QCStatus } from '../aggregates';
+import { QCStatus } from '@quality-control/domain/aggregates';
 
 /**
  * Validate QC status transition

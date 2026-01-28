@@ -1,4 +1,4 @@
-import { TemplateDomainEvent } from '../../domain/base/domain-event';
+import { TemplateDomainEvent } from '@template-core/domain/base/domain-event';
 import { TemplateEventDto } from '../dtos/template-event.dto';
 
 export class TemplateEventMapper {

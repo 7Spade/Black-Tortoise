@@ -1,5 +1,5 @@
 import { AuditLogEntity } from '@domain/aggregates/audit-log.aggregate';
-import { AuditLogDto } from '../models/audit-log.dto.ts';
+import { AuditLogDto } from '@audit/infrastructure/models/audit-log.dto.ts';
 
 export class AuditLogMapper {
     static toDto(entity: AuditLogEntity): AuditLogDto {

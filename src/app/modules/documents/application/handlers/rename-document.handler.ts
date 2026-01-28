@@ -6,7 +6,7 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { RenameDocumentCommand } from '../commands/rename-document.command';
+import { RenameDocumentCommand } from '@documents/application/commands/rename-document.command';
 // import { DocumentRepository } from '@documents/domain';
 
 @Injectable({ providedIn: 'root' })

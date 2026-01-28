@@ -6,7 +6,7 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { UpdateSettingsCommand } from '../commands/update-settings.command';
+import { UpdateSettingsCommand } from '@settings/application/commands/update-settings.command';
 import { SettingsRepository } from '@domain/repositories/settings.repository';
 import { WorkspaceSettingsAggregate } from '@settings/domain/aggregates/workspace-settings.aggregate';
 import { ModuleConfig } from '@settings/domain/entities/module-config.entity';

@@ -6,7 +6,7 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { SubmitQCCheckCommand } from '../commands/submit-qc-check.command';
+import { SubmitQCCheckCommand } from '@quality-control/application/commands/submit-qc-check.command';
 // import { Quality-controlRepository } from '@quality-control/domain';
 
 @Injectable({ providedIn: 'root' })

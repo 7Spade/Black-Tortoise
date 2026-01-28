@@ -1,8 +1,8 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
-import { ModuleConfig } from '../entities/module-config.entity';
-import { NotificationConfig } from '../entities/notification-config.entity';
-import { SettingsId } from '../value-objects/settings-id.vo';
+import { ModuleConfig } from '@settings/domain/entities/module-config.entity';
+import { NotificationConfig } from '@settings/domain/entities/notification-config.entity';
+import { SettingsId } from '@settings/domain/value-objects/settings-id.vo';
 
 /**
  * Workspace Settings Aggregate

@@ -8,7 +8,7 @@
  * Contains all information needed to track document uploads in the event store.
  */
 
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@documents/events/domain-event';
 
 export interface DocumentUploadedPayload {
   readonly workspaceId: string;

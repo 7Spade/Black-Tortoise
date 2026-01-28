@@ -1,6 +1,6 @@
 import { Timestamp } from '@angular/fire/firestore';
-import { Template } from '../../domain/aggregates/template.aggregate';
-import { TemplateId } from '../../domain/value-objects/template-id.vo';
+import { Template } from '@template-core/domain/aggregates/template.aggregate';
+import { TemplateId } from '@template-core/domain/value-objects/template-id.vo';
 
 export class TemplateFirestoreMapper {
   static toDomain(data: any): Template {

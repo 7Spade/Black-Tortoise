@@ -2,8 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { Firestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, Timestamp } from '@angular/fire/firestore';
 import { CalendarRepository } from '@domain/repositories/calendar.repository';
 import { CalendarEventAggregate } from '@calendar/domain/aggregates/calendar-event.aggregate';
-import { CalendarEventMapper } from '../mappers/calendar-event.mapper';
-import { CalendarEventDto } from '../models/calendar-event.dto';
+import { CalendarEventMapper } from '@calendar/infrastructure/mappers/calendar-event.mapper';
+import { CalendarEventDto } from '@calendar/infrastructure/models/calendar-event.dto';
 
 @Injectable({ providedIn: 'root' })
 export class CalendarEventRepository implements CalendarRepository {

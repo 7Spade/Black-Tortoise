@@ -1,6 +1,6 @@
 
-import { AuditLogAggregate } from '../aggregates/audit-log.aggregate';
-import { AuditLogId } from '../value-objects/audit-log-id.vo';
+import { AuditLogAggregate } from '@audit/domain/aggregates/audit-log.aggregate';
+import { AuditLogId } from '@audit/domain/value-objects/audit-log-id.vo';
 import { InjectionToken } from '@angular/core';
 
 export interface AuditLogRepository {

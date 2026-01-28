@@ -1,6 +1,6 @@
-import { AggregateRoot } from '../base/aggregate-root';
-import { UserId } from '../value-objects/user-id.vo';
-import { WorkspaceId } from '../value-objects/workspace-id.vo';
+import { AggregateRoot } from '@domain/base/aggregate-root';
+import { UserId } from '@domain/value-objects/user-id.vo';
+import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
 
 /**
  * Workspace Aggregate Root

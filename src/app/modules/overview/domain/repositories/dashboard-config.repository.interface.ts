@@ -1,6 +1,6 @@
 
-import { DashboardConfigAggregate } from '../aggregates/dashboard-config.aggregate';
-import { DashboardConfigId } from '../value-objects/dashboard-config-id.vo';
+import { DashboardConfigAggregate } from '@overview/domain/aggregates/dashboard-config.aggregate';
+import { DashboardConfigId } from '@overview/domain/value-objects/dashboard-config-id.vo';
 import { InjectionToken } from '@angular/core';
 
 export interface DashboardConfigRepository {

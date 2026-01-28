@@ -6,7 +6,7 @@
  * Emitted by: QualityControl module
  */
 
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@quality-control/events/domain-event';
 
 export interface QCPassedPayload {
   readonly workspaceId: string;

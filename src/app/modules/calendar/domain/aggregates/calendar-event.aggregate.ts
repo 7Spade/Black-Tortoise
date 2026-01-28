@@ -1,6 +1,6 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
-import { CalendarEventId } from '../value-objects/calendar-event-id.vo';
-import { DateRange } from '../value-objects/date-range.vo';
+import { CalendarEventId } from '@calendar/domain/value-objects/calendar-event-id.vo';
+import { DateRange } from '@calendar/domain/value-objects/date-range.vo';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
 import { UserId } from '@domain/value-objects/user-id.vo';
 

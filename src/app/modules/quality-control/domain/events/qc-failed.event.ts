@@ -7,7 +7,7 @@
  * Emitted when quality control fails for a task.
  */
 
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@quality-control/events/domain-event';
 
 export interface QCFailedPayload {
   readonly workspaceId: string;

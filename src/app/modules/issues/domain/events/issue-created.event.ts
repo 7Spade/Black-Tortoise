@@ -7,7 +7,7 @@
  * Emitted when an issue is created (typically from QC failure).
  */
 
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@issues/events/domain-event';
 
 export interface IssueCreatedPayload {
   readonly workspaceId: string;

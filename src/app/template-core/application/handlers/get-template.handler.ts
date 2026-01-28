@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Template } from '../../domain/aggregates/template.aggregate';
+import { Template } from '@template-core/domain/aggregates/template.aggregate';
 import { GetTemplateByIdQuery } from '../queries/get-template.query';
 import { GetTemplateUseCase } from '../use-cases/get-template.use-case';
 

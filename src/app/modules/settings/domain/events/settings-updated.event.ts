@@ -1,5 +1,5 @@
 
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@settings/events/domain-event';
 
 export interface SettingsUpdatedPayload {
   readonly settingKey: string;

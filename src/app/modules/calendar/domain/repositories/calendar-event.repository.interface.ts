@@ -1,7 +1,7 @@
 
-import { CalendarEventAggregate } from '../aggregates/calendar-event.aggregate';
-import { CalendarEventId } from '../value-objects/calendar-event-id.vo';
-import { DateRange } from '../value-objects/date-range.vo';
+import { CalendarEventAggregate } from '@calendar/domain/aggregates/calendar-event.aggregate';
+import { CalendarEventId } from '@calendar/domain/value-objects/calendar-event-id.vo';
+import { DateRange } from '@calendar/domain/value-objects/date-range.vo';
 import { InjectionToken } from '@angular/core';
 
 export interface CalendarEventRepository {

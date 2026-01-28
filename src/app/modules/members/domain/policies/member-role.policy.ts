@@ -7,8 +7,8 @@
  * Encapsulates business rules for member role management and status transitions.
  */
 
-import { MemberAggregate } from '../aggregates/member.aggregate';
-import { MemberRole } from '../value-objects/member-role.vo';
+import { MemberAggregate } from '@members/domain/aggregates/member.aggregate';
+import { MemberRole } from '@members/domain/value-objects/member-role.vo';
 
 /**
  * Check if the member can be promoted to the target role

@@ -9,7 +9,7 @@
  * This interface is pure TypeScript with no framework dependencies.
  */
 
-import { WorkspaceEntity } from '../aggregates/workspace.entity';
+import { WorkspaceEntity } from '@domain/aggregates/workspace.entity';
 
 export interface WorkspaceRepository {
   /**

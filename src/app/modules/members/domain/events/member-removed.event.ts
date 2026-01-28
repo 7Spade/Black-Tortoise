@@ -6,7 +6,7 @@
  * Emitted by: Members module
  */
 
-import { DomainEvent } from '../../events/domain-event';
+import { DomainEvent } from '@members/events/domain-event';
 
 export interface MemberRemovedPayload {
   readonly workspaceId: string;

@@ -2,8 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
 import { WorkspaceSettingsAggregate } from '@settings/domain/aggregates/workspace-settings.aggregate';
 import { WorkspaceSettingsRepository } from '@settings/domain';
-import { WorkspaceSettingsMapper } from '../mappers/workspace-settings.mapper';
-import { WorkspaceSettingsDto } from '../models/workspace-settings.dto';
+import { WorkspaceSettingsMapper } from '@settings/infrastructure/mappers/workspace-settings.mapper';
+import { WorkspaceSettingsDto } from '@settings/infrastructure/models/workspace-settings.dto';
 
 @Injectable({ providedIn: 'root' })
 export class SettingsRepositoryImpl implements WorkspaceSettingsRepository {

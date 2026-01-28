@@ -22,7 +22,7 @@ import { QCFailedEvent } from '@domain/events';
 import { QCPassedEvent } from '@domain/events';
 import { TaskSubmittedForQCEvent } from '@domain/events';
 import { EventBus } from '@domain/types';
-import { QualityControlStore } from '../stores/quality-control.store';
+import { QualityControlStore } from '@quality-control/application/stores/quality-control.store';
 
 export function registerQualityControlEventHandlers(eventBus: EventBus): void {
   const qcStore = inject(QualityControlStore);

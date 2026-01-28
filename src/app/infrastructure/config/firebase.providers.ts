@@ -24,7 +24,7 @@ import {
 } from '@angular/fire/remote-config';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { getVertexAI, provideVertexAI } from '@angular/fire/vertexai';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 export function provideFirebaseIntegration(): EnvironmentProviders {
   return makeEnvironmentProviders([

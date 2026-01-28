@@ -15,8 +15,8 @@
  * - Cross-workspace operations
  */
 
-import { WorkspaceAggregate } from '../aggregates';
-import { WorkspaceId } from '../value-objects';
+import { WorkspaceAggregate } from '@settings/domain/aggregates';
+import { WorkspaceId } from '@settings/domain/value-objects';
 
 /**
  * Validates workspace name according to business rules

@@ -1,8 +1,8 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
 import { UserId } from '@domain/value-objects/user-id.vo';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
-import { Role } from '../entities/role.entity';
-import { Permission } from '../entities/permission.entity';
+import { Role } from '@permissions/domain/entities/role.entity';
+import { Permission } from '@permissions/domain/entities/permission.entity';
 
 /**
  * Permission Matrix Aggregate

@@ -61,6 +61,7 @@
       "@audit/*": ["src/app/modules/audit/*"],
       "@calendar/*": ["src/app/modules/calendar/*"],
       "@settings/*": ["src/app/modules/settings/*"],
+      "@template-core/*": ["src/app/template-core/*"],
       "@env/*": ["src/environments/*"]
     },
     "target": "ES2022",
