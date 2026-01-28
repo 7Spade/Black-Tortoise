@@ -3,51 +3,49 @@ description: "Architecture rules and guidelines for Modules as Workspace capabil
 applyTo: "**"
 ---
 
----
+### Complete Description of Workspace
 
-### Workspace（工作區）之完整表述
+Workspace is the highest-level working unit in the system that carries user collaboration and business behavior,
+and is also the contextual boundary and lifecycle boundary for module capability operations.
 
-Workspace 為系統中承載使用者協作與業務行為之最高層級工作單位，
-同時也是模組能力運作之語境邊界與生命週期邊界。
+Workspace is responsible for defining "who is operating in this workspace, what they can do, and whether operations are currently possible,"
+but **does not directly participate in any business processes, functional behaviors, or data processing**.
 
-Workspace 負責定義「在此工作區中，誰正在操作、可做什麼、目前是否可操作」，
-但**不直接參與任何業務流程、功能行為或資料處理**。
+Workspace itself does not implement capabilities, does not store module state, and does not coordinate module processes.
+It only provides a stable and consistent working context, enabling all capability modules to operate under the same premises.
 
-Workspace 本身不實作能力、不保存模組狀態、不協調模組流程，
-僅提供一個穩定且一致的工作語境，使所有能力模組能在相同前提下運作。
-
-Workspace 的狀態變化僅限於其自身語境層級，例如建立、啟用、封存、權限異動，
-所有業務行為皆由模組於 Workspace 語境中各自完成。
+Changes to Workspace state are limited to its own contextual level, such as creation, activation, archiving, and permission changes.
+All business behaviors are completed independently by modules within the Workspace context.
 
 ---
 
-### Workspace Architecture Rules（最終規則句）
+### Workspace Architecture Rules (Final Rule Statement)
 
-1. Workspace 為系統中最高層級之工作語境單位，所有業務能力必須隸屬於某一 Workspace 之下運作。
+1. Workspace is the highest-level working contextual unit in the system; all business capabilities must operate under some Workspace.
 
-2. Workspace 本身不屬於任何模組，亦不得被任何模組依賴為功能實作或流程控制對象。
+2. Workspace itself does not belong to any module, nor can any module depend on it as a functional implementation or process control object.
 
-3. Workspace 僅負責定義與維護工作語境，不得承擔任何業務能力、功能行為或資料處理責任。
+3. Workspace is only responsible for defining and maintaining the working context; it must not assume any business capability, functional behavior, or data processing responsibility.
 
-4. Workspace 不得直接讀取、寫入或協調任何模組之應用狀態或業務資料。
+4. Workspace must not directly read, write, or coordinate any module's application state or business data.
 
-5. Workspace 之狀態僅包含語境層級資訊，例如 Workspace 身分、生命週期狀態與成員角色關係。
+5. Workspace state only contains contextual-level information, such as Workspace identity, lifecycle state, and member role relationships.
 
-6. Workspace 的生命週期變化不得隱含或觸發任何模組流程，僅能以事件形式對外宣告事實已發生。
+6. Changes to Workspace's lifecycle must not implicitly trigger or cause any module process; it can only announce the fact through events.
 
-7. 所有模組必須在 Workspace 所提供之語境下獨立運作，不得假設 Workspace 會管理或同步其內部狀態。
+7. All modules must operate independently under the context provided by Workspace; they must not assume that Workspace will manage or synchronize their internal state.
 
-8. Workspace 不得作為模組之間的協調者、仲介者或狀態聚合中心。
+8. Workspace must not serve as a coordinator, mediator, or state aggregation center between modules.
 
-9. 任何進入點（例如路由、初始化流程）皆必須先確立 Workspace 語境，再進入模組能力範圍。
+9. Any entry point (such as routing, initialization process) must first establish the Workspace context before entering module capability scope.
 
-10. Workspace 與模組之關係為「語境提供者」與「能力執行者」，不得反轉其責任方向。
+10. The relationship between Workspace and modules is that of "context provider" and "capability executor"; the direction of responsibility must not be reversed.
 
 ---
 
-### 一句不可誤會的總結句（可放章節結尾）
+### One Clear and Unmistakable Summary Statement (can be placed at section end)
 
-> Workspace 定義「這是哪個工作區、是否可運作」，
-> 模組定義「在此工作區中可以完成哪些能力」，
-> **Workspace 不做事，只定義事發生的前提。**
+> Workspace defines "which workspace this is and whether operations are possible,"
+> modules define "what capabilities can be completed in this workspace,"
+> **Workspace does not take action; it only defines the prerequisites for action to occur.**
 

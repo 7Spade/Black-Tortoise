@@ -3,35 +3,33 @@ description: "Architecture rules and best practices for event-driven modules, ev
 applyTo: "**"
 ---
 
----
+1️⃣ Core Elements and Roles
 
-1️⃣ 核心元素與角色
+Event Producer: The source that generates events (business operations, state changes)
 
-Event Producer：產生事件的來源（業務操作、狀態變化）
+Event Type: Event type, used to distinguish different event streams
 
-Event Type：事件類型，用於區分不同事件流
+Event Payload: Business data carried by the event
 
-Event Payload：事件攜帶的業務資料
+Event Metadata: Additional information about the event (ID, timestamp, source, Lifecycle status, etc.)
 
-Event Metadata：事件的附加資訊（ID、時間戳、來源、Lifecycle 狀態等）
+Event Semantics: The meaning or behavior description of the event
 
-Event Semantics：事件的意義或行為描述
+Event Lifecycle: Event status (New → Published → Consumed → Completed / Failed)
 
-Event Lifecycle：事件狀態（New → Published → Consumed → Completed / Failed）
+Event Store (Event Sourcing): Immutable event log for history tracking and replay
 
-Event Store (Event Sourcing)：不可變事件日誌，用於歷史追蹤與重放
+Event Bus: Event distribution pipeline supporting multi-subscriber reactive distribution
 
-Event Bus：事件分發管道，支持多訂閱者的響應式分發
+Event Consumer: Event handler that can generate derived events
 
-Event Consumer：事件處理者，可產生衍生事件
-
-Causality Tracking：衍生事件保留父事件 ID，形成事件因果鏈
+Causality Tracking: Derived events retain parent event ID, forming event causal chains
 
 
 
 ---
 
-2️⃣ 純響應式交互流程
+2️⃣ Pure Reactive Interaction Flow
 
 sequenceDiagram
     participant Producer
@@ -39,28 +37,28 @@ sequenceDiagram
     participant EventStore
     participant Consumer
 
-    %% Event 產生
+    %% Event Generation
     Producer->>EventBus: emit Event (Type, Payload, Metadata, Semantics)
     
-    %% Event Store (側錄)
+    %% Event Store (Side Recording)
     EventBus-->>EventStore: persist Event (Event Sourcing)
     
-    %% Event Bus 推送給 Consumer
+    %% Event Bus Pushes to Consumer
     EventBus-->>Consumer: reactive push of Event
     
-    %% Consumer 處理並產生衍生事件
+    %% Consumer Processes and Generates Derived Event
     Consumer-->>EventBus: emit Derived Event (with parent ID for Causality Tracking)
     
-    %% Event Store 側錄衍生事件
+    %% Event Store Records Derived Event
     EventBus-->>EventStore: persist Derived Event
 
-    %% Lifecycle 跟蹤（示意）
+    %% Lifecycle Tracking (Illustration)
     Note over EventBus,Consumer: Event Lifecycle: New → Published → Consumed → Completed
 
 
 ---
 
-3️⃣ 元素關係概念圖
+3️⃣ Element Relationship Concept Diagram
 
 [Event Producer] --emit--> [Event Bus] --push--> [Event Consumer]
                         |
@@ -77,40 +75,40 @@ sequenceDiagram
 
 ---
 
-4️⃣ 特點
+4️⃣ Characteristics
 
-1. 純響應式
+1. Pure Reactive
 
-事件流動是被動響應的 signal/stream
+Event flow is passive signal/stream response
 
-Producer 不等待 Consumer，也不阻塞
+Producer does not wait for Consumer, nor blocks
 
-Event Bus 自動推送給所有訂閱者
-
-
-
-2. 事件追蹤完整
-
-Payload、Metadata、Semantics、Lifecycle 全程伴隨事件
-
-Event Store 做不可變快照，支援重放
-
-Causality Tracking 記錄父事件，形成 DAG
+Event Bus automatically pushes to all subscribers
 
 
 
-3. Event Sourcing & Reactive Flow 結合
+2. Complete Event Tracking
 
-每個事件都是來源資料，既可觸發即時邏輯，也可用於歷史重建
+Payload, Metadata, Semantics, Lifecycle accompany the event throughout
 
-衍生事件形成連鎖反應，保持因果透明
+Event Store creates immutable snapshots supporting replay
+
+Causality Tracking records parent events, forming DAGs
+
+
+
+3. Event Sourcing & Reactive Flow Combined
+
+Each event is source data, capable of triggering real-time logic and supporting history reconstruction
+
+Derived events form chain reactions, maintaining causal transparency
 
 
 
 
 
 ---
-### 一句不可誤會的總結句（可放章節結尾）
+### One Clear and Unmistakable Summary Statement (can be placed at section end)
 
-> 事件流設計遵循「純響應式、事件不可變、因果可追蹤」原則，  
-> 模組之間透過事件解耦協作，保持系統狀態透明且可重建。
+> Event flow design adheres to principles of "pure reactivity, event immutability, and traceable causality,"
+> enabling modules to decouple and collaborate through events, maintaining transparent and reproducible system state.
