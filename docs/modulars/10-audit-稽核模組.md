@@ -16,7 +16,7 @@
 唯讀 (Read-Only) 呈現，確保日誌不可篡改
 
 ### 在架構中的位置
-本模組是 Workspace 的子模組之一，遵循 Domain → Application → Infrastructure → Presentation 的分層架構。
+本模組是 Workspace 的能力模組 (Capability Module) 之一，遵循 Domain → Application → Infrastructure → Presentation 的分層架構。模組自主管理自身狀態，不依賴或修改 Workspace Context，僅透過事件與其他模組協作。作為唯讀稽核模組，訂閱所有模組事件進行日誌記錄。
 
 ---
 
@@ -130,15 +130,34 @@
 
 ---
 
-## 五、禁止事項 (Forbidden Practices)
+## 五、架構合規性
+
+### Workspace Context 邊界
+- 本模組不修改 Workspace Context
+- 不直接依賴其他模組的內部狀態
+- 僅透過訂閱事件進行日誌記錄
+
+### 模組自主性
+- 完全擁有並管理稽核日誌狀態
+- 不允許其他模組直接讀寫本模組狀態
+- 作為唯讀稽核模組，不發布業務事件
+
+### 稽核模組特性
+- 訂閱所有模組事件，自動記錄操作日誌
+- 使用 append-only 模式，確保日誌不可篡改
+- 不參與業務邏輯，僅負責記錄與查詢
+
+## 六、禁止事項 (Forbidden Practices)
 
 - ❌ 修改或刪除稽核日誌
 - ❌ 繞過稽核記錄執行敏感操作
 - ❌ 跨 Workspace 存取稽核日誌
+- ❌ 直接修改 Workspace Context
+- ❌ 將稽核資料寫入 Workspace Context
 
 ---
 
-## 六、測試策略
+## 七、測試策略
 
 ### Unit Tests
 - 測試 computed 邏輯是否正確反映 source signal 的變化
@@ -156,7 +175,7 @@
 
 ---
 
-## 七、UI/UX 規範
+## 八、UI/UX 規範
 
 ### 設計系統
 - 使用 Angular Material (M3)
@@ -175,7 +194,7 @@
 
 ---
 
-## 八、DDD 實作規範
+## 九、DDD 實作規範
 
 ### Aggregate Root
 - 支援 Creation (create()) 與 Reconstruction (reconstruct())
@@ -192,7 +211,7 @@
 
 ---
 
-## 九、開發檢查清單
+## 十、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -211,7 +230,7 @@
 
 ---
 
-## 十、參考資料
+## 十一、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md

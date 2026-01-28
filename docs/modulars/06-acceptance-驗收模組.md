@@ -16,7 +16,7 @@
 僅接收已通過 QC 的項目，不涉及技術品質檢查
 
 ### 在架構中的位置
-本模組是 Workspace 的子模組之一，遵循 Domain → Application → Infrastructure → Presentation 的分層架構。
+本模組是 Workspace 的能力模組 (Capability Module) 之一，遵循 Domain → Application → Infrastructure → Presentation 的分層架構。模組自主管理自身狀態，不依賴或修改 Workspace Context，僅透過事件與其他模組協作。
 
 ---
 
@@ -125,15 +125,29 @@
 
 ---
 
-## 五、禁止事項 (Forbidden Practices)
+## 五、架構合規性
+
+### Workspace Context 邊界
+- 本模組不修改 Workspace Context
+- 不直接依賴其他模組的內部狀態
+- 跨模組協作僅透過事件完成
+
+### 模組自主性
+- 完全擁有並管理驗收項目與標準狀態
+- 不允許其他模組直接讀寫本模組狀態
+- 狀態變更必須透過 Domain Event 公告
+
+## 六、禁止事項 (Forbidden Practices)
 
 - ❌ 接收未通過 QC 的任務
 - ❌ 直接修改任務狀態，必須透過事件
 - ❌ 繞過 Acceptance Criteria 強制檢查
+- ❌ 直接修改 Workspace Context 或其他模組狀態
+- ❌ 將模組狀態寫入 Workspace Context
 
 ---
 
-## 六、測試策略
+## 七、測試策略
 
 ### Unit Tests
 - 測試 computed 邏輯是否正確反映 source signal 的變化
@@ -151,7 +165,7 @@
 
 ---
 
-## 七、UI/UX 規範
+## 八、UI/UX 規範
 
 ### 設計系統
 - 使用 Angular Material (M3)
@@ -170,7 +184,7 @@
 
 ---
 
-## 八、DDD 實作規範
+## 九、DDD 實作規範
 
 ### Aggregate Root
 - 支援 Creation (create()) 與 Reconstruction (reconstruct())
@@ -187,7 +201,7 @@
 
 ---
 
-## 九、開發檢查清單
+## 十、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -206,7 +220,7 @@
 
 ---
 
-## 十、參考資料
+## 十一、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md
