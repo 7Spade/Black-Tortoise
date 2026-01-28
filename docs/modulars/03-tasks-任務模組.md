@@ -97,7 +97,24 @@
 14. 任務狀態為 Blocked 時，必須關聯至少一個未解決的問題單
 15. 所有關聯問題單解決後，任務自動解除 Blocked 狀態
 
-### 5. 提交任務完成數量時自動發布每日紀錄
+### 5. 自動化工作流與閉環處理 (Automated Workflow & Closed-Loop Behavior)
+
+#### 需求清單
+1. **無人工介入自動流轉**：進度達 100% → 自動發布 TaskReadyForQC → QC 模組自動接收 → QC 通過自動發布 QCPassed → 任務自動流轉 ReadyForAcceptance → Acceptance 模組自動接收
+2. **明確的通過/失敗閘門**：
+   - QC 閘門：所有必檢項目通過 → QCPassed 事件；任一必檢項目失敗 → QCFailed 事件
+   - Acceptance 閘門：所有必檢標準滿足 → AcceptanceApproved 事件；任一標準未滿足 → AcceptanceRejected 事件
+3. **失敗自動觸發問題單建立**：
+   - 接收 QCFailed 事件 → 任務流轉到 Blocked → 訂閱 IssueCreated 事件確認問題單已建立
+   - 接收 AcceptanceRejected 事件 → 任務流轉到 Blocked → 訂閱 IssueCreated 事件確認問題單已建立
+4. **閉環行為：問題解決後重新進入適當階段**：
+   - 接收 IssueResolved 事件 → 檢查所有關聯問題單是否已解決 → 若全部解決，依問題來源自動流轉：
+     - QC 失敗來源：Blocked → InProgress (待開發者重新完成並觸發 100% 進度)
+     - Acceptance 失敗來源：Blocked → ReadyForQC (重新經過完整 QC 流程)
+   - 發布 TaskUnblocked 事件通知相關模組
+5. **異常處理**：任務標記為 Completed 前，系統自動檢查是否有未關閉的問題單，若有則禁止完成並發布 TaskCompletionBlocked 事件
+
+### 6. 提交任務完成數量時自動發布每日紀錄
 
 #### 需求清單
 1. 使用者更新任務進度或完成數量時，自動觸發每日紀錄建立
@@ -151,13 +168,16 @@
 - **TaskReadyForAcceptance**
 - **TaskCompleted**
 - **TaskAssigneeChanged**
+- **TaskUnblocked** (當所有關聯問題單解決後)
+- **TaskCompletionBlocked** (當嘗試完成但有未關閉問題單時)
 
 ### 訂閱事件 (Subscribed Events)
 - **QCPassed**
 - **QCFailed**
 - **AcceptanceApproved**
 - **AcceptanceRejected**
-- **IssueResolved**
+- **IssueCreated** (確認 QC/Acceptance 失敗時問題單已建立)
+- **IssueResolved** (觸發檢查是否可解除 Blocked 狀態)
 - **WorkspaceSwitched**
 
 ### 事件處理原則

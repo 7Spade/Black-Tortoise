@@ -54,6 +54,26 @@
 10. 系統發布 AcceptanceRejected 事件
 11. 任務狀態流轉到 Blocked
 
+### 4. 自動化驗收閘門與失敗處理 (Automated Acceptance Gates & Failure Handling)
+
+#### 需求清單
+1. **自動接收待驗收任務**：訂閱 TaskReadyForAcceptance 事件 → 自動建立驗收項目 → 僅接收 QCPassed 狀態的任務 → 出現在驗收待辦清單 → 無需人工觸發
+2. **明確的通過/失敗閘門**：
+   - **通過條件**：所有必檢標準滿足 → 發布 AcceptanceApproved 事件 → 任務自動流轉到 Completed
+   - **失敗條件**：任一標準未滿足 → 強制填寫拒絕原因 → 發布 AcceptanceRejected 事件
+3. **失敗自動觸發問題單建立**：
+   - AcceptanceRejected 事件發布後 → 自動建立問題單：
+     - 標題：「[驗收失敗] {任務標題}」
+     - 類型：Requirement Change / Defect
+     - 優先級：繼承任務優先級
+     - 指派：任務負責人
+   - 發布 IssueCreated 事件 → 問題單與任務建立雙向關聯
+4. **閉環行為**：
+   - 訂閱 IssueResolved 事件 → 檢查關聯問題單是否已解決
+   - 問題單解決後 → 任務從 Blocked 流轉回 ReadyForQC → 重新經過完整 QC → Acceptance 流程
+   - 驗收項目自動重置為 Pending → 可重新開始驗收
+5. **異常處理**：AcceptanceRejected 事件發布時，若問題單建立失敗，系統記錄異常並保持驗收項目在 Rejected 狀態，等待重試
+
 ### 4. 驗收不通過流轉到問題單
 
 #### 需求清單
@@ -65,6 +85,7 @@
 6. 問題單指派：自動指派給任務負責人
 7. 問題單解決後，任務重新流經 QC → Acceptance 流程
 8. 驗收人員可查看問題單的處理記錄
+9. 驗收項目自動重置，等待任務重新進入驗收階段
 
 ### 5. 驗收歷史與追蹤
 
@@ -108,13 +129,14 @@
 ## 四、事件整合
 
 ### 發布事件 (Published Events)
-- **AcceptanceApproved**
-- **AcceptanceRejected**
+- **AcceptanceApproved** (所有必檢標準滿足)
+- **AcceptanceRejected** (任一標準未滿足)
 - **AcceptanceStarted**
+- **IssueCreated** (驗收失敗時自動建立問題單)
 
 ### 訂閱事件 (Subscribed Events)
-- **TaskReadyForAcceptance**
-- **IssueResolved**
+- **TaskReadyForAcceptance** (僅接收 QCPassed 狀態任務，自動建立驗收項目)
+- **IssueResolved** (問題單解決後重置驗收項目狀態)
 - **WorkspaceSwitched**
 
 ### 事件處理原則

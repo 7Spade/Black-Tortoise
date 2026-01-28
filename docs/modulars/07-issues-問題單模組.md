@@ -61,6 +61,29 @@
 7. 任務完成前，系統檢查是否有未關閉的問題單
 8. 若有，禁止標記任務為 Completed
 
+### 4. 自動問題單建立與閉環處理 (Automated Issue Creation & Closed-Loop)
+
+#### 需求清單
+1. **自動接收失敗事件並建立問題單**：
+   - 訂閱 QCFailed 事件 → 自動建立問題單 (類型: Defect, 標題: "[QC 失敗] {任務標題}")
+   - 訂閱 AcceptanceRejected 事件 → 自動建立問題單 (類型: Requirement Change/Defect, 標題: "[驗收失敗] {任務標題}")
+   - 問題單描述自動填入失敗原因、檢查項目/標準
+   - 優先級繼承任務優先級，自動指派給任務負責人
+2. **問題單與任務雙向關聯**：
+   - 發布 IssueCreated 事件 → 包含 taskId, issueType, sourceEvent (QCFailed/AcceptanceRejected)
+   - 任務訂閱 IssueCreated 事件 → 建立雙向關聯 → 流轉到 Blocked 狀態
+3. **閉環行為：問題解決後重新進入正確階段**：
+   - 問題單標記為 Resolved → 發布 IssueResolved 事件 (包含 sourceEvent)
+   - 任務訂閱 IssueResolved 事件 → 檢查所有關聯問題單是否已解決
+   - 若全部解決，依 sourceEvent 自動流轉：
+     - 來源為 QCFailed → Blocked → InProgress (等待開發者重新完成)
+     - 來源為 AcceptanceRejected → Blocked → ReadyForQC (重新經過 QC → Acceptance)
+   - 發布 TaskUnblocked 事件
+4. **異常處理與防護**：
+   - 問題單狀態為 Open/InProgress 時，關聯任務禁止標記為 Completed
+   - 任務嘗試完成時，系統自動檢查未關閉問題單 → 若有則發布 TaskCompletionBlocked 事件
+   - 問題單 Closed 後，任務檢查是否所有問題單都已關閉 → 若是則允許繼續流程
+
 ### 4. 問題單列表與篩選
 
 #### 需求清單
@@ -118,16 +141,16 @@
 ## 四、事件整合
 
 ### 發布事件 (Published Events)
-- **IssueCreated**
+- **IssueCreated** (QC/Acceptance 失敗時自動建立，包含 sourceEvent)
 - **IssueUpdated**
-- **IssueResolved**
+- **IssueResolved** (包含 sourceEvent 以便任務正確流轉)
 - **IssueClosed**
 - **IssueReopened**
 
 ### 訂閱事件 (Subscribed Events)
-- **QCFailed**
-- **AcceptanceRejected**
-- **TaskCompleted**
+- **QCFailed** (自動建立問題單，sourceEvent: QCFailed)
+- **AcceptanceRejected** (自動建立問題單，sourceEvent: AcceptanceRejected)
+- **TaskCompleted** (檢查是否有未關閉問題單)
 - **WorkspaceSwitched**
 
 ### 事件處理原則

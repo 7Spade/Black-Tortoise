@@ -49,6 +49,26 @@
 10. 系統發布 QCFailed 事件
 11. 任務狀態流轉到 Blocked
 
+### 3. 自動化質檢閘門與失敗處理 (Automated QC Gates & Failure Handling)
+
+#### 需求清單
+1. **自動接收待質檢任務**：訂閱 TaskReadyForQC 事件 → 自動建立 QC 項目 → 出現在質檢待辦清單 → 無需人工觸發
+2. **明確的通過/失敗閘門**：
+   - **通過條件**：所有必檢項目標記為 Pass → 發布 QCPassed 事件 → 任務自動流轉到 ReadyForAcceptance
+   - **失敗條件**：任一必檢項目標記為 Fail → 強制填寫缺失原因 → 發布 QCFailed 事件
+3. **失敗自動觸發問題單建立**：
+   - QCFailed 事件發布後 → 自動建立問題單：
+     - 標題：「[QC 失敗] {任務標題}」
+     - 類型：Defect
+     - 優先級：繼承任務優先級
+     - 指派：任務負責人
+   - 發布 IssueCreated 事件 → 問題單與任務建立雙向關聯
+4. **閉環行為**：
+   - 訂閱 IssueResolved 事件 → 檢查關聯問題單是否已解決
+   - 問題單解決後 → 質檢項目狀態重置為 Pending → 可重新開始質檢
+   - 任務從 Blocked 流轉回 InProgress 後重新達到 100% → 自動再次進入 QC 流程
+5. **異常處理**：QCFailed 事件發布時，若問題單建立失敗，系統記錄異常並保持質檢項目在 Failed 狀態，等待重試
+
 ### 3. 質檢不通過流轉到問題單
 
 #### 需求清單
@@ -61,7 +81,7 @@
 7. 問題單與任務建立雙向關聯
 8. 任務詳情頁顯示關聯的問題單列表
 9. 問題單詳情頁顯示關聯的任務資訊
-10. 問題單解決後，質檢人員可重新開始質檢
+10. 問題單解決後，質檢項目自動重置，任務重新達 100% 後可重新質檢
 
 ### 4. 質檢歷史與追蹤
 
@@ -107,13 +127,14 @@
 ## 四、事件整合
 
 ### 發布事件 (Published Events)
-- **QCPassed**
-- **QCFailed**
+- **QCPassed** (所有必檢項目通過)
+- **QCFailed** (任一必檢項目失敗)
 - **QCStarted**
+- **IssueCreated** (QC 失敗時自動建立問題單)
 
 ### 訂閱事件 (Subscribed Events)
-- **TaskReadyForQC**
-- **IssueResolved**
+- **TaskReadyForQC** (自動建立質檢項目)
+- **IssueResolved** (問題單解決後重置質檢項目狀態)
 - **WorkspaceSwitched**
 
 ### 事件處理原則
