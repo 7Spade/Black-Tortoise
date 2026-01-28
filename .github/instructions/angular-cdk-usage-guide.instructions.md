@@ -1,123 +1,124 @@
 ---
-description: 'Angular CDK 使用指南 - 無 UI 的強大工具集'
+description: 'Angular CDK Usage Guide - Powerful Toolkit Without UI'
 applyTo: '**/*.component.ts,**/*.directive.ts,**/*.service.ts'
 ---
 
-# Angular CDK 使用指南
+# Angular CDK Usage Guide
 
-## 核心概念
+## Core Concepts
 
-Angular Component Dev Kit (CDK) 是一組行為原語和工具，用於建立高品質的 UI 元件。CDK 提供無樣式的功能性實作，可作為自訂元件的基礎。
+Angular Component Dev Kit (CDK) is a set of behavioral primitives and tools for building high-quality UI components. CDK provides unstyled, functional implementations that serve as the foundation for custom components.
 
-## CDK 主要模組
+## CDK Main Modules
 
-### Overlay (浮層)
-提供浮動面板的定位和管理系統:
-- 創建彈出視窗、下拉選單、對話框
-- 靈活的定位策略
-- 滾動和調整大小處理
-- 背景遮罩管理
-- 鍵盤和焦點管理
+### Overlay (Floating Layer)
+Provides positioning and management system for floating panels:
+- Create popups, dropdowns, dialogs
+- Flexible positioning strategies
+- Scrolling and resizing handling
+- Background mask management
+- Keyboard and focus management
 
-### Portal (入口)
-動態內容投影機制:
-- ComponentPortal - 動態載入元件
-- TemplatePortal - 投影模板內容
-- DomPortal - 投影 DOM 元素
-- 跨元件邊界傳遞內容
-- 延遲實例化
+### Portal (Entry Point)
+Dynamic content projection mechanism:
+- ComponentPortal - Dynamically load components
+- TemplatePortal - Project template content
+- DomPortal - Project DOM elements
+- Pass content across component boundaries
+- Lazy instantiation
 
-### A11y (無障礙性)
-無障礙工具集:
-- FocusTrap - 焦點陷阱
-- FocusMonitor - 焦點狀態監控
-- LiveAnnouncer - 動態內容宣告
-- AriaDescriber - ARIA 描述管理
-- InteractivityChecker - 互動性檢查
+### A11y (Accessibility)
+Accessibility toolkit:
+- FocusTrap - Focus trap
+- FocusMonitor - Monitor focus state
+- LiveAnnouncer - Announce dynamic content
+- AriaDescriber - ARIA description management
+- InteractivityChecker - Interactivity checking
 
-### Layout (佈局)
-響應式佈局工具:
-- BreakpointObserver - 斷點監聽
-- MediaMatcher - 媒體查詢匹配
-- 預定義斷點 (Handset, Tablet, Web)
-- 自訂斷點支援
+### Layout (Layout)
+Responsive layout tools:
+- BreakpointObserver - Listen to breakpoints
+- MediaMatcher - Media query matching
+- Predefined breakpoints (Handset, Tablet, Web)
+- Custom breakpoint support
 
-### Scrolling (滾動)
-滾動相關功能:
-- Virtual Scrolling - 虛擬滾動
-- Scroll Dispatcher - 滾動事件調度
-- Viewport Ruler - 視窗尺寸追蹤
-- 高效能大型列表渲染
+### Scrolling (Scrolling)
+Scrolling-related functionality:
+- Virtual Scrolling - Virtual scrolling
+- Scroll Dispatcher - Scroll event dispatch
+- Viewport Ruler - Viewport size tracking
+- High-performance large list rendering
 
-### Drag and Drop (拖放)
-拖放功能實作:
-- CdkDrag - 可拖動元素
-- CdkDropList - 拖放容器
-- 列表排序
-- 跨列表移動
-- 自訂預覽和佔位符
+### Drag and Drop (Drag and Drop)
+Drag and drop functionality:
+- CdkDrag - Draggable elements
+- CdkDropList - Drop container
+- List sorting
+- Cross-list movement
+- Custom preview and placeholder
 
-## Overlay 深入使用
+## Overlay Deep Usage
 
-### 建立 Overlay
-基本流程:
-1. 注入 Overlay 服務
-2. 創建 OverlayConfig
-3. 建立 OverlayRef
-4. 附加 Portal
+### Creating an Overlay
+Basic process:
+1. Inject the Overlay service
+2. Create OverlayConfig
+3. Create OverlayRef
+4. Attach Portal
 
-### 定位策略
-- **GlobalPositionStrategy**: 全域定位 (相對於視窗)
-- **FlexibleConnectedPositionStrategy**: 彈性連接定位 (相對於元素)
-- **ConnectionPositionPair**: 定義連接點對
+### Positioning Strategies
+- **GlobalPositionStrategy**: Global positioning (relative to viewport)
+- **FlexibleConnectedPositionStrategy**: Flexible connected positioning (relative to element)
+- **ConnectionPositionPair**: Define connection point pairs
 
-### 滾動策略
-- **NoopScrollStrategy**: 不處理滾動
-- **CloseScrollStrategy**: 滾動時關閉
-- **BlockScrollStrategy**: 阻止滾動
-- **RepositionScrollStrategy**: 滾動時重新定位
+### Scrolling Strategies
+- **NoopScrollStrategy**: No scroll handling
+- **CloseScrollStrategy**: Close on scroll
+- **BlockScrollStrategy**: Block scrolling
+- **RepositionScrollStrategy**: Reposition on scroll
 
-### 背景遮罩
-- 自訂背景顏色和不透明度
-- 點擊背景關閉
-- 防止內容滾動
-- 層級管理 (z-index)
+### Background Mask
+- Customize background color and opacity
+- Click background to close
+- Prevent content scrolling
+- Z-index management
 
-## Portal 應用場景
+## Portal Application Scenarios
 
-### 動態元件載入
-適用情境:
-- 對話框內容
-- 動態表單
-- 延遲載入的小工具
-- 條件式 UI 區塊
+### Dynamic Component Loading
+Applicable scenarios:
+- Dialog content
+- Dynamic forms
+- Lazy-loaded widgets
+- Conditional UI blocks
 
-### 模板投影
-適用情境:
-- 重用模板內容
-- 跨元件投影
-- 動態內容切換
-- 插槽式設計
+### Template Projection
+Applicable scenarios:
+- Reuse template content
+- Cross-component projection
+- Dynamic content switching
+- Slot-based design
 
-### 最佳實踐
-- 正確管理 Portal 生命週期
-- 及時 detach 避免記憶體洩漏
-- 使用 ComponentRef 控制元件實例
-- 處理 Portal 附加失敗情況
+### Best Practices
+- Correctly manage Portal lifecycle
+- Detach promptly to avoid memory leaks
+- Use ComponentRef to control component instances
+- Handle Portal attachment failures
 
-## A11y 工具應用
+## A11y Tools Application
 
 ### FocusTrap
-使用場景:
-- 模態對話框
-- 側邊欄
-- 彈出選單
-- 確保鍵盤使用者不會失焦
+Use cases:
+- Modal dialogs
+- Sidebars
+- Popup menus
+- Ensure keyboard users don't lose focus
 
-實作要點:
-- 在打開時自動聚焦
-- Tab 循環限制在區域內
-- Escape 鍵關閉
+Implementation points:
+- Auto-focus when opening
+- Tab cycle limited to region
+- Escape key closes
+- Focus restoration on close
 - 關閉後恢復原始焦點
 
 ### FocusMonitor
@@ -136,251 +137,251 @@ Angular Component Dev Kit (CDK) 是一組行為原語和工具，用於建立高
 
 ## BreakpointObserver 響應式設計
 
-### 監聽斷點變化
-整合模式:
-- 訂閱斷點 Observable
-- 使用 `toSignal()` 轉換為 Signal
-- 根據斷點調整佈局
-- 動態載入元件或資源
+### Listening to Breakpoint Changes
+Integration patterns:
+- Subscribe to breakpoint Observable
+- Use `toSignal()` to convert to Signal
+- Adjust layout based on breakpoint
+- Dynamically load components or resources
 
-### 自訂斷點
-定義業務特定斷點:
-- 根據設計需求定義
-- 支援複雜媒體查詢
-- 組合多個條件
-- 保持響應式邏輯集中
+### Custom Breakpoints
+Define business-specific breakpoints:
+- Define based on design requirements
+- Support complex media queries
+- Combine multiple conditions
+- Keep responsive logic centralized
 
-### 與 Signals 整合
-響應式狀態管理:
-- 斷點狀態為 Signal
-- 使用 `computed()` 衍生 UI 狀態
-- 自動更新佈局
-- 減少手動訂閱
+### Integration with Signals
+Reactive state management:
+- Breakpoint state as Signal
+- Use `computed()` to derive UI state
+- Automatically update layout
+- Reduce manual subscriptions
 
-## Virtual Scrolling 效能優化
+## Virtual Scrolling Performance Optimization
 
 ### CdkVirtualScrollViewport
-大型列表渲染:
-- 只渲染可見項目
-- 動態回收 DOM 節點
-- 支援固定或動態高度
-- 大幅提升效能
+Large list rendering:
+- Render only visible items
+- Dynamically recycle DOM nodes
+- Support fixed or dynamic height
+- Significantly improve performance
 
-### 設定項目大小
-兩種模式:
-- **固定大小**: 設定 itemSize
-- **動態大小**: 提供 itemSize 函數
+### Setting Item Size
+Two modes:
+- **Fixed size**: Set itemSize
+- **Dynamic size**: Provide itemSize function
 
-### 整合 Signal
-資料流整合:
-- 資料源為 Signal
-- 自動響應資料變更
-- 保持滾動位置
-- 優化變更檢測
+### Integration with Signals
+Data flow integration:
+- Data source as Signal
+- Auto-respond to data changes
+- Maintain scroll position
+- Optimize change detection
 
-### 適用場景
-- 長列表 (數千筆資料)
-- 聊天訊息記錄
-- 無限滾動
-- 大型表格
+### Applicable Scenarios
+- Long lists (thousands of records)
+- Chat message history
+- Infinite scrolling
+- Large tables
 
-## Drag and Drop 實作
+## Drag and Drop Implementation
 
-### 基本拖放
-設定步驟:
-1. 添加 `cdkDrag` 到可拖動元素
-2. 添加 `cdkDropList` 到容器
-3. 處理 `cdkDropListDropped` 事件
-4. 更新資料模型
+### Basic Drag and Drop
+Setup steps:
+1. Add `cdkDrag` to draggable element
+2. Add `cdkDropList` to container
+3. Handle `cdkDropListDropped` event
+4. Update data model
 
-### 拖放約束
-控制行為:
-- 限制拖動軸向 (水平/垂直)
-- 設定拖動邊界
-- 禁用特定項目拖放
-- 自訂拖動手柄
+### Drag and Drop Constraints
+Control behavior:
+- Limit drag axis (horizontal/vertical)
+- Set drag boundaries
+- Disable drag on specific items
+- Customize drag handle
 
-### 跨列表拖放
-進階功能:
-- 連接多個 drop list
-- 設定 `cdkDropListConnectedTo`
-- 處理跨列表資料傳遞
-- 驗證拖放有效性
+### Cross-List Drag and Drop
+Advanced features:
+- Connect multiple drop lists
+- Set `cdkDropListConnectedTo`
+- Handle cross-list data transfer
+- Validate drop validity
 
-### 自訂預覽
-視覺回饋:
-- 自訂拖動中的預覽元素
-- 設定佔位符樣式
-- 動畫效果
-- 拖放指示器
+### Custom Preview
+Visual feedback:
+- Customize preview element during drag
+- Set placeholder styles
+- Animation effects
+- Drag-drop indicators
 
-## 與 Signals 整合模式
+## Integration Patterns with Signals
 
-### Observable 到 Signal
-常見轉換:
+### Observable to Signal
+Common conversions:
 - BreakpointObserver → Signal
 - ScrollDispatcher → Signal
 - FocusMonitor → Signal
-- Overlay 狀態 → Signal
+- Overlay state → Signal
 
-### 響應式 UI 更新
-整合優勢:
-- 自動變更檢測
-- 減少手動訂閱
-- 更清晰的資料流
-- 更好的效能
+### Reactive UI Updates
+Integration advantages:
+- Automatic change detection
+- Reduce manual subscriptions
+- Clearer data flow
+- Better performance
 
-## 自訂元件建構
+## Custom Component Building
 
-### 使用 CDK 作為基礎
-設計模式:
-- 複用 CDK 行為邏輯
-- 添加自訂樣式和功能
-- 保持無障礙性
-- 符合業務需求
+### Using CDK as Foundation
+Design patterns:
+- Reuse CDK behavioral logic
+- Add custom styles and features
+- Maintain accessibility
+- Meet business requirements
 
-### 組合多個 CDK 功能
-複雜元件:
+### Combining Multiple CDK Features
+Complex components:
 - Overlay + Portal + FocusTrap
 - VirtualScroll + DragDrop
 - Layout + A11y
-- 建立強大的自訂元件
+- Create powerful custom components
 
-## 效能考量
+## Performance Considerations
 
-### Overlay 效能
-最佳化:
-- 重用 OverlayRef 而非重複創建
-- 使用適當的滾動策略
-- 及時銷毀不需要的 overlay
-- 避免過多層級嵌套
+### Overlay Performance
+Optimization:
+- Reuse OverlayRef rather than creating repeatedly
+- Use appropriate scroll strategy
+- Destroy overlays promptly when not needed
+- Avoid excessive nesting levels
 
-### Virtual Scrolling 調校
-優化技巧:
-- 選擇適當的 itemSize
-- 使用 trackBy 函數
-- 避免複雜的模板
-- 測試不同裝置效能
+### Virtual Scrolling Tuning
+Optimization tips:
+- Choose appropriate itemSize
+- Use trackBy function
+- Avoid complex templates
+- Test performance on different devices
 
-### Drag and Drop 優化
-效能提升:
-- 限制可拖動項目數量
-- 使用簡單的預覽元素
-- 避免過度動畫
-- 測試大型列表效能
+### Drag and Drop Optimization
+Performance improvement:
+- Limit number of draggable items
+- Use simple preview elements
+- Avoid excessive animations
+- Test performance on large lists
 
-## 測試策略
+## Testing Strategy
 
-### CDK 元件測試
-測試重點:
-- 使用 ComponentHarness
-- 模擬拖放操作
-- 驗證焦點管理
-- 測試響應式行為
+### CDK Component Testing
+Test focus:
+- Use ComponentHarness
+- Simulate drag and drop operations
+- Verify focus management
+- Test responsive behavior
 
-### Overlay 測試
-測試項目:
-- Overlay 開啟和關閉
-- 定位正確性
-- 背景點擊行為
-- 鍵盤互動
+### Overlay Testing
+Test items:
+- Overlay open and close
+- Positioning accuracy
+- Background click behavior
+- Keyboard interaction
 
-## 常見模式
+## Common Patterns
 
-### 下拉選單
-組合使用:
-- Overlay 提供定位
-- Portal 投射內容
-- FocusTrap 管理焦點
-- 點擊外部關閉
+### Dropdown Menu
+Combined use:
+- Overlay provides positioning
+- Portal projects content
+- FocusTrap manages focus
+- Click outside closes
 
-### 對話框
-完整方案:
-- Overlay 作為容器
-- Portal 載入對話框內容
-- 背景遮罩
-- FocusTrap 焦點管理
-- 鍵盤事件處理
+### Dialog
+Complete solution:
+- Overlay as container
+- Portal loads dialog content
+- Background mask
+- FocusTrap focus management
+- Keyboard event handling
 
-### 工具提示
-輕量實作:
-- Overlay 簡單定位
-- 延遲顯示/隱藏
-- 無背景遮罩
-- 滑鼠移出自動關閉
+### Tooltip
+Lightweight implementation:
+- Overlay simple positioning
+- Delayed show/hide
+- No background mask
+- Auto close on mouse out
 
-### 側邊欄
-完整功能:
-- Overlay 或固定定位
-- 滑入/滑出動畫
-- 背景遮罩可選
-- 響應式行為
+### Sidebar
+Full functionality:
+- Overlay or fixed positioning
+- Slide in/out animation
+- Background mask optional
+- Responsive behavior
 
-## 常見陷阱
+## Common Pitfalls
 
-### ❌ 應避免
-- 忘記 detach Portal 造成記憶體洩漏
-- Overlay 層級管理混亂
-- 忽略無障礙性
-- Virtual Scrolling 使用過小的 itemSize
-- 拖放時不更新資料模型
+### ❌ Should Avoid
+- Forgetting to detach Portal causing memory leaks
+- Overlay z-index management confusion
+- Ignoring accessibility
+- Virtual Scrolling with itemSize too small
+- Not updating data model during drag and drop
 
-### ⚠️ 注意事項
-- Overlay 在 OnPush 策略下的更新
-- Portal 附加時機
-- 焦點管理的完整性
-- 響應式斷點的準確性
+### ⚠️ Cautions
+- Overlay updates under OnPush strategy
+- Portal attachment timing
+- Completeness of focus management
+- Accuracy of responsive breakpoints
 
-## 進階技巧
+## Advanced Techniques
 
-### 自訂 Overlay 位置
-精確控制:
-- 創建自訂定位策略
-- 考慮滾動和視窗調整
-- 處理邊界情況
-- 平滑過渡動畫
+### Custom Overlay Positioning
+Precise control:
+- Create custom positioning strategy
+- Consider scrolling and window resize
+- Handle edge cases
+- Smooth transition animation
 
-### 優化 Virtual Scrolling
-進階配置:
-- 自訂 VirtualScrollStrategy
-- 動態調整緩衝區大小
-- 處理不規則項目高度
-- 整合無限滾動
+### Optimizing Virtual Scrolling
+Advanced configuration:
+- Customize VirtualScrollStrategy
+- Dynamically adjust buffer size
+- Handle irregular item heights
+- Integrate infinite scrolling
 
-### 複雜拖放邏輯
-業務整合:
-- 自訂拖放驗證
-- 多方向拖放
-- 嵌套拖放列表
-- 拖放動畫和轉場
+### Complex Drag and Drop Logic
+Business integration:
+- Custom drag and drop validation
+- Multi-directional dragging
+- Nested drag and drop lists
+- Drag and drop animation and transitions
 
-## 文件與資源
+## Documentation and Resources
 
-### 官方文件
-- CDK API 參考
-- 元件範例
-- 指南和教學
-- 原始碼註解
+### Official Documentation
+- CDK API Reference
+- Component examples
+- Guides and tutorials
+- Source code comments
 
-### 學習路徑
-1. 理解基本概念
-2. 實作簡單範例
-3. 研究 Material 原始碼
-4. 建構自訂元件
-5. 優化和測試
+### Learning Path
+1. Understand basic concepts
+2. Implement simple examples
+3. Study Material source code
+4. Build custom components
+5. Optimize and test
 
-## 專案整合
+## Project Integration
 
-### 引入 CDK
-設定步驟:
-- 安裝 @angular/cdk
-- 按需導入模組
-- 設定必要的樣式
-- 配置主題 (如需要)
+### Introducing CDK
+Setup steps:
+- Install @angular/cdk
+- Import modules as needed
+- Configure necessary styles
+- Configure theme (if needed)
 
-### 團隊協作
-最佳實踐:
-- 文件化 CDK 使用模式
-- 建立可重用的包裝器
-- 統一的命名規範
-- 程式碼審查重點
+### Team Collaboration
+Best practices:
+- Document CDK usage patterns
+- Create reusable wrappers
+- Unified naming conventions
+- Code review points

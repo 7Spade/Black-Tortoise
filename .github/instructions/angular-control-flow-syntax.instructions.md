@@ -1,144 +1,144 @@
 ---
-description: 'Angular 20+ 控制流語法規範 - 強制使用新版控制流'
+description: 'Angular 20+ Control Flow Syntax Standards - Mandatory Use of New Control Flow'
 applyTo: '**/*.html,**/*.component.ts'
 ---
 
-# Angular 20+ 控制流語法規範
+# Angular 20+ Control Flow Syntax Standards
 
-## 核心原則
+## Core Principles
 
-Angular 20 引入全新的內建控制流語法，完全取代舊版結構型指令。新語法提供更好的型別推斷、效能優化和開發體驗。
+Angular 20 introduces an entirely new built-in control flow syntax that completely replaces the old structural directives. The new syntax provides better type inference, performance optimization, and development experience.
 
-## 絕對禁止使用
+## Absolutely Forbidden
 
-- 結構型指令 `*ngIf`
-- 結構型指令 `*ngFor`
-- 結構型指令 `*ngSwitch` 及其相關指令
+- Structural directive `*ngIf`
+- Structural directive `*ngFor`
+- Structural directive `*ngSwitch` and related directives
 
-## 必須使用的新語法
+## Required New Syntax
 
-### 條件渲染: @if / @else / @else if
-- 取代所有 `*ngIf` 使用場景
-- 支援多條件分支
-- 支援 inline 變數宣告 (as 語法)
-- 更好的型別窄化 (type narrowing)
+### Conditional Rendering: @if / @else / @else if
+- Replace all `*ngIf` use cases
+- Support multiple conditional branches
+- Support inline variable declaration (as syntax)
+- Better type narrowing
 
-### 列表渲染: @for / @empty
-- 取代所有 `*ngFor` 使用場景
-- **強制要求** track 表達式以優化渲染效能
-- 提供內建的 `@empty` 區塊處理空列表
-- 可使用 `$index`, `$first`, `$last`, `$even`, `$odd` 等內建變數
+### List Rendering: @for / @empty
+- Replace all `*ngFor` use cases
+- **Mandatory** track expression to optimize rendering performance
+- Provide built-in `@empty` block for handling empty lists
+- Can use built-in variables like `$index`, `$first`, `$last`, `$even`, `$odd`
 
-### 條件切換: @switch / @case / @default
-- 取代 `*ngSwitch` 系列指令
-- 更簡潔的語法結構
-- 更好的可讀性
+### Conditional Switch: @switch / @case / @default
+- Replace `*ngSwitch` series directives
+- More concise syntax structure
+- Better readability
 
-### 延遲載入: @defer
-- Angular 20 新增的效能優化功能
-- 支援多種觸發條件 (viewport, idle, interaction, hover, immediate, timer)
-- 提供 `@placeholder`, `@loading`, `@error` 區塊
-- 可大幅減少初始載入包大小
+### Lazy Loading: @defer
+- Performance optimization feature new in Angular 20
+- Support multiple trigger conditions (viewport, idle, interaction, hover, immediate, timer)
+- Provide `@placeholder`, `@loading`, `@error` blocks
+- Can significantly reduce initial bundle size
 
-## Track 表達式最佳實踐
+## Track Expression Best Practices
 
-### 必須遵守
-- 每個 `@for` 必須提供 track 表達式
-- 優先使用唯一識別符 (如 id)
-- 避免使用物件引用作為 track 值
+### Must Obey
+- Every `@for` must provide a track expression
+- Prefer using unique identifiers (such as id)
+- Avoid using object references as track values
 
-### 選擇策略
-- **最佳**: 使用業務唯一鍵 (item.id, item.uuid)
-- **次佳**: 使用複合鍵 (多個屬性組合)
-- **可接受**: 使用索引 `$index` (僅限靜態、不變動的列表)
-- **避免**: 使用整個物件或不穩定的值
+### Selection Strategy
+- **Best**: Use business unique key (item.id, item.uuid)
+- **Good**: Use composite key (combination of multiple attributes)
+- **Acceptable**: Use index `$index` (only for static, unchanging lists)
+- **Avoid**: Using entire object or unstable values
 
-## @defer 使用時機
+## @defer Usage Timing
 
-### 適合使用場景
-- 大型元件或重型運算元件
-- 非首屏關鍵內容
-- 第三方套件或外部依賴
-- 分析、追蹤等次要功能
-- 低優先級的使用者介面元素
+### Suitable Scenarios
+- Large or heavy computation components
+- Non-critical above-the-fold content
+- Third-party packages or external dependencies
+- Analytics, tracking, and other secondary functions
+- Low-priority UI elements
 
-### 觸發條件選擇
-- **viewport**: 元件進入可視區域時載入 (最常用)
-- **idle**: 瀏覽器閒置時載入
-- **interaction**: 使用者互動後載入
-- **hover**: 滑鼠懸停時載入
-- **immediate**: 立即載入 (用於預載)
-- **timer**: 指定時間後載入
+### Trigger Condition Selection
+- **viewport**: Load when component enters visible area (most common)
+- **idle**: Load when browser is idle
+- **interaction**: Load after user interaction
+- **hover**: Load on mouse hover
+- **immediate**: Load immediately (for preloading)
+- **timer**: Load after specified time
 
-## 遷移檢查清單
+## Migration Checklist
 
-### 第一階段: 基礎遷移
-- [ ] 搜尋並替換所有 `*ngIf` 為 `@if`
-- [ ] 搜尋並替換所有 `*ngFor` 為 `@for`
-- [ ] 為每個 `@for` 添加適當的 track 表達式
-- [ ] 搜尋並替換所有 `*ngSwitch` 為 `@switch`
+### Phase One: Basic Migration
+- [ ] Search and replace all `*ngIf` with `@if`
+- [ ] Search and replace all `*ngFor` with `@for`
+- [ ] Add appropriate track expression to each `@for`
+- [ ] Search and replace all `*ngSwitch` with `@switch`
 
-### 第二階段: 優化
-- [ ] 識別可使用 `@empty` 的列表渲染
-- [ ] 評估 `@defer` 的使用機會
-- [ ] 檢視複雜條件是否可簡化為 `@else if`
-- [ ] 確認 track 表達式的效能表現
+### Phase Two: Optimization
+- [ ] Identify list rendering where `@empty` can be used
+- [ ] Evaluate opportunities for using `@defer`
+- [ ] Review if complex conditions can be simplified to `@else if`
+- [ ] Confirm track expression performance
 
-### 第三階段: 驗證
-- [ ] 執行完整測試套件
-- [ ] 檢查渲染效能指標
-- [ ] 驗證型別推斷正確性
-- [ ] 確認無遺留的舊語法
+### Phase Three: Verification
+- [ ] Execute complete test suite
+- [ ] Check rendering performance metrics
+- [ ] Verify type inference correctness
+- [ ] Confirm no legacy syntax remains
 
-## 常見錯誤模式
+## Common Error Patterns
 
-### 錯誤 1: 遺漏 track 表達式
-問題: `@for` 區塊缺少 track，導致編譯錯誤
+### Error 1: Missing track expression
+Problem: `@for` block lacks track, causing compilation error
 
-### 錯誤 2: 錯誤的 @empty 位置
-問題: `@empty` 區塊未緊接在 `@for` 之後
+### Error 2: Incorrect @empty placement
+Problem: `@empty` block not immediately after `@for`
 
-### 錯誤 3: 混用舊新語法
-問題: 同一模板中混合使用 `*ngIf` 和 `@if`
+### Error 3: Mixing old and new syntax
+Problem: Mixing `*ngIf` and `@if` in same template
 
-### 錯誤 4: 不當的 track 選擇
-問題: 使用不穩定的值或物件引用作為 track
+### Error 4: Improper track choice
+Problem: Using unstable values or object references as track
 
-## 效能考量
+## Performance Considerations
 
-### 控制流優化
-- 新語法編譯時最佳化更激進
-- 更少的執行時開銷
-- 更好的 tree-shaking 效果
+### Control Flow Optimization
+- New syntax has more aggressive compile-time optimization
+- Less runtime overhead
+- Better tree-shaking effects
 
-### Track 函數影響
-- 正確的 track 可避免不必要的 DOM 操作
-- 錯誤的 track 可能導致元件重新建立
-- 影響列表更新效能
+### Track Function Impact
+- Correct track prevents unnecessary DOM operations
+- Wrong track may cause component recreation
+- Affects list update performance
 
-### @defer 效益
-- 減少初始包大小 (可達 30-50%)
-- 改善 First Contentful Paint (FCP)
-- 按需載入降低記憶體使用
+### @defer Benefits
+- Reduce initial bundle size (up to 30-50%)
+- Improve First Contentful Paint (FCP)
+- On-demand loading reduces memory usage
 
-## 型別安全增強
+## Type Safety Enhancement
 
-新控制流語法提供更好的 TypeScript 整合:
-- 更精確的型別窄化
-- 更好的 null/undefined 檢查
-- Inline 變數的型別推斷
-- 更早期的編譯錯誤偵測
+New control flow syntax provides better TypeScript integration:
+- More precise type narrowing
+- Better null/undefined checking
+- Inline variable type inference
+- Earlier compilation error detection
 
-## 相容性注意事項
+## Compatibility Notes
 
-- Angular 17+ 開始支援新控制流
-- Angular 20 建議完全遷移
-- 舊語法雖仍可用，但不建議在新專案中使用
-- 未來版本可能棄用舊結構型指令
+- New control flow supported from Angular 17+
+- Complete migration recommended in Angular 20
+- Old syntax still usable but not recommended for new projects
+- Future versions may deprecate old structural directives
 
-## 學習資源
+## Learning Resources
 
-參考官方文件以深入了解:
-- Angular 官方控制流指南
-- 效能最佳化文件
-- 遷移工具與自動化腳本
+Refer to official documentation for deeper understanding:
+- Angular Official Control Flow Guide
+- Performance Optimization Documentation
+- Migration Tools and Automation Scripts

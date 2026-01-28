@@ -1,112 +1,112 @@
 ---
-description: 'Angular 動畫現代化 API - 效能與體驗優化'
+description: 'Angular Modern Animations API - Performance and Experience Optimization'
 applyTo: '**/*.component.ts,**/*.animations.ts'
 ---
 
-# Angular 動畫現代化 API
+# Angular Modern Animations API
 
-## 核心概念
+## Core Concepts
 - Web Animations API
-- Signals 整合
-- 現代控制流整合
+- Signals Integration
+- Modern Control Flow Integration
 
-## 動畫模組導入
+## Animation Module Setup
 - provideAnimations() / provideNoopAnimations()
-- BrowserAnimationsModule (非 standalone)
-- 按需導入動畫函數
-- 生產環境啟用、測試禁用
-- 使用者偏好設定與低效能偵測
+- BrowserAnimationsModule (non-standalone)
+- Import animation functions on demand
+- Enable in production, disable in tests
+- User preferences and low-performance detection
 
-## 動畫定義方式
-- @Component animations 陣列
-- 可分離檔案
-- 命名觸發器
+## Animation Definition Methods
+- @Component animations array
+- Separable files
+- Named triggers
 - trigger / state / transition / style / animate
-- 明確與通配符狀態，雙向轉換
+- Explicit and wildcard states, bidirectional transitions
 
-## 常見動畫模式
-- 進入/離開動畫
-- 狀態切換動畫
-- 列表動畫
-- 路由動畫
+## Common Animation Patterns
+- Enter/Leave animations
+- State transition animations
+- List animations
+- Route animations
 
-## 動畫時間與緩動
-- 單一數值或完整格式
+## Animation Timing and Easing
+- Single value or full format
 - ease, ease-in/out, linear, cubic-bezier
-- 選擇原則：進入 ease-out、離開 ease-in
+- Selection principles: ease-out for enter, ease-in for leave
 
-## 進階動畫技巧
-- 序列與並行 (sequence, group, stagger)
-- 動畫回呼 (@trigger.start / done)
-- 參數化 (params)
-- 查詢子元素 (query(), animateChild())
+## Advanced Animation Techniques
+- Sequences and parallel (sequence, group, stagger)
+- Animation callbacks (@trigger.start / done)
+- Parameterization (params)
+- Query child elements (query(), animateChild())
 
-## 與 Signals 整合
-- Signal 值觸發動畫
-- computed() 計算動畫狀態
-- effect() 執行動畫
-- SignalStore 動畫狀態管理
+## Integration with Signals
+- Signal values trigger animations
+- computed() calculates animation state
+- effect() executes animations
+- SignalStore animation state management
 
-## 效能最佳化
-- GPU 加速 transform / opacity
-- 避免 layout 屬性動畫
+## Performance Optimization
+- GPU acceleration for transform / opacity
+- Avoid layout property animations
 - will-change CSS
-- 限制同時動畫數量
-- 簡化動畫步驟
-- 清理動畫監聽器 / 虛擬滾動
+- Limit concurrent animations
+- Simplify animation steps
+- Clean up animation listeners / virtual scrolling
 
-## 無障礙性考量
-- prefers-reduced-motion 偵測
-- 螢幕閱讀器友善
-- 提供文字替代資訊
-- 建議動畫時間：簡單 100-200ms，複雜 200-400ms
+## Accessibility Considerations
+- prefers-reduced-motion detection
+- Screen reader friendly
+- Provide text alternatives
+- Recommended animation times: simple 100-200ms, complex 200-400ms
 
-## 測試策略
-- provideNoopAnimations() 禁用動畫
-- 驗證觸發邏輯與完成狀態
-- 模擬回呼
-- Chrome DevTools Animation 面板
+## Testing Strategy
+- provideNoopAnimations() to disable animations
+- Verify trigger logic and completion state
+- Mock callbacks
+- Chrome DevTools Animation panel
 
-## 常見動畫場景
-- 通知 / Toast
-- 手風琴 / 摺疊面板
-- 載入指示器 (spinner / progress)
-- 模態對話框
-- 卡片翻轉 3D 效果
+## Common Animation Scenarios
+- Notifications / Toast
+- Accordion / Collapsible panels
+- Loading indicators (spinner / progress)
+- Modal dialogs
+- Card flip 3D effects
 
-## 動畫與路由
-- 路由配置 data.animation
-- RouterOutlet 綁定觸發器
-- 淡入淡出、滑動、縮放
-- 保持動畫簡短與效能
+## Animations and Routing
+- Route configuration data.animation
+- RouterOutlet bind triggers
+- Fade, slide, scale
+- Keep animations short and performant
 
-## 動畫庫與資源
-- ng-animate、Material 動畫
-- 自訂動畫集合
-- 設計靈感：Material / iOS / Dribbble
+## Animation Libraries and Resources
+- ng-animate, Material animations
+- Custom animation collections
+- Design inspiration: Material / iOS / Dribbble
 
-## 常見模式與反模式
-- ✅ GPU 加速、短動畫、回呼、reduced-motion
-- ❌ width/height/top/left 動畫、過長、過多元素、忽略無障礙、複雜邏輯
+## Common Patterns and Anti-patterns
+- ✅ GPU acceleration, short animations, callbacks, reduced-motion
+- ❌ width/height/top/left animations, too long, too many elements, ignore accessibility, complex logic
 
-## 動畫除錯
-- 未觸發 / 閃爍 / 卡頓 / 衝突
-- Chrome DevTools / Angular DevTools / 瀏覽器效能分析 / logs
+## Animation Debugging
+- Not triggered / flickering / stuttering / conflicts
+- Chrome DevTools / Angular DevTools / Browser performance analysis / logs
 
-## 未來趨勢
-- Web Animations API 改進
-- Signals 更佳整合
-- API 簡化與型別強化
-- 視覺化動畫工具
+## Future Trends
+- Web Animations API improvements
+- Better Signals integration
+- API simplification and type strengthening
+- Visual animation tools
 
-## 學習資源
-- 官方文件、API 參考、範例、最佳實踐
-- 學習路徑：語法 → 常見效果 → 效能 → 進階技巧 → 動畫庫
+## Learning Resources
+- Official documentation, API reference, examples, best practices
+- Learning path: Syntax → Common effects → Performance → Advanced techniques → Animation libraries
 
-## 專案整合
-- 獨立 animations.ts 檔案
-- 按功能分類、可重用、命名規範
-- 文件化動畫用途與參數
-- 提供範例與預覽
-- Code review 關注效能
-- 建立動畫設計規範
+## Project Integration
+- Separate animations.ts file
+- Classify by functionality, reusable, naming conventions
+- Document animation purpose and parameters
+- Provide examples and previews
+- Code review focusing on performance
+- Establish animation design standards
