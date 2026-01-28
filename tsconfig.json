@@ -20,11 +20,11 @@
     "paths": {
       "@presentation/components": ["src/app/presentation/components/index.ts"],
       "@presentation/dialogs": ["src/app/presentation/dialogs/index.ts"],
-      "@presentation/directives": ["src/app/presentation/directives/index.ts"],
+      "@presentation/directives": ["src/app/shell/ui/directives/index.ts"],
       "@presentation/layouts": ["src/app/shell/layout/index.ts"],
       "@shell": ["src/app/shell/index.ts"],
       "@presentation/pages": ["src/app/presentation/pages/index.ts"],
-      "@presentation/pipes": ["src/app/presentation/pipes/index.ts"],
+      "@presentation/pipes": ["src/app/shell/ui/pipes/index.ts"],
       "@presentation/styles": ["src/app/presentation/styles/index.ts"],
       "@presentation/*": ["src/app/presentation/*"],
       "@modules/*": ["src/app/modules/*"],

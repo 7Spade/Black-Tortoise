@@ -2,6 +2,6 @@
  * Presentation Layer
  */
 export * from './components';
-export * from './directives';
+export * from '../shell/ui/directives';
 export * from './pages';
-export * from './pipes';
+export * from '../shell/ui/pipes';
