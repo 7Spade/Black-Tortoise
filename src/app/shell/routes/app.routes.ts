@@ -68,7 +68,7 @@ export const routes: Routes = [
     path: 'templates',
     canActivate: [canActivateAuth],
     loadChildren: () =>
-      import('../template-core/presentation/template.routes').then(
+      import('../../template-core/presentation/template.routes').then(
         (m) => m.TEMPLATE_ROUTES,
       ),
   },
