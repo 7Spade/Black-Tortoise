@@ -1,15 +1,8 @@
 /**
  * Notification Component Styles
- * 
- * Layer: Presentation
+ *
+ * Layer: Shell UI
  * Purpose: Themeable notification list styles using Material Design 3 tokens
- * 
- * Design System Compliance:
- * - Uses CSS custom properties from m3-tokens.scss
- * - Supports light/dark theme via --md-sys-color-* tokens
- * - No hardcoded colors - all from design system
- * - Type-specific styling (info, success, warning, error)
- * - Responsive spacing and elevation
  */
 
 .notification {
@@ -44,7 +37,6 @@
       border-left-width: 3px;
     }
 
-    // Type-specific styling using data attributes
     &[data-type='info'] {
       border-left-color: var(--md-sys-color-primary);
     }

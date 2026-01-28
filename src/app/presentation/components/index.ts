@@ -1,12 +1,7 @@
 /**
- * Presentation Layer - components
- * Technical Barrel File
+ * Presentation Layer - Legacy Barrel
+ *
+ * NOTE: Components have been relocated to shell/components.
+ * This re-export preserves compatibility until the presentation layer is removed.
  */
-
-export * from './notification.component';
-// Organization components moved to @account
-export * from './search.component';
-// Team components moved to @account
-export * from './theme-toggle.component';
-export { WorkspaceHostComponent } from '@workspace/presentation';
-export * from './types';
+export * from '@shell/components';

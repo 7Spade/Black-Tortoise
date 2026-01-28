@@ -1,0 +1,79 @@
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { NotificationFacade } from '@application/facades/notification.facade';
+import {
+  NotificationItem,
+  PresentationStore,
+} from '@application/stores/presentation.store';
+
+/**
+ * NotificationComponent
+ *
+ * Layer: Shell UI - Global shared component
+ * Purpose: Pure UI component for notification list - no state ownership, no business logic
+ * Architecture: Zone-less, Pure Reactive, Signals as single source of truth
+ */
+@Component({
+  selector: 'app-notification',
+  standalone: true,
+  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrls: ['./notification.component.scss'],
+  template: `
+    <!-- NotificationComponent（Shell UI, Shared） -->
+    <!-- Pure UI: Consumes state from PresentationStore, forwards events to NotificationFacade -->
+    <!-- No local state, no business logic - fully reactive control flow -->
+    <!-- Architecture: Angular 20 control flow (@for instead of *ngFor) -->
+    <ul class="notification">
+      @for (n of store.notifications(); track n.id) {
+        <li
+          class="notification__item"
+          [class.notification__item--unread]="!n.read"
+          [attr.data-type]="n.type"
+          (click)="onClick(n)"
+        >
+          <div class="notification__content">
+            <strong class="notification__type">{{ n.type }}</strong>
+            <div class="notification__text">
+              <span class="notification__title">{{ n.title }}</span>
+              <span class="notification__message">{{ n.message }}</span>
+            </div>
+            <span class="notification__timestamp">
+              {{ n.timestamp | date: 'short' }}
+            </span>
+          </div>
+          <button
+            class="notification__dismiss"
+            (click)="dismiss(n.id); $event.stopPropagation()"
+            type="button"
+            aria-label="Dismiss notification"
+          >
+            ✕
+          </button>
+        </li>
+      } @empty {
+        <li class="notification__empty">No notifications</li>
+      }
+    </ul>
+
+    @if (store.hasNotifications()) {
+      <div class="notification__footer">
+        <span class="notification__count">
+          {{ store.unreadNotificationsCount() }} unread
+        </span>
+      </div>
+    }
+  `,
+})
+export class NotificationComponent {
+  private readonly facade = inject(NotificationFacade);
+  protected readonly store = inject(PresentationStore);
+
+  dismiss(id: string): void {
+    this.facade.dismissNotification(id);
+  }
+
+  onClick(notification: NotificationItem): void {
+    this.facade.handleNotificationClick(notification);
+  }
+}

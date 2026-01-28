@@ -6,3 +6,4 @@
 
 export * from './global-shell.component';
 export * from './layout';
+export * from './components';

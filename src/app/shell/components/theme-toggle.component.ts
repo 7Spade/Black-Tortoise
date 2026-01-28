@@ -9,7 +9,7 @@ import { SettingsFacade } from '@application/facades/settings.facade';
 
 /**
  * ThemeToggleComponent
- * - Presentation layer shared component: Toggle application theme (light / dark)
+ * - Shell UI shared component: Toggle application theme (light / dark)
  * - Architecture: Zone-less, OnPush, Angular 20, Signal-based
  * - Persists theme preference via SettingsFacade
  * - Global theme application is handled via effect reacting to Facade state
@@ -42,7 +42,6 @@ export class ThemeToggleComponent {
   private readonly document = inject(DOCUMENT);
 
   constructor() {
-    // Apply global theme via body class reactively
     effect(() => {
       const isDark = this.facade.isDark();
       const themeClass = isDark ? 'dark' : 'light';
