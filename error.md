@@ -3,7 +3,7 @@ PS D:\GitHub\7s\Black-Tortoise> pnpm start
 > stackblitz-starters-vxcrzm@0.0.0 start D:\GitHub\7s\Black-Tortoise
 > ng serve
 
-Application bundle generation failed. [4.231 seconds]
+Application bundle generation failed. [4.370 seconds]
 
 ✘ [ERROR] TS2305: Module '"@application/handlers"' has no exported member 'provideEventHandlers'. [plugin angular-compiler]
 
@@ -2269,6 +2269,13 @@ Application bundle generation failed. [4.231 seconds]
     src/app/presentation/app.routes.ts:66:13:
       66 │       import('@presentation/pages/settings').then((m) => m.Setting...
          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+✘ [ERROR] TS2307: Cannot find module '@application/events/module-events' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/presentation/components/module-event-helper.ts:28:7:
+      28 │ } from '@application/events/module-events';
+         ╵        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2307: Cannot find module '@application/facades/settings.facade' or its corresponding type declarations. [plugin angular-compiler]
