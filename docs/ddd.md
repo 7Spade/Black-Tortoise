@@ -1,3 +1,4 @@
+
 ---
 **Domain：**
 VO → 2. Entity → 3. Aggregate → 4. Domain Service（如需） → 5. Factory（如需） → 6. Repository（介面，通常必須） → 7. Specification / Domain Event / Policy（可選）
