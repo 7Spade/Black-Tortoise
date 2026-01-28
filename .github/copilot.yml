@@ -48,4 +48,6 @@ include:
 exclude:
   - "node_modules/**"
   - "dist/**"
+  - "dataconnect-generated/**"
+  - "src/dataconnect-generated/**"
 
