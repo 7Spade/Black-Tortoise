@@ -16,7 +16,7 @@
 先做出基礎功能，未來擴展
 
 ### 在架構中的位置
-本模組是 Workspace 的子模組之一，遵循 Domain → Application → Infrastructure → Presentation 的分層架構。
+本模組是 Workspace 的能力模組 (Capability Module) 之一，遵循 Domain → Application → Infrastructure → Presentation 的分層架構。模組自主管理自身狀態，不依賴或修改 Workspace Context，僅透過事件與其他模組協作。作為聚合視圖模組，訂閱其他模組事件進行時間維度資料聚合。
 
 ---
 
@@ -110,14 +110,33 @@
 
 ---
 
-## 五、禁止事項 (Forbidden Practices)
+## 五、架構合規性
+
+### Workspace Context 邊界
+- 本模組不修改 Workspace Context
+- 不直接依賴其他模組的內部狀態
+- 僅透過訂閱事件獲取其他模組資訊
+
+### 模組自主性
+- 完全擁有並管理行事曆視圖狀態與配置
+- 不允許其他模組直接讀寫本模組狀態
+- 作為只讀聚合模組，不發布業務事件
+
+### 聚合模組特性
+- 訂閱 TasksModule 與 DailyModule 事件
+- 不重複請求 API，僅透過事件訂閱獲取資料
+- 不實作業務邏輯，僅負責時間維度聚合與視覺化
+
+## 六、禁止事項 (Forbidden Practices)
 
 - ❌ 重新 fetch 資料，應訂閱原模組的 Store
 - ❌ 在 CalendarModule 中實作業務邏輯
+- ❌ 直接修改 Workspace Context 或其他模組狀態
+- ❌ 將聚合資料寫入 Workspace Context
 
 ---
 
-## 六、測試策略
+## 七、測試策略
 
 ### Unit Tests
 - 測試 computed 邏輯是否正確反映 source signal 的變化
@@ -135,7 +154,7 @@
 
 ---
 
-## 七、UI/UX 規範
+## 八、UI/UX 規範
 
 ### 設計系統
 - 使用 Angular Material (M3)
@@ -154,7 +173,7 @@
 
 ---
 
-## 八、DDD 實作規範
+## 九、DDD 實作規範
 
 ### Aggregate Root
 - 支援 Creation (create()) 與 Reconstruction (reconstruct())
@@ -171,7 +190,7 @@
 
 ---
 
-## 九、開發檢查清單
+## 十、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -190,7 +209,7 @@
 
 ---
 
-## 十、參考資料
+## 十一、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md

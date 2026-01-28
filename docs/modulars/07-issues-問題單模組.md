@@ -13,10 +13,10 @@
 異常與缺失追蹤 (Defect Tracking)，管理所有工作流中的問題
 
 ### 邊界定義
-追蹤問題的生命週期，與任務狀態掛鉤，確保閉環
+追蹤問題的生命週期，透過事件訂閱接收失敗通知，透過事件發布通知問題解決狀態
 
 ### 在架構中的位置
-本模組是 Workspace 的子模組之一，遵循 Domain → Application → Infrastructure → Presentation 的分層架構。
+本模組是 Workspace 的能力模組 (Capability Module) 之一，遵循 Domain → Application → Infrastructure → Presentation 的分層架構。模組自主管理自身狀態，不依賴或修改 Workspace Context，僅透過事件與其他模組協作。
 
 ---
 
@@ -25,7 +25,7 @@
 ### 1. 問題單建立
 
 #### 需求清單
-1. 自動建立：QC 失敗 / 驗收失敗時系統自動建立
+1. 自動建立：訂閱 QCFailed / AcceptanceRejected 事件，接收到事件時自動建立
 2. 手動建立：使用者在任務頁面或問題單模組手動建立
 3. 問題單屬性：標題、描述、類型、優先級、狀態、關聯任務、指派人員、報告者
 4. 類型：Defect、Bug、Requirement Change、Question
@@ -44,22 +44,45 @@
 5. Resolved：問題已解決，等待驗證
 6. Closed：問題已驗證關閉，不可再修改
 7. Reopened：問題驗證未通過，重新開啟
-8. 問題單為 Open / InProgress 時，關聯任務狀態為 Blocked
-9. 問題單 Resolved 時，通知任務負責人驗證
-10. 問題單 Closed 時，檢查是否所有關聯問題單都已關閉
-11. 若所有問題單都已關閉，任務自動解除 Blocked 狀態
+8. 問題單為 Open / InProgress 時，發布狀態供任務模組訂閱
+9. 問題單 Resolved 時，發布 IssueResolved 事件通知
+10. 問題單 Closed 時，發布 IssueClosed 事件
+11. (任務模組訂閱 IssueResolved 事件，檢查所有關聯問題單後決定是否解除 Blocked)
 
 ### 3. 問題單根據處理狀態流轉到模組完成閉環
 
 #### 需求清單
-1. QC 失敗產生的問題單 → 解決後 → 任務回到 ReadyForQC
-2. 驗收失敗產生的問題單 → 解決後 → 任務回到 ReadyForAcceptance
-3. 手動建立的問題單 → 解決後 → 任務繼續原流程
-4. 當所有關聯問題單解決後，系統自動提示任務可重新提交
+1. QC 失敗產生的問題單 → 解決後發布 IssueResolved (含 sourceEvent) → (任務模組訂閱並流轉回 InProgress)
+2. 驗收失敗產生的問題單 → 解決後發布 IssueResolved (含 sourceEvent) → (任務模組訂閱並流轉回 ReadyForQC)
+3. 手動建立的問題單 → 解決後發布 IssueResolved → (任務模組訂閱並繼續原流程)
+4. 發布 IssueResolved 事件包含 sourceEvent 資訊
 5. 發布 IssueResolved 事件
-6. 任務模組訂閱並更新狀態
-7. 任務完成前，系統檢查是否有未關閉的問題單
-8. 若有，禁止標記任務為 Completed
+6. (任務模組訂閱 IssueResolved 並依 sourceEvent 更新狀態)
+7. (任務模組完成前訂閱 IssueClosed 檢查是否有未關閉問題單)
+8. (任務模組依檢查結果決定是否允許標記為 Completed)
+
+### 4. 自動問題單建立與閉環處理 (Automated Issue Creation & Closed-Loop)
+
+#### 需求清單
+1. **自動接收失敗事件並建立問題單**：
+   - 訂閱 QCFailed 事件 → 自動建立問題單 (類型: Defect, 標題: "[QC 失敗] {任務標題}")
+   - 訂閱 AcceptanceRejected 事件 → 自動建立問題單 (類型: Requirement Change/Defect, 標題: "[驗收失敗] {任務標題}")
+   - 問題單描述自動填入失敗原因、檢查項目/標準
+   - 優先級繼承任務優先級，自動指派給任務負責人
+2. **問題單與任務雙向關聯**：
+   - 發布 IssueCreated 事件 → 包含 taskId, issueType, sourceEvent (QCFailed/AcceptanceRejected)
+   - 任務訂閱 IssueCreated 事件 → 建立雙向關聯 → 流轉到 Blocked 狀態
+3. **閉環行為：問題解決後重新進入正確階段**：
+   - 問題單標記為 Resolved → 發布 IssueResolved 事件 (包含 sourceEvent)
+   - 任務訂閱 IssueResolved 事件 → 檢查所有關聯問題單是否已解決
+   - 若全部解決，依 sourceEvent 自動流轉：
+     - 來源為 QCFailed → Blocked → InProgress (等待開發者重新完成)
+     - 來源為 AcceptanceRejected → Blocked → ReadyForQC (重新經過 QC → Acceptance)
+   - 發布 TaskUnblocked 事件
+4. **異常處理與防護**：
+   - 問題單狀態為 Open/InProgress 時，關聯任務禁止標記為 Completed
+   - 任務嘗試完成時，系統自動檢查未關閉問題單 → 若有則發布 TaskCompletionBlocked 事件
+   - 問題單 Closed 後，任務檢查是否所有問題單都已關閉 → 若是則允許繼續流程
 
 ### 4. 問題單列表與篩選
 
@@ -75,7 +98,21 @@
 9. 支援批次關閉
 10. 支援批次匯出
 
-### 5. 問題單統計與報表
+### 5. 問題單列表與篩選
+
+#### 需求清單
+1. 顯示所有問題單，支援排序、篩選、分組
+2. 預設依建立時間降序排列
+3. 依狀態篩選
+4. 依類型篩選
+5. 依優先級篩選
+6. 依指派人員篩選
+7. 依關聯任務篩選
+8. 支援批次指派
+9. 支援批次關閉
+10. 支援批次匯出
+
+### 6. 問題單統計與報表
 
 #### 需求清單
 1. 問題單總數 / 開啟數 / 解決數 / 關閉數
@@ -118,16 +155,16 @@
 ## 四、事件整合
 
 ### 發布事件 (Published Events)
-- **IssueCreated**
+- **IssueCreated** (QC/Acceptance 失敗時自動建立，包含 sourceEvent)
 - **IssueUpdated**
-- **IssueResolved**
+- **IssueResolved** (包含 sourceEvent 以便任務正確流轉)
 - **IssueClosed**
 - **IssueReopened**
 
 ### 訂閱事件 (Subscribed Events)
-- **QCFailed**
-- **AcceptanceRejected**
-- **TaskCompleted**
+- **QCFailed** (自動建立問題單，sourceEvent: QCFailed)
+- **AcceptanceRejected** (自動建立問題單，sourceEvent: AcceptanceRejected)
+- **TaskCompleted** (檢查是否有未關閉問題單)
 - **WorkspaceSwitched**
 
 ### 事件處理原則
@@ -138,15 +175,29 @@
 
 ---
 
-## 五、禁止事項 (Forbidden Practices)
+## 五、架構合規性
+
+### Workspace Context 邊界
+- 本模組不修改 Workspace Context
+- 不直接依賴其他模組的內部狀態
+- 跨模組協作僅透過事件完成
+
+### 模組自主性
+- 完全擁有並管理問題單狀態與生命週期
+- 不允許其他模組直接讀寫本模組狀態
+- 狀態變更必須透過 Domain Event 公告
+
+## 六、禁止事項 (Forbidden Practices)
 
 - ❌ 直接修改任務狀態，必須透過事件
 - ❌ 關閉問題單時未驗證問題是否真正解決
 - ❌ 遺漏未關閉問題單而完成任務
+- ❌ 直接修改 Workspace Context 或其他模組狀態
+- ❌ 將模組狀態寫入 Workspace Context
 
 ---
 
-## 六、測試策略
+## 七、測試策略
 
 ### Unit Tests
 - 測試 computed 邏輯是否正確反映 source signal 的變化
@@ -164,7 +215,7 @@
 
 ---
 
-## 七、UI/UX 規範
+## 八、UI/UX 規範
 
 ### 設計系統
 - 使用 Angular Material (M3)
@@ -183,7 +234,7 @@
 
 ---
 
-## 八、DDD 實作規範
+## 九、DDD 實作規範
 
 ### Aggregate Root
 - 支援 Creation (create()) 與 Reconstruction (reconstruct())
@@ -200,7 +251,7 @@
 
 ---
 
-## 九、開發檢查清單
+## 十、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -219,7 +270,7 @@
 
 ---
 
-## 十、參考資料
+## 十一、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md
