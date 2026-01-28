@@ -12,9 +12,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Auth, User as FirebaseUser, authState, createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateProfile } from '@angular/fire/auth';
 import { AuthStream } from '@application/interfaces/auth-stream.token';
-import { User } from '@domain/entities';
+import { User, Email, UserId } from '@account/index';
 import { AuthRepository } from '@domain/repositories';
-import { Email, UserId } from '@domain/value-objects';
 import { Observable, map } from 'rxjs';
 
 @Injectable({

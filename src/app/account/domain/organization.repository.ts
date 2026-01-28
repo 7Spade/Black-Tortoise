@@ -1,6 +1,6 @@
-import { Organization } from '@domain/entities/organization.entity';
-import { OrganizationId } from '@domain/value-objects/organization-id.vo';
-import { UserId } from '@domain/value-objects/user-id.vo';
+import { Organization } from './organization.entity';
+import { UserId } from './user-id.vo';
+import { OrganizationId } from './organization-id.vo';
 
 /**
  * Organization Repository Interface

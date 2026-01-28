@@ -22,7 +22,7 @@ export function registerIssuesEventHandlers(eventBus: EventBus): void {
 
       const issue = createIssue(
         event.aggregateId,
-        event.payload.workspaceId as WorkspaceId,
+        event.payload.workspaceId as unknown as WorkspaceId,
         event.payload.title,
         event.payload.description,
         IssueType.BUG, // Defaulting to BUG as type isn't in event payload yet

@@ -1,5 +1,5 @@
 import { InjectionToken } from '@angular/core';
-import { OrganizationRepository } from '@domain/repositories/organization.repository';
+import { OrganizationRepository } from '../domain/organization.repository';
 
 /**
  * Injection Token for Organization Repository

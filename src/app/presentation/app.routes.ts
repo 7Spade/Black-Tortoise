@@ -39,7 +39,7 @@ export const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () =>
-      import('@presentation/pages/auth/auth.routes').then((m) => m.AUTH_ROUTES),
+      import('@account/presentation/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
 
   // Profile Page
@@ -47,7 +47,7 @@ export const routes: Routes = [
     path: 'profile',
     canActivate: [canActivateAuth],
     loadComponent: () =>
-      import('@presentation/pages/profile').then((m) => m.ProfileComponent),
+      import('@account/presentation/profile').then((m) => m.ProfileComponent),
   },
 
   // Demo route - presentation-only dashboard

@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { IdentityFacade } from '@application/facades';
+import { IdentityFacade } from '../application/identity.facade';
 
 @Component({
   selector: 'app-user-avatar',

@@ -1,6 +1,6 @@
-import { Entity } from '../base/entity';
-import { Email } from '../value-objects/email.vo';
-import { UserId } from '../value-objects/user-id.vo';
+import { Entity } from './base/entity';
+import { Email } from './email.vo';
+import { UserId } from './user-id.vo';
 
 /**
  * User Entity

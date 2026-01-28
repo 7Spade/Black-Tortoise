@@ -1,18 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import {
-    collection,
-    collectionData,
-    doc,
-    Firestore,
-    getDoc,
-    query,
-    setDoc,
-    where
+  collection,
+  collectionData,
+  doc,
+  Firestore,
+  getDoc,
+  query,
+  setDoc,
+  where
 } from '@angular/fire/firestore';
-import { Organization } from '@domain/entities/organization.entity';
-import { OrganizationRepository } from '@domain/repositories/organization.repository';
-import { OrganizationId } from '@domain/value-objects/organization-id.vo';
-import { UserId } from '@domain/value-objects/user-id.vo';
+import { Organization, OrganizationRepository, OrganizationId, UserId } from '@account/domain';
 import { firstValueFrom, Observable } from 'rxjs';
 
 @Injectable()

@@ -18,10 +18,10 @@ import { AcceptanceStore } from '@application/stores/acceptance.store';
 import { AuditStore } from '@application/stores/audit.store';
 import { DailyStore } from '@application/stores/daily.store';
 import { DocumentsStore } from '@application/stores/documents.store';
-import { IdentityContextStore } from '@application/stores/identity-context.store';
+import { IdentityContextStore } from '@account/application';
 import { IssuesStore } from '@application/stores/issues.store';
 import { MembersStore } from '@application/stores/members.store';
-import { OrganizationStore } from '@application/stores/organization.store';
+import { OrganizationStore } from '@account/application';
 import { OverviewStore } from '@application/stores/overview.store';
 import { PermissionsStore } from '@application/stores/permissions.store';
 import { QualityControlStore } from '@application/stores/quality-control.store';
@@ -89,35 +89,35 @@ const ALL_MODULE_IDS: string[] = [
  */
 export const WorkspaceStore = signalStore(
   { providedIn: 'root' },
-  
+
   withState(initialState),
-  
+
   withComputed((state) => ({
     /**
      * Has workspace context
      */
     hasWorkspace: computed(() => state.currentWorkspace() !== null),
-    
+
     /**
      * Current workspace modules
      */
-    currentWorkspaceModules: computed(() => 
+    currentWorkspaceModules: computed(() =>
       state.currentWorkspace()?.moduleIds ?? []
     ),
-    
+
     /**
      * Workspace count
      */
     workspaceCount: computed(() => state.availableWorkspaces().length),
-    
+
     /**
      * Current workspace name
      */
-    currentWorkspaceName: computed(() => 
+    currentWorkspaceName: computed(() =>
       state.currentWorkspace()?.name ?? 'No Workspace'
     ),
   })),
-  
+
   withMethods((store) => {
     const createWorkspaceHandler = inject(CreateWorkspaceHandler);
     const switchWorkspaceHandler = inject(SwitchWorkspaceHandler);
@@ -125,7 +125,7 @@ export const WorkspaceStore = signalStore(
     const runtimeFactory = inject(WORKSPACE_RUNTIME_FACTORY);
     const identityContext = inject(IdentityContextStore);
     const organizationStore = inject(OrganizationStore);
-    
+
     // Module stores for cleanup
     const tasksStore = inject(TasksStore);
     const documentsStore = inject(DocumentsStore);
@@ -138,7 +138,7 @@ export const WorkspaceStore = signalStore(
     const qualityControlStore = inject(QualityControlStore);
     const acceptanceStore = inject(AcceptanceStore);
     const dailyStore = inject(DailyStore);
-    
+
     return {
       /**
        * Create new workspace
@@ -149,7 +149,7 @@ export const WorkspaceStore = signalStore(
           exhaustMap(({ name, moduleIds }) => {
             const identityId = identityContext.currentIdentityId();
             const identityType = identityContext.currentIdentityType();
-            
+
             if (!identityId || !identityType) {
               patchState(store, {
                 error: 'No identity selected',
@@ -157,7 +157,7 @@ export const WorkspaceStore = signalStore(
               });
               return of(null);
             }
-            
+
             return from(createWorkspaceHandler.execute({
               name,
               ownerId: identityId,
@@ -186,7 +186,7 @@ export const WorkspaceStore = signalStore(
           })
         )
       ),
-      
+
       /**
        * Switch to workspace
        * 
@@ -201,26 +201,26 @@ export const WorkspaceStore = signalStore(
        */
       switchWorkspace(workspaceId: string): void {
         const workspace = store.availableWorkspaces().find(w => w.id === workspaceId);
-        
+
         if (!workspace) {
           patchState(store, { error: `Workspace ${workspaceId} not found` });
           return;
         }
-        
+
         const previousWorkspaceId = store.currentWorkspace()?.id || null;
-        
+
         // 1. Set loading/unknown state (signal to UI: workspace switching)
-        patchState(store, { 
-          isLoading: true, 
+        patchState(store, {
+          isLoading: true,
           currentWorkspace: null,
-          error: null 
+          error: null
         });
-        
+
         // 2-3. Stop all module runtimes and dispose workspace-scoped event bus
         if (previousWorkspaceId) {
           runtimeFactory.destroyRuntime(previousWorkspaceId);
         }
-        
+
         // 4. Reset all module stores (clear workspace-scoped data)
         tasksStore.reset();
         documentsStore.reset();
@@ -233,16 +233,16 @@ export const WorkspaceStore = signalStore(
         qualityControlStore.reset();
         acceptanceStore.reset();
         dailyStore.reset();
-        
+
         // Execute domain use case (business logic)
         switchWorkspaceHandler.execute({
           previousWorkspaceId,
           targetWorkspaceId: workspaceId,
         });
-        
+
         // 5-6. Create new workspace runtime (starts new event bus and module runtimes)
         runtimeFactory.createRuntime(workspace);
-        
+
         // Update organization context if workspace is org-owned
         if (workspace.ownerType === 'organization') {
           const org = organizationStore.findOrganizationById(workspace.ownerId);
@@ -256,7 +256,7 @@ export const WorkspaceStore = signalStore(
           // User-owned workspace: clear org context
           organizationStore.clearCurrentOrganization();
         }
-        
+
         // 7. Set ready state (signal to UI: workspace ready)
         patchState(store, {
           currentWorkspace: workspace,
@@ -265,29 +265,29 @@ export const WorkspaceStore = signalStore(
           error: null,
         });
       },
-      
+
       /**
        * Activate module
        */
       activateModule(moduleId: string): void {
         const workspace = store.currentWorkspace();
-        
+
         if (!workspace) {
           patchState(store, { error: 'No workspace selected' });
           return;
         }
-        
+
         if (!workspace.moduleIds.includes(moduleId)) {
           patchState(store, { error: `Module ${moduleId} not enabled` });
           return;
         }
-        
+
         patchState(store, {
           activeModuleId: moduleId,
           error: null,
         });
       },
-      
+
       /**
        * Load available workspaces for current identity
        */
@@ -297,12 +297,12 @@ export const WorkspaceStore = signalStore(
           switchMap(() => {
             const ownerId = identityContext.currentIdentityId();
             const ownerType = identityContext.currentIdentityType();
-            
+
             if (!ownerId || !ownerType) {
               patchState(store, { isLoading: false });
               return of([]);
             }
-            
+
             return from(repository.findByOwnerId(ownerId, ownerType)).pipe(
               tapResponse({
                 next: (workspaces) => {
@@ -325,45 +325,45 @@ export const WorkspaceStore = signalStore(
           })
         )
       ),
-      
+
       /**
        * Find workspace by ID
        */
       findWorkspaceById(workspaceId: string): WorkspaceEntity | undefined {
         return store.availableWorkspaces().find(w => w.id === workspaceId);
       },
-      
+
       /**
        * Set loading state
        */
       setLoading(isLoading: boolean): void {
         patchState(store, { isLoading });
       },
-      
+
       /**
        * Set error
        */
       setError(error: string | null): void {
         patchState(store, { error });
       },
-      
+
       /**
        * Reset store
        */
       reset(): void {
         // Cleanup all runtimes
         runtimeFactory.destroyAll();
-        
+
         patchState(store, initialState);
       },
     };
   }),
-  
+
   withHooks({
     onInit() {
       console.log('[WorkspaceStore] Initialized');
     },
-    
+
     onDestroy() {
       console.log('[WorkspaceStore] Destroyed');
     },

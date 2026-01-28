@@ -7,11 +7,13 @@
 
 import { inject, Injectable } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { ORGANIZATION_REPOSITORY } from '@application/interfaces/organization-repository.token';
-import { Organization } from '@domain/entities/organization.entity';
+import {
+  ORGANIZATION_REPOSITORY,
+  Organization,
+  OrganizationId,
+  UserId
+} from '@account/index';
 import { createOrganizationCreatedEvent } from '@domain/events/organization-created.event';
-import { OrganizationId } from '@domain/value-objects/organization-id.vo';
-import { UserId } from '@domain/value-objects/user-id.vo';
 
 /**
  * Create Organization Command

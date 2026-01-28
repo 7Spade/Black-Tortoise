@@ -6,13 +6,13 @@ import {
   DOCUMENT_REPOSITORY,
   ISSUE_REPOSITORY,
   MEMBER_REPOSITORY,
-  ORGANIZATION_REPOSITORY,
   OVERVIEW_REPOSITORY,
   PERMISSION_REPOSITORY,
   QUALITY_CONTROL_REPOSITORY,
   SETTINGS_REPOSITORY,
   TASK_REPOSITORY,
 } from '@application/interfaces';
+import { ORGANIZATION_REPOSITORY, OrganizationRepositoryImpl } from '@account/index';
 import {
   AcceptanceRepositoryImpl,
   AuditLogRepositoryImpl,
@@ -20,7 +20,6 @@ import {
   DocumentRepositoryImpl,
   IssueRepositoryImpl,
   MemberRepositoryImpl,
-  OrganizationRepositoryImpl,
   OverviewRepositoryImpl,
   PermissionRepositoryImpl,
   QualityControlRepositoryImpl,

@@ -16,7 +16,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { IdentityFacade } from '@application/facades';
+import { IdentityFacade } from '../application/identity.facade';
 import { OrganizationCreateResult } from './organization-create-dialog.component';
 import { OrganizationCreateTriggerComponent } from './organization-create-trigger.component';
 

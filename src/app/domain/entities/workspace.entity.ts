@@ -1,5 +1,5 @@
-import { AggregateRoot } from '../base/aggregate-root';
-import { UserId } from '../value-objects/user-id.vo';
+import { AggregateRoot } from '@account/index';
+import { UserId } from '@account/index';
 import { WorkspaceId } from '../value-objects/workspace-id.vo';
 
 /**

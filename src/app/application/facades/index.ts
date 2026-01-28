@@ -4,7 +4,6 @@
  */
 
 export * from './header.facade';
-export * from './identity.facade';
 export * from './module.facade';
 export * from './notification.facade';
 export * from './search.facade';

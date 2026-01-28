@@ -1,5 +1,5 @@
 import { InjectionToken } from '@angular/core';
-import { User } from '@domain/entities';
+import { User } from '@account/index';
 import { Observable } from 'rxjs';
 
 /**

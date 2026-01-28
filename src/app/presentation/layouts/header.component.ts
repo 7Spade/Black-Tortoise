@@ -16,12 +16,11 @@
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { IdentitySwitcherComponent, UserAvatarComponent } from '@account/index';
 import {
-  IdentitySwitcherComponent,
   NotificationComponent,
   SearchComponent,
   ThemeToggleComponent,
-  UserAvatarComponent,
   WorkspaceSwitcherComponent,
 } from '@presentation/components';
 @Component({

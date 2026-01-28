@@ -6,7 +6,7 @@
 export * from './aggregates';
 export * from './entities';
 export * from './value-objects';
-export * from './events';
+// Domain Events moved to @account/domain/events
 export * from './repositories';
 export * from './services';
 export * from './policies';

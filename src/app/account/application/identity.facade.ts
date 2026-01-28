@@ -17,8 +17,8 @@ import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IdentityViewModel, UserAvatarViewModel } from '@application/models';
 import { AuthStore } from '@application/stores/auth.store';
-import { IdentityContextStore } from '@application/stores/identity-context.store';
-import { OrganizationStore } from '@application/stores/organization.store';
+import { IdentityContextStore } from './identity-context.store';
+import { OrganizationStore } from './organization.store';
 import { WorkspaceStore } from '@application/stores/workspace.store';
 
 @Injectable({ providedIn: 'root' })
@@ -44,7 +44,7 @@ export class IdentityFacade {
     effect(() => {
       const identityId = this.identityContext.currentIdentityId();
       const identityType = this.identityContext.currentIdentityType();
-      
+
       if (identityId && identityType) {
         this.loadDataForCurrentIdentity(identityType);
       }
@@ -68,7 +68,7 @@ export class IdentityFacade {
   // Local identity UI state
   private readonly _showIdentityMenu = signal(false);
   private readonly _showAvatarMenu = signal(false);
-  
+
   // Public signal for menu state
   readonly showIdentityMenu = this._showIdentityMenu.asReadonly();
   readonly showAvatarMenu = this._showAvatarMenu.asReadonly();
@@ -87,26 +87,26 @@ export class IdentityFacade {
     let roleLabel: string | undefined = undefined;
 
     if (isAuthenticated) {
-        if (mappedType === 'organization' && orgName) {
-            displayName = orgName;
-            roleLabel = 'Admin'; // TODO: Get actual role from context
-        } else {
-            displayName = userName || 'User';
-        }
+      if (mappedType === 'organization' && orgName) {
+        displayName = orgName;
+        roleLabel = 'Admin'; // TODO: Get actual role from context
+      } else {
+        displayName = userName || 'User';
+      }
     }
 
     return {
-        type: mappedType,
-        displayName,
-        roleLabel,
-        isAuthenticated
+      type: mappedType,
+      displayName,
+      roleLabel,
+      isAuthenticated
     };
   });
 
   readonly organizations = computed(() => {
     return this.organizationStore.availableOrganizations().map(org => ({
-        id: org.id.toString(),
-        name: org.displayName
+      id: org.id.toString(),
+      name: org.displayName
     }));
   });
 
@@ -116,9 +116,9 @@ export class IdentityFacade {
     const displayName = this.authStore.displayName() || 'Guest';
 
     return {
-        photoUrl,
-        initials: this.getInitials(displayName),
-        color: this.getColor(displayName)
+      photoUrl,
+      initials: this.getInitials(displayName),
+      color: this.getColor(displayName)
     };
   });
 
@@ -129,10 +129,10 @@ export class IdentityFacade {
     const currentState = this._showIdentityMenu();
     this.closeAllMenus();
     if (!currentState) {
-        this._showIdentityMenu.set(true);
+      this._showIdentityMenu.set(true);
     }
   }
-  
+
   /**
    * Toggle avatar menu
    */
@@ -140,7 +140,7 @@ export class IdentityFacade {
     const currentState = this._showAvatarMenu();
     this.closeAllMenus();
     if (!currentState) {
-        this._showAvatarMenu.set(true);
+      this._showAvatarMenu.set(true);
     }
   }
 
@@ -163,7 +163,7 @@ export class IdentityFacade {
    * Close avatar menu
    */
   closeAvatarMenu(): void {
-      this._showAvatarMenu.set(false);
+    this._showAvatarMenu.set(false);
   }
 
   /**
@@ -174,8 +174,8 @@ export class IdentityFacade {
     this.closeAllMenus();
     const userId = this.authStore.currentUserId();
     if (userId) {
-        this.identityContext.setIdentity(userId, 'user');
-        // Data loading orchestrated by constructor effect
+      this.identityContext.setIdentity(userId, 'user');
+      // Data loading orchestrated by constructor effect
     }
   }
 
@@ -184,26 +184,26 @@ export class IdentityFacade {
    * Orchestration effect will trigger data loading automatically
    */
   selectOrganization(organizationId: string, organizationName: string): void {
-      this.closeAllMenus();
-      this.identityContext.setIdentity(organizationId, 'organization');
-      this.organizationStore.setCurrentOrganization(organizationId, organizationName);
-      // Data loading orchestrated by constructor effect
+    this.closeAllMenus();
+    this.identityContext.setIdentity(organizationId, 'organization');
+    this.organizationStore.setCurrentOrganization(organizationId, organizationName);
+    // Data loading orchestrated by constructor effect
   }
 
   /**
    * Create new organization
    */
   createOrganization(displayName: string): void {
-      this.closeAllMenus();
-      this.organizationStore.createOrganization({ displayName });
+    this.closeAllMenus();
+    this.organizationStore.createOrganization({ displayName });
   }
 
   /**
    * Navigation Actions
    */
   async navigateToProfile(): Promise<void> {
-      this.closeAllMenus();
-      await this.router.navigate(['/profile']);
+    this.closeAllMenus();
+    await this.router.navigate(['/profile']);
   }
 
   async navigateToSettings(): Promise<void> {
@@ -236,7 +236,7 @@ export class IdentityFacade {
     if (!name) return '#CCC';
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
-        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
     // Simple color generation
     const c = (hash & 0x00ffffff).toString(16).toUpperCase();

@@ -19,8 +19,5 @@ export * from './permission-repository.token';
 export * from './quality-control-repository.token';
 export * from './settings-repository.token';
 export * from './task-repository.token';
+// Organization moved to @account
 export * from './workspace-repository.token';
-export * from './workspace-runtime-factory.interface';
-export * from './workspace-runtime.token';
-
-export * from './organization-repository.token';

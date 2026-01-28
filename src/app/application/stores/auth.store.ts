@@ -13,7 +13,7 @@
 
 import { computed, inject } from '@angular/core';
 import { AUTH_REPOSITORY, AUTH_STREAM } from '@application/interfaces';
-import { User } from '@domain/entities';
+import { User } from '@account/index';
 import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';

@@ -11,7 +11,6 @@ export * from './document.repository.impl';
 export * from './in-memory-event-store.repository';
 export * from './issue.repository.impl';
 export * from './member.repository.impl';
-export * from './organization.repository.impl';
 export * from './overview.repository.impl';
 export * from './permission.repository.impl';
 export * from './quality-control.repository.impl';

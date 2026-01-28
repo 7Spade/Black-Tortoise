@@ -11,10 +11,10 @@
 
 import { computed, effect, inject } from '@angular/core';
 import { CreateOrganizationHandler } from '@application/handlers/create-organization.handler';
-import { ORGANIZATION_REPOSITORY } from '@application/interfaces/organization-repository.token';
-import { IdentityContextStore } from '@application/stores/identity-context.store';
-import { Organization } from '@domain/entities/organization.entity';
-import { UserId } from '@domain/value-objects/user-id.vo';
+import { ORGANIZATION_REPOSITORY } from './organization-repository.token';
+import { IdentityContextStore } from './identity-context.store';
+import { Organization } from '../domain/organization.entity';
+import { UserId } from '../domain/user-id.vo';
 import { tapResponse } from '@ngrx/operators';
 import {
   patchState,
@@ -57,33 +57,33 @@ const initialState: OrganizationState = {
  */
 export const OrganizationStore = signalStore(
   { providedIn: 'root' },
-  
+
   withState(initialState),
-  
+
   withComputed((state) => ({
     /**
      * Has current organization
      */
     hasCurrentOrganization: computed(() => state.currentOrganizationId() !== null),
-    
+
     /**
      * Current organization name (with fallback)
      */
     currentOrganizationName: computed(() =>
       state.currentOrganizationDisplayName() ?? 'Organization'
     ),
-    
+
     /**
      * Organization count
      */
     organizationCount: computed(() => state.availableOrganizations().length),
   })),
-  
+
   withMethods((store) => {
     const createOrganizationHandler = inject(CreateOrganizationHandler);
     const organizationRepository = inject(ORGANIZATION_REPOSITORY);
     const identityContext = inject(IdentityContextStore);
-    
+
     return {
       /**
        * Set current organization (for context switching)
@@ -95,7 +95,7 @@ export const OrganizationStore = signalStore(
           error: null,
         });
       },
-      
+
       /**
        * Clear current organization
        */
@@ -105,7 +105,7 @@ export const OrganizationStore = signalStore(
           currentOrganizationDisplayName: null,
         });
       },
-      
+
       /**
        * Load available organizations for the current user
        */
@@ -115,13 +115,13 @@ export const OrganizationStore = signalStore(
           switchMap(() => {
             const identityId = identityContext.currentIdentityId();
             const identityType = identityContext.currentIdentityType();
-            
+
             // Only load orgs for user context
             if (!identityId || identityType !== 'user') {
               patchState(store, { isLoading: false });
               return of([]);
             }
-            
+
             return from(organizationRepository.findByOwner(UserId.create(identityId))).pipe(
               tapResponse({
                 next: (organizations) => patchState(store, {
@@ -141,7 +141,7 @@ export const OrganizationStore = signalStore(
           })
         )
       ),
-      
+
       /**
        * Create new organization
        */
@@ -150,7 +150,7 @@ export const OrganizationStore = signalStore(
           tap(() => patchState(store, { isLoading: true })),
           exhaustMap((command) => {
             const ownerId = identityContext.currentIdentityId();
-            
+
             if (!ownerId) {
               patchState(store, {
                 isLoading: false,
@@ -158,7 +158,7 @@ export const OrganizationStore = signalStore(
               });
               return of(null);
             }
-            
+
             return from(createOrganizationHandler.execute({
               displayName: command.displayName,
               ownerId: ownerId,
@@ -185,28 +185,28 @@ export const OrganizationStore = signalStore(
           })
         )
       ),
-      
+
       /**
        * Find organization by ID
        */
       findOrganizationById(organizationId: string): Organization | undefined {
         return store.availableOrganizations().find(o => o.id.toString() === organizationId);
       },
-      
+
       /**
        * Set loading state
        */
       setLoading(isLoading: boolean): void {
         patchState(store, { isLoading });
       },
-      
+
       /**
        * Set error
        */
       setError(error: string | null): void {
         patchState(store, { error });
       },
-      
+
       /**
        * Reset store
        */
@@ -215,12 +215,12 @@ export const OrganizationStore = signalStore(
       },
     };
   }),
-  
+
   withHooks({
     onInit() {
       console.log('[OrganizationStore] Initialized');
     },
-    
+
     onDestroy() {
       console.log('[OrganizationStore] Destroyed');
     },

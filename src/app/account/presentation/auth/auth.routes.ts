@@ -6,19 +6,19 @@ export const AUTH_ROUTES: Routes = [
     path: 'login',
     canActivate: [canActivatePublic],
     loadComponent: () =>
-      import('@presentation/pages/auth').then((m) => m.LoginPage),
+      import('./index').then((m) => m.LoginPage),
   },
   {
     path: 'register',
     canActivate: [canActivatePublic],
     loadComponent: () =>
-      import('@presentation/pages/auth').then((m) => m.RegisterPage),
+      import('./index').then((m) => m.RegisterPage),
   },
   {
     path: 'forgot-password',
     canActivate: [canActivatePublic],
     loadComponent: () =>
-      import('@presentation/pages/auth').then((m) => m.ForgotPasswordPage),
+      import('./index').then((m) => m.ForgotPasswordPage),
   },
   {
     path: '',
