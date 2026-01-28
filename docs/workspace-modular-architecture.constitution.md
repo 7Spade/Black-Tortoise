@@ -174,11 +174,31 @@ Copilot 在生成代碼時必須嚴格遵守此文件，優先於其他通用規
 
 ---
 
-## 六、工程標準與奧卡姆剃刀原則 (Engineering Standards & Occam's Razor)
+## 六、工程標準、目錄結構與奧卡姆剃刀原則 (Engineering Standards, Directory Structure & Occam's Razor)
 
-Copilot 生成代碼時必須遵循「如無必要，勿增實體」的原則。
+Copilot 生成代碼時必須遵循「如無必要，勿增實體」的原則，並嚴格遵守目錄結構標準。
 
-### 1. 奧卡姆剃刀 (Occam's Razor) 實踐
+### 1. 目錄結構與模型分離原則 (Directory Structure & Model Separation)
+為確保 Strict Modular DDD 架構落地，所有模組必須遵循以下目錄與模型分離規則：
+- **Application Read Model**: 位於 `application/.../models/`，專為 UI 展示設計 (View Model)。
+- **Infrastructure DTO**: 位於 `infrastructure/.../models/`，對應資料庫 Schema。
+- **Mapper 職責**: 位於 `infrastructure/.../mappers/`，負責 `DTO <-> Entity` 與 `DTO -> Read Model` 轉換。
+
+**標準目錄結構**:
+```
+src/app/[layer]/[module]/
+├── application/
+│   ├── models/       # Read Models / View Models
+│   ├── commands/     # Write Operations
+│   ├── queries/      # Read Operations
+│   └── stores/       # NgRx Signal Stores
+├── infrastructure/
+│   ├── models/       # DTOs
+│   ├── mappers/      # Transform Logic
+│   └── repositories/ # Implementation
+```
+
+### 2. 奧卡姆剃刀 (Occam's Razor) 實踐
 - **拒絕過度設計 (No Over-engineering)**：
   - 如果一個 Component 只有 20 行邏輯，**不需要** 拆分出 Service。
   - 如果一個 Store 可以直接被 Component 使用，**不需要** 建立 Facade 層。
