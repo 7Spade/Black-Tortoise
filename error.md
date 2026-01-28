@@ -3,7 +3,7 @@ PS D:\GitHub\7s\Black-Tortoise> pnpm start
 > stackblitz-starters-vxcrzm@0.0.0 start D:\GitHub\7s\Black-Tortoise
 > ng serve
 
-Application bundle generation failed. [4.370 seconds]
+Application bundle generation failed. [4.362 seconds]
 
 ✘ [ERROR] TS2305: Module '"@application/handlers"' has no exported member 'provideEventHandlers'. [plugin angular-compiler]
 
@@ -33,20 +33,6 @@ Application bundle generation failed. [4.370 seconds]
          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2339: Property 'eventId' does not exist on type 'DomainEvent<TPayload>'. [plugin angular-compiler]
-
-    src/app/application/handlers/publish-event.handler.ts:64:15:
-      64 │     if (!event.eventId) {
-         ╵                ~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<TPayload>'. [plugin angular-compiler]
-
-    src/app/application/handlers/publish-event.handler.ts:70:15:
-      70 │     if (!event.aggregateId) {
-         ╵                ~~~~~~~~~~~
-
-
 ✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'createWorkspaceSwitchedEvent'. [plugin angular-compiler]
 
     src/app/application/handlers/switch-workspace.handler.ts:9:9:
@@ -59,20 +45,6 @@ Application bundle generation failed. [4.370 seconds]
     src/app/application/stores/workspace.store.ts:231:22:
       231 │         settingsStore.reset();
           ╵                       ~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module '@domain/events/domain-event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/domain/base/aggregate-root.ts:1:28:
-      1 │ import { DomainEvent } from '@domain/events/domain-event';
-        ╵                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<unknown>'. [plugin angular-compiler]
-
-    src/app/infrastructure/repositories/in-memory-event-store.repository.ts:61:21:
-      61 │       .filter(e => e.aggregateId === aggregateId)
-         ╵                      ~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2308: Module '@audit/infrastructure/repositories/audit-log.repository.impl' has already exported a member named 'AuditLogRepositoryImpl'. Consider explicitly re-exporting to resolve the ambiguity. [plugin angular-compiler]
@@ -97,8 +69,8 @@ Application bundle generation failed. [4.370 seconds]
 
   'AcceptanceApproved' is declared here.
 
-    src/app/events/acceptance/acceptance.events.ts:18:13:
-      18 │ export class AcceptanceApproved implements DomainEvent<{ taskId: s...
+    src/app/events/acceptance/acceptance.events.ts:21:13:
+      21 │ export class AcceptanceApproved implements DomainEvent<{ taskId: s...
          ╵              ~~~~~~~~~~~~~~~~~~
 
 
@@ -110,8 +82,8 @@ Application bundle generation failed. [4.370 seconds]
 
   'AcceptanceRejected' is declared here.
 
-    src/app/events/acceptance/acceptance.events.ts:31:13:
-      31 │ export class AcceptanceRejected implements DomainEvent<{ taskId: s...
+    src/app/events/acceptance/acceptance.events.ts:37:13:
+      37 │ export class AcceptanceRejected implements DomainEvent<{ taskId: s...
          ╵              ~~~~~~~~~~~~~~~~~~
 
 
@@ -120,13 +92,6 @@ Application bundle generation failed. [4.370 seconds]
     src/app/modules/acceptance/application/handlers/acceptance.event-handlers.ts:10:59:
       10 │ ...t, AcceptanceRejectedEvent, QCPassedEvent } from '@domain/events';
          ╵                                ~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<QCPassedEvent>'. [plugin angular-compiler]
-
-    src/app/modules/acceptance/application/handlers/acceptance.event-handlers.ts:24:22:
-      24 │         taskId: event.aggregateId,
-         ╵                       ~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2551: Property 'PENDING' does not exist on type 'typeof AcceptanceStatus'. Did you mean 'pending'? [plugin angular-compiler]
@@ -142,25 +107,11 @@ Application bundle generation failed. [4.370 seconds]
          ╵                   ~~~~~~~
 
 
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<AcceptanceApprovedEvent>'. [plugin angular-compiler]
-
-    src/app/modules/acceptance/application/handlers/acceptance.event-handlers.ts:41:74:
-      41 │ ...cceptanceStore.checks().find(c => c.taskId === event.aggregateId);
-         ╵                                                         ~~~~~~~~~~~
-
-
 ✘ [ERROR] TS2339: Property 'APPROVED' does not exist on type 'typeof AcceptanceStatus'. [plugin angular-compiler]
 
     src/app/modules/acceptance/application/handlers/acceptance.event-handlers.ts:45:39:
       45 │               status: AcceptanceStatus.APPROVED,
          ╵                                        ~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<AcceptanceRejectedEvent>'. [plugin angular-compiler]
-
-    src/app/modules/acceptance/application/handlers/acceptance.event-handlers.ts:58:74:
-      58 │ ...cceptanceStore.checks().find(c => c.taskId === event.aggregateId);
-         ╵                                                         ~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2339: Property 'REJECTED' does not exist on type 'typeof AcceptanceStatus'. [plugin angular-compiler]
@@ -334,13 +285,6 @@ Application bundle generation failed. [4.370 seconds]
     src/app/modules/acceptance/presentation/pages/acceptance.component.ts:220:13:
       220 │       .then((result) => {
           ╵              ~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'eventId' does not exist on type 'DomainEvent<any>'. [plugin angular-compiler]
-
-    src/app/modules/audit/application/stores/audit.store.ts:179:54:
-      179 │           correlationId: event.correlationId || event.eventId,
-          ╵                                                       ~~~~~~~
 
 
 ✘ [ERROR] TS2307: Cannot find module './events/audit-log-created.event' or its corresponding type declarations. [plugin angular-compiler]
@@ -676,16 +620,9 @@ Application bundle generation failed. [4.370 seconds]
 
   'IssueResolved' is declared here.
 
-    src/app/events/issues/issues.events.ts:18:13:
-      18 │ export class IssueResolved implements DomainEvent<{ issueId: strin...
+    src/app/events/issues/issues.events.ts:21:13:
+      21 │ export class IssueResolved implements DomainEvent<{ issueId: strin...
          ╵              ~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<IssueCreatedEvent>'. [plugin angular-compiler]
-
-    src/app/modules/issues/application/handlers/issues.event-handlers.ts:24:14:
-      24 │         event.aggregateId,
-         ╵               ~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2551: Property 'BUG' does not exist on type 'typeof IssueType'. Did you mean 'bug'? [plugin angular-compiler]
@@ -712,13 +649,6 @@ Application bundle generation failed. [4.370 seconds]
     src/app/modules/issues/domain/value-objects/issue-priority.vo.ts:25:18:
       25 │     public static high(): IssuePriority {
          ╵                   ~~~~
-
-
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<IssueResolvedEvent>'. [plugin angular-compiler]
-
-    src/app/modules/issues/application/handlers/issues.event-handlers.ts:44:36:
-      44 │       issuesStore.updateIssue(event.aggregateId, {
-         ╵                                     ~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2339: Property 'RESOLVED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
@@ -1504,46 +1434,11 @@ Application bundle generation failed. [4.370 seconds]
          ╵          ~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<TaskSubmittedForQCEvent>'. [plugin angular-compiler]
-
-    src/app/modules/quality-control/application/handlers/quality-control.event-handlers.ts:36:22:
-      36 │         taskId: event.aggregateId,
-         ╵                       ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<QCPassedEvent>'. [plugin angular-compiler]
-
-    src/app/modules/quality-control/application/handlers/quality-control.event-handlers.ts:50:14:
-      50 │         event.aggregateId,
-         ╵               ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<QCFailedEvent>'. [plugin angular-compiler]
-
-    src/app/modules/quality-control/application/handlers/quality-control.event-handlers.ts:64:14:
-      64 │         event.aggregateId,
-         ╵               ~~~~~~~~~~~
-
-
 ✘ [ERROR] TS18046: 'createIssueHandler' is of type 'unknown'. [plugin angular-compiler]
 
     src/app/modules/quality-control/application/handlers/quality-control.event-handlers.ts:72:12:
       72 │       await createIssueHandler.execute({
          ╵             ~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<QCFailedEvent>'. [plugin angular-compiler]
-
-    src/app/modules/quality-control/application/handlers/quality-control.event-handlers.ts:74:22:
-      74 │         taskId: event.aggregateId,
-         ╵                       ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'eventId' does not exist on type 'DomainEvent<QCFailedEvent>'. [plugin angular-compiler]
-
-    src/app/modules/quality-control/application/handlers/quality-control.event-handlers.ts:80:27:
-      80 │         causationId: event.eventId, // Parent event that caused this
-         ╵                            ~~~~~~~
 
 
 ✘ [ERROR] TS2305: Module '"@quality-control/domain"' has no exported member 'QualityControlRepository'. [plugin angular-compiler]
@@ -2075,8 +1970,8 @@ Application bundle generation failed. [4.370 seconds]
 
   'IssueResolved' is declared here.
 
-    src/app/events/issues/issues.events.ts:18:13:
-      18 │ export class IssueResolved implements DomainEvent<{ issueId: strin...
+    src/app/events/issues/issues.events.ts:21:13:
+      21 │ export class IssueResolved implements DomainEvent<{ issueId: strin...
          ╵              ~~~~~~~~~~~~~
 
 
@@ -2120,32 +2015,18 @@ Application bundle generation failed. [4.370 seconds]
           ╵     ~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<TaskSubmittedForQCEvent>'. [plugin angular-compiler]
+✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'TaskId' and 'string' have no overlap. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:34:36:
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:34:21:
       34 │         .find((t) => t.id === event.aggregateId);
-         ╵                                     ~~~~~~~~~~~
+         ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<QCFailedEvent>'. [plugin angular-compiler]
+✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'TaskId' and 'string' have no overlap. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:46:34:
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:46:19:
       46 │       .find((t) => t.id === event.aggregateId);
-         ╵                                   ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<IssueResolvedEvent>'. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:62:54:
-      62 │         existingTask.blockedByIssueIds.includes(event.aggregateId)
-         ╵                                                       ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'aggregateId' does not exist on type 'DomainEvent<IssueResolvedEvent>'. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:68:33:
-      68 │             (id) => id !== event.aggregateId,
-         ╵                                  ~~~~~~~~~~~
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2345: Argument of type 'TaskId' is not assignable to parameter of type 'string'. [plugin angular-compiler]

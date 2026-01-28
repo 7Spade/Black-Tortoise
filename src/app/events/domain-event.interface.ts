@@ -6,7 +6,12 @@ export interface DomainEvent<T = unknown> {
     /**
      * Unique identifier for this event instance (UUID)
      */
-    readonly id: string;
+    readonly eventId: string;
+
+    /**
+     * Unique identifier of the Aggregate Root this event belongs to
+     */
+    readonly aggregateId: string;
 
     /**
      * Application-wide unique event type identifier

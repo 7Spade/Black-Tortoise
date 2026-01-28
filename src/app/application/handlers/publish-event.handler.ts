@@ -15,7 +15,7 @@
  */
 
 import { inject, Injectable } from '@angular/core';
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '@events';
 import { EVENT_BUS, EVENT_STORE } from '@application/interfaces/event-infrastructure.tokens';
 
 export interface PublishEventRequest<TPayload> {
@@ -79,8 +79,8 @@ export class PublishEventHandler {
     if (!event.correlationId) {
       throw new Error('Event must have correlationId');
     }
-    if (event.causationId !== null && typeof event.causationId !== 'string') {
-      throw new Error('Event causationId must be string or null');
+    if (event.causationId !== undefined && event.causationId !== null && typeof event.causationId !== 'string') {
+      throw new Error('Event causationId must be string or undefined');
     }
   }
 }
