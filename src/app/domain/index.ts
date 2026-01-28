@@ -11,3 +11,17 @@ export * from './repositories';
 export * from './services';
 export * from './policies';
 export * from './types';
+
+// Functional Modules
+export * from './acceptance';
+export * from './audit';
+export * from './calendar';
+export * from './daily';
+export * from './documents';
+export * from './issues';
+export * from './members';
+export * from './overview';
+export * from './permissions';
+export * from './quality-control';
+export * from './settings';
+export * from './tasks';
