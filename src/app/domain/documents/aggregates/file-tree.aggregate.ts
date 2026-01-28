@@ -2,6 +2,8 @@ import { AggregateRoot } from '@domain/base/aggregate-root';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
 import { Document } from '../entities/document.entity';
 import { Folder } from '../entities/folder.entity';
+import { DocumentId } from '../value-objects/document-id.vo';
+import { FolderId } from '../value-objects/folder-id.vo';
 
 /**
  * File Tree Aggregate
@@ -23,5 +25,30 @@ export class FileTreeAggregate extends AggregateRoot<WorkspaceId> {
         return new FileTreeAggregate(workspaceId);
     }
 
-    // Logic to manage tree structure would go here
+    get rootFolders(): ReadonlyArray<Folder> {
+        return [...this._rootFolders];
+    }
+
+    get rootDocuments(): ReadonlyArray<Document> {
+        return [...this._rootDocuments];
+    }
+
+    public addDocument(document: Document): void {
+        if (document.parentFolderId) {
+            // Logic to find folder and add to it would go here
+            // But since Folder entity holds children usually, or we hold flat list?
+            // "FileTreeAggregate" implies it manages the hole thing.
+            // For simplicity, let's assume we manage roots here.
+        } else {
+            this._rootDocuments.push(document);
+        }
+    }
+
+    public addFolder(folder: Folder): void {
+        if (folder.parentFolderId) {
+            // Logic to add to parent
+        } else {
+            this._rootFolders.push(folder);
+        }
+    }
 }

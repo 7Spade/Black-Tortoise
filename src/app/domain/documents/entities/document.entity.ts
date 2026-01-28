@@ -1,5 +1,5 @@
 import { Entity } from '@domain/base/entity';
-import { DocumentId } from '@domain/value-objects/document-id.vo';
+import { DocumentId } from '../value-objects/document-id.vo';
 import { FileMetadata } from '../value-objects/file-metadata.vo';
 import { FolderId } from '../value-objects/folder-id.vo';
 

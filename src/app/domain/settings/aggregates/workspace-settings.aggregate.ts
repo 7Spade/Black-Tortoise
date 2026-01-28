@@ -2,23 +2,19 @@ import { AggregateRoot } from '@domain/base/aggregate-root';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
 import { ModuleConfig } from '../entities/module-config.entity';
 import { NotificationConfig } from '../entities/notification-config.entity';
-
-// ID for settings aggregate, typically tied one-to-one with workspace
-interface WorkspaceSettingsId {
-    value: string;
-}
+import { SettingsId } from '../value-objects/settings-id.vo';
 
 /**
  * Workspace Settings Aggregate
  * 
  * Manages configuration for a workspace.
  */
-export class WorkspaceSettingsAggregate extends AggregateRoot<WorkspaceSettingsId> {
+export class WorkspaceSettingsAggregate extends AggregateRoot<SettingsId> {
     private _moduleConfigs: Map<string, ModuleConfig> = new Map();
     private _notificationConfig: NotificationConfig | null = null;
 
     private constructor(
-        id: WorkspaceSettingsId,
+        id: SettingsId,
         public readonly workspaceId: WorkspaceId
     ) {
         super(id);

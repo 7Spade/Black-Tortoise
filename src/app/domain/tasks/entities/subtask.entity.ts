@@ -1,5 +1,5 @@
 import { Entity } from '@domain/base/entity';
-import { TaskStatus } from '../value-objects/task-status.vo';
+import { TaskStatus } from '@domain/tasks/value-objects/task-status.vo';
 
 /**
  * Subtask Entity

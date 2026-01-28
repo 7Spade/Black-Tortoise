@@ -1,6 +1,6 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
 import { CalendarEventId } from '../value-objects/calendar-event-id.vo';
-import { EventPeriod } from '../value-objects/event-period.vo';
+import { DateRange } from '../value-objects/date-range.vo';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
 import { UserId } from '@domain/value-objects/user-id.vo';
 
@@ -11,7 +11,7 @@ import { UserId } from '@domain/value-objects/user-id.vo';
  */
 export interface CalendarEventProps {
     title: string;
-    period: EventPeriod;
+    period: DateRange;
     workspaceId: WorkspaceId;
     creatorId: UserId;
     description?: string;
@@ -20,7 +20,7 @@ export interface CalendarEventProps {
 
 export class CalendarEventAggregate extends AggregateRoot<CalendarEventId> {
     public title: string;
-    public period: EventPeriod;
+    public period: DateRange;
     public readonly workspaceId: WorkspaceId;
     public readonly creatorId: UserId;
     public description?: string;

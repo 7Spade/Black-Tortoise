@@ -1,13 +1,13 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
-import { TaskId } from '@domain/value-objects/task-id.vo';
+import { TaskId } from '@domain/tasks/value-objects/task-id.vo';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
 import { UserId } from '@domain/value-objects/user-id.vo';
-import { TaskStatus } from '../value-objects/task-status.vo';
-import { TaskPriority } from '../value-objects/task-priority.vo';
-import { Money } from '../value-objects/money.vo';
-import { Progress } from '../value-objects/progress.vo';
-import { Subtask } from '../entities/subtask.entity';
-import { TaskDependency } from '../entities/task-dependency.entity';
+import { TaskStatus } from '@domain/tasks/value-objects/task-status.vo';
+import { TaskPriority } from '@domain/tasks/value-objects/task-priority.vo';
+import { Money } from '@domain/tasks/value-objects/money.vo';
+import { Progress } from '@domain/tasks/value-objects/progress.vo';
+import { Subtask } from '@domain/tasks/entities/subtask.entity';
+import { TaskDependency } from '@domain/tasks/entities/task-dependency.entity';
 
 export interface TaskProps {
     workspaceId: WorkspaceId;

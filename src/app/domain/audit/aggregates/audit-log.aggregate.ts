@@ -1,6 +1,6 @@
 import { AggregateRoot } from '@domain/base/aggregate-root';
 import { AuditLogId } from '../value-objects/audit-log-id.vo';
-import { ActionType } from '../value-objects/action-type.vo';
+import { OperationType } from '../value-objects/operation-type.vo';
 import { UserId } from '@domain/value-objects/user-id.vo';
 import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
 
@@ -10,7 +10,7 @@ import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
  * Immutable record of a system action.
  */
 export interface AuditLogProps {
-    action: ActionType;
+    action: OperationType;
     actorId: UserId;
     workspaceId: WorkspaceId;
     targetEntity: string;
@@ -20,7 +20,7 @@ export interface AuditLogProps {
 }
 
 export class AuditLogAggregate extends AggregateRoot<AuditLogId> {
-    public readonly action: ActionType;
+    public readonly action: OperationType;
     public readonly actorId: UserId;
     public readonly workspaceId: WorkspaceId;
     public readonly targetEntity: string;
