@@ -4,20 +4,20 @@
  */
 
 // Acceptance
-export * from '@domain/acceptance/events/acceptance-approved.event';
-export * from '@domain/acceptance/events/acceptance-rejected.event';
+export * from '@acceptance/domain/events/acceptance-approved.event';
+export * from '@acceptance/domain/events/acceptance-rejected.event';
 
 // Audit
-export * from '@domain/audit/events/audit-log-created.event';
+export * from '@audit/domain/events/audit-log-created.event';
 
 // Daily
-export * from '@domain/daily/events/daily-entry-created.event';
+export * from '@daily/domain/events/daily-entry-created.event';
 
 // Overview
-export * from '@domain/overview/events/dashboard-refreshed.event';
+export * from '@overview/domain/events/dashboard-refreshed.event';
 
 // Documents
-export * from '@domain/documents/events/document-uploaded.event';
+export * from '@documents/domain/events/document-uploaded.event';
 
 // Base
 export * from './domain-event';
@@ -25,12 +25,12 @@ export * from './event-metadata';
 export * from './event-type';
 
 // Issues
-export * from '@domain/issues/events/issue-created.event';
-export * from '@domain/issues/events/issue-resolved.event';
+export * from '@issues/domain/events/issue-created.event';
+export * from '@issues/domain/events/issue-resolved.event';
 
 // Members
-export * from '@domain/members/events/member-invited.event';
-export * from '@domain/members/events/member-removed.event';
+export * from '@members/domain/events/member-invited.event';
+export * from '@members/domain/events/member-removed.event';
 
 // System
 export * from './module-activated.event';
@@ -38,23 +38,24 @@ export * from './module-deactivated.event';
 
 // Identity
 export * from './organization-created.event';
-export * from '@domain/permissions/events/permission-granted.event';
-export * from '@domain/permissions/events/permission-revoked.event';
+export * from '@permissions/domain/events/permission-granted.event';
+export * from '@permissions/domain/events/permission-revoked.event';
 
 // Quality Control
-export * from '@domain/quality-control/events/qc-failed.event';
-export * from '@domain/quality-control/events/qc-passed.event';
+export * from '@quality-control/domain/events/qc-failed.event';
+export * from '@quality-control/domain/events/qc-passed.event';
 
 // Settings
-export * from '@domain/settings/events/settings-updated.event';
+export * from '@settings/domain/events/settings-updated.event';
 
 // Tasks
-export * from '@domain/tasks/events/task-completed.event';
-export * from '@domain/tasks/events/task-created.event';
-export * from '@domain/tasks/events/task-deleted.event';
-export * from '@domain/tasks/events/task-submitted-for-qc.event';
-export * from '@domain/tasks/events/task-updated.event';
+export * from '@tasks/domain/events/task-completed.event';
+export * from '@tasks/domain/events/task-created.event';
+export * from '@tasks/domain/events/task-deleted.event';
+export * from '@tasks/domain/events/task-submitted-for-qc.event';
+export * from '@tasks/domain/events/task-updated.event';
 
 // Workspace Context
 export * from './workspace-created.event';
 export * from './workspace-switched.event';
+

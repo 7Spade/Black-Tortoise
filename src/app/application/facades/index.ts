@@ -8,9 +8,10 @@ export * from './identity.facade';
 export * from './module.facade';
 export * from './notification.facade';
 export * from './search.facade';
-export * from './settings.facade';
+export * from '@settings/application/facades/settings.facade';
 export * from './shell.facade';
-export * from './tasks.facade';
+export * from '@tasks/application/facades/tasks.facade';
 export * from './workspace-event-bus.adapter';
 export * from './workspace-host.facade';
 export * from './workspace.facade';
+
