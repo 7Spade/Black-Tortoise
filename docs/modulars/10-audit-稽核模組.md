@@ -84,8 +84,8 @@
 以下是本模組預期的檔案結構樹（按分層展示）：
 
 ```
-src/app/
-├── domain/audit/
+src/app/modules/
+├── audit/domain/
 │   ├── aggregates/
 │   │   └── audit-log.aggregate.ts
 │   ├── value-objects/
@@ -97,7 +97,7 @@ src/app/
 │   └── repositories/
 │       └── audit-log.repository.interface.ts
 │
-├── application/audit/
+├── audit/application/
 │   ├── commands/
 │   │   └── create-audit-log.command.ts
 │   ├── handlers/
@@ -106,16 +106,22 @@ src/app/
 │   ├── queries/
 │   │   ├── get-audit-logs.query.ts
 │   │   └── search-audit-logs.query.ts
+│   ├── models/
+│   │   └── audit-log-view.model.ts
 │   └── stores/
 │       └── audit.store.ts
 │
-├── infrastructure/audit/
+├── audit/infrastructure/
+│   ├── models/
+│   │   └── audit-log.dto.ts
+│   ├── mappers/
+│   │   └── audit-log.mapper.ts
 │   ├── repositories/
 │   │   └── audit-log.repository.ts
 │   └── adapters/
 │       └── firebase-audit.adapter.ts
 │
-└── presentation/audit/
+└── audit/presentation/
     ├── components/
     │   ├── audit-log-list/
     │   ├── audit-log-filter/
@@ -128,7 +134,7 @@ src/app/
 
 ## 五、預計新增檔案
 
-### Domain Layer (src/app/domain/audit/)
+### Domain Layer (src/app/modules/audit/domain/)
 - `aggregates/audit-log.aggregate.ts` - 稽核日誌聚合根
 - `value-objects/audit-log-id.vo.ts` - 稽核日誌 ID 值物件
 - `value-objects/operation-type.vo.ts` - 操作類型值物件
@@ -136,19 +142,22 @@ src/app/
 - `events/audit-log-created.event.ts` - 稽核日誌建立事件
 - `repositories/audit-log.repository.interface.ts` - Repository 介面
 
-### Application Layer (src/app/application/audit/)
+### Application Layer (src/app/modules/audit/application/)
 - `commands/create-audit-log.command.ts` - 建立稽核日誌命令
 - `handlers/all-domain-events.handler.ts` - 所有領域事件處理器
 - `handlers/create-audit-log.handler.ts` - 建立稽核日誌處理器
 - `queries/get-audit-logs.query.ts` - 取得稽核日誌查詢
 - `queries/search-audit-logs.query.ts` - 搜尋稽核日誌查詢
+- `models/audit-log-view.model.ts` - 稽核日誌顯示模型
 - `stores/audit.store.ts` - 稽核 Signal Store
 
-### Infrastructure Layer (src/app/infrastructure/audit/)
+### Infrastructure Layer (src/app/modules/audit/infrastructure/)
+- `models/audit-log.dto.ts` - 稽核日誌 DTO
+- `mappers/audit-log.mapper.ts` - 稽核日誌 Mapper
 - `repositories/audit-log.repository.ts` - Repository 實作
 - `adapters/firebase-audit.adapter.ts` - Firebase 適配器
 
-### Presentation Layer (src/app/presentation/audit/)
+### Presentation Layer (src/app/modules/audit/presentation/)
 - `components/audit-log-list/audit-log-list.component.ts` - 稽核日誌列表元件
 - `components/audit-log-filter/audit-log-filter.component.ts` - 稽核日誌篩選元件
 - `components/audit-log-detail/audit-log-detail.component.ts` - 稽核日誌詳情元件

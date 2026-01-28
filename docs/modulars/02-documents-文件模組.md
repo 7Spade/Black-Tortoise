@@ -84,8 +84,8 @@ Workspace 檔案資產管理，包含檔案樹結構與資料夾組織
 以下是本模組預期的檔案結構樹（按分層展示）：
 
 ```
-src/app/
-├── domain/documents/
+src/app/modules/
+├── documents/domain/
 │   ├── aggregates/
 │   │   └── file-tree.aggregate.ts
 │   ├── entities/
@@ -104,7 +104,7 @@ src/app/
 │   └── repositories/
 │       └── file-tree.repository.interface.ts
 │
-├── application/documents/
+├── documents/application/
 │   ├── commands/
 │   │   ├── upload-document.command.ts
 │   │   ├── delete-document.command.ts
@@ -120,17 +120,23 @@ src/app/
 │   ├── queries/
 │   │   ├── get-file-tree.query.ts
 │   │   └── search-documents.query.ts
+│   ├── models/
+│   │   └── file-node-view.model.ts
 │   └── stores/
 │       └── documents.store.ts
 │
-├── infrastructure/documents/
+├── documents/infrastructure/
 │   ├── repositories/
 │   │   └── file-tree.repository.ts
-│   └── adapters/
+│   ├── adapters/
 │       ├── firebase-storage.adapter.ts
 │       └── file-upload.service.ts
+│   ├── models/
+│   │   └── file-node.dto.ts
+│   └── mappers/
+│       └── file-tree.mapper.ts
 │
-└── presentation/documents/
+└── documents/presentation/
     ├── components/
     │   ├── file-tree/
     │   │   ├── file-tree.component.ts
@@ -152,7 +158,7 @@ src/app/
 
 ## 五、預計新增檔案
 
-### Domain Layer (src/app/domain/documents/)
+### Domain Layer (src/app/modules/documents/domain/)
 - `aggregates/file-tree.aggregate.ts` - 檔案樹聚合根
 - `entities/document.entity.ts` - 文件實體
 - `entities/folder.entity.ts` - 資料夾實體
@@ -166,7 +172,7 @@ src/app/
 - `events/folder-deleted.event.ts` - 資料夾刪除事件
 - `repositories/file-tree.repository.interface.ts` - Repository 介面
 
-### Application Layer (src/app/application/documents/)
+### Application Layer (src/app/modules/documents/application/)
 - `commands/upload-document.command.ts` - 上傳文件命令
 - `commands/delete-document.command.ts` - 刪除文件命令
 - `commands/create-folder.command.ts` - 建立資料夾命令
@@ -179,14 +185,17 @@ src/app/
 - `handlers/move-node.handler.ts` - 移動節點處理器
 - `queries/get-file-tree.query.ts` - 取得檔案樹查詢
 - `queries/search-documents.query.ts` - 搜尋文件查詢
+- `models/file-node-view.model.ts` - 檔案節點視圖模型
 - `stores/documents.store.ts` - 文件 Signal Store
 
-### Infrastructure Layer (src/app/infrastructure/documents/)
+### Infrastructure Layer (src/app/modules/documents/infrastructure/)
 - `repositories/file-tree.repository.ts` - Repository 實作
 - `adapters/firebase-storage.adapter.ts` - Firebase Storage 適配器
 - `adapters/file-upload.service.ts` - 檔案上傳服務
+- `models/file-node.dto.ts` - 檔案節點 DTO/Schema
+- `mappers/file-tree.mapper.ts` - 檔案樹資料轉換器
 
-### Presentation Layer (src/app/presentation/documents/)
+### Presentation Layer (src/app/modules/documents/presentation/)
 - `components/file-tree/file-tree.component.ts` - 檔案樹元件
 - `components/file-tree/file-tree.component.html` - 檔案樹模板
 - `components/file-tree/file-tree.component.scss` - 檔案樹樣式

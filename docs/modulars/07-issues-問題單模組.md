@@ -84,8 +84,8 @@
 以下是本模組預期的檔案結構樹（按分層展示）：
 
 ```
-src/app/
-├── domain/issues/
+src/app/modules/
+├── issues/domain/
 │   ├── aggregates/
 │   │   └── issue.aggregate.ts
 │   ├── value-objects/
@@ -101,7 +101,7 @@ src/app/
 │   └── repositories/
 │       └── issue.repository.interface.ts
 │
-├── application/issues/
+├── issues/application/
 │   ├── commands/
 │   │   ├── create-issue.command.ts
 │   │   ├── update-issue.command.ts
@@ -118,16 +118,22 @@ src/app/
 │   │   ├── get-issues.query.ts
 │   │   ├── get-issue-by-id.query.ts
 │   │   └── get-issues-by-task.query.ts
+│   ├── models/
+│   │   └── issue-detail.model.ts
 │   └── stores/
 │       └── issues.store.ts
 │
-├── infrastructure/issues/
+├── issues/infrastructure/
+│   ├── models/
+│   │   └── issue.dto.ts
+│   ├── mappers/
+│   │   └── issue.mapper.ts
 │   ├── repositories/
 │   │   └── issue.repository.ts
 │   └── adapters/
 │       └── firebase-issues.adapter.ts
 │
-└── presentation/issues/
+└── issues/presentation/
     ├── components/
     │   ├── issue-list/
     │   ├── issue-editor/
@@ -140,7 +146,7 @@ src/app/
 
 ## 五、預計新增檔案
 
-### Domain Layer (src/app/domain/issues/)
+### Domain Layer (src/app/modules/issues/domain/)
 - `aggregates/issue.aggregate.ts` - 問題單聚合根
 - `value-objects/issue-id.vo.ts` - 問題單 ID 值物件
 - `value-objects/issue-type.vo.ts` - 問題單類型值物件
@@ -152,7 +158,7 @@ src/app/
 - `events/issue-reopened.event.ts` - 問題單重開事件
 - `repositories/issue.repository.interface.ts` - Repository 介面
 
-### Application Layer (src/app/application/issues/)
+### Application Layer (src/app/modules/issues/application/)
 - `commands/create-issue.command.ts` - 建立問題單命令
 - `commands/update-issue.command.ts` - 更新問題單命令
 - `commands/resolve-issue.command.ts` - 解決問題單命令
@@ -166,13 +172,16 @@ src/app/
 - `queries/get-issues.query.ts` - 取得問題單列表查詢
 - `queries/get-issue-by-id.query.ts` - 依 ID 取得問題單查詢
 - `queries/get-issues-by-task.query.ts` - 依任務取得問題單查詢
+- `models/issue-detail.model.ts` - 問題單詳情讀取模型
 - `stores/issues.store.ts` - 問題單 Signal Store
 
-### Infrastructure Layer (src/app/infrastructure/issues/)
+### Infrastructure Layer (src/app/modules/issues/infrastructure/)
+- `models/issue.dto.ts` - 問題單資料傳輸物件
+- `mappers/issue.mapper.ts` - 問題單資料映射器
 - `repositories/issue.repository.ts` - Repository 實作
 - `adapters/firebase-issues.adapter.ts` - Firebase 適配器
 
-### Presentation Layer (src/app/presentation/issues/)
+### Presentation Layer (src/app/modules/issues/presentation/)
 - `components/issue-list/issue-list.component.ts` - 問題單列表元件
 - `components/issue-editor/issue-editor.component.ts` - 問題單編輯器元件
 - `components/issue-detail/issue-detail.component.ts` - 問題單詳情元件

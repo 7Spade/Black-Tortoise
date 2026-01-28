@@ -84,8 +84,8 @@
 以下是本模組預期的檔案結構樹（按分層展示）：
 
 ```
-src/app/
-├── domain/permissions/
+src/app/modules/
+├── permissions/domain/
 │   ├── aggregates/
 │   │   └── permission-matrix.aggregate.ts
 │   ├── entities/
@@ -103,7 +103,7 @@ src/app/
 │   └── repositories/
 │       └── permission-matrix.repository.interface.ts
 │
-├── application/permissions/
+├── permissions/application/
 │   ├── commands/
 │   │   ├── create-role.command.ts
 │   │   ├── update-role.command.ts
@@ -117,16 +117,22 @@ src/app/
 │   ├── queries/
 │   │   ├── get-permission-matrix.query.ts
 │   │   └── get-roles.query.ts
+│   ├── models/
+│   │   └── permission-check-result.model.ts
 │   └── stores/
 │       └── permissions.store.ts
 │
-├── infrastructure/permissions/
+├── permissions/infrastructure/
 │   ├── repositories/
 │   │   └── permission-matrix.repository.ts
-│   └── adapters/
+│   ├── adapters/
 │       └── firebase-permissions.adapter.ts
+│   ├── models/
+│   │   └── permission-matrix.dto.ts
+│   └── mappers/
+│       └── permission-matrix.mapper.ts
 │
-└── presentation/permissions/
+└── permissions/presentation/
     ├── components/
     │   ├── permission-matrix/
     │   │   ├── permission-matrix.component.ts
@@ -148,7 +154,7 @@ src/app/
 
 ## 五、預計新增檔案
 
-### Domain Layer (src/app/domain/permissions/)
+### Domain Layer (src/app/modules/permissions/domain/)
 - `aggregates/permission-matrix.aggregate.ts` - 權限矩陣聚合根
 - `entities/role.entity.ts` - 角色實體
 - `entities/permission.entity.ts` - 權限實體
@@ -161,7 +167,7 @@ src/app/
 - `events/role-deleted.event.ts` - 角色刪除事件
 - `repositories/permission-matrix.repository.interface.ts` - Repository 介面
 
-### Application Layer (src/app/application/permissions/)
+### Application Layer (src/app/modules/permissions/application/)
 - `commands/create-role.command.ts` - 建立角色命令
 - `commands/update-role.command.ts` - 更新角色命令
 - `commands/delete-role.command.ts` - 刪除角色命令
@@ -172,13 +178,16 @@ src/app/
 - `handlers/update-permissions.handler.ts` - 更新權限處理器
 - `queries/get-permission-matrix.query.ts` - 取得權限矩陣查詢
 - `queries/get-roles.query.ts` - 取得角色列表查詢
+- `models/permission-check-result.model.ts` - 權限檢查結果模型
 - `stores/permissions.store.ts` - 權限 Signal Store
 
-### Infrastructure Layer (src/app/infrastructure/permissions/)
+### Infrastructure Layer (src/app/modules/permissions/infrastructure/)
 - `repositories/permission-matrix.repository.ts` - Repository 實作
 - `adapters/firebase-permissions.adapter.ts` - Firebase 適配器
+- `models/permission-matrix.dto.ts` - 權限矩陣 DTO/Schema
+- `mappers/permission-matrix.mapper.ts` - 權限矩陣資料轉換器
 
-### Presentation Layer (src/app/presentation/permissions/)
+### Presentation Layer (src/app/modules/permissions/presentation/)
 - `components/permission-matrix/permission-matrix.component.ts` - 權限矩陣元件
 - `components/permission-matrix/permission-matrix.component.html` - 權限矩陣模板
 - `components/permission-matrix/permission-matrix.component.scss` - 權限矩陣樣式

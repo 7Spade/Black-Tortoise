@@ -84,8 +84,8 @@
 以下是本模組預期的檔案結構樹（按分層展示）：
 
 ```
-src/app/
-├── domain/settings/
+src/app/modules/
+├── settings/domain/
 │   ├── aggregates/
 │   │   └── workspace-settings.aggregate.ts
 │   ├── entities/
@@ -100,7 +100,7 @@ src/app/
 │   └── repositories/
 │       └── workspace-settings.repository.interface.ts
 │
-├── application/settings/
+├── settings/application/
 │   ├── commands/
 │   │   ├── update-workspace-info.command.ts
 │   │   ├── toggle-module.command.ts
@@ -111,16 +111,22 @@ src/app/
 │   │   └── update-notification-config.handler.ts
 │   ├── queries/
 │   │   └── get-workspace-settings.query.ts
+│   ├── models/
+│   │   └── workspace-settings-view.model.ts
 │   └── stores/
 │       └── settings.store.ts
 │
-├── infrastructure/settings/
+├── settings/infrastructure/
+│   ├── models/
+│   │   └── workspace-settings.dto.ts
+│   ├── mappers/
+│   │   └── workspace-settings.mapper.ts
 │   ├── repositories/
 │   │   └── workspace-settings.repository.ts
 │   └── adapters/
 │       └── firebase-settings.adapter.ts
 │
-└── presentation/settings/
+└── settings/presentation/
     ├── components/
     │   ├── workspace-info-form/
     │   ├── module-toggles/
@@ -133,7 +139,7 @@ src/app/
 
 ## 五、預計新增檔案
 
-### Domain Layer (src/app/domain/settings/)
+### Domain Layer (src/app/modules/settings/domain/)
 - `aggregates/workspace-settings.aggregate.ts` - Workspace 設定聚合根
 - `entities/module-config.entity.ts` - 模組配置實體
 - `entities/notification-config.entity.ts` - 通知配置實體
@@ -143,7 +149,7 @@ src/app/
 - `events/settings-changed.event.ts` - 設定變更事件
 - `repositories/workspace-settings.repository.interface.ts` - Repository 介面
 
-### Application Layer (src/app/application/settings/)
+### Application Layer (src/app/modules/settings/application/)
 - `commands/update-workspace-info.command.ts` - 更新 Workspace 資訊命令
 - `commands/toggle-module.command.ts` - 切換模組命令
 - `commands/update-notification-config.command.ts` - 更新通知配置命令
@@ -151,13 +157,16 @@ src/app/
 - `handlers/toggle-module.handler.ts` - 切換模組處理器
 - `handlers/update-notification-config.handler.ts` - 更新通知配置處理器
 - `queries/get-workspace-settings.query.ts` - 取得 Workspace 設定查詢
+- `models/workspace-settings-view.model.ts` - Workspace 設定顯示模型
 - `stores/settings.store.ts` - 設定 Signal Store
 
-### Infrastructure Layer (src/app/infrastructure/settings/)
+### Infrastructure Layer (src/app/modules/settings/infrastructure/)
+- `models/workspace-settings.dto.ts` - Workspace 設定 DTO
+- `mappers/workspace-settings.mapper.ts` - Workspace 設定 Mapper
 - `repositories/workspace-settings.repository.ts` - Repository 實作
 - `adapters/firebase-settings.adapter.ts` - Firebase 適配器
 
-### Presentation Layer (src/app/presentation/settings/)
+### Presentation Layer (src/app/modules/settings/presentation/)
 - `components/workspace-info-form/workspace-info-form.component.ts` - Workspace 資訊表單元件
 - `components/module-toggles/module-toggles.component.ts` - 模組切換元件
 - `components/notification-settings/notification-settings.component.ts` - 通知設定元件
