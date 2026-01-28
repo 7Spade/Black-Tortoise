@@ -45,8 +45,8 @@ export class FocusTrapDirective {
       return;
     }
 
-    const firstElement = this.focusableElements[0];
-    const lastElement = this.focusableElements[this.focusableElements.length - 1];
+    const firstElement = this.focusableElements[0]!;
+    const lastElement = this.focusableElements[this.focusableElements.length - 1]!;
     const activeElement = document.activeElement as HTMLElement;
 
     if (event.shiftKey) {
@@ -68,7 +68,7 @@ export class FocusTrapDirective {
     this.isActive.set(true);
     this.updateFocusableElements();
     if (this.focusableElements.length > 0) {
-      this.focusableElements[0].focus();
+      this.focusableElements[0]!.focus();
     }
   }
 

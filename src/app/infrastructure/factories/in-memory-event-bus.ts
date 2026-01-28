@@ -16,20 +16,20 @@ import { filter } from 'rxjs/operators';
  * In-Memory Event Bus Implementation
  * Uses RxJS Subject for event streaming
  */
-export class InMemoryEventBus implements WorkspaceEventBus {
+export class WorkspaceInMemoryEventBus implements WorkspaceEventBus {
   private readonly events$ = new Subject<DomainEvent<unknown>>();
   private readonly workspaceId: string;
   private readonly subscriptions = new Map<string, Subscription[]>();
-  
+
   constructor(workspaceId: string) {
     this.workspaceId = workspaceId;
   }
-  
+
   publish<TPayload>(event: DomainEvent<TPayload>): void {
     console.log(`[EventBus:${this.workspaceId}] Publishing:`, event.type);
     this.events$.next(event as DomainEvent<unknown>);
   }
-  
+
   subscribe<T extends DomainEvent<TPayload>, TPayload = unknown>(
     eventType: string,
     handler: EventHandler<T, TPayload>
@@ -39,13 +39,13 @@ export class InMemoryEventBus implements WorkspaceEventBus {
         filter(event => event.type === eventType)
       )
       .subscribe(event => handler(event as T));
-    
+
     // Store subscription for cleanup
     if (!this.subscriptions.has(eventType)) {
       this.subscriptions.set(eventType, []);
     }
     this.subscriptions.get(eventType)!.push(subscription);
-    
+
     // Return unsubscribe function
     return () => {
       subscription.unsubscribe();
@@ -58,11 +58,11 @@ export class InMemoryEventBus implements WorkspaceEventBus {
       }
     };
   }
-  
+
   getWorkspaceId(): string {
     return this.workspaceId;
   }
-  
+
   clear(): void {
     console.log(`[EventBus:${this.workspaceId}] Clearing all subscriptions`);
     this.subscriptions.forEach(subs => {

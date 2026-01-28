@@ -11,4 +11,3 @@ export * from './repositories';
 export * from './services';
 export * from './policies';
 export * from './types';
-export * from './factories';
