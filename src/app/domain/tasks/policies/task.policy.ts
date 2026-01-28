@@ -1,4 +1,6 @@
-﻿import { TaskAggregate, TaskPriority, TaskStatus } from '../aggregates';
+﻿import { TaskAggregate } from '../aggregates/task.aggregate';
+import { TaskPriority } from '../value-objects/task-priority.vo';
+import { TaskStatus } from '../value-objects/task-status.vo';
 
 /**
  * Validates task title according to business rules

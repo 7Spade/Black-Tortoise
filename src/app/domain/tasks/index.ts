@@ -12,3 +12,4 @@ export * from './value-objects/progress.vo';
 export * from './value-objects/task-id.vo';
 export * from './value-objects/task-priority.vo';
 export * from './value-objects/task-status.vo';
+export * from './policies/task.policy';

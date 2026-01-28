@@ -6,3 +6,4 @@ export * from './value-objects/invitation-token.vo';
 export * from './value-objects/member-id.vo';
 export * from './value-objects/member-role.vo';
 export * from './value-objects/member-status.vo';
+export * from './policies/member-role.policy';

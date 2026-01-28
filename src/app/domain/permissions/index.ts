@@ -8,6 +8,7 @@ export * from './events/role-created.event';
 export * from './events/role-deleted.event';
 export * from './events/role-updated.event';
 export * from './repositories/permission-matrix.repository.interface';
+export * from './policies/permission-validation.policy';
 export * from './value-objects/permission-id.vo';
 export * from './value-objects/resource-action.vo';
 export * from './value-objects/role-id.vo';

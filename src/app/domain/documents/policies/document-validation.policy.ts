@@ -5,7 +5,7 @@
  * DDD Pattern: Policy
  */
 
-import { DocumentStatus } from '../aggregates';
+import { DocumentStatus } from '../value-objects/document-status.vo';
 
 /**
  * Validate document creation metadata

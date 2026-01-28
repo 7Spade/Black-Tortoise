@@ -7,3 +7,5 @@ export * from './value-objects/document-id.vo';
 export * from './value-objects/file-metadata.vo';
 export * from './value-objects/file-path.vo';
 export * from './value-objects/folder-id.vo';
+export * from './value-objects/document-status.vo';
+export * from './policies/document-validation.policy';

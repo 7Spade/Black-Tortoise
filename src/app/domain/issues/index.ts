@@ -6,3 +6,4 @@ export * from './value-objects/issue-id.vo';
 export * from './value-objects/issue-priority.vo';
 export * from './value-objects/issue-status.vo';
 export * from './value-objects/issue-type.vo';
+export * from './policies/issue-workflow.policy';
