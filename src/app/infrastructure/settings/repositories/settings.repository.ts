@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';
-import { WorkspaceSettingsEntity } from '@domain/aggregates';
+import { WorkspaceSettingsEntity } from '@domain/settings';
 import { SettingsRepository } from '@domain/repositories';
+import { WorkspaceSettingsMapper } from '../mappers/workspace-settings.mapper';
+import { WorkspaceSettingsDto } from '../models/workspace-settings.dto';
 
 @Injectable({ providedIn: 'root' })
 export class SettingsRepositoryImpl implements SettingsRepository {
@@ -13,14 +15,17 @@ export class SettingsRepositoryImpl implements SettingsRepository {
       doc(this.firestore, `${this.collectionName}/${workspaceId}`),
     );
     if (d.exists()) {
-      return d.data() as WorkspaceSettingsEntity;
+      return WorkspaceSettingsMapper.toDomain(d.data() as WorkspaceSettingsDto);
     }
-    return { workspaceId, theme: 'light' } as any;
+    // Return default empty settings if not found
+    return WorkspaceSettingsEntity.reconstitute(workspaceId, workspaceId, [], null);
   }
+
   async saveSettings(settings: WorkspaceSettingsEntity): Promise<void> {
+    const dto = WorkspaceSettingsMapper.toDto(settings);
     await setDoc(
-      doc(this.firestore, `${this.collectionName}/${settings.workspaceId}`),
-      settings,
+      doc(this.firestore, `${this.collectionName}/${settings.workspaceId.value}`),
+      dto,
     );
   }
 }

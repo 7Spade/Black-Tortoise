@@ -18,6 +18,10 @@ export class NotificationConfig extends Entity<any> {
         return new NotificationConfig(id, true, true); // Default enabled
     }
 
+    public static reconstitute(id: string, emailEnabled: boolean, inAppEnabled: boolean): NotificationConfig {
+        return new NotificationConfig(id, emailEnabled, inAppEnabled);
+    }
+
     public toggleEmail(enabled: boolean): void {
         this.emailEnabled = enabled;
     }

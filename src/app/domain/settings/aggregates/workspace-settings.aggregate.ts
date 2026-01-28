@@ -28,12 +28,37 @@ export class WorkspaceSettingsAggregate extends AggregateRoot<WorkspaceSettingsI
         return new WorkspaceSettingsAggregate({ value: id }, workspaceId);
     }
 
+    public static reconstitute(
+        id: string, 
+        workspaceId: string, 
+        moduleConfigs: ModuleConfig[],
+        notificationConfig: NotificationConfig | null
+    ): WorkspaceSettingsAggregate {
+        const aggregate = new WorkspaceSettingsAggregate(
+            { value: id }, 
+            new WorkspaceId(workspaceId)
+        );
+        moduleConfigs.forEach(conf => aggregate.setModuleConfig(conf));
+        if (notificationConfig) {
+            aggregate.updateNotificationConfig(notificationConfig);
+        }
+        return aggregate;
+    }
+
     public setModuleConfig(config: ModuleConfig): void {
         this._moduleConfigs.set(config.moduleId, config);
     }
 
     public getModuleConfig(moduleId: string): ModuleConfig | undefined {
         return this._moduleConfigs.get(moduleId);
+    }
+
+    public get allModuleConfigs(): ModuleConfig[] {
+        return Array.from(this._moduleConfigs.values());
+    }
+
+    public get notificationConfig(): NotificationConfig | null {
+        return this._notificationConfig;
     }
 
     public updateNotificationConfig(config: NotificationConfig): void {

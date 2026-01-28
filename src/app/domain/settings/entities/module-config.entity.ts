@@ -20,6 +20,10 @@ export class ModuleConfig extends Entity<any> {
         }
     }
 
+    public static reconstitute(moduleId: string, settings: Record<string, any>): ModuleConfig {
+        return new ModuleConfig(moduleId, settings);
+    }
+
     public static create(moduleId: string): ModuleConfig {
         return new ModuleConfig(moduleId);
     }
