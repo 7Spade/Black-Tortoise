@@ -13,6 +13,24 @@
 
 ---
 
+### 診斷樹 (快速排查流程)
+
+```mermaid
+flowchart TD
+   Q[開始診斷 Copilot 問題]
+   Q --> S1{有回應嗎?}
+   S1 -- 是 --> S2{建議正確嗎?}
+   S1 -- 否 --> R1[檢查擴充/網路/登入]
+   S2 -- 是 --> Done[正常]
+   S2 -- 否 --> R2[檢查上下文: open `.github/copilot-instructions.md`]
+   R2 --> R3{仍錯誤?}
+   R3 -- 是 --> R4[使用精準 prompt + 指定 skill]
+   R3 -- 否 --> Done
+```
+
+使用方式: 依圖沿箭頭排查，遇到節點提供的短句動作即執行。
+
+
 ## Copilot 沒有回應
 
 ### 症狀

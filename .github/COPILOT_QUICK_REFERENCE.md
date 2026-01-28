@@ -82,6 +82,26 @@ export class WorkspaceListComponent {
 
 ---
 
+## ✅ 規則矩陣 (短句 DO / DON'T)
+
+| 情境 | DO (短句) | DON'T (短句) |
+|------|-----------|--------------|
+| 控制流程 | 使用 `@if/@for/@switch` | 使用 `*ngIf/*ngFor/*ngSwitch` |
+| 狀態管理 | 使用 `signalStore()` + `rxMethod()` | 使用傳統 `@ngrx/store` |
+| 端到端 | 把業務放在 Domain/Application | 把業務放在 Component |
+| 非同步 | 用 `rxMethod(...tapResponse(...))` | 直接 `.subscribe()` 在元件中 |
+
+```mermaid
+flowchart LR
+  Start[需要快速規則?] --> A{情境}
+  A -->|控制流程| B[參考: @if/@for 範例]
+  A -->|狀態管理| C[參考: signalStore 範例]
+  A -->|測試/CI| D[參考: Test + CI 範本]
+```
+
+短則規則: 每條規則皆以 1-2 行短句呈現，便於 Copilot 拾取與內化。
+
+
 ## 🎯 Angular 20 Control Flow
 
 ```html

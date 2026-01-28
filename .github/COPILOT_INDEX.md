@@ -14,6 +14,27 @@
 
 ---
 
+## 🧭 決策樹 (快速判斷應該看哪個文件)
+
+```mermaid
+flowchart TD
+	A[我需要什麼?] -->|架構規則| B[copilot-instructions.md]
+	A -->|快速範例| C[COPILOT_QUICK_REFERENCE.md]
+	A -->|查詢索引/技能| D[COPILOT_INDEX.md]
+	A -->|除錯/問題處理| E[COPILOT_TROUBLESHOOTING.md]
+	B --> F[層界/禁止模式 --> forbidden-copilot-instructions.md]
+	C --> G[範例/速查清單]
+	D --> H[Skill 與 Agent 列表]
+	E --> I[故障類別與快速修復]
+```
+
+短則規則:
+- 若要「架構/邊界」優先打開 `copilot-instructions.md`。
+- 若要「一秒解法或範本」打開 `COPILOT_QUICK_REFERENCE.md`。
+- 若要找 Agent/Skill/Prompt，打開 `COPILOT_INDEX.md`。
+- 若遇到 Copilot 建議錯誤或無回應，先看 `COPILOT_TROUBLESHOOTING.md`。
+
+
 ## 📂 指令檔案組織
 
 ### 架構與設計模式
