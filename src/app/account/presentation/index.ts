@@ -6,3 +6,4 @@ export * from './team-create-trigger';
 export * from './team-placeholder.component';
 export * from './auth';
 export * from './profile';
+export * from './settings';

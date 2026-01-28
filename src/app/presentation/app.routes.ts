@@ -60,7 +60,7 @@ export const routes: Routes = [
     path: 'settings',
     canActivate: [canActivateAuth],
     loadComponent: () =>
-      import('@presentation/pages/settings').then((m) => m.SettingsComponent),
+      import('@account/presentation/settings').then((m) => m.SettingsComponent),
   },
 
   // Templates (Strict DDD Demo)
