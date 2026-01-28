@@ -115,10 +115,16 @@ src/app/
 │   ├── queries/
 │   │   ├── get-pending-qc-items.query.ts
 │   │   └── get-qc-history.query.ts
+│   ├── models/
+│   │   └── qc-dashboard.model.ts
 │   └── stores/
 │       └── qc.store.ts
 │
 ├── infrastructure/quality-control/
+│   ├── models/
+│   │   └── qc-item.dto.ts
+│   ├── mappers/
+│   │   └── qc-item.mapper.ts
 │   ├── repositories/
 │   │   └── qc-item.repository.ts
 │   └── adapters/
@@ -159,9 +165,12 @@ src/app/
 - `handlers/reject-qc.handler.ts` - 駁回質檢處理器
 - `queries/get-pending-qc-items.query.ts` - 取得待辦質檢查詢
 - `queries/get-qc-history.query.ts` - 取得質檢歷史查詢
+- `models/qc-dashboard.model.ts` - 質檢儀表板讀取模型
 - `stores/qc.store.ts` - 質檢 Signal Store
 
 ### Infrastructure Layer (src/app/infrastructure/quality-control/)
+- `models/qc-item.dto.ts` - 質檢項目資料傳輸物件
+- `mappers/qc-item.mapper.ts` - 質檢項目資料映射器
 - `repositories/qc-item.repository.ts` - Repository 實作
 - `adapters/firebase-qc.adapter.ts` - Firebase 適配器
 

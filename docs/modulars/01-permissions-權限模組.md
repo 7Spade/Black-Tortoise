@@ -117,14 +117,20 @@ src/app/
 │   ├── queries/
 │   │   ├── get-permission-matrix.query.ts
 │   │   └── get-roles.query.ts
+│   ├── models/
+│   │   └── permission-check-result.model.ts
 │   └── stores/
 │       └── permissions.store.ts
 │
 ├── infrastructure/permissions/
 │   ├── repositories/
 │   │   └── permission-matrix.repository.ts
-│   └── adapters/
+│   ├── adapters/
 │       └── firebase-permissions.adapter.ts
+│   ├── models/
+│   │   └── permission-matrix.dto.ts
+│   └── mappers/
+│       └── permission-matrix.mapper.ts
 │
 └── presentation/permissions/
     ├── components/
@@ -172,11 +178,14 @@ src/app/
 - `handlers/update-permissions.handler.ts` - 更新權限處理器
 - `queries/get-permission-matrix.query.ts` - 取得權限矩陣查詢
 - `queries/get-roles.query.ts` - 取得角色列表查詢
+- `models/permission-check-result.model.ts` - 權限檢查結果模型
 - `stores/permissions.store.ts` - 權限 Signal Store
 
 ### Infrastructure Layer (src/app/infrastructure/permissions/)
 - `repositories/permission-matrix.repository.ts` - Repository 實作
 - `adapters/firebase-permissions.adapter.ts` - Firebase 適配器
+- `models/permission-matrix.dto.ts` - 權限矩陣 DTO/Schema
+- `mappers/permission-matrix.mapper.ts` - 權限矩陣資料轉換器
 
 ### Presentation Layer (src/app/presentation/permissions/)
 - `components/permission-matrix/permission-matrix.component.ts` - 權限矩陣元件

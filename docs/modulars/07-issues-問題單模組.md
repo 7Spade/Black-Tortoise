@@ -118,10 +118,16 @@ src/app/
 │   │   ├── get-issues.query.ts
 │   │   ├── get-issue-by-id.query.ts
 │   │   └── get-issues-by-task.query.ts
+│   ├── models/
+│   │   └── issue-detail.model.ts
 │   └── stores/
 │       └── issues.store.ts
 │
 ├── infrastructure/issues/
+│   ├── models/
+│   │   └── issue.dto.ts
+│   ├── mappers/
+│   │   └── issue.mapper.ts
 │   ├── repositories/
 │   │   └── issue.repository.ts
 │   └── adapters/
@@ -166,9 +172,12 @@ src/app/
 - `queries/get-issues.query.ts` - 取得問題單列表查詢
 - `queries/get-issue-by-id.query.ts` - 依 ID 取得問題單查詢
 - `queries/get-issues-by-task.query.ts` - 依任務取得問題單查詢
+- `models/issue-detail.model.ts` - 問題單詳情讀取模型
 - `stores/issues.store.ts` - 問題單 Signal Store
 
 ### Infrastructure Layer (src/app/infrastructure/issues/)
+- `models/issue.dto.ts` - 問題單資料傳輸物件
+- `mappers/issue.mapper.ts` - 問題單資料映射器
 - `repositories/issue.repository.ts` - Repository 實作
 - `adapters/firebase-issues.adapter.ts` - Firebase 適配器
 

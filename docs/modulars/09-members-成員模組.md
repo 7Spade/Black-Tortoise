@@ -114,10 +114,16 @@ src/app/
 │   ├── queries/
 │   │   ├── get-members.query.ts
 │   │   └── get-member-by-id.query.ts
+│   ├── models/
+│   │   └── member-list-view.model.ts
 │   └── stores/
 │       └── members.store.ts
 │
 ├── infrastructure/members/
+│   ├── models/
+│   │   └── member.dto.ts
+│   ├── mappers/
+│   │   └── member.mapper.ts
 │   ├── repositories/
 │   │   └── member.repository.ts
 │   └── adapters/
@@ -158,9 +164,12 @@ src/app/
 - `handlers/assign-role.handler.ts` - 指派角色處理器
 - `queries/get-members.query.ts` - 取得成員列表查詢
 - `queries/get-member-by-id.query.ts` - 依 ID 取得成員查詢
+- `models/member-list-view.model.ts` - 成員列表讀取模型
 - `stores/members.store.ts` - 成員 Signal Store
 
 ### Infrastructure Layer (src/app/infrastructure/members/)
+- `models/member.dto.ts` - 成員資料傳輸物件
+- `mappers/member.mapper.ts` - 成員資料映射器
 - `repositories/member.repository.ts` - Repository 實作
 - `adapters/firebase-members.adapter.ts` - Firebase 適配器
 

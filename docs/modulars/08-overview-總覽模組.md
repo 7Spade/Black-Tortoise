@@ -108,10 +108,16 @@ src/app/
 │   ├── queries/
 │   │   ├── get-dashboard-metrics.query.ts
 │   │   └── get-activity-timeline.query.ts
+│   ├── models/
+│   │   └── dashboard-metrics.model.ts
 │   └── stores/
 │       └── overview.store.ts
 │
 ├── infrastructure/overview/
+│   ├── models/
+│   │   └── dashboard-config.dto.ts
+│   ├── mappers/
+│   │   └── dashboard-config.mapper.ts
 │   ├── repositories/
 │   │   └── dashboard-config.repository.ts
 │   └── adapters/
@@ -148,9 +154,12 @@ src/app/
 - `handlers/update-widget-layout.handler.ts` - 更新佈局處理器
 - `queries/get-dashboard-metrics.query.ts` - 取得儀表板指標查詢
 - `queries/get-activity-timeline.query.ts` - 取得活動時間軸查詢
+- `models/dashboard-metrics.model.ts` - 儀表板指標讀取模型
 - `stores/overview.store.ts` - 總覽 Signal Store
 
 ### Infrastructure Layer (src/app/infrastructure/overview/)
+- `models/dashboard-config.dto.ts` - 儀表板配置資料傳輸物件
+- `mappers/dashboard-config.mapper.ts` - 儀表板配置資料映射器
 - `repositories/dashboard-config.repository.ts` - Repository 實作
 - `adapters/firebase-overview.adapter.ts` - Firebase 適配器
 

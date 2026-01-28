@@ -106,10 +106,16 @@ src/app/
 │   ├── queries/
 │   │   ├── get-calendar-events.query.ts
 │   │   └── get-events-by-date-range.query.ts
+│   ├── models/
+│   │   └── calendar-event-view.model.ts
 │   └── stores/
 │       └── calendar.store.ts
 │
 ├── infrastructure/calendar/
+│   ├── models/
+│   │   └── calendar-event.dto.ts
+│   ├── mappers/
+│   │   └── calendar-event.mapper.ts
 │   ├── repositories/
 │   │   └── calendar-event.repository.ts
 │   └── adapters/
@@ -144,9 +150,12 @@ src/app/
 - `handlers/update-task-due-date.handler.ts` - 更新到期日處理器
 - `queries/get-calendar-events.query.ts` - 取得行事曆事件查詢
 - `queries/get-events-by-date-range.query.ts` - 依日期範圍取得事件查詢
+- `models/calendar-event-view.model.ts` - 行事曆事件顯示模型
 - `stores/calendar.store.ts` - 行事曆 Signal Store
 
 ### Infrastructure Layer (src/app/infrastructure/calendar/)
+- `models/calendar-event.dto.ts` - 行事曆事件 DTO
+- `mappers/calendar-event.mapper.ts` - 行事曆事件 Mapper
 - `repositories/calendar-event.repository.ts` - Repository 實作
 - `adapters/firebase-calendar.adapter.ts` - Firebase 適配器
 

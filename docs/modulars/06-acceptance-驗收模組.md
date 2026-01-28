@@ -114,10 +114,16 @@ src/app/
 │   ├── queries/
 │   │   ├── get-pending-acceptance-items.query.ts
 │   │   └── get-acceptance-history.query.ts
+│   ├── models/
+│   │   └── acceptance-history-view.model.ts
 │   └── stores/
 │       └── acceptance.store.ts
 │
 ├── infrastructure/acceptance/
+│   ├── models/
+│   │   └── acceptance-item.dto.ts
+│   ├── mappers/
+│   │   └── acceptance-item.mapper.ts
 │   ├── repositories/
 │   │   └── acceptance-item.repository.ts
 │   └── adapters/
@@ -157,9 +163,12 @@ src/app/
 - `handlers/reject-acceptance.handler.ts` - 駁回驗收處理器
 - `queries/get-pending-acceptance-items.query.ts` - 取得待辦驗收查詢
 - `queries/get-acceptance-history.query.ts` - 取得驗收歷史查詢
+- `models/acceptance-history-view.model.ts` - 驗收歷史讀取模型
 - `stores/acceptance.store.ts` - 驗收 Signal Store
 
 ### Infrastructure Layer (src/app/infrastructure/acceptance/)
+- `models/acceptance-item.dto.ts` - 驗收項目資料傳輸物件
+- `mappers/acceptance-item.mapper.ts` - 驗收項目資料映射器
 - `repositories/acceptance-item.repository.ts` - Repository 實作
 - `adapters/firebase-acceptance.adapter.ts` - Firebase 適配器
 

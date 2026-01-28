@@ -111,10 +111,16 @@ src/app/
 │   │   └── update-notification-config.handler.ts
 │   ├── queries/
 │   │   └── get-workspace-settings.query.ts
+│   ├── models/
+│   │   └── workspace-settings-view.model.ts
 │   └── stores/
 │       └── settings.store.ts
 │
 ├── infrastructure/settings/
+│   ├── models/
+│   │   └── workspace-settings.dto.ts
+│   ├── mappers/
+│   │   └── workspace-settings.mapper.ts
 │   ├── repositories/
 │   │   └── workspace-settings.repository.ts
 │   └── adapters/
@@ -151,9 +157,12 @@ src/app/
 - `handlers/toggle-module.handler.ts` - 切換模組處理器
 - `handlers/update-notification-config.handler.ts` - 更新通知配置處理器
 - `queries/get-workspace-settings.query.ts` - 取得 Workspace 設定查詢
+- `models/workspace-settings-view.model.ts` - Workspace 設定顯示模型
 - `stores/settings.store.ts` - 設定 Signal Store
 
 ### Infrastructure Layer (src/app/infrastructure/settings/)
+- `models/workspace-settings.dto.ts` - Workspace 設定 DTO
+- `mappers/workspace-settings.mapper.ts` - Workspace 設定 Mapper
 - `repositories/workspace-settings.repository.ts` - Repository 實作
 - `adapters/firebase-settings.adapter.ts` - Firebase 適配器
 

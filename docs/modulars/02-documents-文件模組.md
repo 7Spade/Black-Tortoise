@@ -120,15 +120,21 @@ src/app/
 │   ├── queries/
 │   │   ├── get-file-tree.query.ts
 │   │   └── search-documents.query.ts
+│   ├── models/
+│   │   └── file-node-view.model.ts
 │   └── stores/
 │       └── documents.store.ts
 │
 ├── infrastructure/documents/
 │   ├── repositories/
 │   │   └── file-tree.repository.ts
-│   └── adapters/
+│   ├── adapters/
 │       ├── firebase-storage.adapter.ts
 │       └── file-upload.service.ts
+│   ├── models/
+│   │   └── file-node.dto.ts
+│   └── mappers/
+│       └── file-tree.mapper.ts
 │
 └── presentation/documents/
     ├── components/
@@ -179,12 +185,15 @@ src/app/
 - `handlers/move-node.handler.ts` - 移動節點處理器
 - `queries/get-file-tree.query.ts` - 取得檔案樹查詢
 - `queries/search-documents.query.ts` - 搜尋文件查詢
+- `models/file-node-view.model.ts` - 檔案節點視圖模型
 - `stores/documents.store.ts` - 文件 Signal Store
 
 ### Infrastructure Layer (src/app/infrastructure/documents/)
 - `repositories/file-tree.repository.ts` - Repository 實作
 - `adapters/firebase-storage.adapter.ts` - Firebase Storage 適配器
 - `adapters/file-upload.service.ts` - 檔案上傳服務
+- `models/file-node.dto.ts` - 檔案節點 DTO/Schema
+- `mappers/file-tree.mapper.ts` - 檔案樹資料轉換器
 
 ### Presentation Layer (src/app/presentation/documents/)
 - `components/file-tree/file-tree.component.ts` - 檔案樹元件

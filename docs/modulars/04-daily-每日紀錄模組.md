@@ -110,10 +110,16 @@ src/app/
 │   ├── queries/
 │   │   ├── get-daily-entries.query.ts
 │   │   └── get-weekly-summary.query.ts
+│   ├── models/
+│   │   └── weekly-summary.model.ts
 │   └── stores/
 │       └── daily.store.ts
 │
 ├── infrastructure/daily/
+│   ├── models/
+│   │   └── daily-entry.dto.ts
+│   ├── mappers/
+│   │   └── daily-entry.mapper.ts
 │   ├── repositories/
 │   │   └── daily-entry.repository.ts
 │   └── adapters/
@@ -150,9 +156,12 @@ src/app/
 - `handlers/batch-create-entries.handler.ts` - 批次建立處理器
 - `queries/get-daily-entries.query.ts` - 取得紀錄查詢
 - `queries/get-weekly-summary.query.ts` - 取得週摘要查詢
+- `models/weekly-summary.model.ts` - 週摘要讀取模型
 - `stores/daily.store.ts` - 每日紀錄 Signal Store
 
 ### Infrastructure Layer (src/app/infrastructure/daily/)
+- `models/daily-entry.dto.ts` - 每日紀錄資料傳輸物件
+- `mappers/daily-entry.mapper.ts` - 每日紀錄資料映射器
 - `repositories/daily-entry.repository.ts` - Repository 實作
 - `adapters/firebase-daily.adapter.ts` - Firebase 適配器
 

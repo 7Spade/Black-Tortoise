@@ -122,14 +122,20 @@ src/app/
 │   │   ├── get-tasks.query.ts
 │   │   ├── get-task-by-id.query.ts
 │   │   └── get-tasks-by-status.query.ts
+│   ├── models/
+│   │   └── task-list-view.model.ts
 │   └── stores/
 │       └── tasks.store.ts
 │
 ├── infrastructure/tasks/
 │   ├── repositories/
 │   │   └── task.repository.ts
-│   └── adapters/
+│   ├── adapters/
 │       └── firebase-tasks.adapter.ts
+│   ├── models/
+│   │   └── task.dto.ts
+│   └── mappers/
+│       └── task.mapper.ts
 │
 └── presentation/tasks/
     ├── components/
@@ -175,11 +181,14 @@ src/app/
 - `queries/get-tasks.query.ts` - 取得任務列表查詢
 - `queries/get-task-by-id.query.ts` - 依 ID 取得任務查詢
 - `queries/get-tasks-by-status.query.ts` - 依狀態取得任務查詢
+- `models/task-list-view.model.ts` - 任務列表視圖模型
 - `stores/tasks.store.ts` - 任務 Signal Store
 
 ### Infrastructure Layer (src/app/infrastructure/tasks/)
 - `repositories/task.repository.ts` - Repository 實作
 - `adapters/firebase-tasks.adapter.ts` - Firebase 適配器
+- `models/task.dto.ts` - 任務 DTO/Schema
+- `mappers/task.mapper.ts` - 任務資料轉換器
 
 ### Presentation Layer (src/app/presentation/tasks/)
 - `components/task-list/task-list.component.ts` - 任務列表元件

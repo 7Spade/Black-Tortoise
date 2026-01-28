@@ -106,10 +106,16 @@ src/app/
 │   ├── queries/
 │   │   ├── get-audit-logs.query.ts
 │   │   └── search-audit-logs.query.ts
+│   ├── models/
+│   │   └── audit-log-view.model.ts
 │   └── stores/
 │       └── audit.store.ts
 │
 ├── infrastructure/audit/
+│   ├── models/
+│   │   └── audit-log.dto.ts
+│   ├── mappers/
+│   │   └── audit-log.mapper.ts
 │   ├── repositories/
 │   │   └── audit-log.repository.ts
 │   └── adapters/
@@ -142,9 +148,12 @@ src/app/
 - `handlers/create-audit-log.handler.ts` - 建立稽核日誌處理器
 - `queries/get-audit-logs.query.ts` - 取得稽核日誌查詢
 - `queries/search-audit-logs.query.ts` - 搜尋稽核日誌查詢
+- `models/audit-log-view.model.ts` - 稽核日誌顯示模型
 - `stores/audit.store.ts` - 稽核 Signal Store
 
 ### Infrastructure Layer (src/app/infrastructure/audit/)
+- `models/audit-log.dto.ts` - 稽核日誌 DTO
+- `mappers/audit-log.mapper.ts` - 稽核日誌 Mapper
 - `repositories/audit-log.repository.ts` - Repository 實作
 - `adapters/firebase-audit.adapter.ts` - Firebase 適配器
 
