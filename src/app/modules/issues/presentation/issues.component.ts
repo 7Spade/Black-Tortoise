@@ -22,7 +22,7 @@ import {
   ModuleType,
 } from '@application/interfaces/module.interface';
 import { IssuesStore } from '@application/stores/issues.store';
-import { ModuleEventHelper } from '@presentation/components/module-event-helper';
+import { ModuleEventHelper } from '@modules/shared/module-event-helper';
 
 @Component({
   selector: 'app-issues-module',
@@ -32,7 +32,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
   template: `
     <div class="issues-module">
       <div class="module-header">
-        <h2>🐛 Issues</h2>
+        <h2>?? Issues</h2>
         <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
 

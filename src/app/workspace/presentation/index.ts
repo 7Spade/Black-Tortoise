@@ -2,5 +2,8 @@ export * from './components/workspace-host.component';
 export * from './components/workspace-switcher.component';
 export * from './components/workspace-create-trigger.component';
 export * from './components/workspace-create-dialog.component';
+export * from './components/module-navigation.component';
+export * from './components/module-content.component';
+export * from './components/module-host-container.component';
 export * from './pages/workspace.page';
 export * from './pages/workspace.routes';

@@ -24,7 +24,7 @@ import {
   SettingsStore,
   TaskPriority,
 } from '@application/stores/settings.store';
-import { ModuleEventHelper } from '@presentation/components/module-event-helper';
+import { ModuleEventHelper } from '@modules/shared/module-event-helper';
 
 @Component({
   selector: 'app-settings-module',

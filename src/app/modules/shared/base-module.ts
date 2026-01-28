@@ -18,7 +18,7 @@
 import { Directive, Input, OnDestroy } from '@angular/core';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { IAppModule } from '@application/interfaces/module.interface';
-import { ModuleEventHelper, ModuleEventSubscriptions } from '@presentation/components/module-event-helper';
+import { ModuleEventHelper, ModuleEventSubscriptions } from '@modules/shared/module-event-helper';
 
 /**
  * Base implementation pattern for modules

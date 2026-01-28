@@ -18,10 +18,8 @@ import {
   OnInit,
 } from '@angular/core';
 import { WorkspaceHostFacade } from '@workspace/application';
-import {
-  ModuleContentComponent,
-  ModuleNavigationComponent,
-} from '@presentation/components';
+import { ModuleContentComponent } from './module-content.component';
+import { ModuleNavigationComponent } from './module-navigation.component';
 @Component({
   selector: 'app-workspace-host',
   standalone: true,

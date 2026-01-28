@@ -8,7 +8,7 @@
  * - Injects QualityControlStore for state management
  * - Communicates via WorkspaceEventBus for cross-module events
  * - Event bus passed via @Input() from parent component
- * - Follows Append → Publish → React pattern
+ * - Follows Append ??Publish ??React pattern
  *
  * Events Handled:
  * - Reacts to: TaskSubmittedForQC
@@ -33,7 +33,7 @@ import {
   ModuleType,
 } from '@application/interfaces/module.interface';
 import { QualityControlStore } from '@application/stores/quality-control.store';
-import { ModuleEventHelper } from '@presentation/components/module-event-helper';
+import { ModuleEventHelper } from '@modules/shared/module-event-helper';
 
 @Component({
   selector: 'app-quality-control-module',
@@ -43,7 +43,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
   template: `
     <div class="quality-control-module">
       <div class="module-header">
-        <h2>🔍 Quality Control</h2>
+        <h2>?? Quality Control</h2>
         <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
 
@@ -75,10 +75,10 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
                 class="input-field"
               />
               <button (click)="passQC(task.taskId)" class="btn-success">
-                ✓ Pass QC
+                ??Pass QC
               </button>
               <button (click)="failQC(task.taskId)" class="btn-danger">
-                ✗ Fail QC
+                ??Fail QC
               </button>
             </div>
           </div>

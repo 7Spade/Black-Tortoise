@@ -23,7 +23,7 @@ import { IssuesStore } from '@application/stores/issues.store';
 import { OverviewStore } from '@application/stores/overview.store';
 import { QualityControlStore } from '@application/stores/quality-control.store';
 import { TasksStore } from '@application/stores/tasks.store';
-import { ModuleEventHelper } from '@presentation/components/module-event-helper';
+import { ModuleEventHelper } from '@modules/shared/module-event-helper';
 
 @Component({
   selector: 'app-overview-module',
@@ -33,7 +33,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
   template: `
     <div class="overview-module">
       <div class="module-header">
-        <h2>📈 Overview</h2>
+        <h2>?? Overview</h2>
         <p>Workspace Dashboard</p>
       </div>
 

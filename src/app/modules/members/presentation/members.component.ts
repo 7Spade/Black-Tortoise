@@ -19,7 +19,7 @@ import {
   ModuleType,
 } from '@application/interfaces/module.interface';
 import { MembersStore } from '@application/stores/members.store';
-import { ModuleEventHelper } from '@presentation/components/module-event-helper';
+import { ModuleEventHelper } from '@modules/shared/module-event-helper';
 
 @Component({
   selector: 'app-members-module',
@@ -29,7 +29,7 @@ import { ModuleEventHelper } from '@presentation/components/module-event-helper'
   template: `
     <div class="members-module">
       <div class="module-header">
-        <h2>ðŸ‘¥ Members</h2>
+        <h2>?‘¥ Members</h2>
         <p>
           Workspace: {{ eventBus?.workspaceId }} | Total:
           {{ membersStore.totalMembers() }}

@@ -21,7 +21,7 @@ import {
   ModuleType,
 } from '@application/interfaces/module.interface';
 import { TasksStore } from '@application/stores/tasks.store';
-import { ModuleEventHelper } from '@presentation/components/module-event-helper';
+import { ModuleEventHelper } from '@modules/shared/module-event-helper';
 
 interface CalendarDay {
   date: number;
@@ -38,14 +38,18 @@ interface CalendarDay {
   template: `
     <div class="calendar-module">
       <div class="module-header">
-        <h2>📅 Calendar</h2>
+        <h2>Calendar</h2>
         <p>Workspace: {{ eventBus?.workspaceId }}</p>
       </div>
 
       <div class="calendar-controls">
-        <button (click)="previousMonth()" class="nav-btn">‹</button>
+        <button (click)="previousMonth()" class="nav-btn" aria-label="Previous month">
+          <span aria-hidden="true">&lt;</span>
+        </button>
         <h3>{{ currentMonthName() }} {{ currentYear() }}</h3>
-        <button (click)="nextMonth()" class="nav-btn">›</button>
+        <button (click)="nextMonth()" class="nav-btn" aria-label="Next month">
+          <span aria-hidden="true">&gt;</span>
+        </button>
       </div>
 
       <div class="calendar-grid">
@@ -268,8 +272,8 @@ export class CalendarComponent implements IAppModule, OnInit, OnDestroy {
     return [];
   }
 
-  activate(): void {}
-  deactivate(): void {}
+  activate(): void { }
+  deactivate(): void { }
   destroy(): void {
     this.subscriptions.unsubscribeAll();
   }
