@@ -16,7 +16,7 @@
 
 import { inject, Injectable } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { TASK_REPOSITORY } from '@application/interfaces';
+import { TASK_REPOSITORY } from '@tasks/application/interfaces/task-repository.token';
 import { createTask, TaskPriority } from '@tasks/domain';
 import { createTaskCreatedEvent } from '@domain/events';
 

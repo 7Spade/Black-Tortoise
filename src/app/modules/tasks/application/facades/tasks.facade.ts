@@ -1,16 +1,16 @@
 import { Injectable, inject, signal } from '@angular/core';
 import {
   TaskAggregate,
-  TaskPriority,
-  TaskStatus,
   createTask,
-} from '@domain/aggregates/task.aggregate';
-import { CreateTaskHandler } from '@application/handlers/create-task.handler';
-import { FailQCHandler } from '@application/handlers/fail-qc.handler';
-import { ResolveIssueHandler } from '@application/handlers/resolve-issue.handler';
-import { SubmitTaskForQCHandler } from '@application/handlers/submit-task-for-qc.handler';
+} from '@tasks/domain/aggregates/task.aggregate';
+import { TaskPriority } from '@tasks/domain/value-objects/task-priority.vo';
+import { TaskStatus } from '@tasks/domain/value-objects/task-status.vo';
+import { CreateTaskHandler } from '@tasks/application/handlers/create-task.handler';
+import { FailQCHandler } from '@quality-control/application/handlers/fail-qc.handler';
+import { ResolveIssueHandler } from '@issues/application/handlers/resolve-issue.handler';
+import { SubmitTaskForQCHandler } from '@quality-control/application/handlers/submit-task-for-qc.handler';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
-import { TasksStore } from '@application/stores/tasks.store';
+import { TasksStore } from '@tasks/application/stores/tasks.store';
 
 @Injectable({
   providedIn: 'root',

@@ -28,13 +28,15 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TasksFacade } from '@application/facades/tasks.facade';
+import { TasksFacade } from '@tasks/application/facades/tasks.facade';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import {
   IAppModule,
   ModuleType,
 } from '@application/interfaces/module.interface';
-import { TaskAggregate, TaskPriority } from '@domain/aggregates/task.aggregate';
+import { TaskAggregate } from '@tasks/domain/aggregates/task.aggregate';
+import { TaskPriority } from '@tasks/domain/value-objects/task-priority.vo';
+import { TaskStatus } from '@tasks/domain/value-objects/task-status.vo';
 
 @Component({
   selector: 'app-tasks-module',
@@ -115,7 +117,7 @@ import { TaskAggregate, TaskPriority } from '@domain/aggregates/task.aggregate';
             <div class="empty-state">No tasks yet. Create one above!</div>
           }
           @for (task of tasks(); track task.id) {
-            <div class="task-card" [class.blocked]="task.status === 'blocked'">
+            <div class="task-card" [class.blocked]="task.status.toString() === 'BLOCKED'">
               <div class="task-header">
                 <h4>{{ task.title }}</h4>
                 <span class="status-badge" [attr.data-status]="task.status">
@@ -127,23 +129,23 @@ import { TaskAggregate, TaskPriority } from '@domain/aggregates/task.aggregate';
                 <span class="priority" [attr.data-priority]="task.priority">
                   {{ task.priority }}
                 </span>
-                <span class="task-id">ID: {{ task.id.substring(0, 8) }}</span>
+                <span class="task-id">ID: {{ task.id.value.substring(0, 8) }}</span>
               </div>
 
               <!-- Feedback Loop Actions -->
               <div class="task-actions">
-                @if (task.status === 'ready' || task.status === 'draft') {
+                @if (task.status.toString() === 'READY' || task.status.toString() === 'DRAFT') {
                   <button (click)="submitTaskForQC(task)" class="btn-action">
                     Submit for QC
                   </button>
                 }
-                @if (task.status === 'in-qc') {
+                @if (task.status.toString() === 'IN_QC') {
                   <button (click)="failQC(task)" class="btn-danger">
                     Fail QC (Stub)
                   </button>
                 }
                 @if (
-                  task.status === 'blocked' && task.blockedByIssueIds.length > 0
+                  task.status.toString() === 'BLOCKED' && task.blockedByIssueIds.length > 0
                 ) {
                   <button (click)="resolveIssue(task)" class="btn-success">
                     Resolve Issue (Stub)
@@ -174,7 +176,7 @@ import { TaskAggregate, TaskPriority } from '@domain/aggregates/task.aggregate';
                   @for (task of getTasksByStatus(status); track task.id) {
                     <div
                       class="kanban-card"
-                      [class.blocked]="task.status === 'blocked'"
+                      [class.blocked]="task.status.toString() === 'BLOCKED'"
                     >
                       <h5>{{ task.title }}</h5>
                       <p>{{ task.description }}</p>
@@ -261,12 +263,12 @@ export class TasksComponent implements IAppModule, OnInit, OnDestroy {
   newTaskPriority: TaskPriority = TaskPriority.MEDIUM;
 
   readonly kanbanStatuses = [
-    'draft',
-    'ready',
-    'in-qc',
-    'qc-failed',
-    'blocked',
-    'completed',
+    'DRAFT',
+    'READY',
+    'IN_QC',
+    'QC_FAILED',
+    'BLOCKED',
+    'COMPLETED',
   ];
   readonly ganttDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -318,19 +320,21 @@ export class TasksComponent implements IAppModule, OnInit, OnDestroy {
   }
 
   getTasksByStatus(status: string): TaskAggregate[] {
-    return this.tasks().filter((t) => t.status === status);
+    return this.tasks().filter((t) => t.status.toString() === status);
   }
 
   getTaskProgress(task: TaskAggregate): number {
     const statusProgress: Record<string, number> = {
-      draft: 10,
-      ready: 25,
-      'in-qc': 50,
-      'qc-failed': 40,
-      blocked: 30,
-      completed: 100,
+      DRAFT: 10,
+      READY: 25,
+      IN_QC: 50,
+      QC_FAILED: 40,
+      BLOCKED: 30,
+      COMPLETED: 100,
+      IN_PROGRESS: 40,
+      IN_REVIEW: 45
     };
-    return statusProgress[task.status] || 0;
+    return statusProgress[task.status.toString()] || 0;
   }
 
   activate(): void {

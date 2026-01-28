@@ -35,6 +35,7 @@ export class TaskAggregate extends AggregateRoot<TaskId> {
     public assigneeId: UserId | null;
     public estimatedCost: Money | null;
     public progress: Progress;
+    public blockedByIssueIds: string[] = [];
 
     private constructor(
         id: TaskId,
@@ -56,17 +57,24 @@ export class TaskAggregate extends AggregateRoot<TaskId> {
         workspaceId: WorkspaceId,
         title: string
     ): TaskAggregate {
-        return new TaskAggregate(
-            id,
+        const props: TaskProps = {
             workspaceId,
             title,
-            '',
-            TaskStatus.todo(),
-            TaskPriority.medium(),
-            null,
-            null,
-            Progress.zero()
-        );
+            description: '',
+            status: TaskStatus.todo(),
+            priority: TaskPriority.medium(),
+            assigneeId: null,
+            estimatedCost: null,
+            progress: Progress.zero()
+        };
+        return new TaskAggregate(id, props);
+    }
+
+    public static restore(
+        id: TaskId,
+        props: TaskProps
+    ): TaskAggregate {
+        return new TaskAggregate(id, props);
     }
 
     public addSubtask(subtask: Subtask): void {
@@ -76,4 +84,13 @@ export class TaskAggregate extends AggregateRoot<TaskId> {
     public get subtasks(): ReadonlyArray<Subtask> {
         return [...this._subtasks];
     }
+}
+
+// Factory function
+export function createTask(
+    id: TaskId,
+    workspaceId: WorkspaceId,
+    title: string
+): TaskAggregate {
+    return TaskAggregate.create(id, workspaceId, title);
 }

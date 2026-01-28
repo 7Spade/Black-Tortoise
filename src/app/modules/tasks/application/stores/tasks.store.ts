@@ -10,7 +10,7 @@
  */
 
 import { computed, inject } from '@angular/core';
-import { TASK_REPOSITORY } from '@application/interfaces';
+import { TASK_REPOSITORY } from '@tasks/application/interfaces/task-repository.token';
 import {
   TaskAggregate,
   TaskPriority,
