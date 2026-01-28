@@ -11,5 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Install actionlint
+        run: |
+          go install github.com/rhysd/actionlint/cmd/actionlint@latest
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+
       - name: Run actionlint
-        uses: rhysd/actionlint-action@v1
+        run: |
+          actionlint -no-color
