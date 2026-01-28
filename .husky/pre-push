@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+# On push, run dependency-cruise and typecheck to avoid bad pushes
+pnpm run depcruise || exit 1
+pnpm exec tsc --noEmit || exit 1

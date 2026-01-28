@@ -40,6 +40,9 @@ jobs:
       - name: Run tests
         run: pnpm run test -- --watch=false --browsers=ChromeHeadless
 
+      - name: Dependency cruise (validate layer boundaries)
+        run: pnpm run depcruise || true
+
       - name: Build (production)
         run: pnpm run build -- --configuration=production
 

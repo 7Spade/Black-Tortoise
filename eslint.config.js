@@ -189,6 +189,11 @@ export default [
     rules: {
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
+      // Complexity & size rules to keep single responsibility and Occam's razor
+      'complexity': ['error', { 'max': 10 }],
+      'max-lines-per-function': ['error', { 'max': 120, 'skipComments': true }],
+      'max-params': ['error', 4],
+      'max-statements': ['error', 30],
     },
   },
   {
@@ -271,7 +276,7 @@ export default [
     rules: {
       // Test files can import RxJS for mocking Material Dialog and other Angular testing utilities
       // But still enforce DDD boundaries (no Domain/Infrastructure imports)
-      'no-restricted-imports': ['error', { 
+      'no-restricted-imports': ['error', {
         patterns: [
           {
             group: ['@domain/**', '@infrastructure/**', '**/domain/**', '**/infrastructure/**'],
