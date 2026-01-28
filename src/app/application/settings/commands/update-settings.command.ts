@@ -6,13 +6,13 @@
  */
 
 export interface ModuleConfigUpdate {
-    moduleId: string;
-    settings: Record<string, any>;
+  moduleId: string;
+  settings: Record<string, any>;
 }
 
 export interface NotificationConfigUpdate {
-    emailEnabled: boolean;
-    inAppEnabled: boolean;
+  emailEnabled: boolean;
+  inAppEnabled: boolean;
 }
 
 export interface UpdateSettingsCommand {

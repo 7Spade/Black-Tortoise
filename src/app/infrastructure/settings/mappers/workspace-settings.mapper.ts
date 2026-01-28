@@ -1,4 +1,4 @@
-import { WorkspaceSettingsEntity, ModuleConfig, NotificationConfig } from '@domain/settings';
+import { WorkspaceSettingsAggregate, ModuleConfig, NotificationConfig } from '@domain/settings';
 import { WorkspaceSettingsDto } from '../models/workspace-settings.dto';
 import { Timestamp } from '@angular/fire/firestore';
 
@@ -6,36 +6,36 @@ import { Timestamp } from '@angular/fire/firestore';
  * Workspace Settings Mapper
  */
 export class WorkspaceSettingsMapper {
-    static toDomain(dto: WorkspaceSettingsDto): WorkspaceSettingsEntity {
+    static toDomain(dto: WorkspaceSettingsDto): WorkspaceSettingsAggregate {
         // Reconstruct ModuleConfigs
         const moduleConfigs: ModuleConfig[] = [];
         if (dto.moduleConfigs) {
             Object.values(dto.moduleConfigs).forEach((conf: any) => {
-               moduleConfigs.push(ModuleConfig.reconstitute(conf.moduleId, conf.settings));
+                moduleConfigs.push(ModuleConfig.reconstitute(conf.moduleId, conf.settings));
             });
         }
 
         // Reconstruct NotificationConfig
         let notificationConfig: NotificationConfig | null = null;
         if (dto.notificationConfig) {
-             notificationConfig = NotificationConfig.reconstitute(
+            notificationConfig = NotificationConfig.reconstitute(
                 'notification-config', // Simple ID
                 dto.notificationConfig.emailEnabled,
                 dto.notificationConfig.inAppEnabled
-             );
+            );
         }
-        
-        return WorkspaceSettingsEntity.reconstitute(
-            dto.workspaceId, 
-            dto.workspaceId, 
+
+        return WorkspaceSettingsAggregate.reconstitute(
+            dto.workspaceId,
+            dto.workspaceId,
             moduleConfigs,
             notificationConfig
         );
     }
 
-    static toDto(domain: WorkspaceSettingsEntity): WorkspaceSettingsDto {
+    static toDto(domain: WorkspaceSettingsAggregate): WorkspaceSettingsDto {
         const moduleConfigsRecord: Record<string, any> = {};
-        
+
         domain.allModuleConfigs.forEach(conf => {
             // Using 'any' access to private _settings for mapping purposes 
             moduleConfigsRecord[conf.moduleId] = {
@@ -46,7 +46,7 @@ export class WorkspaceSettingsMapper {
 
         return {
             workspaceId: domain.workspaceId.value,
-            theme: 'light', 
+            theme: 'light',
             moduleConfigs: moduleConfigsRecord,
             notificationConfig: domain.notificationConfig ? {
                 emailEnabled: domain.notificationConfig.emailEnabled,
@@ -54,3 +54,5 @@ export class WorkspaceSettingsMapper {
             } : { emailEnabled: true, inAppEnabled: true },
             updatedAt: Timestamp.now()
         };
+    }
+}

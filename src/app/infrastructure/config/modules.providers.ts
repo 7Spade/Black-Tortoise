@@ -10,9 +10,9 @@ import {
   OVERVIEW_REPOSITORY,
   PERMISSION_REPOSITORY,
   QUALITY_CONTROL_REPOSITORY,
-  SETTINGS_REPOSITORY,
   TASK_REPOSITORY,
 } from '@application/interfaces';
+import { SettingsRepository } from '@domain/repositories/settings.repository';
 import {
   AcceptanceRepositoryImpl,
   AuditLogRepositoryImpl,
@@ -24,9 +24,9 @@ import {
   OverviewRepositoryImpl,
   PermissionRepositoryImpl,
   QualityControlRepositoryImpl,
-  SettingsRepositoryImpl,
   TaskRepositoryImpl,
 } from '@infrastructure/repositories';
+import { SettingsRepositoryImpl } from '@infrastructure/settings';
 
 export function provideModulesInfrastructure(): Provider[] {
   return [
@@ -75,7 +75,7 @@ export function provideModulesInfrastructure(): Provider[] {
       useClass: QualityControlRepositoryImpl,
     },
     {
-      provide: SETTINGS_REPOSITORY,
+      provide: SettingsRepository,
       useClass: SettingsRepositoryImpl,
     },
   ];

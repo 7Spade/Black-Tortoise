@@ -13,22 +13,18 @@ import { ModuleConfig } from '@domain/settings/entities/module-config.entity';
 import { NotificationConfig } from '@domain/settings/entities/notification-config.entity';
 import { SettingKey } from '@domain/settings/value-objects/setting-key.vo';
 import { SettingValue } from '@domain/settings/value-objects/setting-value.vo';
+import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
 
 @Injectable({ providedIn: 'root' })
 export class UpdateSettingsHandler {
   private repo = inject(SettingsRepository);
 
   async execute(command: UpdateSettingsCommand): Promise<void> {
-    // 1. Load Aggregate
-    // Note: If no settings exist yet, we might need a way to create them. 
-    // Assuming find settings by workspace ID.
-    // However, repository method is typically findById (workspaceId).
-    
+
     let aggregate = await this.repo.getSettings(command.workspaceId);
-    
+
     if (!aggregate) {
-       // If mostly using workspaceId as ID, we can create it
-       aggregate = WorkspaceSettingsAggregate.create(command.workspaceId, { value: command.workspaceId });
+      aggregate = WorkspaceSettingsAggregate.create(command.workspaceId, new WorkspaceId(command.workspaceId));
     }
 
     // 2. Update Module Configs
@@ -38,29 +34,18 @@ export class UpdateSettingsHandler {
         if (!config) {
           config = ModuleConfig.create(update.moduleId);
         }
-        
-        // Apply settings
+
         Object.entries(update.settings).forEach(([k, v]) => {
-           config!.setSetting(new SettingKey(k), new SettingValue(v));
+          config!.setSetting(new SettingKey(k), new SettingValue(v));
         });
-        
+
         aggregate!.setModuleConfig(config);
       });
     }
 
     // 3. Update Notification Config
     if (command.notificationConfig) {
-       // Reconstitute purely for update is acceptable, or use a create method if exists.
-       // NotificationConfig has reconstitute.
-       const notif = NotificationConfig.reconstitute(
-          'notification-config', // Default ID
-          command.notificationConfig.emailEnabled,
-          command.notificationConfig.inAppEnabled
-       );
-       aggregate.updateNotificationConfig(notif);
-    }
-    
-    // 4. Save
-    await this.repo.save(aggregate);
+      const notif = NotificationConfig.reconstitute(
+        'notification-config',
   }
-}
+  }

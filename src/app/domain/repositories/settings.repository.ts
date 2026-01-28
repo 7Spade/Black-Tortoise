@@ -1,7 +1,7 @@
 
-import { WorkspaceSettingsEntity } from '../aggregates';
+import { WorkspaceSettingsAggregate } from '@domain/settings/aggregates/workspace-settings.aggregate';
 
-export interface SettingsRepository {
-  getSettings(workspaceId: string): Promise<WorkspaceSettingsEntity>;
-  saveSettings(settings: WorkspaceSettingsEntity): Promise<void>;
+export abstract class SettingsRepository {
+  abstract getSettings(workspaceId: string): Promise<WorkspaceSettingsAggregate | null>;
+  abstract save(settings: WorkspaceSettingsAggregate): Promise<void>;
 }
