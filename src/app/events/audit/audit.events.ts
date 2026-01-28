@@ -33,3 +33,7 @@ export class AuditAlertTriggered implements DomainEvent<{ alertId: string; reaso
         this.aggregateId = payload.alertId;
     }
 }
+// Helpers for backward compatibility
+export function createAuditLoggedEvent(payload: { action: string; userId: string; details: any }, correlationId: string, causationId?: string | null): AuditLogged {
+    return new AuditLogged(payload, correlationId, causationId ?? undefined);
+}

@@ -3,7 +3,7 @@ PS D:\GitHub\7s\Black-Tortoise> pnpm start
 > stackblitz-starters-vxcrzm@0.0.0 start D:\GitHub\7s\Black-Tortoise
 > ng serve
 
-Application bundle generation failed. [4.362 seconds]
+Application bundle generation failed. [4.111 seconds]
 
 ✘ [ERROR] TS2305: Module '"@application/handlers"' has no exported member 'provideEventHandlers'. [plugin angular-compiler]
 
@@ -19,11 +19,17 @@ Application bundle generation failed. [4.362 seconds]
          ╵                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'createWorkspaceCreatedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2724: '"@events"' has no exported member named 'createWorkspaceCreatedEvent'. Did you mean 'createIssueCreatedEvent'? [plugin angular-compiler]
 
     src/app/application/handlers/create-workspace.handler.ts:12:9:
-      12 │ import { createWorkspaceCreatedEvent } from '@domain/events';
+      12 │ import { createWorkspaceCreatedEvent } from '@events';
          ╵          ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  'createIssueCreatedEvent' is declared here.
+
+    src/app/events/issues/issues.events.ts:37:16:
+      37 │ export function createIssueCreatedEvent(payload: { issueId: string...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2307: Cannot find module '@quality-control/application/handlers/submit-task-for-qc.handler' or its corresponding type declarations. [plugin angular-compiler]
@@ -33,10 +39,10 @@ Application bundle generation failed. [4.362 seconds]
          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'createWorkspaceSwitchedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2305: Module '"@events"' has no exported member 'createWorkspaceSwitchedEvent'. [plugin angular-compiler]
 
     src/app/application/handlers/switch-workspace.handler.ts:9:9:
-      9 │ import { createWorkspaceSwitchedEvent } from '@domain/events';
+      9 │ import { createWorkspaceSwitchedEvent } from '@events';
         ╵          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -45,6 +51,50 @@ Application bundle generation failed. [4.362 seconds]
     src/app/application/stores/workspace.store.ts:231:22:
       231 │         settingsStore.reset();
           ╵                       ~~~~~
+
+
+✘ [ERROR] TS2304: Cannot find name 'AuditLogged'. [plugin angular-compiler]
+
+    src/app/events/audit/audit.events.ts:37:151:
+      37 │ ...correlationId: string, causationId?: string | null): AuditLogged {
+         ╵                                                         ~~~~~~~~~~~
+
+
+✘ [ERROR] TS2304: Cannot find name 'AuditLogged'. [plugin angular-compiler]
+
+    src/app/events/audit/audit.events.ts:38:15:
+      38 │     return new AuditLogged(payload, correlationId, causationId ?? ...
+         ╵                ~~~~~~~~~~~
+
+
+✘ [ERROR] TS2345: Argument of type '{ eventId: string; title: string; startTime: number; endTime: number; }' is not assignable to parameter of type '{ eventId: string; title: string; start: Date; end: Date; ownerId: string; }'.
+  Type '{ eventId: string; title: string; startTime: number; endTime: number; }' is missing the following properties from type '{ eventId: string; title: string; start: Date; end: Date; ownerId: string; }': start, end, ownerId [plugin angular-compiler]
+
+    src/app/events/calendar/calendar.events.ts:22:36:
+      22 │ ...rn new CalendarEventCreated(payload, correlationId, causationId...
+         ╵                                ~~~~~~~
+
+
+✘ [ERROR] TS2345: Argument of type '{ entryId: string; userId: string; content: string; }' is not assignable to parameter of type '{ entryId: string; taskId: string; content: string; date: string; }'.
+  Type '{ entryId: string; userId: string; content: string; }' is missing the following properties from type '{ entryId: string; taskId: string; content: string; date: string; }': taskId, date [plugin angular-compiler]
+
+    src/app/events/daily/daily.events.ts:22:33:
+      22 │ ...eturn new DailyEntryCreated(payload, correlationId, causationId...
+         ╵                                ~~~~~~~
+
+
+✘ [ERROR] TS2304: Cannot find name 'MemberAdded'. [plugin angular-compiler]
+
+    src/app/events/members/members.events.ts:21:156:
+      21 │ ...correlationId: string, causationId?: string | null): MemberAdded {
+         ╵                                                         ~~~~~~~~~~~
+
+
+✘ [ERROR] TS2304: Cannot find name 'MemberAdded'. [plugin angular-compiler]
+
+    src/app/events/members/members.events.ts:22:15:
+      22 │     return new MemberAdded(payload, correlationId, causationId ?? ...
+         ╵                ~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2308: Module '@audit/infrastructure/repositories/audit-log.repository.impl' has already exported a member named 'AuditLogRepositoryImpl'. Consider explicitly re-exporting to resolve the ambiguity. [plugin angular-compiler]
@@ -61,7 +111,7 @@ Application bundle generation failed. [4.362 seconds]
         ╵          ~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2724: '"@domain/events"' has no exported member named 'AcceptanceApprovedEvent'. Did you mean 'AcceptanceApproved'? [plugin angular-compiler]
+✘ [ERROR] TS2724: '"@events"' has no exported member named 'AcceptanceApprovedEvent'. Did you mean 'AcceptanceApproved'? [plugin angular-compiler]
 
     src/app/modules/acceptance/application/handlers/acceptance.event-handlers.ts:10:9:
       10 │ import { AcceptanceApprovedEvent, AcceptanceRejectedEvent, QCPasse...
@@ -74,7 +124,7 @@ Application bundle generation failed. [4.362 seconds]
          ╵              ~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2724: '"@domain/events"' has no exported member named 'AcceptanceRejectedEvent'. Did you mean 'AcceptanceRejected'? [plugin angular-compiler]
+✘ [ERROR] TS2724: '"@events"' has no exported member named 'AcceptanceRejectedEvent'. Did you mean 'AcceptanceRejected'? [plugin angular-compiler]
 
     src/app/modules/acceptance/application/handlers/acceptance.event-handlers.ts:10:34:
       10 │ ...tanceApprovedEvent, AcceptanceRejectedEvent, QCPassedEvent } fr...
@@ -87,11 +137,11 @@ Application bundle generation failed. [4.362 seconds]
          ╵              ~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'QCPassedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2305: Module '"@events"' has no exported member 'QCPassedEvent'. [plugin angular-compiler]
 
     src/app/modules/acceptance/application/handlers/acceptance.event-handlers.ts:10:59:
-      10 │ ...t, AcceptanceRejectedEvent, QCPassedEvent } from '@domain/events';
-         ╵                                ~~~~~~~~~~~~~
+      10 │ ...vedEvent, AcceptanceRejectedEvent, QCPassedEvent } from '@events';
+         ╵                                       ~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2551: Property 'PENDING' does not exist on type 'typeof AcceptanceStatus'. Did you mean 'pending'? [plugin angular-compiler]
@@ -448,17 +498,23 @@ Application bundle generation failed. [4.362 seconds]
           ╵                                         ~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'createDailyEntryCreatedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2554: Expected 2-3 arguments, but got 1. [plugin angular-compiler]
 
-    src/app/modules/daily/application/handlers/create-daily-entry.handler.ts:15:9:
-      15 │ import { createDailyEntryCreatedEvent } from '@domain/events';
-         ╵          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/modules/daily/application/handlers/create-daily-entry.handler.ts:40:20:
+      40 │       const event = createDailyEntryCreatedEvent({
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  An argument for 'correlationId' was not provided.
+
+    src/app/events/daily/daily.events.ts:21:108:
+      21 │ ...; content: string }, correlationId: string, causationId?: strin...
+         ╵                         ~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2724: '"@domain/events"' has no exported member named 'DailyEntryCreatedEvent'. Did you mean 'DailyEntryCreated'? [plugin angular-compiler]
+✘ [ERROR] TS2724: '"@events"' has no exported member named 'DailyEntryCreatedEvent'. Did you mean 'DailyEntryCreated'? [plugin angular-compiler]
 
     src/app/modules/daily/application/handlers/daily.event-handlers.ts:14:9:
-      14 │ import { DailyEntryCreatedEvent } from '@domain/events';
+      14 │ import { DailyEntryCreatedEvent } from '@events';
          ╵          ~~~~~~~~~~~~~~~~~~~~~~
 
   'DailyEntryCreated' is declared here.
@@ -585,11 +641,17 @@ Application bundle generation failed. [4.362 seconds]
          ╵                           ~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'createIssueCreatedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2554: Expected 2-3 arguments, but got 1. [plugin angular-compiler]
 
-    src/app/modules/issues/application/handlers/create-issue.handler.ts:15:9:
-      15 │ import { createIssueCreatedEvent } from '@domain/events';
-         ╵          ~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/modules/issues/application/handlers/create-issue.handler.ts:39:20:
+      39 │       const event = createIssueCreatedEvent({
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~
+
+  An argument for 'correlationId' was not provided.
+
+    src/app/events/issues/issues.events.ts:37:105:
+      37 │ ...eporterId: string }, correlationId: string, causationId?: strin...
+         ╵                         ~~~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2305: Module '"@issues/domain"' has no exported member 'createIssue'. [plugin angular-compiler]
@@ -599,10 +661,10 @@ Application bundle generation failed. [4.362 seconds]
         ╵          ~~~~~~~~~~~
 
 
-✘ [ERROR] TS2724: '"@domain/events"' has no exported member named 'IssueCreatedEvent'. Did you mean 'IssueCreated'? [plugin angular-compiler]
+✘ [ERROR] TS2724: '"@events"' has no exported member named 'IssueCreatedEvent'. Did you mean 'IssueCreated'? [plugin angular-compiler]
 
     src/app/modules/issues/application/handlers/issues.event-handlers.ts:10:9:
-      10 │ import { IssueCreatedEvent, IssueResolvedEvent } from '@domain/eve...
+      10 │ import { IssueCreatedEvent, IssueResolvedEvent } from '@events';
          ╵          ~~~~~~~~~~~~~~~~~
 
   'IssueCreated' is declared here.
@@ -612,11 +674,11 @@ Application bundle generation failed. [4.362 seconds]
         ╵              ~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2724: '"@domain/events"' has no exported member named 'IssueResolvedEvent'. Did you mean 'IssueResolved'? [plugin angular-compiler]
+✘ [ERROR] TS2724: '"@events"' has no exported member named 'IssueResolvedEvent'. Did you mean 'IssueResolved'? [plugin angular-compiler]
 
     src/app/modules/issues/application/handlers/issues.event-handlers.ts:10:28:
-      10 │ ...t { IssueCreatedEvent, IssueResolvedEvent } from '@domain/events';
-         ╵                           ~~~~~~~~~~~~~~~~~~
+      10 │ import { IssueCreatedEvent, IssueResolvedEvent } from '@events';
+         ╵                             ~~~~~~~~~~~~~~~~~~
 
   'IssueResolved' is declared here.
 
@@ -672,18 +734,18 @@ Application bundle generation failed. [4.362 seconds]
         ╵                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'createIssueResolvedEvent'. [plugin angular-compiler]
-
-    src/app/modules/issues/application/handlers/resolve-issue.handler.ts:5:9:
-      5 │ import { createIssueResolvedEvent } from '@domain/events';
-        ╵          ~~~~~~~~~~~~~~~~~~~~~~~~
-
-
 ✘ [ERROR] TS2345: Argument of type 'string' is not assignable to parameter of type 'IssueId'. [plugin angular-compiler]
 
     src/app/modules/issues/application/handlers/resolve-issue.handler.ts:30:45:
       30 │       const issue = await this.repo.findById(request.issueId);
          ╵                                              ~~~~~~~~~~~~~~~
+
+
+✘ [ERROR] TS2554: Expected 2-3 arguments, but got 7. [plugin angular-compiler]
+
+    src/app/modules/issues/application/handlers/resolve-issue.handler.ts:48:8:
+      48 │         request.resolvedBy,
+         ╵         ~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2551: Property 'OPEN' does not exist on type 'typeof IssueStatus'. Did you mean 'open'? [plugin angular-compiler]
@@ -1385,10 +1447,10 @@ Application bundle generation failed. [4.362 seconds]
         ╵                      ~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'createQCFailedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2305: Module '"@events"' has no exported member 'createQCFailedEvent'. [plugin angular-compiler]
 
     src/app/modules/quality-control/application/handlers/fail-qc.handler.ts:5:9:
-      5 │ import { createQCFailedEvent } from '@domain/events';
+      5 │ import { createQCFailedEvent } from '@events';
         ╵          ~~~~~~~~~~~~~~~~~~~
 
 
@@ -1399,10 +1461,10 @@ Application bundle generation failed. [4.362 seconds]
         ╵          ~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'createQCPassedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2305: Module '"@events"' has no exported member 'createQCPassedEvent'. [plugin angular-compiler]
 
     src/app/modules/quality-control/application/handlers/pass-qc.handler.ts:15:9:
-      15 │ import { createQCPassedEvent } from '@domain/events';
+      15 │ import { createQCPassedEvent } from '@events';
          ╵          ~~~~~~~~~~~~~~~~~~~
 
 
@@ -1413,24 +1475,24 @@ Application bundle generation failed. [4.362 seconds]
          ╵                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'QCFailedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2305: Module '"@events"' has no exported member 'QCFailedEvent'. [plugin angular-compiler]
 
     src/app/modules/quality-control/application/handlers/quality-control.event-handlers.ts:21:9:
-      21 │ import { QCFailedEvent } from '@domain/events';
+      21 │ import { QCFailedEvent } from '@events';
          ╵          ~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'QCPassedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2305: Module '"@events"' has no exported member 'QCPassedEvent'. [plugin angular-compiler]
 
     src/app/modules/quality-control/application/handlers/quality-control.event-handlers.ts:22:9:
-      22 │ import { QCPassedEvent } from '@domain/events';
+      22 │ import { QCPassedEvent } from '@events';
          ╵          ~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'TaskSubmittedForQCEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2305: Module '"@events"' has no exported member 'TaskSubmittedForQCEvent'. [plugin angular-compiler]
 
     src/app/modules/quality-control/application/handlers/quality-control.event-handlers.ts:23:9:
-      23 │ import { TaskSubmittedForQCEvent } from '@domain/events';
+      23 │ import { TaskSubmittedForQCEvent } from '@events';
          ╵          ~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -1941,18 +2003,30 @@ Application bundle generation failed. [4.362 seconds]
         ╵            ~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'createAcceptanceApprovedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2554: Expected 2-3 arguments, but got 1. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/approve-task.handler.ts:18:9:
-      18 │ import { createAcceptanceApprovedEvent } from '@domain/events';
-         ╵          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/modules/tasks/application/handlers/approve-task.handler.ts:45:20:
+      45 │       const event = createAcceptanceApprovedEvent({
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  An argument for 'correlationId' was not provided.
+
+    src/app/events/acceptance/acceptance.events.ts:58:116:
+      58 │ ...feedback?: string }, correlationId: string, causationId?: strin...
+         ╵                         ~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'createAcceptanceRejectedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2554: Expected 2-3 arguments, but got 1. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/reject-task.handler.ts:18:9:
-      18 │ import { createAcceptanceRejectedEvent } from '@domain/events';
-         ╵          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/modules/tasks/application/handlers/reject-task.handler.ts:45:20:
+      45 │       const event = createAcceptanceRejectedEvent({
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  An argument for 'correlationId' was not provided.
+
+    src/app/events/acceptance/acceptance.events.ts:62:116:
+      62 │ ...reasons: string[] }, correlationId: string, causationId?: strin...
+         ╵                         ~~~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2305: Module '"@tasks/domain"' has no exported member 'updateTaskStatus'. [plugin angular-compiler]
@@ -1962,7 +2036,7 @@ Application bundle generation failed. [4.362 seconds]
         ╵                               ~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2724: '"@domain/events"' has no exported member named 'IssueResolvedEvent'. Did you mean 'IssueResolved'? [plugin angular-compiler]
+✘ [ERROR] TS2724: '"@events"' has no exported member named 'IssueResolvedEvent'. Did you mean 'IssueResolved'? [plugin angular-compiler]
 
     src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:4:2:
       4 │   IssueResolvedEvent,
@@ -1975,14 +2049,14 @@ Application bundle generation failed. [4.362 seconds]
          ╵              ~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'QCFailedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2305: Module '"@events"' has no exported member 'QCFailedEvent'. [plugin angular-compiler]
 
     src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:5:2:
       5 │   QCFailedEvent,
         ╵   ~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2724: '"@domain/events"' has no exported member named 'TaskCreatedEvent'. Did you mean 'TaskCreated'? [plugin angular-compiler]
+✘ [ERROR] TS2724: '"@events"' has no exported member named 'TaskCreatedEvent'. Did you mean 'TaskCreated'? [plugin angular-compiler]
 
     src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:6:2:
       6 │   TaskCreatedEvent,
@@ -1995,7 +2069,7 @@ Application bundle generation failed. [4.362 seconds]
         ╵              ~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@domain/events"' has no exported member 'TaskSubmittedForQCEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2305: Module '"@events"' has no exported member 'TaskSubmittedForQCEvent'. [plugin angular-compiler]
 
     src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:7:2:
       7 │   TaskSubmittedForQCEvent,
@@ -2185,6 +2259,13 @@ Application bundle generation failed. [4.362 seconds]
     src/app/presentation/components/theme-toggle.component.ts:47:21:
       47 │       const isDark = this.facade.isDark();
          ╵                      ~~~~~~~~~~~
+
+
+✘ [ERROR] NG5002: Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
+
+    src/app/template-core/presentation/pages/template-list-page/template-list-page.component.ts:76:10:
+      76 │           </div>
+         ╵           ~~~~~~
 
 
 Watch mode enabled. Watching for file changes...

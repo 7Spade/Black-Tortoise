@@ -17,7 +17,10 @@ export class DailyEntryCreated implements DomainEvent<{ entryId: string; taskId:
         this.aggregateId = payload.entryId;
     }
 }
-
+// Helpers for backward compatibility
+export function createDailyEntryCreatedEvent(payload: { entryId: string; userId: string; content: string }, correlationId: string, causationId?: string | null): DailyEntryCreated {
+    return new DailyEntryCreated(payload, correlationId, causationId ?? undefined);
+}
 export class DailyEntryUpdated implements DomainEvent<{ entryId: string; content: string }> {
     readonly type = 'Daily.DailyEntryUpdated';
     readonly source = DAILY_SOURCE;

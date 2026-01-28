@@ -49,3 +49,16 @@ export class AcceptanceRejected implements DomainEvent<{ taskId: string; accepta
         this.aggregateId = payload.taskId;
     }
 }
+
+// Helpers for backward compatibility
+export function createAcceptanceStartedEvent(payload: { taskId: string; acceptanceId?: string }, correlationId: string, causationId?: string | null): AcceptanceStarted {
+    return new AcceptanceStarted(payload, correlationId, causationId ?? undefined);
+}
+
+export function createAcceptanceApprovedEvent(payload: { taskId: string; acceptanceId: string; feedback?: string }, correlationId: string, causationId?: string | null): AcceptanceApproved {
+    return new AcceptanceApproved(payload, correlationId, causationId ?? undefined);
+}
+
+export function createAcceptanceRejectedEvent(payload: { taskId: string; acceptanceId: string; reasons: string[] }, correlationId: string, causationId?: string | null): AcceptanceRejected {
+    return new AcceptanceRejected(payload, correlationId, causationId ?? undefined);
+}

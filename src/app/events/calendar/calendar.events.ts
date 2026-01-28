@@ -17,7 +17,10 @@ export class CalendarEventCreated implements DomainEvent<{ eventId: string; titl
         this.aggregateId = payload.eventId;
     }
 }
-
+// Helpers for backward compatibility
+export function createCalendarEventCreatedEvent(payload: { eventId: string; title: string; startTime: number; endTime: number }, correlationId: string, causationId?: string | null): CalendarEventCreated {
+    return new CalendarEventCreated(payload, correlationId, causationId ?? undefined);
+}
 export class CalendarEventUpdated implements DomainEvent<{ eventId: string; changes: Record<string, any> }> {
     readonly type = 'Calendar.CalendarEventUpdated';
     readonly source = CALENDAR_SOURCE;
