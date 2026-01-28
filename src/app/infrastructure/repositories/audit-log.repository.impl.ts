@@ -9,8 +9,7 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { AuditLogEntity } from '@domain/aggregates';
-import { AuditLogRepository } from '@domain/repositories';
+import { AuditLogEntity, AuditLogRepository } from '@domain/audit';
 
 @Injectable({ providedIn: 'root' })
 export class AuditLogRepositoryImpl implements AuditLogRepository {

@@ -8,8 +8,7 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { QCCheckEntity } from '@domain/aggregates';
-import { QualityControlRepository } from '@domain/repositories';
+import { QCCheckEntity, QualityControlRepository } from '@domain/quality-control';
 
 @Injectable({ providedIn: 'root' })
 export class QualityControlRepositoryImpl implements QualityControlRepository {

@@ -11,9 +11,8 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { TaskAggregate, TaskStatus } from '@domain/aggregates';
-import { TaskRepository } from '@domain/repositories';
-import { TaskId, WorkspaceId } from '@domain/value-objects';
+import { TaskAggregate, TaskStatus, TaskRepository, TaskId } from '@domain/tasks';
+import { WorkspaceId } from '@domain/value-objects';
 
 @Injectable({
   providedIn: 'root',
