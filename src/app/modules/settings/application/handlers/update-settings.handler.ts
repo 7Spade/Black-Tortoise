@@ -45,10 +45,16 @@ export class UpdateSettingsHandler {
 
     // 3. Update Notification Config
     if (command.notificationConfig) {
-      // TODO: FIX BROKEN CODE
-      // const notif = NotificationConfig.reconstitute(
-      //   'notification-config',
-      // }
+      let notif = aggregate!.notificationConfig;
+
+      if (!notif) {
+        notif = NotificationConfig.create('notification-config');
+      }
+
+      notif.toggleEmail(command.notificationConfig.emailEnabled);
+      notif.toggleInApp(command.notificationConfig.inAppEnabled);
+
+      aggregate!.updateNotificationConfig(notif);
     }
   }
 }
