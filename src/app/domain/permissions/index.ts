@@ -1,6 +1,6 @@
-
 export * from './aggregates/permission-matrix.aggregate';
 export * from './entities/permission.entity';
+export * from './entities/role.entity';
 export * from './events/permission-changed.event';
 export * from './events/permission-granted.event';
 export * from './events/permission-revoked.event';
@@ -11,4 +11,3 @@ export * from './repositories/permission-matrix.repository.interface';
 export * from './value-objects/permission-id.vo';
 export * from './value-objects/resource-action.vo';
 export * from './value-objects/role-id.vo';
-export * from './entities/role.entity';
