@@ -3,7 +3,7 @@ PS D:\GitHub\7s\Black-Tortoise> pnpm start
 > stackblitz-starters-vxcrzm@0.0.0 start D:\GitHub\7s\Black-Tortoise
 > ng serve
 
-Application bundle generation failed. [4.111 seconds]
+Application bundle generation failed. [4.403 seconds]
 
 ✘ [ERROR] TS2305: Module '"@application/handlers"' has no exported member 'provideEventHandlers'. [plugin angular-compiler]
 
@@ -27,8 +27,8 @@ Application bundle generation failed. [4.111 seconds]
 
   'createIssueCreatedEvent' is declared here.
 
-    src/app/events/issues/issues.events.ts:37:16:
-      37 │ export function createIssueCreatedEvent(payload: { issueId: string...
+    src/app/events/issues/issues.events.ts:53:16:
+      53 │ export function createIssueCreatedEvent(payload: IssueCreatedPaylo...
          ╵                 ~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -81,20 +81,6 @@ Application bundle generation failed. [4.111 seconds]
     src/app/events/daily/daily.events.ts:22:33:
       22 │ ...eturn new DailyEntryCreated(payload, correlationId, causationId...
          ╵                                ~~~~~~~
-
-
-✘ [ERROR] TS2304: Cannot find name 'MemberAdded'. [plugin angular-compiler]
-
-    src/app/events/members/members.events.ts:21:156:
-      21 │ ...correlationId: string, causationId?: string | null): MemberAdded {
-         ╵                                                         ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2304: Cannot find name 'MemberAdded'. [plugin angular-compiler]
-
-    src/app/events/members/members.events.ts:22:15:
-      22 │     return new MemberAdded(payload, correlationId, causationId ?? ...
-         ╵                ~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2308: Module '@audit/infrastructure/repositories/audit-log.repository.impl' has already exported a member named 'AuditLogRepositoryImpl'. Consider explicitly re-exporting to resolve the ambiguity. [plugin angular-compiler]
@@ -239,34 +225,6 @@ Application bundle generation failed. [4.111 seconds]
          ╵         ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] Could not resolve "./events/acceptance-approved.event"
-
-    src/app/modules/acceptance/domain/index.ts:3:14:
-      3 │ export * from './events/acceptance-approved.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/acceptance-approved.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/acceptance/domain/index.ts:3:14:
-      3 │ export * from './events/acceptance-approved.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] Could not resolve "./events/acceptance-rejected.event"
-
-    src/app/modules/acceptance/domain/index.ts:4:14:
-      4 │ export * from './events/acceptance-rejected.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/acceptance-rejected.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/acceptance/domain/index.ts:4:14:
-      4 │ export * from './events/acceptance-rejected.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
 ✘ [ERROR] TS2307: Cannot find module '@acceptance/domain/aggregates' or its corresponding type declarations. [plugin angular-compiler]
 
     src/app/modules/acceptance/domain/policies/acceptance-validation.policy.ts:8:33:
@@ -335,13 +293,6 @@ Application bundle generation failed. [4.111 seconds]
     src/app/modules/acceptance/presentation/pages/acceptance.component.ts:220:13:
       220 │       .then((result) => {
           ╵              ~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/audit-log-created.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/audit/domain/index.ts:2:14:
-      2 │ export * from './events/audit-log-created.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2307: Cannot find module '@domain/aggregates/audit-log.aggregate' or its corresponding type declarations. [plugin angular-compiler]
@@ -531,13 +482,6 @@ Application bundle generation failed. [4.111 seconds]
         ╵          ~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2307: Cannot find module './events/daily-entry-created.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/daily/domain/index.ts:2:14:
-      2 │ export * from './events/daily-entry-created.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
 ✘ [ERROR] TS2724: '"@daily/domain"' has no exported member named 'DailyEntryEntity'. Did you mean 'DailyEntryId'? [plugin angular-compiler]
 
     src/app/modules/daily/infrastructure/repositories/daily.repository.impl.ts:12:9:
@@ -620,13 +564,6 @@ Application bundle generation failed. [4.111 seconds]
         ╵          ~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2307: Cannot find module './events/document-uploaded.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/documents/domain/index.ts:4:14:
-      4 │ export * from './events/document-uploaded.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
 ✘ [ERROR] TS2305: Module '"@documents/domain"' has no exported member 'DocumentAggregate'. [plugin angular-compiler]
 
     src/app/modules/documents/infrastructure/repositories/document.repository.impl.ts:14:9:
@@ -649,8 +586,8 @@ Application bundle generation failed. [4.111 seconds]
 
   An argument for 'correlationId' was not provided.
 
-    src/app/events/issues/issues.events.ts:37:105:
-      37 │ ...eporterId: string }, correlationId: string, causationId?: strin...
+    src/app/events/issues/issues.events.ts:53:70:
+      53 │ ...IssueCreatedPayload, correlationId: string, causationId?: strin...
          ╵                         ~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -669,9 +606,9 @@ Application bundle generation failed. [4.111 seconds]
 
   'IssueCreated' is declared here.
 
-    src/app/events/issues/issues.events.ts:5:13:
-      5 │ export class IssueCreated implements DomainEvent<{ issueId: string;...
-        ╵              ~~~~~~~~~~~~
+    src/app/events/issues/issues.events.ts:14:13:
+      14 │ export class IssueCreated implements DomainEvent<IssueCreatedPaylo...
+         ╵              ~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2724: '"@events"' has no exported member named 'IssueResolvedEvent'. Did you mean 'IssueResolved'? [plugin angular-compiler]
@@ -682,8 +619,8 @@ Application bundle generation failed. [4.111 seconds]
 
   'IssueResolved' is declared here.
 
-    src/app/events/issues/issues.events.ts:21:13:
-      21 │ export class IssueResolved implements DomainEvent<{ issueId: strin...
+    src/app/events/issues/issues.events.ts:36:13:
+      36 │ export class IssueResolved implements DomainEvent<IssueResolvedPay...
          ╵              ~~~~~~~~~~~~~
 
 
@@ -842,34 +779,6 @@ Application bundle generation failed. [4.111 seconds]
     src/app/modules/issues/domain/aggregates/issue.aggregate.ts:6:23:
       6 │ import { TaskId } from '@domain/value-objects/task-id.vo';
         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] Could not resolve "./events/issue-created.event"
-
-    src/app/modules/issues/domain/index.ts:2:14:
-      2 │ export * from './events/issue-created.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/issue-created.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/index.ts:2:14:
-      2 │ export * from './events/issue-created.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] Could not resolve "./events/issue-resolved.event"
-
-    src/app/modules/issues/domain/index.ts:3:14:
-      3 │ export * from './events/issue-resolved.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/issue-resolved.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/index.ts:3:14:
-      3 │ export * from './events/issue-resolved.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2344: Type 'IssueStatus' does not satisfy the constraint 'string | number | symbol'. [plugin angular-compiler]
@@ -1176,20 +1085,6 @@ Application bundle generation failed. [4.111 seconds]
          ╵                   ~~~~~~
 
 
-✘ [ERROR] TS2307: Cannot find module './events/member-invited.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/members/domain/index.ts:2:14:
-      2 │ export * from './events/member-invited.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/member-removed.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/members/domain/index.ts:3:14:
-      3 │ export * from './events/member-removed.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
 ✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'MemberStatus' and 'string' have no overlap. [plugin angular-compiler]
 
     src/app/modules/members/domain/policies/member-role.policy.ts:20:6:
@@ -1294,13 +1189,6 @@ Application bundle generation failed. [4.111 seconds]
          ╵                                       ~~~~~
 
 
-✘ [ERROR] TS2307: Cannot find module './events/dashboard-refreshed.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/overview/domain/index.ts:2:14:
-      2 │ export * from './events/dashboard-refreshed.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
 ✘ [ERROR] TS2305: Module '"@overview/domain"' has no exported member 'OverviewDashboard'. [plugin angular-compiler]
 
     src/app/modules/overview/infrastructure/repositories/overview.repository.impl.ts:3:9:
@@ -1357,48 +1245,6 @@ Application bundle generation failed. [4.111 seconds]
          ╵                                                 ~~~~~
 
 
-✘ [ERROR] TS2307: Cannot find module './events/permission-changed.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/permissions/domain/index.ts:4:14:
-      4 │ export * from './events/permission-changed.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/permission-granted.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/permissions/domain/index.ts:5:14:
-      5 │ export * from './events/permission-granted.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/permission-revoked.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/permissions/domain/index.ts:6:14:
-      6 │ export * from './events/permission-revoked.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/role-created.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/permissions/domain/index.ts:7:14:
-      7 │ export * from './events/role-created.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/role-deleted.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/permissions/domain/index.ts:8:14:
-      8 │ export * from './events/role-deleted.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/role-updated.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/permissions/domain/index.ts:9:14:
-      9 │ export * from './events/role-updated.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
 ✘ [ERROR] TS2305: Module '"@permissions/domain/aggregates/permission-matrix.aggregate"' has no exported member 'PermissionMatrix'. [plugin angular-compiler]
 
     src/app/modules/permissions/domain/repositories/permission-matrix.repository.interface.ts:3:9:
@@ -1447,13 +1293,6 @@ Application bundle generation failed. [4.111 seconds]
         ╵                      ~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@events"' has no exported member 'createQCFailedEvent'. [plugin angular-compiler]
-
-    src/app/modules/quality-control/application/handlers/fail-qc.handler.ts:5:9:
-      5 │ import { createQCFailedEvent } from '@events';
-        ╵          ~~~~~~~~~~~~~~~~~~~
-
-
 ✘ [ERROR] TS2305: Module '"@domain/value-objects"' has no exported member 'TaskId'. [plugin angular-compiler]
 
     src/app/modules/quality-control/application/handlers/fail-qc.handler.ts:6:9:
@@ -1461,11 +1300,30 @@ Application bundle generation failed. [4.111 seconds]
         ╵          ~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@events"' has no exported member 'createQCPassedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2554: Expected 2-3 arguments, but got 1. [plugin angular-compiler]
 
-    src/app/modules/quality-control/application/handlers/pass-qc.handler.ts:15:9:
-      15 │ import { createQCPassedEvent } from '@events';
-         ╵          ~~~~~~~~~~~~~~~~~~~
+    src/app/modules/quality-control/application/handlers/fail-qc.handler.ts:43:20:
+      43 │       const event = createQCFailedEvent({
+         ╵                     ~~~~~~~~~~~~~~~~~~~
+
+  An argument for 'correlationId' was not provided.
+
+    src/app/events/quality/quality.events.ts:62:98:
+      62 │ ...reasons: string[] }, correlationId: string, causationId?: strin...
+         ╵                         ~~~~~~~~~~~~~~~~~~~~~
+
+
+✘ [ERROR] TS2554: Expected 2-3 arguments, but got 1. [plugin angular-compiler]
+
+    src/app/modules/quality-control/application/handlers/pass-qc.handler.ts:38:20:
+      38 │       const event = createQCPassedEvent({
+         ╵                     ~~~~~~~~~~~~~~~~~~~
+
+  An argument for 'correlationId' was not provided.
+
+    src/app/events/quality/quality.events.ts:42:95:
+      42 │ ...g; notes?: string }, correlationId: string, causationId?: strin...
+         ╵                         ~~~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2307: Cannot find module '@application/handlers/create-issue.handler' or its corresponding type declarations. [plugin angular-compiler]
@@ -1515,34 +1373,6 @@ Application bundle generation failed. [4.111 seconds]
     src/app/modules/quality-control/domain/entities/qc-checklist-item.entity.ts:10:8:
       10 │         public readonly id: string, // Simple string ID
          ╵         ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] Could not resolve "./events/qc-failed.event"
-
-    src/app/modules/quality-control/domain/index.ts:3:14:
-      3 │ export * from './events/qc-failed.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/qc-failed.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/quality-control/domain/index.ts:3:14:
-      3 │ export * from './events/qc-failed.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] Could not resolve "./events/qc-passed.event"
-
-    src/app/modules/quality-control/domain/index.ts:4:14:
-      4 │ export * from './events/qc-passed.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/qc-passed.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/quality-control/domain/index.ts:4:14:
-      4 │ export * from './events/qc-passed.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2307: Cannot find module '@quality-control/domain/aggregates' or its corresponding type declarations. [plugin angular-compiler]
@@ -1718,20 +1548,6 @@ Application bundle generation failed. [4.111 seconds]
     src/app/modules/settings/domain/entities/module-config.entity.ts:3:29:
       3 │ ...tingValue } from '@settings/domain/value-objects/setting-value.vo';
         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] Could not resolve "./events/settings-updated.event"
-
-    src/app/modules/settings/domain/index.ts:4:14:
-      4 │ export * from './events/settings-updated.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/settings-updated.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/settings/domain/index.ts:4:14:
-      4 │ export * from './events/settings-updated.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2341: Property 'value' is private and only accessible within class 'WorkspaceId'. [plugin angular-compiler]
@@ -2044,8 +1860,8 @@ Application bundle generation failed. [4.111 seconds]
 
   'IssueResolved' is declared here.
 
-    src/app/events/issues/issues.events.ts:21:13:
-      21 │ export class IssueResolved implements DomainEvent<{ issueId: strin...
+    src/app/events/issues/issues.events.ts:36:13:
+      36 │ export class IssueResolved implements DomainEvent<IssueResolvedPay...
          ╵              ~~~~~~~~~~~~~
 
 
@@ -2122,76 +1938,6 @@ Application bundle generation failed. [4.111 seconds]
     src/app/modules/tasks/domain/entities/task-dependency.entity.ts:2:23:
       2 │ import { TaskId } from '../../value-objects/task-id.vo';
         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] Could not resolve "./events/task-completed.event"
-
-    src/app/modules/tasks/domain/index.ts:4:14:
-      4 │ export * from './events/task-completed.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/task-completed.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/tasks/domain/index.ts:4:14:
-      4 │ export * from './events/task-completed.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] Could not resolve "./events/task-created.event"
-
-    src/app/modules/tasks/domain/index.ts:5:14:
-      5 │ export * from './events/task-created.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/task-created.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/tasks/domain/index.ts:5:14:
-      5 │ export * from './events/task-created.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] Could not resolve "./events/task-deleted.event"
-
-    src/app/modules/tasks/domain/index.ts:6:14:
-      6 │ export * from './events/task-deleted.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/task-deleted.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/tasks/domain/index.ts:6:14:
-      6 │ export * from './events/task-deleted.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] Could not resolve "./events/task-submitted-for-qc.event"
-
-    src/app/modules/tasks/domain/index.ts:7:14:
-      7 │ export * from './events/task-submitted-for-qc.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/task-submitted-for-qc.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/tasks/domain/index.ts:7:14:
-      7 │ export * from './events/task-submitted-for-qc.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] Could not resolve "./events/task-updated.event"
-
-    src/app/modules/tasks/domain/index.ts:8:14:
-      8 │ export * from './events/task-updated.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2307: Cannot find module './events/task-updated.event' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/tasks/domain/index.ts:8:14:
-      8 │ export * from './events/task-updated.event';
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2365: Operator '<' cannot be applied to types 'Date' and 'number'. [plugin angular-compiler]

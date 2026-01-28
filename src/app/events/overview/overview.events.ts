@@ -18,6 +18,11 @@ export class DashboardLayoutUpdated implements DomainEvent<{ userId: string; lay
     }
 }
 
+// Helpers for backward compatibility
+export function createDashboardLayoutUpdatedEvent(payload: { userId: string; layoutConfig: any }, correlationId: string, causationId?: string | null): DashboardLayoutUpdated {
+    return new DashboardLayoutUpdated(payload, correlationId, causationId ?? undefined);
+}
+
 export class WidgetAdded implements DomainEvent<{ userId: string; widgetType: string; settings: any }> {
     readonly type = 'Overview.WidgetAdded';
     readonly source = OVERVIEW_SOURCE;
@@ -34,6 +39,10 @@ export class WidgetAdded implements DomainEvent<{ userId: string; widgetType: st
     }
 }
 
+export function createWidgetAddedEvent(payload: { userId: string; widgetType: string; settings: any }, correlationId: string, causationId?: string | null): WidgetAdded {
+    return new WidgetAdded(payload, correlationId, causationId ?? undefined);
+}
+
 export class WidgetRemoved implements DomainEvent<{ userId: string; widgetId: string }> {
     readonly type = 'Overview.WidgetRemoved';
     readonly source = OVERVIEW_SOURCE;
@@ -48,4 +57,8 @@ export class WidgetRemoved implements DomainEvent<{ userId: string; widgetId: st
     ) {
         this.aggregateId = payload.userId;
     }
+}
+
+export function createWidgetRemovedEvent(payload: { userId: string; widgetId: string }, correlationId: string, causationId?: string | null): WidgetRemoved {
+    return new WidgetRemoved(payload, correlationId, causationId ?? undefined);
 }

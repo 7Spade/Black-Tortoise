@@ -1,7 +1,6 @@
 export * from './aggregates/file-tree.aggregate';
 export * from './entities/document.entity';
 export * from './entities/folder.entity';
-export * from './events/document-uploaded.event';
 export * from './repositories/file-tree.repository.interface';
 export * from './value-objects/document-id.vo';
 export * from './value-objects/file-metadata.vo';

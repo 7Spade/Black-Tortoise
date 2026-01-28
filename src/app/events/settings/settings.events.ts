@@ -18,6 +18,11 @@ export class SettingUpdated implements DomainEvent<{ key: string; oldValue: any;
     }
 }
 
+// Helpers for backward compatibility
+export function createSettingUpdatedEvent(payload: { key: string; oldValue: any; newValue: any }, correlationId: string, causationId?: string | null): SettingUpdated {
+    return new SettingUpdated(payload, correlationId, causationId ?? undefined);
+}
+
 export class IntegrationConfigured implements DomainEvent<{ integrationId: string; provider: string; config: any }> {
     readonly type = 'Settings.IntegrationConfigured';
     readonly source = SETTINGS_SOURCE;
@@ -32,4 +37,8 @@ export class IntegrationConfigured implements DomainEvent<{ integrationId: strin
     ) {
         this.aggregateId = payload.integrationId;
     }
+}
+
+export function createIntegrationConfiguredEvent(payload: { integrationId: string; provider: string; config: any }, correlationId: string, causationId?: string | null): IntegrationConfigured {
+    return new IntegrationConfigured(payload, correlationId, causationId ?? undefined);
 }

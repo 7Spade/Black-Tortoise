@@ -18,6 +18,11 @@ export class TaskCreated implements DomainEvent<{ taskId: string; title: string;
     }
 }
 
+// Helpers for backward compatibility
+export function createTaskCreatedEvent(payload: { taskId: string; title: string; assigneeId?: string; dueDate?: Date }, correlationId: string, causationId?: string | null): TaskCreated {
+    return new TaskCreated(payload, correlationId, causationId ?? undefined);
+}
+
 export class TaskUpdated implements DomainEvent<{ taskId: string; changes: Record<string, any> }> {
     readonly type = 'Tasks.TaskUpdated';
     readonly source = TASKS_SOURCE;
@@ -32,6 +37,10 @@ export class TaskUpdated implements DomainEvent<{ taskId: string; changes: Recor
     ) {
         this.aggregateId = payload.taskId;
     }
+}
+
+export function createTaskUpdatedEvent(payload: { taskId: string; changes: Record<string, any> }, correlationId: string, causationId?: string | null): TaskUpdated {
+    return new TaskUpdated(payload, correlationId, causationId ?? undefined);
 }
 
 export class TaskCompleted implements DomainEvent<{ taskId: string; completedBy: string }> {
@@ -50,6 +59,10 @@ export class TaskCompleted implements DomainEvent<{ taskId: string; completedBy:
     }
 }
 
+export function createTaskCompletedEvent(payload: { taskId: string; completedBy: string }, correlationId: string, causationId?: string | null): TaskCompleted {
+    return new TaskCompleted(payload, correlationId, causationId ?? undefined);
+}
+
 export class TaskReopened implements DomainEvent<{ taskId: string; reason?: string }> {
     readonly type = 'Tasks.TaskReopened';
     readonly source = TASKS_SOURCE;
@@ -66,6 +79,10 @@ export class TaskReopened implements DomainEvent<{ taskId: string; reason?: stri
     }
 }
 
+export function createTaskReopenedEvent(payload: { taskId: string; reason?: string }, correlationId: string, causationId?: string | null): TaskReopened {
+    return new TaskReopened(payload, correlationId, causationId ?? undefined);
+}
+
 export class TaskDeleted implements DomainEvent<{ taskId: string }> {
     readonly type = 'Tasks.TaskDeleted';
     readonly source = TASKS_SOURCE;
@@ -80,4 +97,8 @@ export class TaskDeleted implements DomainEvent<{ taskId: string }> {
     ) {
         this.aggregateId = payload.taskId;
     }
+}
+
+export function createTaskDeletedEvent(payload: { taskId: string }, correlationId: string, causationId?: string | null): TaskDeleted {
+    return new TaskDeleted(payload, correlationId, causationId ?? undefined);
 }
