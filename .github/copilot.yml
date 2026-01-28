@@ -33,7 +33,7 @@ files:
   - pattern: "src/app/**/*.component.ts"
     suggestion:
       enable: true
-      frequency: low
+      frequency: medium
 
   - pattern: "**/*.spec.ts"
     suggestion:
@@ -50,4 +50,5 @@ exclude:
   - "dist/**"
   - "dataconnect-generated/**"
   - "src/dataconnect-generated/**"
+  - "**/dataconnect-generated/**"
 

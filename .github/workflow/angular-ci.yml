@@ -5,10 +5,19 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
 jobs:
-  build-test-lint:
+  actionlint:
+    name: Lint GitHub workflows
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run actionlint
+        uses: rhysd/actionlint-action@v1
+
+  ci:
+    name: Install / Lint / Typecheck / Test / Build
+    runs-on: ubuntu-latest
+    needs: actionlint
     steps:
       - uses: actions/checkout@v3
 
@@ -16,15 +25,38 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
-      - name: Install Dependencies
-        run: pnpm install
+      - name: Install dependencies (pnpm)
+        run: pnpm install --frozen-lockfile
 
-      - name: Run Lint
-        run: pnpm run lint
+      - name: Run ESLint
+        run: pnpm run lint --if-present
 
-      - name: Run Tests
+      - name: Type check (tsc)
+        run: pnpm exec tsc --noEmit
+
+      - name: Run tests
         run: pnpm run test -- --watch=false --browsers=ChromeHeadless
 
-      - name: Build Project
-        run: pnpm run build -- --prod
+      - name: Build (production)
+        run: pnpm run build -- --configuration=production
+
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
