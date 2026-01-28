@@ -50,170 +50,170 @@ User Input → FormControl → Observable → Signal → UI Update
                           API Call
 ```
 
-## 表單驗證策略
+## Form Validation Strategy
 
-### 同步驗證
-- 內建驗證器 (required, email, min, max 等)
-- 自訂同步驗證器函數
-- 使用 Signal 響應驗證結果
+### Synchronous Validation
+- Built-in validators (required, email, min, max, etc.)
+- Custom synchronous validator functions
+- Use Signal to respond to validation results
 
-### 非同步驗證
-- 使用 AsyncValidator 介面
-- 後端驗證 (如檢查使用者名稱是否已存在)
-- 轉換為 Signal 以追蹤驗證狀態
+### Asynchronous Validation
+- Use AsyncValidator interface
+- Backend validation (e.g., checking if username already exists)
+- Convert to Signal to track validation state
 
-### 驗證錯誤處理
-- 使用 `computed()` 計算錯誤訊息
-- 條件式顯示錯誤 (配合 `@if`)
-- 多語系錯誤訊息支援
+### Validation Error Handling
+- Use `computed()` to calculate error messages
+- Conditional error display (with `@if`)
+- Multi-language error message support
 
-## 狀態管理模式
+## State Management Patterns
 
-### 本地狀態 (Component-scoped)
-適用場景:
-- 簡單表單 (少於 5 個欄位)
-- 不需跨元件共享
-- 無複雜業務邏輯
+### Local State (Component-scoped)
+Applicable scenarios:
+- Simple forms (less than 5 fields)
+- No need for cross-component sharing
+- No complex business logic
 
-管理方式:
-- 直接在 Component 使用 `toSignal()`
-- 使用 local signals 管理輔助狀態
+Management approach:
+- Use `toSignal()` directly in Component
+- Use local signals to manage auxiliary state
 
-### 全域狀態 (Application-scoped)
-適用場景:
-- 複雜多步驟表單
-- 需要跨頁面保持狀態
-- 多個元件共享表單資料
-- 需要復原/重做功能
+### Global State (Application-scoped)
+Applicable scenarios:
+- Complex multi-step forms
+- Need to maintain state across pages
+- Multiple components share form data
+- Need undo/redo functionality
 
-管理方式:
-- 使用 @ngrx/signals SignalStore
-- 統一的狀態更新邏輯
-- 集中的副作用處理
+Management approach:
+- Use @ngrx/signals SignalStore
+- Unified state update logic
+- Centralized side-effect handling
 
-## 表單提交流程
+## Form Submission Flow
 
-### 標準流程
-1. 使用者觸發提交
-2. 驗證表單有效性
-3. 更新提交中狀態 (isSubmitting)
-4. 呼叫 Service/Store 方法
-5. 使用 rxMethod 處理非同步操作
-6. 處理成功/失敗回應
-7. 更新 UI 狀態 (成功訊息、錯誤訊息)
-8. 可選: 重置表單或導航
+### Standard Flow
+1. User triggers submission
+2. Validate form validity
+3. Update submitting state (isSubmitting)
+4. Call Service/Store method
+5. Use rxMethod to handle async operations
+6. Handle success/failure response
+7. Update UI state (success message, error message)
+8. Optional: reset form or navigate
 
-### 錯誤處理
-- 使用 `tapResponse` 處理成功/錯誤
-- 錯誤訊息儲存在 Signal 中
-- 提供使用者友善的錯誤回饋
-- 考慮重試機制
+### Error Handling
+- Use `tapResponse` to handle success/failure
+- Store error messages in Signal
+- Provide user-friendly error feedback
+- Consider retry mechanism
 
-### 載入狀態
-- 維護 `isSubmitting` Signal
-- 禁用提交按鈕避免重複提交
-- 顯示載入指示器
-- 保持 UI 響應性
+### Loading State
+- Maintain `isSubmitting` Signal
+- Disable submit button to avoid duplicate submission
+- Show loading indicator
+- Keep UI responsive
 
-## 動態表單處理
+## Dynamic Form Handling
 
-### FormArray 管理
-- 動態新增/移除表單控制項
-- 使用 Signal 追蹤陣列長度
-- 配合 `@for` 渲染動態欄位
-- 使用適當的 track 表達式
+### FormArray Management
+- Dynamically add/remove form controls
+- Use Signal to track array length
+- Render dynamic fields with `@for`
+- Use appropriate track expression
 
-### 條件式欄位
-- 根據其他欄位值顯示/隱藏欄位
-- 使用 `computed()` 判斷顯示邏輯
-- 動態啟用/禁用控制項
-- 條件式驗證規則
+### Conditional Fields
+- Show/hide fields based on other field values
+- Use `computed()` to determine display logic
+- Dynamically enable/disable controls
+- Conditional validation rules
 
-### 巢狀表單
-- 使用 FormGroup 巢狀結構
-- 子表單元件化
-- 使用 ControlValueAccessor 整合
-- 保持型別安全
+### Nested Forms
+- Use FormGroup nested structure
+- Child form componentization
+- Use ControlValueAccessor integration
+- Maintain type safety
 
-## 效能最佳化
+## Performance Optimization
 
-### 避免不必要的計算
-- 使用 `computed()` 而非 getter
-- 謹慎使用 `effect()` (避免副作用循環)
-- 適當使用 `untracked()` 打破依賴
+### Avoid Unnecessary Computation
+- Use `computed()` instead of getter
+- Use `effect()` carefully (avoid side effect loops)
+- Use `untracked()` appropriately to break dependencies
 
-### 減少訂閱
-- 優先使用 `toSignal()` 而非手動訂閱
-- 讓 Angular 自動管理訂閱生命週期
-- 避免記憶體洩漏
+### Reduce Subscriptions
+- Prefer `toSignal()` over manual subscription
+- Let Angular automatically manage subscription lifecycle
+- Avoid memory leaks
 
-### 表單值變更節流
-- 使用 RxJS operators (debounceTime, throttleTime)
-- 避免過度頻繁的 API 呼叫
-- 平衡即時性和效能
+### Form Value Change Throttling
+- Use RxJS operators (debounceTime, throttleTime)
+- Avoid excessive API calls
+- Balance responsiveness and performance
 
-## TypeScript 型別安全
+## TypeScript Type Safety
 
-### 強型別表單
-- 使用泛型定義 FormControl<T>
-- 使用介面定義表單結構
-- 啟用 `nonNullable` 選項避免 null 值
-- 完整的型別推斷
+### Strongly Typed Forms
+- Use generics to define FormControl<T>
+- Use interfaces to define form structure
+- Enable `nonNullable` option to avoid null values
+- Complete type inference
 
-### 型別保護
-- 驗證器返回型別安全的錯誤
-- 使用 TypeScript 嚴格模式
-- 避免 any 型別
+### Type Guards
+- Validators return type-safe errors
+- Use TypeScript strict mode
+- Avoid any type
 
-## 常見模式與反模式
+## Common Patterns and Anti-patterns
 
-### ✅ 良好模式
-- 使用 `toSignal()` 轉換 Observable
-- 在 Store 處理業務邏輯
-- 使用 `computed()` 衍生狀態
-- 保持單向資料流
-- 集中錯誤處理
+### ✅ Good Patterns
+- Use `toSignal()` to convert Observable
+- Handle business logic in Store
+- Use `computed()` to derive state
+- Maintain unidirectional data flow
+- Centralize error handling
 
-### ❌ 應避免
-- 手動訂閱 valueChanges (除非必要)
-- 在 Component 直接呼叫 API
-- 混用 Signal 和傳統狀態管理
-- 忘記設定 `initialValue`
-- 在模板中使用複雜的表達式
+### ❌ Avoid
+- Manual subscription to valueChanges (unless necessary)
+- Call API directly in Component
+- Mix Signals with traditional state management
+- Forget to set `initialValue`
+- Use complex expressions in templates
 
-## 測試策略
+## Testing Strategy
 
-### 單元測試
-- 測試表單驗證邏輯
-- 測試 Signal 計算邏輯
-- Mock Service/Store 依賴
-- 使用 TestBed 設定
+### Unit Tests
+- Test form validation logic
+- Test Signal computation logic
+- Mock Service/Store dependencies
+- Use TestBed setup
 
-### 整合測試
-- 測試表單提交流程
-- 測試錯誤處理
-- 測試狀態同步
-- 模擬使用者互動
+### Integration Tests
+- Test form submission flow
+- Test error handling
+- Test state synchronization
+- Simulate user interaction
 
-## 可訪問性考量
+## Accessibility Considerations
 
-- 適當的 label 與 input 關聯
-- 錯誤訊息與 aria-describedby 連結
-- 表單驗證狀態的無障礙提示
-- 鍵盤導航支援
-- 螢幕閱讀器友善的錯誤訊息
+- Proper label and input association
+- Error messages linked with aria-describedby
+- Accessibility hints for form validation state
+- Keyboard navigation support
+- Screen reader-friendly error messages
 
-## 遷移建議
+## Migration Recommendations
 
-### 從傳統表單遷移
-1. 保持現有 FormControl/FormGroup 結構
-2. 逐步將 Observable 訂閱改為 `toSignal()`
-3. 引入 SignalStore 管理複雜狀態
-4. 重構業務邏輯到 Service/Store
-5. 更新測試
+### Migrating from Traditional Forms
+1. Keep existing FormControl/FormGroup structure
+2. Gradually convert Observable subscriptions to `toSignal()`
+3. Introduce SignalStore to manage complex state
+4. Refactor business logic to Service/Store
+5. Update tests
 
-### 漸進式採用
-- 新功能使用 Signals
-- 既有功能逐步重構
-- 保持向後相容
-- 團隊培訓與文件更新
+### Progressive Adoption
+- Use Signals for new features
+- Gradually refactor existing functionality
+- Maintain backward compatibility
+- Team training and documentation updates
