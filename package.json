@@ -48,7 +48,7 @@
     "eslint": "^9.39.2",
     "husky": "^8.0.0",
     "lint-staged": "^13.0.0",
-    "dependency-cruiser": "^11.27.0",
+    "dependency-cruiser": "^17.3.7",
     "prettier": "^3.7.4",
     "typescript": "~5.8.0"
   }
