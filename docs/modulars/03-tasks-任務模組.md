@@ -84,8 +84,8 @@
 以下是本模組預期的檔案結構樹（按分層展示）：
 
 ```
-src/app/
-├── domain/tasks/
+src/app/modules/
+├── tasks/domain/
 │   ├── aggregates/
 │   │   └── task.aggregate.ts
 │   ├── entities/
@@ -106,7 +106,7 @@ src/app/
 │   └── repositories/
 │       └── task.repository.interface.ts
 │
-├── application/tasks/
+├── tasks/application/
 │   ├── commands/
 │   │   ├── create-task.command.ts
 │   │   ├── update-task.command.ts
@@ -127,7 +127,7 @@ src/app/
 │   └── stores/
 │       └── tasks.store.ts
 │
-├── infrastructure/tasks/
+├── tasks/infrastructure/
 │   ├── repositories/
 │   │   └── task.repository.ts
 │   ├── adapters/
@@ -137,7 +137,7 @@ src/app/
 │   └── mappers/
 │       └── task.mapper.ts
 │
-└── presentation/tasks/
+└── tasks/presentation/
     ├── components/
     │   ├── task-list/
     │   ├── task-kanban/
@@ -152,7 +152,7 @@ src/app/
 
 ## 五、預計新增檔案
 
-### Domain Layer (src/app/domain/tasks/)
+### Domain Layer (src/app/modules/tasks/domain/)
 - `aggregates/task.aggregate.ts` - 任務聚合根
 - `entities/subtask.entity.ts` - 子任務實體
 - `entities/task-dependency.entity.ts` - 任務依賴實體
@@ -168,7 +168,7 @@ src/app/
 - `events/task-blocked.event.ts` - 任務阻塞事件
 - `repositories/task.repository.interface.ts` - Repository 介面
 
-### Application Layer (src/app/application/tasks/)
+### Application Layer (src/app/modules/tasks/application/)
 - `commands/create-task.command.ts` - 建立任務命令
 - `commands/update-task.command.ts` - 更新任務命令
 - `commands/delete-task.command.ts` - 刪除任務命令
@@ -184,13 +184,13 @@ src/app/
 - `models/task-list-view.model.ts` - 任務列表視圖模型
 - `stores/tasks.store.ts` - 任務 Signal Store
 
-### Infrastructure Layer (src/app/infrastructure/tasks/)
+### Infrastructure Layer (src/app/modules/tasks/infrastructure/)
 - `repositories/task.repository.ts` - Repository 實作
 - `adapters/firebase-tasks.adapter.ts` - Firebase 適配器
 - `models/task.dto.ts` - 任務 DTO/Schema
 - `mappers/task.mapper.ts` - 任務資料轉換器
 
-### Presentation Layer (src/app/presentation/tasks/)
+### Presentation Layer (src/app/modules/tasks/presentation/)
 - `components/task-list/task-list.component.ts` - 任務列表元件
 - `components/task-kanban/task-kanban.component.ts` - 看板視圖元件
 - `components/task-gantt/task-gantt.component.ts` - 甘特圖元件

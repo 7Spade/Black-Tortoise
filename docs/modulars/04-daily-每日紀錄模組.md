@@ -84,8 +84,8 @@
 以下是本模組預期的檔案結構樹（按分層展示）：
 
 ```
-src/app/
-├── domain/daily/
+src/app/modules/
+├── daily/domain/
 │   ├── aggregates/
 │   │   └── daily-entry.aggregate.ts
 │   ├── value-objects/
@@ -98,7 +98,7 @@ src/app/
 │   └── repositories/
 │       └── daily-entry.repository.interface.ts
 │
-├── application/daily/
+├── daily/application/
 │   ├── commands/
 │   │   ├── create-daily-entry.command.ts
 │   │   ├── update-daily-entry.command.ts
@@ -115,7 +115,7 @@ src/app/
 │   └── stores/
 │       └── daily.store.ts
 │
-├── infrastructure/daily/
+├── daily/infrastructure/
 │   ├── models/
 │   │   └── daily-entry.dto.ts
 │   ├── mappers/
@@ -125,7 +125,7 @@ src/app/
 │   └── adapters/
 │       └── firebase-daily.adapter.ts
 │
-└── presentation/daily/
+└── daily/presentation/
     ├── components/
     │   ├── daily-entry-form/
     │   ├── daily-entry-list/
@@ -138,7 +138,7 @@ src/app/
 
 ## 五、預計新增檔案
 
-### Domain Layer (src/app/domain/daily/)
+### Domain Layer (src/app/modules/daily/domain/)
 - `aggregates/daily-entry.aggregate.ts` - 每日紀錄聚合根
 - `value-objects/daily-entry-id.vo.ts` - 紀錄 ID 值物件
 - `value-objects/man-day.vo.ts` - 人工/日值物件
@@ -147,7 +147,7 @@ src/app/
 - `events/daily-entry-updated.event.ts` - 紀錄更新事件
 - `repositories/daily-entry.repository.interface.ts` - Repository 介面
 
-### Application Layer (src/app/application/daily/)
+### Application Layer (src/app/modules/daily/application/)
 - `commands/create-daily-entry.command.ts` - 建立紀錄命令
 - `commands/update-daily-entry.command.ts` - 更新紀錄命令
 - `commands/batch-create-entries.command.ts` - 批次建立命令
@@ -159,13 +159,13 @@ src/app/
 - `models/weekly-summary.model.ts` - 週摘要讀取模型
 - `stores/daily.store.ts` - 每日紀錄 Signal Store
 
-### Infrastructure Layer (src/app/infrastructure/daily/)
+### Infrastructure Layer (src/app/modules/daily/infrastructure/)
 - `models/daily-entry.dto.ts` - 每日紀錄資料傳輸物件
 - `mappers/daily-entry.mapper.ts` - 每日紀錄資料映射器
 - `repositories/daily-entry.repository.ts` - Repository 實作
 - `adapters/firebase-daily.adapter.ts` - Firebase 適配器
 
-### Presentation Layer (src/app/presentation/daily/)
+### Presentation Layer (src/app/modules/daily/presentation/)
 - `components/daily-entry-form/daily-entry-form.component.ts` - 紀錄表單元件
 - `components/daily-entry-list/daily-entry-list.component.ts` - 紀錄列表元件
 - `components/weekly-summary/weekly-summary.component.ts` - 週摘要元件

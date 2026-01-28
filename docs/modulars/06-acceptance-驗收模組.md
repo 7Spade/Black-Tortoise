@@ -84,8 +84,8 @@
 以下是本模組預期的檔案結構樹（按分層展示）：
 
 ```
-src/app/
-├── domain/acceptance/
+src/app/modules/
+├── acceptance/domain/
 │   ├── aggregates/
 │   │   └── acceptance-item.aggregate.ts
 │   ├── entities/
@@ -101,7 +101,7 @@ src/app/
 │   └── repositories/
 │       └── acceptance-item.repository.interface.ts
 │
-├── application/acceptance/
+├── acceptance/application/
 │   ├── commands/
 │   │   ├── start-acceptance.command.ts
 │   │   ├── approve-acceptance.command.ts
@@ -119,7 +119,7 @@ src/app/
 │   └── stores/
 │       └── acceptance.store.ts
 │
-├── infrastructure/acceptance/
+├── acceptance/infrastructure/
 │   ├── models/
 │   │   └── acceptance-item.dto.ts
 │   ├── mappers/
@@ -129,7 +129,7 @@ src/app/
 │   └── adapters/
 │       └── firebase-acceptance.adapter.ts
 │
-└── presentation/acceptance/
+└── acceptance/presentation/
     ├── components/
     │   ├── acceptance-criteria-list/
     │   ├── acceptance-item-detail/
@@ -142,7 +142,7 @@ src/app/
 
 ## 五、預計新增檔案
 
-### Domain Layer (src/app/domain/acceptance/)
+### Domain Layer (src/app/modules/acceptance/domain/)
 - `aggregates/acceptance-item.aggregate.ts` - 驗收項目聚合根
 - `entities/acceptance-criteria-item.entity.ts` - 驗收標準項目實體
 - `value-objects/acceptance-item-id.vo.ts` - 驗收項目 ID 值物件
@@ -153,7 +153,7 @@ src/app/
 - `events/acceptance-started.event.ts` - 驗收開始事件
 - `repositories/acceptance-item.repository.interface.ts` - Repository 介面
 
-### Application Layer (src/app/application/acceptance/)
+### Application Layer (src/app/modules/acceptance/application/)
 - `commands/start-acceptance.command.ts` - 開始驗收命令
 - `commands/approve-acceptance.command.ts` - 批准驗收命令
 - `commands/reject-acceptance.command.ts` - 駁回驗收命令
@@ -166,13 +166,13 @@ src/app/
 - `models/acceptance-history-view.model.ts` - 驗收歷史讀取模型
 - `stores/acceptance.store.ts` - 驗收 Signal Store
 
-### Infrastructure Layer (src/app/infrastructure/acceptance/)
+### Infrastructure Layer (src/app/modules/acceptance/infrastructure/)
 - `models/acceptance-item.dto.ts` - 驗收項目資料傳輸物件
 - `mappers/acceptance-item.mapper.ts` - 驗收項目資料映射器
 - `repositories/acceptance-item.repository.ts` - Repository 實作
 - `adapters/firebase-acceptance.adapter.ts` - Firebase 適配器
 
-### Presentation Layer (src/app/presentation/acceptance/)
+### Presentation Layer (src/app/modules/acceptance/presentation/)
 - `components/acceptance-criteria-list/acceptance-criteria-list.component.ts` - 驗收標準列表元件
 - `components/acceptance-item-detail/acceptance-item-detail.component.ts` - 驗收項目詳情元件
 - `components/acceptance-history/acceptance-history.component.ts` - 驗收歷史元件

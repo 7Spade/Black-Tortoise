@@ -84,8 +84,8 @@
 以下是本模組預期的檔案結構樹（按分層展示）：
 
 ```
-src/app/
-├── domain/members/
+src/app/modules/
+├── members/domain/
 │   ├── aggregates/
 │   │   └── member.aggregate.ts
 │   ├── value-objects/
@@ -100,7 +100,7 @@ src/app/
 │   └── repositories/
 │       └── member.repository.interface.ts
 │
-├── application/members/
+├── members/application/
 │   ├── commands/
 │   │   ├── add-member.command.ts
 │   │   ├── remove-member.command.ts
@@ -119,7 +119,7 @@ src/app/
 │   └── stores/
 │       └── members.store.ts
 │
-├── infrastructure/members/
+├── members/infrastructure/
 │   ├── models/
 │   │   └── member.dto.ts
 │   ├── mappers/
@@ -129,7 +129,7 @@ src/app/
 │   └── adapters/
 │       └── firebase-members.adapter.ts
 │
-└── presentation/members/
+└── members/presentation/
     ├── components/
     │   ├── member-list/
     │   ├── member-invitation/
@@ -142,7 +142,7 @@ src/app/
 
 ## 五、預計新增檔案
 
-### Domain Layer (src/app/domain/members/)
+### Domain Layer (src/app/modules/members/domain/)
 - `aggregates/member.aggregate.ts` - 成員聚合根
 - `value-objects/member-id.vo.ts` - 成員 ID 值物件
 - `value-objects/member-status.vo.ts` - 成員狀態值物件
@@ -153,7 +153,7 @@ src/app/
 - `events/member-invited.event.ts` - 成員邀請事件
 - `repositories/member.repository.interface.ts` - Repository 介面
 
-### Application Layer (src/app/application/members/)
+### Application Layer (src/app/modules/members/application/)
 - `commands/add-member.command.ts` - 加入成員命令
 - `commands/remove-member.command.ts` - 移除成員命令
 - `commands/assign-role.command.ts` - 指派角色命令
@@ -167,13 +167,13 @@ src/app/
 - `models/member-list-view.model.ts` - 成員列表讀取模型
 - `stores/members.store.ts` - 成員 Signal Store
 
-### Infrastructure Layer (src/app/infrastructure/members/)
+### Infrastructure Layer (src/app/modules/members/infrastructure/)
 - `models/member.dto.ts` - 成員資料傳輸物件
 - `mappers/member.mapper.ts` - 成員資料映射器
 - `repositories/member.repository.ts` - Repository 實作
 - `adapters/firebase-members.adapter.ts` - Firebase 適配器
 
-### Presentation Layer (src/app/presentation/members/)
+### Presentation Layer (src/app/modules/members/presentation/)
 - `components/member-list/member-list.component.ts` - 成員列表元件
 - `components/member-invitation/member-invitation.component.ts` - 成員邀請元件
 - `components/member-detail/member-detail.component.ts` - 成員詳情元件

@@ -84,8 +84,8 @@
 以下是本模組預期的檔案結構樹（按分層展示）：
 
 ```
-src/app/
-├── domain/quality-control/
+src/app/modules/
+├── quality-control/domain/
 │   ├── aggregates/
 │   │   └── qc-item.aggregate.ts
 │   ├── entities/
@@ -101,7 +101,7 @@ src/app/
 │   └── repositories/
 │       └── qc-item.repository.interface.ts
 │
-├── application/quality-control/
+├── quality-control/application/
 │   ├── commands/
 │   │   ├── start-qc.command.ts
 │   │   ├── approve-qc.command.ts
@@ -120,7 +120,7 @@ src/app/
 │   └── stores/
 │       └── qc.store.ts
 │
-├── infrastructure/quality-control/
+├── quality-control/infrastructure/
 │   ├── models/
 │   │   └── qc-item.dto.ts
 │   ├── mappers/
@@ -130,7 +130,7 @@ src/app/
 │   └── adapters/
 │       └── firebase-qc.adapter.ts
 │
-└── presentation/quality-control/
+└── quality-control/presentation/
     ├── components/
     │   ├── qc-checklist/
     │   ├── qc-item-detail/
@@ -143,7 +143,7 @@ src/app/
 
 ## 五、預計新增檔案
 
-### Domain Layer (src/app/domain/quality-control/)
+### Domain Layer (src/app/modules/quality-control/domain/)
 - `aggregates/qc-item.aggregate.ts` - 質檢項目聚合根
 - `entities/qc-checklist-item.entity.ts` - 檢查項目實體
 - `value-objects/qc-item-id.vo.ts` - 質檢項目 ID 值物件
@@ -154,7 +154,7 @@ src/app/
 - `events/qc-started.event.ts` - 質檢開始事件
 - `repositories/qc-item.repository.interface.ts` - Repository 介面
 
-### Application Layer (src/app/application/quality-control/)
+### Application Layer (src/app/modules/quality-control/application/)
 - `commands/start-qc.command.ts` - 開始質檢命令
 - `commands/approve-qc.command.ts` - 批准質檢命令
 - `commands/reject-qc.command.ts` - 駁回質檢命令
@@ -168,13 +168,13 @@ src/app/
 - `models/qc-dashboard.model.ts` - 質檢儀表板讀取模型
 - `stores/qc.store.ts` - 質檢 Signal Store
 
-### Infrastructure Layer (src/app/infrastructure/quality-control/)
+### Infrastructure Layer (src/app/modules/quality-control/infrastructure/)
 - `models/qc-item.dto.ts` - 質檢項目資料傳輸物件
 - `mappers/qc-item.mapper.ts` - 質檢項目資料映射器
 - `repositories/qc-item.repository.ts` - Repository 實作
 - `adapters/firebase-qc.adapter.ts` - Firebase 適配器
 
-### Presentation Layer (src/app/presentation/quality-control/)
+### Presentation Layer (src/app/modules/quality-control/presentation/)
 - `components/qc-checklist/qc-checklist.component.ts` - 質檢清單元件
 - `components/qc-item-detail/qc-item-detail.component.ts` - 質檢項目詳情元件
 - `components/qc-history/qc-history.component.ts` - 質檢歷史元件

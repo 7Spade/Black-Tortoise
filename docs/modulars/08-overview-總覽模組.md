@@ -84,8 +84,8 @@ Workspace 核心指標與活動儀表板，顯示各項數據、負責人、詳�
 以下是本模組預期的檔案結構樹（按分層展示）：
 
 ```
-src/app/
-├── domain/overview/
+src/app/modules/
+├── overview/domain/
 │   ├── aggregates/
 │   │   └── dashboard-config.aggregate.ts
 │   ├── value-objects/
@@ -95,7 +95,7 @@ src/app/
 │   └── repositories/
 │       └── dashboard-config.repository.interface.ts
 │
-├── application/overview/
+├── overview/application/
 │   ├── commands/
 │   │   ├── update-widget-layout.command.ts
 │   │   └── toggle-widget.command.ts
@@ -113,7 +113,7 @@ src/app/
 │   └── stores/
 │       └── overview.store.ts
 │
-├── infrastructure/overview/
+├── overview/infrastructure/
 │   ├── models/
 │   │   └── dashboard-config.dto.ts
 │   ├── mappers/
@@ -123,7 +123,7 @@ src/app/
 │   └── adapters/
 │       └── firebase-overview.adapter.ts
 │
-└── presentation/overview/
+└── overview/presentation/
     ├── components/
     │   ├── metrics-card/
     │   ├── activity-timeline/
@@ -137,14 +137,14 @@ src/app/
 
 ## 五、預計新增檔案
 
-### Domain Layer (src/app/domain/overview/)
+### Domain Layer (src/app/modules/overview/domain/)
 - `aggregates/dashboard-config.aggregate.ts` - 儀表板配置聚合根
 - `value-objects/widget-id.vo.ts` - Widget ID 值物件
 - `value-objects/widget-type.vo.ts` - Widget 類型值物件
 - `value-objects/widget-position.vo.ts` - Widget 位置值物件
 - `repositories/dashboard-config.repository.interface.ts` - Repository 介面
 
-### Application Layer (src/app/application/overview/)
+### Application Layer (src/app/modules/overview/application/)
 - `commands/update-widget-layout.command.ts` - 更新 Widget 佈局命令
 - `commands/toggle-widget.command.ts` - 切換 Widget 顯示命令
 - `handlers/task-created-event.handler.ts` - 任務建立事件處理器
@@ -157,13 +157,13 @@ src/app/
 - `models/dashboard-metrics.model.ts` - 儀表板指標讀取模型
 - `stores/overview.store.ts` - 總覽 Signal Store
 
-### Infrastructure Layer (src/app/infrastructure/overview/)
+### Infrastructure Layer (src/app/modules/overview/infrastructure/)
 - `models/dashboard-config.dto.ts` - 儀表板配置資料傳輸物件
 - `mappers/dashboard-config.mapper.ts` - 儀表板配置資料映射器
 - `repositories/dashboard-config.repository.ts` - Repository 實作
 - `adapters/firebase-overview.adapter.ts` - Firebase 適配器
 
-### Presentation Layer (src/app/presentation/overview/)
+### Presentation Layer (src/app/modules/overview/presentation/)
 - `components/metrics-card/metrics-card.component.ts` - 指標卡片元件
 - `components/activity-timeline/activity-timeline.component.ts` - 活動時間軸元件
 - `components/chart-widgets/chart-widgets.component.ts` - 圖表 Widget 元件

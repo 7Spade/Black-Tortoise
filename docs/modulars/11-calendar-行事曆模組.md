@@ -84,8 +84,8 @@
 以下是本模組預期的檔案結構樹（按分層展示）：
 
 ```
-src/app/
-├── domain/calendar/
+src/app/modules/
+├── calendar/domain/
 │   ├── aggregates/
 │   │   └── calendar-event.aggregate.ts
 │   ├── value-objects/
@@ -95,7 +95,7 @@ src/app/
 │   └── repositories/
 │       └── calendar-event.repository.interface.ts
 │
-├── application/calendar/
+├── calendar/application/
 │   ├── commands/
 │   │   └── update-task-due-date.command.ts
 │   ├── handlers/
@@ -111,7 +111,7 @@ src/app/
 │   └── stores/
 │       └── calendar.store.ts
 │
-├── infrastructure/calendar/
+├── calendar/infrastructure/
 │   ├── models/
 │   │   └── calendar-event.dto.ts
 │   ├── mappers/
@@ -121,7 +121,7 @@ src/app/
 │   └── adapters/
 │       └── firebase-calendar.adapter.ts
 │
-└── presentation/calendar/
+└── calendar/presentation/
     ├── components/
     │   ├── calendar-month-view/
     │   ├── calendar-week-view/
@@ -135,14 +135,14 @@ src/app/
 
 ## 五、預計新增檔案
 
-### Domain Layer (src/app/domain/calendar/)
+### Domain Layer (src/app/modules/calendar/domain/)
 - `aggregates/calendar-event.aggregate.ts` - 行事曆事件聚合根
 - `value-objects/calendar-event-id.vo.ts` - 行事曆事件 ID 值物件
 - `value-objects/date-range.vo.ts` - 日期範圍值物件
 - `value-objects/event-type.vo.ts` - 事件類型值物件
 - `repositories/calendar-event.repository.interface.ts` - Repository 介面
 
-### Application Layer (src/app/application/calendar/)
+### Application Layer (src/app/modules/calendar/application/)
 - `commands/update-task-due-date.command.ts` - 更新任務到期日命令
 - `handlers/task-created-event.handler.ts` - 任務建立事件處理器
 - `handlers/task-updated-event.handler.ts` - 任務更新事件處理器
@@ -153,13 +153,13 @@ src/app/
 - `models/calendar-event-view.model.ts` - 行事曆事件顯示模型
 - `stores/calendar.store.ts` - 行事曆 Signal Store
 
-### Infrastructure Layer (src/app/infrastructure/calendar/)
+### Infrastructure Layer (src/app/modules/calendar/infrastructure/)
 - `models/calendar-event.dto.ts` - 行事曆事件 DTO
 - `mappers/calendar-event.mapper.ts` - 行事曆事件 Mapper
 - `repositories/calendar-event.repository.ts` - Repository 實作
 - `adapters/firebase-calendar.adapter.ts` - Firebase 適配器
 
-### Presentation Layer (src/app/presentation/calendar/)
+### Presentation Layer (src/app/modules/calendar/presentation/)
 - `components/calendar-month-view/calendar-month-view.component.ts` - 月視圖元件
 - `components/calendar-week-view/calendar-week-view.component.ts` - 週視圖元件
 - `components/calendar-day-view/calendar-day-view.component.ts` - 日視圖元件
