@@ -66,3 +66,67 @@
   color: #999;
   padding: 2rem;
 }
+
+/* Priority chips */
+mat-chip {
+  &.priority-low {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  &.priority-medium {
+    background-color: #fff3e0;
+    color: #e65100;
+  }
+  
+  &.priority-high {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+  
+  &.priority-critical {
+    background-color: #f44336;
+    color: white;
+  }
+
+  /* Status chips */
+  &.status-open {
+    background-color: #e3f2fd;
+    color: #1565c0;
+  }
+  
+  &.status-in-progress {
+    background-color: #fff9c4;
+    color: #f57f17;
+  }
+  
+  &.status-reopened {
+    background-color: #fce4ec;
+    color: #c2185b;
+  }
+  
+  &.status-resolved {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  &.status-closed {
+    background-color: #eceff1;
+    color: #546e7a;
+  }
+  
+  &.status-wont-fix {
+    background-color: #efebe9;
+    color: #5d4037;
+  }
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  background-color: #e0e0e0;
+  color: #424242;
+}
+

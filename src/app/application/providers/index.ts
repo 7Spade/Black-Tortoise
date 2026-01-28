@@ -15,3 +15,5 @@ export {
   DAILY_CONTEXT 
 } from './daily-context.provider';
 export * from './task-context.provider';
+export * from './issue-context.provider';
+export * from './issue-context-provider.impl';

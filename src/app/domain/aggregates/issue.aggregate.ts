@@ -15,6 +15,7 @@ export enum IssueStatus {
   IN_PROGRESS = 'in-progress',
   RESOLVED = 'resolved',
   CLOSED = 'closed',
+  REOPENED = 'reopened',
   WONT_FIX = 'wont-fix',
 }
 
@@ -219,7 +220,7 @@ export function reopenIssue(issue: IssueAggregate): IssueAggregate {
 
   const result: IssueAggregate = {
     ...issue,
-    status: IssueStatus.OPEN,
+    status: IssueStatus.REOPENED,
     updatedAt: Date.now(),
     version: issue.version + 1,
   };

@@ -17,7 +17,7 @@
 
 import { computed, inject } from '@angular/core';
 import { ISSUE_REPOSITORY } from '@application/interfaces';
-import { IssueAggregate, IssueStatus } from '@domain/aggregates';
+import { IssueAggregate, IssuePriority, IssueStatus, IssueType } from '@domain/aggregates';
 import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
@@ -28,6 +28,11 @@ export interface IssuesState {
   readonly selectedIssueId: string | null;
   readonly isProcessing: boolean;
   readonly error: string | null;
+  readonly filterStatus: IssueStatus | null;
+  readonly filterType: IssueType | null;
+  readonly filterPriority: IssuePriority | null;
+  readonly filterAssigneeId: string | null;
+  readonly searchQuery: string;
 }
 
 const initialState: IssuesState = {
@@ -35,6 +40,11 @@ const initialState: IssuesState = {
   selectedIssueId: null,
   isProcessing: false,
   error: null,
+  filterStatus: null,
+  filterType: null,
+  filterPriority: null,
+  filterAssigneeId: null,
+  searchQuery: '',
 };
 
 /**
@@ -52,7 +62,11 @@ export const IssuesStore = signalStore(
      * Open issues
      */
     openIssues: computed(() =>
-      state.issues().filter(i => i.status === IssueStatus.OPEN || i.status === IssueStatus.IN_PROGRESS)
+      state.issues().filter(i => 
+        i.status === IssueStatus.OPEN || 
+        i.status === IssueStatus.IN_PROGRESS || 
+        i.status === IssueStatus.REOPENED
+      )
     ),
 
     /**
@@ -80,7 +94,52 @@ export const IssuesStore = signalStore(
     /**
      * Has open issues
      */
-    hasOpenIssues: computed(() => state.issues().some(i => i.status === IssueStatus.OPEN || i.status === IssueStatus.IN_PROGRESS)),
+    hasOpenIssues: computed(() => 
+      state.issues().some(i => 
+        i.status === IssueStatus.OPEN || 
+        i.status === IssueStatus.IN_PROGRESS || 
+        i.status === IssueStatus.REOPENED
+      )
+    ),
+
+    /**
+     * Filtered issues based on current filter state
+     */
+    filteredIssues: computed(() => {
+      let filtered = state.issues();
+
+      // Filter by status
+      if (state.filterStatus()) {
+        filtered = filtered.filter(i => i.status === state.filterStatus());
+      }
+
+      // Filter by type
+      if (state.filterType()) {
+        filtered = filtered.filter(i => i.type === state.filterType());
+      }
+
+      // Filter by priority
+      if (state.filterPriority()) {
+        filtered = filtered.filter(i => i.priority === state.filterPriority());
+      }
+
+      // Filter by assignee
+      if (state.filterAssigneeId()) {
+        filtered = filtered.filter(i => i.assigneeId === state.filterAssigneeId());
+      }
+
+      // Filter by search query
+      const query = state.searchQuery().toLowerCase();
+      if (query) {
+        filtered = filtered.filter(
+          i =>
+            i.title.toLowerCase().includes(query) ||
+            i.description.toLowerCase().includes(query)
+        );
+      }
+
+      return filtered;
+    }),
   })),
 
   withMethods((store, repo = inject(ISSUE_REPOSITORY)) => ({
@@ -149,6 +208,54 @@ export const IssuesStore = signalStore(
      */
     selectIssue(issueId: string | null): void {
       patchState(store, { selectedIssueId: issueId });
+    },
+
+    /**
+     * Set filter by status
+     */
+    filterByStatus(status: IssueStatus | null): void {
+      patchState(store, { filterStatus: status });
+    },
+
+    /**
+     * Set filter by type
+     */
+    filterByType(type: IssueType | null): void {
+      patchState(store, { filterType: type });
+    },
+
+    /**
+     * Set filter by priority
+     */
+    filterByPriority(priority: IssuePriority | null): void {
+      patchState(store, { filterPriority: priority });
+    },
+
+    /**
+     * Set filter by assignee
+     */
+    filterByAssignee(assigneeId: string | null): void {
+      patchState(store, { filterAssigneeId: assigneeId });
+    },
+
+    /**
+     * Set search query
+     */
+    searchIssues(query: string): void {
+      patchState(store, { searchQuery: query });
+    },
+
+    /**
+     * Clear all filters
+     */
+    clearFilters(): void {
+      patchState(store, {
+        filterStatus: null,
+        filterType: null,
+        filterPriority: null,
+        filterAssigneeId: null,
+        searchQuery: '',
+      });
     },
 
     /**

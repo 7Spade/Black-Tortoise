@@ -13,6 +13,7 @@ export * from './domain-event';
 export * from './event-metadata';
 export * from './event-type';
 export * from './issue-created.event';
+export * from './issue-reopened.event';
 export * from './issue-resolved.event';
 export * from './member-invited.event';
 export * from './member-removed.event';
