@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TaskSubmittedForQCEvent
  * 
  * Layer: Domain
@@ -7,7 +7,7 @@
  * Emitted when a task is submitted for quality control.
  */
 
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '../../events/domain-event';
 
 export interface TaskSubmittedForQCPayload {
   readonly workspaceId: string;
@@ -20,17 +20,20 @@ export interface TaskSubmittedForQCEvent extends DomainEvent<TaskSubmittedForQCP
   readonly type: 'TaskSubmittedForQC';
 }
 
-export function createTaskSubmittedForQCEvent(
-  taskId: string,
-  workspaceId: string,
-  taskTitle: string,
-  submittedById: string,
-  correlationId?: string,
-  causationId?: string | null
-): TaskSubmittedForQCEvent {
+export interface CreateTaskSubmittedForQCEventParams {
+  taskId: string;
+  workspaceId: string;
+  taskTitle: string;
+  submittedById: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
+export function createTaskSubmittedForQCEvent(params: CreateTaskSubmittedForQCEventParams): TaskSubmittedForQCEvent {
+  const { taskId, workspaceId, taskTitle, submittedById, correlationId, causationId } = params;
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
-  
+
   return {
     eventId,
     type: 'TaskSubmittedForQC',

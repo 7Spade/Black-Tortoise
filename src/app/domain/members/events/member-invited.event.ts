@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Member Invited Event
  * 
  * Layer: Domain
@@ -6,7 +6,7 @@
  * Emitted by: Members module
  */
 
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '../../events/domain-event';
 
 export interface MemberInvitedPayload {
   readonly workspaceId: string;
@@ -20,18 +20,21 @@ export interface MemberInvitedEvent extends DomainEvent<MemberInvitedPayload> {
   readonly type: 'MemberInvited';
 }
 
-export function createMemberInvitedEvent(
-  inviteId: string,
-  workspaceId: string,
-  email: string,
-  roleId: string,
-  invitedBy: string,
-  correlationId?: string,
-  causationId?: string | null
-): MemberInvitedEvent {
+export interface CreateMemberInvitedEventParams {
+  inviteId: string;
+  workspaceId: string;
+  email: string;
+  roleId: string;
+  invitedBy: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
+export function createMemberInvitedEvent(params: CreateMemberInvitedEventParams): MemberInvitedEvent {
+  const { inviteId, workspaceId, email, roleId, invitedBy, correlationId, causationId } = params;
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
-  
+
   return {
     eventId,
     type: 'MemberInvited',

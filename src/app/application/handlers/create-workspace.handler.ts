@@ -33,7 +33,7 @@ export class CreateWorkspaceHandler {
   async execute(command: CreateWorkspaceCommand): Promise<WorkspaceEntity> {
     // Generate unique workspace ID
     const workspaceId = WorkspaceId.generate().getValue();
-    
+
     // Create workspace entity
     const workspace = createWorkspaceEntity(
       workspaceId,
@@ -42,23 +42,23 @@ export class CreateWorkspaceHandler {
       command.ownerType,
       command.moduleIds
     );
-    
+
     // Persist to infrastructure
     await this.repository.save(workspace);
-    
+
     // Create domain event using the factory function
-    const event = createWorkspaceCreatedEvent(
-      workspace.id,
-      workspace.name,
-      workspace.ownerId,
-      workspace.ownerType,
-      command.ownerType === 'user' ? command.ownerId : undefined,
-      undefined
-    );
+    const event = createWorkspaceCreatedEvent({
+      workspaceId: workspace.id,
+      name: workspace.name,
+      ownerId: workspace.ownerId,
+      ownerType: workspace.ownerType,
+      userId: command.ownerType === 'user' ? command.ownerId : undefined,
+      correlationId: undefined
+    });
 
     // Publish event asynchronously
     void this.publishEvent.execute({ event });
-    
+
     return workspace;
   }
 }

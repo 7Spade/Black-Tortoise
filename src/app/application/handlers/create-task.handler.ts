@@ -57,16 +57,16 @@ export class CreateTaskHandler {
       await this.repository.save(task);
 
       // 3. Create Event
-      const event = createTaskCreatedEvent(
-        task.id,
-        task.workspaceId,
-        task.title,
-        task.description,
-        task.priority,
-        task.createdById,
-        request.correlationId,
-        request.causationId,
-      );
+      const event = createTaskCreatedEvent({
+        taskId: task.id,
+        workspaceId: task.workspaceId,
+        title: task.title,
+        description: task.description,
+        priority: task.priority,
+        createdById: task.createdById,
+        correlationId: request.correlationId,
+        causationId: request.causationId,
+      });
 
       // 4. Publish Event
       await this.publishEvent.execute({ event });

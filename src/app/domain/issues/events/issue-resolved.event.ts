@@ -1,4 +1,4 @@
-﻿/**
+/**
  * IssueResolvedEvent
  * 
  * Layer: Domain
@@ -7,7 +7,7 @@
  * Emitted when an issue is resolved, unblocking the task.
  */
 
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '../../events/domain-event';
 
 export interface IssueResolvedPayload {
   readonly workspaceId: string;

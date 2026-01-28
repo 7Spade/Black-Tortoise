@@ -8,7 +8,7 @@
  * Contains all information needed to track document uploads in the event store.
  */
 
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '../../events/domain-event';
 
 export interface DocumentUploadedPayload {
   readonly workspaceId: string;
@@ -25,24 +25,39 @@ export interface DocumentUploadedEvent extends DomainEvent<DocumentUploadedPaylo
   readonly type: 'DocumentUploaded';
 }
 
+export interface CreateDocumentUploadedEventParams {
+  documentId: string;
+  documentName: string;
+  documentType: string;
+  fileSize: number;
+  uploadedBy: string;
+  storagePath: string;
+  workspaceId: string;
+  userId?: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
 /**
  * Create a DocumentUploadedEvent
  */
-export function createDocumentUploadedEvent(
-  documentId: string,
-  documentName: string,
-  documentType: string,
-  fileSize: number,
-  uploadedBy: string,
-  storagePath: string,
-  workspaceId: string,
-  userId?: string,
-  correlationId?: string,
-  causationId?: string | null
-): DocumentUploadedEvent {
+export function createDocumentUploadedEvent(params: CreateDocumentUploadedEventParams): DocumentUploadedEvent {
+  const {
+    documentId,
+    documentName,
+    documentType,
+    fileSize,
+    uploadedBy,
+    storagePath,
+    workspaceId,
+    userId,
+    correlationId,
+    causationId
+  } = params;
+
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
-  
+
   const payload: DocumentUploadedPayload = {
     workspaceId,
     documentId,
@@ -53,7 +68,7 @@ export function createDocumentUploadedEvent(
     storagePath,
     ...(userId !== undefined ? { userId } : {}),
   };
-  
+
   return {
     eventId,
     type: 'DocumentUploaded',

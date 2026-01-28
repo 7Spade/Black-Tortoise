@@ -42,15 +42,15 @@ export class ApproveTaskHandler {
   async execute(request: ApproveTaskRequest): Promise<ApproveTaskResponse> {
     try {
       // Create domain event
-      const event = createAcceptanceApprovedEvent(
-        request.taskId,
-        request.workspaceId,
-        request.taskTitle,
-        request.approverId,
-        request.approvalNotes,
-        request.correlationId,
-        request.causationId
-      );
+      const event = createAcceptanceApprovedEvent({
+        taskId: request.taskId,
+        workspaceId: request.workspaceId,
+        taskTitle: request.taskTitle,
+        approverId: request.approverId,
+        approvalNotes: request.approvalNotes,
+        correlationId: request.correlationId,
+        causationId: request.causationId
+      });
 
       // Publish via PublishEventHandler (append BEFORE publish)
       const result = await this.publishEvent.execute({ event });

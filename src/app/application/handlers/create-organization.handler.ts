@@ -42,11 +42,11 @@ export class CreateOrganizationHandler {
     await this.repository.save(organization);
 
     // Publish Event
-    const event = createOrganizationCreatedEvent(
-      organizationId.toString(),
-      organization.displayName,
-      ownerId.toString()
-    );
+    const event = createOrganizationCreatedEvent({
+      organizationId: organizationId.toString(),
+      organizationName: organization.displayName,
+      ownerId: ownerId.toString()
+    });
 
     await this.publishEvent.execute({ event });
 

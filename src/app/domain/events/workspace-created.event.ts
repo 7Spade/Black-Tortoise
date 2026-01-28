@@ -22,21 +22,26 @@ export interface WorkspaceCreatedEvent extends DomainEvent<WorkspaceCreatedPaylo
   readonly type: 'WorkspaceCreated';
 }
 
+export interface CreateWorkspaceCreatedEventParams {
+  workspaceId: string;
+  name: string;
+  ownerId: string;
+  ownerType: 'user' | 'organization';
+  userId?: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
 /**
  * Create a WorkspaceCreatedEvent
  */
 export function createWorkspaceCreatedEvent(
-  workspaceId: string,
-  name: string,
-  ownerId: string,
-  ownerType: 'user' | 'organization',
-  userId?: string,
-  correlationId?: string,
-  causationId?: string | null
+  params: CreateWorkspaceCreatedEventParams
 ): WorkspaceCreatedEvent {
+  const { workspaceId, name, ownerId, ownerType, userId, correlationId, causationId } = params;
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
-  
+
   const payload: WorkspaceCreatedPayload = {
     workspaceId,
     name,
@@ -44,7 +49,7 @@ export function createWorkspaceCreatedEvent(
     ownerType,
     ...(userId !== undefined ? { userId } : {}),
   };
-  
+
   return {
     eventId,
     type: 'WorkspaceCreated',

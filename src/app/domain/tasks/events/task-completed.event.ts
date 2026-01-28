@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TaskCompletedEvent
  * 
  * Layer: Domain
@@ -8,7 +8,7 @@
  * Contains all information needed to track task completion in the event store.
  */
 
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '../../events/domain-event';
 
 export interface TaskCompletedPayload {
   readonly workspaceId: string;
@@ -23,22 +23,25 @@ export interface TaskCompletedEvent extends DomainEvent<TaskCompletedPayload> {
   readonly type: 'TaskCompleted';
 }
 
+export interface CreateTaskCompletedEventParams {
+  taskId: string;
+  taskName: string;
+  completedBy: string;
+  workspaceId: string;
+  completionNotes?: string;
+  userId?: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
 /**
  * Create a TaskCompletedEvent
  */
-export function createTaskCompletedEvent(
-  taskId: string,
-  taskName: string,
-  completedBy: string,
-  workspaceId: string,
-  completionNotes?: string,
-  userId?: string,
-  correlationId?: string,
-  causationId?: string | null
-): TaskCompletedEvent {
+export function createTaskCompletedEvent(params: CreateTaskCompletedEventParams): TaskCompletedEvent {
+  const { taskId, taskName, completedBy, workspaceId, completionNotes, userId, correlationId, causationId } = params;
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
-  
+
   const payload: TaskCompletedPayload = {
     workspaceId,
     taskId,
@@ -47,7 +50,7 @@ export function createTaskCompletedEvent(
     ...(completionNotes !== undefined ? { completionNotes } : {}),
     ...(userId !== undefined ? { userId } : {}),
   };
-  
+
   return {
     eventId,
     type: 'TaskCompleted',

@@ -36,16 +36,16 @@ export class CreateIssueHandler {
 
   async execute(request: CreateIssueRequest): Promise<CreateIssueResponse> {
     try {
-      const event = createIssueCreatedEvent(
-        request.issueId,
-        request.taskId,
-        request.workspaceId,
-        request.title,
-        request.description,
-        request.createdBy,
-        request.correlationId,
-        request.causationId
-      );
+      const event = createIssueCreatedEvent({
+        issueId: request.issueId,
+        taskId: request.taskId,
+        workspaceId: request.workspaceId,
+        title: request.title,
+        description: request.description,
+        createdById: request.createdBy,
+        correlationId: request.correlationId,
+        causationId: request.causationId
+      });
 
       const result = await this.publishEvent.execute({ event });
       return result;

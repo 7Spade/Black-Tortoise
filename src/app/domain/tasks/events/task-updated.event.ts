@@ -8,7 +8,7 @@
  */
 
 import { TaskAggregate } from '@domain/aggregates';
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '../../events/domain-event';
 import { EventType } from '@domain/events/event-type';
 
 export interface TaskUpdatedPayload {
@@ -22,14 +22,17 @@ export interface TaskUpdatedEvent extends DomainEvent<TaskUpdatedPayload> {
   readonly type: typeof EventType.TASK_UPDATED;
 }
 
-export function createTaskUpdatedEvent(
-  taskId: string,
-  workspaceId: string,
-  changes: Partial<TaskAggregate>,
-  updatedById: string,
-  correlationId?: string,
-  causationId?: string | null,
-): TaskUpdatedEvent {
+export interface CreateTaskUpdatedEventParams {
+  taskId: string;
+  workspaceId: string;
+  changes: Partial<TaskAggregate>;
+  updatedById: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
+export function createTaskUpdatedEvent(params: CreateTaskUpdatedEventParams): TaskUpdatedEvent {
+  const { taskId, workspaceId, changes, updatedById, correlationId, causationId } = params;
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Member Removed Event
  * 
  * Layer: Domain
@@ -6,7 +6,7 @@
  * Emitted by: Members module
  */
 
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '../../events/domain-event';
 
 export interface MemberRemovedPayload {
   readonly workspaceId: string;
@@ -19,24 +19,27 @@ export interface MemberRemovedEvent extends DomainEvent<MemberRemovedPayload> {
   readonly type: 'MemberRemoved';
 }
 
-export function createMemberRemovedEvent(
-  userId: string,
-  workspaceId: string,
-  removedBy: string,
-  reason?: string,
-  correlationId?: string,
-  causationId?: string | null
-): MemberRemovedEvent {
+export interface CreateMemberRemovedEventParams {
+  userId: string;
+  workspaceId: string;
+  removedBy: string;
+  reason?: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
+export function createMemberRemovedEvent(params: CreateMemberRemovedEventParams): MemberRemovedEvent {
+  const { userId, workspaceId, removedBy, reason, correlationId, causationId } = params;
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
-  
+
   const payload: MemberRemovedPayload = {
     workspaceId,
     userId,
     removedBy,
     ...(reason !== undefined ? { reason } : {}),
   };
-  
+
   return {
     eventId,
     type: 'MemberRemoved',

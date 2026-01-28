@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Daily Entry Created Event
  * 
  * Layer: Domain
@@ -6,7 +6,7 @@
  * Emitted by: Daily module
  */
 
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '../../events/domain-event';
 
 export interface DailyEntryCreatedPayload {
   readonly workspaceId: string;
@@ -22,20 +22,34 @@ export interface DailyEntryCreatedEvent extends DomainEvent<DailyEntryCreatedPay
   readonly type: 'DailyEntryCreated';
 }
 
-export function createDailyEntryCreatedEvent(
-  entryId: string,
-  workspaceId: string,
-  date: string,
-  userId: string,
-  taskIds: string[],
-  headcount: number,
-  notes?: string,
-  correlationId?: string,
-  causationId?: string | null
-): DailyEntryCreatedEvent {
+export interface CreateDailyEntryCreatedEventParams {
+  entryId: string;
+  workspaceId: string;
+  date: string;
+  userId: string;
+  taskIds: string[];
+  headcount: number;
+  notes?: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
+export function createDailyEntryCreatedEvent(params: CreateDailyEntryCreatedEventParams): DailyEntryCreatedEvent {
+  const {
+    entryId,
+    workspaceId,
+    date,
+    userId,
+    taskIds,
+    headcount,
+    notes,
+    correlationId,
+    causationId
+  } = params;
+
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
-  
+
   const payload: DailyEntryCreatedPayload = {
     workspaceId,
     entryId,
@@ -45,7 +59,7 @@ export function createDailyEntryCreatedEvent(
     headcount,
     ...(notes !== undefined ? { notes } : {}),
   };
-  
+
   return {
     eventId,
     type: 'DailyEntryCreated',

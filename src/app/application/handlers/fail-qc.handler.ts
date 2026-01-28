@@ -40,15 +40,15 @@ export class FailQCHandler {
       await this.repo.save(updatedTask);
 
       // 4. Publish Event
-      const event = createQCFailedEvent(
-        updatedTask.id,
-        updatedTask.workspaceId,
-        updatedTask.title,
-        request.failureReason,
-        request.reviewedBy,
-        request.correlationId,
-        request.causationId,
-      );
+      const event = createQCFailedEvent({
+        taskId: updatedTask.id,
+        workspaceId: updatedTask.workspaceId,
+        taskTitle: updatedTask.title,
+        failureReason: request.failureReason,
+        reviewedById: request.reviewedBy,
+        correlationId: request.correlationId,
+        causationId: request.causationId,
+      });
 
       await this.publishEvent.execute({ event });
       return { success: true };

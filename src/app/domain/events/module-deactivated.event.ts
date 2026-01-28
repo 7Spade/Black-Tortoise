@@ -18,15 +18,20 @@ export interface ModuleDeactivatedEvent extends DomainEvent<ModuleDeactivatedPay
   readonly type: 'ModuleDeactivated';
 }
 
+export interface CreateModuleDeactivatedEventParams {
+  moduleId: string;
+  workspaceId: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
 export function createModuleDeactivatedEvent(
-  moduleId: string,
-  workspaceId: string,
-  correlationId?: string,
-  causationId?: string | null
+  params: CreateModuleDeactivatedEventParams
 ): ModuleDeactivatedEvent {
+  const { moduleId, workspaceId, correlationId, causationId } = params;
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
-  
+
   return {
     eventId,
     type: 'ModuleDeactivated',

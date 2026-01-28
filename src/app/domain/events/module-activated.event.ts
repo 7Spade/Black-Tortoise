@@ -18,15 +18,20 @@ export interface ModuleActivatedEvent extends DomainEvent<ModuleActivatedPayload
   readonly type: 'ModuleActivated';
 }
 
+export interface CreateModuleActivatedEventParams {
+  moduleId: string;
+  workspaceId: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
 export function createModuleActivatedEvent(
-  moduleId: string,
-  workspaceId: string,
-  correlationId?: string,
-  causationId?: string | null
+  params: CreateModuleActivatedEventParams
 ): ModuleActivatedEvent {
+  const { moduleId, workspaceId, correlationId, causationId } = params;
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
-  
+
   return {
     eventId,
     type: 'ModuleActivated',

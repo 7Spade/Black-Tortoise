@@ -7,7 +7,7 @@
  * Emitted when a task is deleted.
  */
 
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '../../events/domain-event';
 import { EventType } from '@domain/events/event-type';
 
 export interface TaskDeletedPayload {
@@ -20,13 +20,16 @@ export interface TaskDeletedEvent extends DomainEvent<TaskDeletedPayload> {
   readonly type: typeof EventType.TASK_DELETED;
 }
 
-export function createTaskDeletedEvent(
-  taskId: string,
-  workspaceId: string,
-  deletedById: string,
-  correlationId?: string,
-  causationId?: string | null,
-): TaskDeletedEvent {
+export interface CreateTaskDeletedEventParams {
+  taskId: string;
+  workspaceId: string;
+  deletedById: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
+export function createTaskDeletedEvent(params: CreateTaskDeletedEventParams): TaskDeletedEvent {
+  const { taskId, workspaceId, deletedById, correlationId, causationId } = params;
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
 

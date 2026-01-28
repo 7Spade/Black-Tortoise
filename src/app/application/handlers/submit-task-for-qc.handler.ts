@@ -41,14 +41,14 @@ export class SubmitTaskForQCHandler {
       await this.repo.save(updatedTask);
 
       // 4. Publish
-      const event = createTaskSubmittedForQCEvent(
-        updatedTask.id,
-        updatedTask.workspaceId,
-        updatedTask.title,
-        request.submittedBy,
-        request.correlationId,
-        request.causationId,
-      );
+      const event = createTaskSubmittedForQCEvent({
+        taskId: updatedTask.id,
+        workspaceId: updatedTask.workspaceId,
+        taskTitle: updatedTask.title,
+        submittedById: request.submittedBy,
+        correlationId: request.correlationId,
+        causationId: request.causationId,
+      });
 
       await this.publishEvent.execute({ event });
       return { success: true };

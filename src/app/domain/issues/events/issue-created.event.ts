@@ -1,4 +1,4 @@
-﻿/**
+/**
  * IssueCreatedEvent
  * 
  * Layer: Domain
@@ -7,7 +7,7 @@
  * Emitted when an issue is created (typically from QC failure).
  */
 
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '../../events/domain-event';
 
 export interface IssueCreatedPayload {
   readonly workspaceId: string;
@@ -22,19 +22,22 @@ export interface IssueCreatedEvent extends DomainEvent<IssueCreatedPayload> {
   readonly type: 'IssueCreated';
 }
 
-export function createIssueCreatedEvent(
-  issueId: string,
-  taskId: string,
-  workspaceId: string,
-  title: string,
-  description: string,
-  createdById: string,
-  correlationId?: string,
-  causationId?: string | null
-): IssueCreatedEvent {
+export interface CreateIssueCreatedEventParams {
+  issueId: string;
+  taskId: string;
+  workspaceId: string;
+  title: string;
+  description: string;
+  createdById: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
+export function createIssueCreatedEvent(params: CreateIssueCreatedEventParams): IssueCreatedEvent {
+  const { issueId, taskId, workspaceId, title, description, createdById, correlationId, causationId } = params;
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
-  
+
   return {
     eventId,
     type: 'IssueCreated',

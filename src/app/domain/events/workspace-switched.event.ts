@@ -20,25 +20,30 @@ export interface WorkspaceSwitchedEvent extends DomainEvent<WorkspaceSwitchedPay
   readonly type: 'WorkspaceSwitched';
 }
 
+export interface CreateWorkspaceSwitchedEventParams {
+  previousWorkspaceId: string | null;
+  currentWorkspaceId: string;
+  userId?: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
 /**
  * Create a WorkspaceSwitchedEvent
  */
 export function createWorkspaceSwitchedEvent(
-  previousWorkspaceId: string | null,
-  currentWorkspaceId: string,
-  userId?: string,
-  correlationId?: string,
-  causationId?: string | null
+  params: CreateWorkspaceSwitchedEventParams
 ): WorkspaceSwitchedEvent {
+  const { previousWorkspaceId, currentWorkspaceId, userId, correlationId, causationId } = params;
   const eventId = crypto.randomUUID();
   const newCorrelationId = correlationId ?? eventId;
-  
+
   const payload: WorkspaceSwitchedPayload = {
     previousWorkspaceId,
     currentWorkspaceId,
     ...(userId !== undefined ? { userId } : {}),
   };
-  
+
   return {
     eventId,
     type: 'WorkspaceSwitched',

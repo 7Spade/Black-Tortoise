@@ -23,23 +23,23 @@ export interface SwitchWorkspaceCommand {
  */
 @Injectable({ providedIn: 'root' })
 export class SwitchWorkspaceHandler {
-  
+
   execute(command: SwitchWorkspaceCommand): void {
     // Create domain event using factory function
-    const event = createWorkspaceSwitchedEvent(
-      command.previousWorkspaceId,
-      command.targetWorkspaceId,
-      command.userId,
-      command.correlationId
-    );
-    
+    const event = createWorkspaceSwitchedEvent({
+      previousWorkspaceId: command.previousWorkspaceId,
+      currentWorkspaceId: command.targetWorkspaceId,
+      userId: command.userId,
+      correlationId: command.correlationId
+    });
+
     // In real implementation:
     // 1. Validate target workspace exists and user has access
     // 2. Cleanup previous workspace context
     // 3. Load new workspace context
     // 4. Publish event to workspace-scoped event bus
     // 5. Update application state
-    
+
     console.log('[SwitchWorkspaceHandler] Workspace switched:', event);
   }
 }

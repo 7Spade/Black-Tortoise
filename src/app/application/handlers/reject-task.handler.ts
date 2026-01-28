@@ -42,15 +42,15 @@ export class RejectTaskHandler {
   async execute(request: RejectTaskRequest): Promise<RejectTaskResponse> {
     try {
       // Create domain event
-      const event = createAcceptanceRejectedEvent(
-        request.taskId,
-        request.workspaceId,
-        request.taskTitle,
-        request.rejectedById,
-        request.rejectionReason,
-        request.correlationId,
-        request.causationId
-      );
+      const event = createAcceptanceRejectedEvent({
+        taskId: request.taskId,
+        workspaceId: request.workspaceId,
+        taskTitle: request.taskTitle,
+        rejectedById: request.rejectedById,
+        rejectionReason: request.rejectionReason,
+        correlationId: request.correlationId,
+        causationId: request.causationId
+      });
 
       // Publish via PublishEventHandler (append BEFORE publish)
       const result = await this.publishEvent.execute({ event });

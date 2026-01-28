@@ -20,19 +20,27 @@ export interface OrganizationCreatedEvent extends DomainEvent<OrganizationCreate
   type: typeof EventType.ORGANIZATION_CREATED;
 }
 
+export interface CreateOrganizationCreatedEventParams {
+  organizationId: string;
+  organizationName: string;
+  ownerId: string;
+  correlationId?: string;
+  causationId?: string | null;
+}
+
 export function createOrganizationCreatedEvent(
-  organizationId: string,
-  organizationName: string,
-  ownerId: string
+  params: CreateOrganizationCreatedEventParams
 ): OrganizationCreatedEvent {
+  const { organizationId, organizationName, ownerId, correlationId, causationId } = params;
+  const eventId = crypto.randomUUID();
+  const newCorrelationId = correlationId ?? eventId;
+
   return {
-    eventId: crypto.randomUUID(),
+    eventId,
     type: EventType.ORGANIZATION_CREATED,
     aggregateId: organizationId,
-    // For root events, correlationId can be new if not provided. 
-    // Ideally it should be passed in, but for now generating new one conforms to types.
-    correlationId: crypto.randomUUID(),
-    causationId: null,
+    correlationId: newCorrelationId,
+    causationId: causationId ?? null,
     timestamp: Date.now(),
     payload: {
       organizationId,

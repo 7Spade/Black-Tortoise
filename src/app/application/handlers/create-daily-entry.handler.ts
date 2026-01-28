@@ -37,16 +37,17 @@ export class CreateDailyEntryHandler {
 
   async execute(request: CreateDailyEntryRequest): Promise<CreateDailyEntryResponse> {
     try {
-      const event = createDailyEntryCreatedEvent(
-        request.entryId,
-        request.workspaceId,
-        request.date,
-        request.userId,
-        request.taskIds,
-        request.headcount,
-        request.notes,
-        request.correlationId
-      );
+      const event = createDailyEntryCreatedEvent({
+        entryId: request.entryId,
+        workspaceId: request.workspaceId,
+        date: request.date,
+        userId: request.userId,
+        taskIds: request.taskIds,
+        headcount: request.headcount,
+        notes: request.notes,
+        correlationId: request.correlationId,
+        causationId: request.causationId,
+      });
 
       const result = await this.publishEvent.execute({ event });
       return result;
