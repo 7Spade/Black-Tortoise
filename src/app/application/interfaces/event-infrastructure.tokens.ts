@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Event Infrastructure Injection Tokens
  * 
  * Layer: Application
@@ -19,8 +19,7 @@
  */
 
 import { InjectionToken } from '@angular/core';
-import { EventBus } from '@domain/types';
-import { EventStore } from '@domain/types';
+import { EventBus, EventStore } from '@eventing/domain/interfaces';
 
 /**
  * Event Bus Injection Token

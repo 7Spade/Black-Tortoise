@@ -23,7 +23,7 @@
 
 import { computed, inject } from '@angular/core';
 import { EVENT_BUS } from '@application/interfaces';
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '@eventing/domain/events';
 import {
   patchState,
   signalStore,

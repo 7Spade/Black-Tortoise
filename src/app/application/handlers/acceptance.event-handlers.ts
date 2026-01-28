@@ -7,8 +7,8 @@
 
 import { inject } from '@angular/core';
 import { AcceptanceCheckEntity, AcceptanceStatus } from '@domain/aggregates';
-import { AcceptanceApprovedEvent, AcceptanceRejectedEvent, QCPassedEvent } from '@domain/events';
-import { EventBus } from '@domain/types';
+import { AcceptanceApprovedEvent, AcceptanceRejectedEvent, QCPassedEvent } from '@eventing/domain/events';
+import { EventBus } from '@eventing/domain/interfaces';
 import { AcceptanceStore } from '../stores/acceptance.store';
 
 export function registerAcceptanceEventHandlers(eventBus: EventBus): void {

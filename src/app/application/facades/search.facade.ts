@@ -13,7 +13,7 @@
  * - No business logic - pure orchestration
  * 
  * Control Flow:
- * 1. Presentation forwards search events → facade
+ * 1. Presentation forwards search events ??facade
  * 2. Facade updates PresentationStore state
  * 3. Presentation consumes state signals from PresentationStore
  */

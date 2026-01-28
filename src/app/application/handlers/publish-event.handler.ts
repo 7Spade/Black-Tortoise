@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Publish Event Use Case
  * 
  * Layer: Application - Use Case
@@ -15,7 +15,7 @@
  */
 
 import { inject, Injectable } from '@angular/core';
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '@eventing/domain/events';
 import { EVENT_BUS, EVENT_STORE } from '../interfaces/event-infrastructure.tokens';
 
 export interface PublishEventRequest<TPayload> {

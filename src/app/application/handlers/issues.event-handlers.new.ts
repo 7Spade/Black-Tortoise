@@ -7,8 +7,8 @@
 
 import { inject } from '@angular/core';
 import { createIssue, IssuePriority, IssueStatus, IssueType } from '@domain/aggregates';
-import { IssueCreatedEvent, IssueResolvedEvent } from '@domain/events';
-import { EventBus } from '@domain/types';
+import { IssueCreatedEvent, IssueResolvedEvent } from '@eventing/domain/events';
+import { EventBus } from '@eventing/domain/interfaces';
 import { WorkspaceId } from '@workspace/domain';
 import { IssuesStore } from '../stores/issues.store';
 

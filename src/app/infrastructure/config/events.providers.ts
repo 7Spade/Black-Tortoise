@@ -1,7 +1,6 @@
 import { Provider } from '@angular/core';
 import { EVENT_BUS, EVENT_STORE } from '@application/interfaces';
-import { InMemoryEventBus } from '@infrastructure/adapters';
-import { InMemoryEventStore } from '@infrastructure/repositories';
+import { InMemoryEventBus, InMemoryEventStore } from '@eventing/infrastructure';
 
 export function provideEventsInfrastructure(): Provider[] {
   return [

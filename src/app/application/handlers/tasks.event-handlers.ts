@@ -5,8 +5,8 @@ import {
   QCFailedEvent,
   TaskCreatedEvent,
   TaskSubmittedForQCEvent,
-} from '@domain/events';
-import { EventBus } from '@domain/types';
+} from '@eventing/domain/events';
+import { EventBus } from '@eventing/domain/interfaces';
 import { TasksStore } from '../stores/tasks.store';
 
 export function registerTasksEventHandlers(eventBus: EventBus): void {

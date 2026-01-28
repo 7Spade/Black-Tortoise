@@ -13,7 +13,7 @@
  * - No business logic - pure orchestration
  * 
  * Control Flow:
- * 1. Presentation forwards notification events → facade
+ * 1. Presentation forwards notification events ??facade
  * 2. Facade updates PresentationStore state via methods
  * 3. Presentation consumes notification signals from PresentationStore
  */

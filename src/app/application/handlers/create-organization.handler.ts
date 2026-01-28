@@ -13,7 +13,7 @@ import {
   OrganizationId,
   UserId
 } from '@account/index';
-import { createOrganizationCreatedEvent } from '@domain/events/organization-created.event';
+import { createOrganizationCreatedEvent } from '@eventing/domain/events/organization-created.event';
 
 /**
  * Create Organization Command

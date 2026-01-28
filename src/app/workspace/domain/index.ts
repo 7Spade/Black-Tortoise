@@ -5,7 +5,4 @@ export * from './aggregates/workspace-settings.aggregate';
 export * from './interfaces/settings.repository';
 export * from './repositories/workspace.repository';
 export * from './value-objects/workspace-id.vo';
-export * from './events/workspace-created.event';
-export * from './events/workspace-switched.event';
 export * from './types/workspace-context';
-export * from './types/workspace-event-bus.interface';

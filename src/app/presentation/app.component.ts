@@ -10,7 +10,7 @@
  */
 
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { GlobalShellComponent } from '@presentation/shell';
+import { GlobalShellComponent } from '@shell';
 
 @Component({
   selector: 'app-root',
@@ -20,4 +20,4 @@ import { GlobalShellComponent } from '@presentation/shell';
   template: `<app-shell />`,
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {}
+export class AppComponent { }

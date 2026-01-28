@@ -1,7 +1,11 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { WorkspaceStore } from '../stores/workspace.store';
-import { ModuleMetadata, ModuleType, STANDARD_MODULES } from '@domain/types';
+import {
+  ModuleMetadata,
+  ModuleType,
+  STANDARD_MODULES,
+} from '@application/interfaces/module.interface';
 
 @Injectable({ providedIn: 'root' })
 export class WorkspaceHostFacade {

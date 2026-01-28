@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { NotificationFacade } from '@application/facades/notification.facade';
-import { TaskCreatedEvent } from '@domain/events';
-import { EventBus } from '@domain/types';
+import { TaskCreatedEvent } from '@eventing/domain/events';
+import { EventBus } from '@eventing/domain/interfaces';
 
 /**
  * Register global notification event handlers

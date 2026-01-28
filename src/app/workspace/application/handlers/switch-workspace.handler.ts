@@ -5,8 +5,9 @@
  * Purpose: Orchestrates workspace switching with event publishing
  */
 
-import { Injectable } from '@angular/core';
-import { createWorkspaceSwitchedEvent } from '@workspace/domain';
+import { inject, Injectable } from '@angular/core';
+import { PublishEventHandler } from '@application/handlers/publish-event.handler';
+import { createWorkspaceSwitchedEvent } from '@eventing/domain/events/workspace-switched.event';
 
 /**
  * Switch Workspace Command
@@ -23,6 +24,7 @@ export interface SwitchWorkspaceCommand {
  */
 @Injectable({ providedIn: 'root' })
 export class SwitchWorkspaceHandler {
+  private readonly publishEvent = inject(PublishEventHandler);
 
   execute(command: SwitchWorkspaceCommand): void {
     // Create domain event using factory function
@@ -40,7 +42,7 @@ export class SwitchWorkspaceHandler {
     // 4. Publish event to workspace-scoped event bus
     // 5. Update application state
 
-    console.log('[SwitchWorkspaceHandler] Workspace switched:', event);
+    void this.publishEvent.execute({ event });
   }
 }
 

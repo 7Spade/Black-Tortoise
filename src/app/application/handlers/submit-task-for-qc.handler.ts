@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
 import { TASK_REPOSITORY } from '@application/interfaces';
 import { TaskStatus, updateTaskStatus } from '@domain/aggregates';
-import { createTaskSubmittedForQCEvent } from '@domain/events';
+import { createTaskSubmittedForQCEvent } from '@eventing/domain/events';
 import { TaskId } from '@domain/value-objects';
 
 export interface SubmitTaskForQCRequest {

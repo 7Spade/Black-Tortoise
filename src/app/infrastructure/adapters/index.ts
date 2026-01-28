@@ -1,6 +1,8 @@
 /**
  * Infrastructure Layer - Adapters
  * Technical Barrel File
+ *
+ * Eventing implementations now live under @eventing/infrastructure.
  */
 
-export * from './in-memory-event-bus.adapter';
+export * from '@eventing/infrastructure';
