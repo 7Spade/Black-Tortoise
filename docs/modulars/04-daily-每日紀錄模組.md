@@ -20,7 +20,151 @@
 
 ---
 
-## 二、功能需求規格
+## 二、架構指引遵循
+
+本模組的實作必須嚴格遵循以下架構指引文件：
+
+1. **使用者層級指引**  
+   `.github/instructions/00-user-guidelines.instructions.md`  
+   定義使用者體驗、無障礙設計、互動模式等前端規範
+
+2. **組織層級指引**  
+   `.github/instructions/01-organization-guidelines.instructions.md`  
+   定義多組織管理、權限隔離、資源分配等規範
+
+3. **工作區層級指引**  
+   `.github/instructions/02-workspace-guidelines.instructions.md`  
+   定義 Workspace Context 邊界、模組協作、狀態管理等核心規範
+
+4. **模組開發指引**  
+   `.github/instructions/03-modules-guidelines.instructions.md`  
+   定義模組分層架構、DDD 實作、事件驅動等開發規範
+
+5. **事件溯源與因果關係**  
+   `.github/instructions/04-event-sourcing-and-causality.instructions.md`  
+   定義事件設計、因果鏈追蹤、事件處理順序等規範
+
+**重要提醒**：所有實作決策若與上述指引衝突，必須以指引文件為準。若指引之間有衝突，優先順序為 04 > 03 > 02 > 01 > 00。
+
+---
+
+## 三、開發流程與方法
+
+本模組採用 **Sub-Agent + Software Planning + Sequential Thinking** 的開發流程：
+
+### 流程說明
+
+1. **Software Planning 階段**  
+   - 使用 `software-planning-mcp` 工具建立模組開發計劃
+   - 分解功能需求為可執行的開發任務
+   - 定義各層級（Domain/Application/Infrastructure/Presentation）的職責邊界
+   - 建立事件流轉與模組互動的序列圖
+
+2. **Sequential Thinking 階段**  
+   - 使用 `server-sequential-thinking` 工具進行逐步推理
+   - 驗證架構設計是否符合 DDD 原則
+   - 檢查事件設計是否滿足因果完整性
+   - 確認模組邊界是否清晰且無循環依賴
+
+3. **Sub-Agent 協作**  
+   - Domain Agent: 負責 Aggregate、Entity、Value Object 設計
+   - Application Agent: 負責 Use Case、Command Handler、Event Handler 實作
+   - Infrastructure Agent: 負責 Repository、Adapter、外部服務整合
+   - Presentation Agent: 負責 Component、Store、UI 互動邏輯
+
+4. **迭代與驗證**  
+   - 每完成一個功能需求，回到 Planning 階段驗證
+   - 使用 Sequential Thinking 檢查是否引入技術債
+   - 確保所有變更都有對應的測試覆蓋
+
+---
+
+## 四、模組結構規劃
+
+以下是本模組預期的檔案結構樹（按分層展示）：
+
+```
+src/app/
+├── domain/daily/
+│   ├── aggregates/
+│   │   └── daily-entry.aggregate.ts
+│   ├── value-objects/
+│   │   ├── daily-entry-id.vo.ts
+│   │   ├── man-day.vo.ts
+│   │   └── work-date.vo.ts
+│   ├── events/
+│   │   ├── daily-entry-created.event.ts
+│   │   └── daily-entry-updated.event.ts
+│   └── repositories/
+│       └── daily-entry.repository.interface.ts
+│
+├── application/daily/
+│   ├── commands/
+│   │   ├── create-daily-entry.command.ts
+│   │   ├── update-daily-entry.command.ts
+│   │   └── batch-create-entries.command.ts
+│   ├── handlers/
+│   │   ├── create-daily-entry.handler.ts
+│   │   ├── task-progress-updated-event.handler.ts
+│   │   └── batch-create-entries.handler.ts
+│   ├── queries/
+│   │   ├── get-daily-entries.query.ts
+│   │   └── get-weekly-summary.query.ts
+│   └── stores/
+│       └── daily.store.ts
+│
+├── infrastructure/daily/
+│   ├── repositories/
+│   │   └── daily-entry.repository.ts
+│   └── adapters/
+│       └── firebase-daily.adapter.ts
+│
+└── presentation/daily/
+    ├── components/
+    │   ├── daily-entry-form/
+    │   ├── daily-entry-list/
+    │   └── weekly-summary/
+    └── pages/
+        └── daily-page.component.ts
+```
+
+---
+
+## 五、預計新增檔案
+
+### Domain Layer (src/app/domain/daily/)
+- `aggregates/daily-entry.aggregate.ts` - 每日紀錄聚合根
+- `value-objects/daily-entry-id.vo.ts` - 紀錄 ID 值物件
+- `value-objects/man-day.vo.ts` - 人工/日值物件
+- `value-objects/work-date.vo.ts` - 工作日期值物件
+- `events/daily-entry-created.event.ts` - 紀錄建立事件
+- `events/daily-entry-updated.event.ts` - 紀錄更新事件
+- `repositories/daily-entry.repository.interface.ts` - Repository 介面
+
+### Application Layer (src/app/application/daily/)
+- `commands/create-daily-entry.command.ts` - 建立紀錄命令
+- `commands/update-daily-entry.command.ts` - 更新紀錄命令
+- `commands/batch-create-entries.command.ts` - 批次建立命令
+- `handlers/create-daily-entry.handler.ts` - 建立紀錄處理器
+- `handlers/task-progress-updated-event.handler.ts` - 任務進度更新事件處理器
+- `handlers/batch-create-entries.handler.ts` - 批次建立處理器
+- `queries/get-daily-entries.query.ts` - 取得紀錄查詢
+- `queries/get-weekly-summary.query.ts` - 取得週摘要查詢
+- `stores/daily.store.ts` - 每日紀錄 Signal Store
+
+### Infrastructure Layer (src/app/infrastructure/daily/)
+- `repositories/daily-entry.repository.ts` - Repository 實作
+- `adapters/firebase-daily.adapter.ts` - Firebase 適配器
+
+### Presentation Layer (src/app/presentation/daily/)
+- `components/daily-entry-form/daily-entry-form.component.ts` - 紀錄表單元件
+- `components/daily-entry-list/daily-entry-list.component.ts` - 紀錄列表元件
+- `components/weekly-summary/weekly-summary.component.ts` - 週摘要元件
+- `pages/daily-page.component.ts` - 每日紀錄頁面元件
+
+---
+
+## 六、功能需求規格
 
 ### 1. 傳統產業工時計算
 
@@ -72,7 +216,7 @@
 
 ---
 
-## 三、現代化實作要求
+## 七、現代化實作要求
 
 ### Angular 20+ 最佳實踐
 
@@ -100,7 +244,7 @@
 
 ---
 
-## 四、事件整合
+## 八、事件整合
 
 ### 發布事件 (Published Events)
 - **DailyEntryCreated**
@@ -118,7 +262,7 @@
 
 ---
 
-## 五、架構合規性
+## 九、架構合規性
 
 ### Workspace Context 邊界
 - 本模組不修改 Workspace Context
@@ -130,7 +274,7 @@
 - 不允許其他模組直接讀寫本模組狀態
 - 狀態變更必須透過 Domain Event 公告
 
-## 六、禁止事項 (Forbidden Practices)
+## 十、禁止事項 (Forbidden Practices)
 
 - ❌ 記錄超過 1.0 人工/日
 - ❌ 跨 Workspace 查看或修改記錄
@@ -140,7 +284,7 @@
 
 ---
 
-## 七、測試策略
+## 十一、測試策略
 
 ### Unit Tests
 - 測試 computed 邏輯是否正確反映 source signal 的變化
@@ -158,7 +302,7 @@
 
 ---
 
-## 八、UI/UX 規範
+## 十二、UI/UX 規範
 
 ### 設計系統
 - 使用 Angular Material (M3)
@@ -177,7 +321,7 @@
 
 ---
 
-## 九、DDD 實作規範
+## 十三、DDD 實作規範
 
 ### Aggregate Root
 - 支援 Creation (create()) 與 Reconstruction (reconstruct())
@@ -194,7 +338,7 @@
 
 ---
 
-## 十、開發檢查清單
+## 十四、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -213,7 +357,7 @@
 
 ---
 
-## 十一、參考資料
+## 十五、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md

@@ -20,7 +20,143 @@
 
 ---
 
-## 二、功能需求規格
+## 二、架構指引遵循
+
+本模組的實作必須嚴格遵循以下架構指引文件：
+
+1. **使用者層級指引**  
+   `.github/instructions/00-user-guidelines.instructions.md`  
+   定義使用者體驗、無障礙設計、互動模式等前端規範
+
+2. **組織層級指引**  
+   `.github/instructions/01-organization-guidelines.instructions.md`  
+   定義多組織管理、權限隔離、資源分配等規範
+
+3. **工作區層級指引**  
+   `.github/instructions/02-workspace-guidelines.instructions.md`  
+   定義 Workspace Context 邊界、模組協作、狀態管理等核心規範
+
+4. **模組開發指引**  
+   `.github/instructions/03-modules-guidelines.instructions.md`  
+   定義模組分層架構、DDD 實作、事件驅動等開發規範
+
+5. **事件溯源與因果關係**  
+   `.github/instructions/04-event-sourcing-and-causality.instructions.md`  
+   定義事件設計、因果鏈追蹤、事件處理順序等規範
+
+**重要提醒**：所有實作決策若與上述指引衝突，必須以指引文件為準。若指引之間有衝突，優先順序為 04 > 03 > 02 > 01 > 00。
+
+---
+
+## 三、開發流程與方法
+
+本模組採用 **Sub-Agent + Software Planning + Sequential Thinking** 的開發流程：
+
+### 流程說明
+
+1. **Software Planning 階段**  
+   - 使用 `software-planning-mcp` 工具建立模組開發計劃
+   - 分解功能需求為可執行的開發任務
+   - 定義各層級（Domain/Application/Infrastructure/Presentation）的職責邊界
+   - 建立事件流轉與模組互動的序列圖
+
+2. **Sequential Thinking 階段**  
+   - 使用 `server-sequential-thinking` 工具進行逐步推理
+   - 驗證架構設計是否符合 DDD 原則
+   - 檢查事件設計是否滿足因果完整性
+   - 確認模組邊界是否清晰且無循環依賴
+
+3. **Sub-Agent 協作**  
+   - Domain Agent: 負責 Aggregate、Entity、Value Object 設計
+   - Application Agent: 負責 Use Case、Command Handler、Event Handler 實作
+   - Infrastructure Agent: 負責 Repository、Adapter、外部服務整合
+   - Presentation Agent: 負責 Component、Store、UI 互動邏輯
+
+4. **迭代與驗證**  
+   - 每完成一個功能需求，回到 Planning 階段驗證
+   - 使用 Sequential Thinking 檢查是否引入技術債
+   - 確保所有變更都有對應的測試覆蓋
+
+---
+
+## 四、模組結構規劃
+
+以下是本模組預期的檔案結構樹（按分層展示）：
+
+```
+src/app/
+├── domain/audit/
+│   ├── aggregates/
+│   │   └── audit-log.aggregate.ts
+│   ├── value-objects/
+│   │   ├── audit-log-id.vo.ts
+│   │   ├── operation-type.vo.ts
+│   │   └── audit-metadata.vo.ts
+│   ├── events/
+│   │   └── audit-log-created.event.ts
+│   └── repositories/
+│       └── audit-log.repository.interface.ts
+│
+├── application/audit/
+│   ├── commands/
+│   │   └── create-audit-log.command.ts
+│   ├── handlers/
+│   │   ├── all-domain-events.handler.ts
+│   │   └── create-audit-log.handler.ts
+│   ├── queries/
+│   │   ├── get-audit-logs.query.ts
+│   │   └── search-audit-logs.query.ts
+│   └── stores/
+│       └── audit.store.ts
+│
+├── infrastructure/audit/
+│   ├── repositories/
+│   │   └── audit-log.repository.ts
+│   └── adapters/
+│       └── firebase-audit.adapter.ts
+│
+└── presentation/audit/
+    ├── components/
+    │   ├── audit-log-list/
+    │   ├── audit-log-filter/
+    │   └── audit-log-detail/
+    └── pages/
+        └── audit-page.component.ts
+```
+
+---
+
+## 五、預計新增檔案
+
+### Domain Layer (src/app/domain/audit/)
+- `aggregates/audit-log.aggregate.ts` - 稽核日誌聚合根
+- `value-objects/audit-log-id.vo.ts` - 稽核日誌 ID 值物件
+- `value-objects/operation-type.vo.ts` - 操作類型值物件
+- `value-objects/audit-metadata.vo.ts` - 稽核元資料值物件
+- `events/audit-log-created.event.ts` - 稽核日誌建立事件
+- `repositories/audit-log.repository.interface.ts` - Repository 介面
+
+### Application Layer (src/app/application/audit/)
+- `commands/create-audit-log.command.ts` - 建立稽核日誌命令
+- `handlers/all-domain-events.handler.ts` - 所有領域事件處理器
+- `handlers/create-audit-log.handler.ts` - 建立稽核日誌處理器
+- `queries/get-audit-logs.query.ts` - 取得稽核日誌查詢
+- `queries/search-audit-logs.query.ts` - 搜尋稽核日誌查詢
+- `stores/audit.store.ts` - 稽核 Signal Store
+
+### Infrastructure Layer (src/app/infrastructure/audit/)
+- `repositories/audit-log.repository.ts` - Repository 實作
+- `adapters/firebase-audit.adapter.ts` - Firebase 適配器
+
+### Presentation Layer (src/app/presentation/audit/)
+- `components/audit-log-list/audit-log-list.component.ts` - 稽核日誌列表元件
+- `components/audit-log-filter/audit-log-filter.component.ts` - 稽核日誌篩選元件
+- `components/audit-log-detail/audit-log-detail.component.ts` - 稽核日誌詳情元件
+- `pages/audit-page.component.ts` - 稽核頁面元件
+
+---
+
+## 六、功能需求規格
 
 ### 1. 操作記錄
 
@@ -86,7 +222,7 @@
 
 ---
 
-## 三、現代化實作要求
+## 七、現代化實作要求
 
 ### Angular 20+ 最佳實踐
 
@@ -114,7 +250,7 @@
 
 ---
 
-## 四、事件整合
+## 八、事件整合
 
 ### 發布事件 (Published Events)
 - 無
@@ -130,7 +266,7 @@
 
 ---
 
-## 五、架構合規性
+## 九、架構合規性
 
 ### Workspace Context 邊界
 - 本模組不修改 Workspace Context
@@ -147,7 +283,7 @@
 - 使用 append-only 模式，確保日誌不可篡改
 - 不參與業務邏輯，僅負責記錄與查詢
 
-## 六、禁止事項 (Forbidden Practices)
+## 十、禁止事項 (Forbidden Practices)
 
 - ❌ 修改或刪除稽核日誌
 - ❌ 繞過稽核記錄執行敏感操作
@@ -157,7 +293,7 @@
 
 ---
 
-## 七、測試策略
+## 十一、測試策略
 
 ### Unit Tests
 - 測試 computed 邏輯是否正確反映 source signal 的變化
@@ -175,7 +311,7 @@
 
 ---
 
-## 八、UI/UX 規範
+## 十二、UI/UX 規範
 
 ### 設計系統
 - 使用 Angular Material (M3)
@@ -194,7 +330,7 @@
 
 ---
 
-## 九、DDD 實作規範
+## 十三、DDD 實作規範
 
 ### Aggregate Root
 - 支援 Creation (create()) 與 Reconstruction (reconstruct())
@@ -211,7 +347,7 @@
 
 ---
 
-## 十、開發檢查清單
+## 十四、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -230,7 +366,7 @@
 
 ---
 
-## 十一、參考資料
+## 十五、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md

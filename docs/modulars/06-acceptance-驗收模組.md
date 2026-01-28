@@ -20,7 +20,158 @@
 
 ---
 
-## 二、功能需求規格
+## 二、架構指引遵循
+
+本模組的實作必須嚴格遵循以下架構指引文件：
+
+1. **使用者層級指引**  
+   `.github/instructions/00-user-guidelines.instructions.md`  
+   定義使用者體驗、無障礙設計、互動模式等前端規範
+
+2. **組織層級指引**  
+   `.github/instructions/01-organization-guidelines.instructions.md`  
+   定義多組織管理、權限隔離、資源分配等規範
+
+3. **工作區層級指引**  
+   `.github/instructions/02-workspace-guidelines.instructions.md`  
+   定義 Workspace Context 邊界、模組協作、狀態管理等核心規範
+
+4. **模組開發指引**  
+   `.github/instructions/03-modules-guidelines.instructions.md`  
+   定義模組分層架構、DDD 實作、事件驅動等開發規範
+
+5. **事件溯源與因果關係**  
+   `.github/instructions/04-event-sourcing-and-causality.instructions.md`  
+   定義事件設計、因果鏈追蹤、事件處理順序等規範
+
+**重要提醒**：所有實作決策若與上述指引衝突，必須以指引文件為準。若指引之間有衝突，優先順序為 04 > 03 > 02 > 01 > 00。
+
+---
+
+## 三、開發流程與方法
+
+本模組採用 **Sub-Agent + Software Planning + Sequential Thinking** 的開發流程：
+
+### 流程說明
+
+1. **Software Planning 階段**  
+   - 使用 `software-planning-mcp` 工具建立模組開發計劃
+   - 分解功能需求為可執行的開發任務
+   - 定義各層級（Domain/Application/Infrastructure/Presentation）的職責邊界
+   - 建立事件流轉與模組互動的序列圖
+
+2. **Sequential Thinking 階段**  
+   - 使用 `server-sequential-thinking` 工具進行逐步推理
+   - 驗證架構設計是否符合 DDD 原則
+   - 檢查事件設計是否滿足因果完整性
+   - 確認模組邊界是否清晰且無循環依賴
+
+3. **Sub-Agent 協作**  
+   - Domain Agent: 負責 Aggregate、Entity、Value Object 設計
+   - Application Agent: 負責 Use Case、Command Handler、Event Handler 實作
+   - Infrastructure Agent: 負責 Repository、Adapter、外部服務整合
+   - Presentation Agent: 負責 Component、Store、UI 互動邏輯
+
+4. **迭代與驗證**  
+   - 每完成一個功能需求，回到 Planning 階段驗證
+   - 使用 Sequential Thinking 檢查是否引入技術債
+   - 確保所有變更都有對應的測試覆蓋
+
+---
+
+## 四、模組結構規劃
+
+以下是本模組預期的檔案結構樹（按分層展示）：
+
+```
+src/app/
+├── domain/acceptance/
+│   ├── aggregates/
+│   │   └── acceptance-item.aggregate.ts
+│   ├── entities/
+│   │   └── acceptance-criteria-item.entity.ts
+│   ├── value-objects/
+│   │   ├── acceptance-item-id.vo.ts
+│   │   ├── acceptance-status.vo.ts
+│   │   └── acceptance-result.vo.ts
+│   ├── events/
+│   │   ├── acceptance-approved.event.ts
+│   │   ├── acceptance-rejected.event.ts
+│   │   └── acceptance-started.event.ts
+│   └── repositories/
+│       └── acceptance-item.repository.interface.ts
+│
+├── application/acceptance/
+│   ├── commands/
+│   │   ├── start-acceptance.command.ts
+│   │   ├── approve-acceptance.command.ts
+│   │   └── reject-acceptance.command.ts
+│   ├── handlers/
+│   │   ├── task-ready-for-acceptance-event.handler.ts
+│   │   ├── start-acceptance.handler.ts
+│   │   ├── approve-acceptance.handler.ts
+│   │   └── reject-acceptance.handler.ts
+│   ├── queries/
+│   │   ├── get-pending-acceptance-items.query.ts
+│   │   └── get-acceptance-history.query.ts
+│   └── stores/
+│       └── acceptance.store.ts
+│
+├── infrastructure/acceptance/
+│   ├── repositories/
+│   │   └── acceptance-item.repository.ts
+│   └── adapters/
+│       └── firebase-acceptance.adapter.ts
+│
+└── presentation/acceptance/
+    ├── components/
+    │   ├── acceptance-criteria-list/
+    │   ├── acceptance-item-detail/
+    │   └── acceptance-history/
+    └── pages/
+        └── acceptance-page.component.ts
+```
+
+---
+
+## 五、預計新增檔案
+
+### Domain Layer (src/app/domain/acceptance/)
+- `aggregates/acceptance-item.aggregate.ts` - 驗收項目聚合根
+- `entities/acceptance-criteria-item.entity.ts` - 驗收標準項目實體
+- `value-objects/acceptance-item-id.vo.ts` - 驗收項目 ID 值物件
+- `value-objects/acceptance-status.vo.ts` - 驗收狀態值物件
+- `value-objects/acceptance-result.vo.ts` - 驗收結果值物件
+- `events/acceptance-approved.event.ts` - 驗收通過事件
+- `events/acceptance-rejected.event.ts` - 驗收駁回事件
+- `events/acceptance-started.event.ts` - 驗收開始事件
+- `repositories/acceptance-item.repository.interface.ts` - Repository 介面
+
+### Application Layer (src/app/application/acceptance/)
+- `commands/start-acceptance.command.ts` - 開始驗收命令
+- `commands/approve-acceptance.command.ts` - 批准驗收命令
+- `commands/reject-acceptance.command.ts` - 駁回驗收命令
+- `handlers/task-ready-for-acceptance-event.handler.ts` - 任務準備驗收事件處理器
+- `handlers/start-acceptance.handler.ts` - 開始驗收處理器
+- `handlers/approve-acceptance.handler.ts` - 批准驗收處理器
+- `handlers/reject-acceptance.handler.ts` - 駁回驗收處理器
+- `queries/get-pending-acceptance-items.query.ts` - 取得待辦驗收查詢
+- `queries/get-acceptance-history.query.ts` - 取得驗收歷史查詢
+- `stores/acceptance.store.ts` - 驗收 Signal Store
+
+### Infrastructure Layer (src/app/infrastructure/acceptance/)
+- `repositories/acceptance-item.repository.ts` - Repository 實作
+- `adapters/firebase-acceptance.adapter.ts` - Firebase 適配器
+
+### Presentation Layer (src/app/presentation/acceptance/)
+- `components/acceptance-criteria-list/acceptance-criteria-list.component.ts` - 驗收標準列表元件
+- `components/acceptance-item-detail/acceptance-item-detail.component.ts` - 驗收項目詳情元件
+- `components/acceptance-history/acceptance-history.component.ts` - 驗收歷史元件
+- `pages/acceptance-page.component.ts` - 驗收頁面元件
+
+---
+
+## 六、功能需求規格
 
 ### 1. 驗收項目管理
 
@@ -98,7 +249,7 @@
 
 ---
 
-## 三、現代化實作要求
+## 七、現代化實作要求
 
 ### Angular 20+ 最佳實踐
 
@@ -126,7 +277,7 @@
 
 ---
 
-## 四、事件整合
+## 八、事件整合
 
 ### 發布事件 (Published Events)
 - **AcceptanceApproved** (所有必檢標準滿足)
@@ -146,7 +297,7 @@
 
 ---
 
-## 五、架構合規性
+## 九、架構合規性
 
 ### Workspace Context 邊界
 - 本模組不修改 Workspace Context
@@ -158,7 +309,7 @@
 - 不允許其他模組直接讀寫本模組狀態
 - 狀態變更必須透過 Domain Event 公告
 
-## 六、禁止事項 (Forbidden Practices)
+## 十、禁止事項 (Forbidden Practices)
 
 - ❌ 接收未通過 QC 的任務
 - ❌ 直接修改任務狀態，必須透過事件
@@ -168,7 +319,7 @@
 
 ---
 
-## 七、測試策略
+## 十一、測試策略
 
 ### Unit Tests
 - 測試 computed 邏輯是否正確反映 source signal 的變化
@@ -186,7 +337,7 @@
 
 ---
 
-## 八、UI/UX 規範
+## 十二、UI/UX 規範
 
 ### 設計系統
 - 使用 Angular Material (M3)
@@ -205,7 +356,7 @@
 
 ---
 
-## 九、DDD 實作規範
+## 十三、DDD 實作規範
 
 ### Aggregate Root
 - 支援 Creation (create()) 與 Reconstruction (reconstruct())
@@ -222,7 +373,7 @@
 
 ---
 
-## 十、開發檢查清單
+## 十四、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -241,7 +392,7 @@
 
 ---
 
-## 十一、參考資料
+## 十五、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md

@@ -20,7 +20,178 @@
 
 ---
 
-## 二、功能需求規格
+## 二、架構指引遵循
+
+本模組的實作必須嚴格遵循以下架構指引文件：
+
+1. **使用者層級指引**  
+   `.github/instructions/00-user-guidelines.instructions.md`  
+   定義使用者體驗、無障礙設計、互動模式等前端規範
+
+2. **組織層級指引**  
+   `.github/instructions/01-organization-guidelines.instructions.md`  
+   定義多組織管理、權限隔離、資源分配等規範
+
+3. **工作區層級指引**  
+   `.github/instructions/02-workspace-guidelines.instructions.md`  
+   定義 Workspace Context 邊界、模組協作、狀態管理等核心規範
+
+4. **模組開發指引**  
+   `.github/instructions/03-modules-guidelines.instructions.md`  
+   定義模組分層架構、DDD 實作、事件驅動等開發規範
+
+5. **事件溯源與因果關係**  
+   `.github/instructions/04-event-sourcing-and-causality.instructions.md`  
+   定義事件設計、因果鏈追蹤、事件處理順序等規範
+
+**重要提醒**：所有實作決策若與上述指引衝突，必須以指引文件為準。若指引之間有衝突，優先順序為 04 > 03 > 02 > 01 > 00。
+
+---
+
+## 三、開發流程與方法
+
+本模組採用 **Sub-Agent + Software Planning + Sequential Thinking** 的開發流程：
+
+### 流程說明
+
+1. **Software Planning 階段**  
+   - 使用 `software-planning-mcp` 工具建立模組開發計劃
+   - 分解功能需求為可執行的開發任務
+   - 定義各層級（Domain/Application/Infrastructure/Presentation）的職責邊界
+   - 建立事件流轉與模組互動的序列圖
+
+2. **Sequential Thinking 階段**  
+   - 使用 `server-sequential-thinking` 工具進行逐步推理
+   - 驗證架構設計是否符合 DDD 原則
+   - 檢查事件設計是否滿足因果完整性
+   - 確認模組邊界是否清晰且無循環依賴
+
+3. **Sub-Agent 協作**  
+   - Domain Agent: 負責 Aggregate、Entity、Value Object 設計
+   - Application Agent: 負責 Use Case、Command Handler、Event Handler 實作
+   - Infrastructure Agent: 負責 Repository、Adapter、外部服務整合
+   - Presentation Agent: 負責 Component、Store、UI 互動邏輯
+
+4. **迭代與驗證**  
+   - 每完成一個功能需求，回到 Planning 階段驗證
+   - 使用 Sequential Thinking 檢查是否引入技術債
+   - 確保所有變更都有對應的測試覆蓋
+
+---
+
+## 四、模組結構規劃
+
+以下是本模組預期的檔案結構樹（按分層展示）：
+
+```
+src/app/
+├── domain/tasks/
+│   ├── aggregates/
+│   │   └── task.aggregate.ts
+│   ├── entities/
+│   │   ├── subtask.entity.ts
+│   │   └── task-dependency.entity.ts
+│   ├── value-objects/
+│   │   ├── task-id.vo.ts
+│   │   ├── task-status.vo.ts
+│   │   ├── task-priority.vo.ts
+│   │   ├── money.vo.ts
+│   │   └── progress.vo.ts
+│   ├── events/
+│   │   ├── task-created.event.ts
+│   │   ├── task-updated.event.ts
+│   │   ├── task-completed.event.ts
+│   │   ├── task-ready-for-qc.event.ts
+│   │   └── task-blocked.event.ts
+│   └── repositories/
+│       └── task.repository.interface.ts
+│
+├── application/tasks/
+│   ├── commands/
+│   │   ├── create-task.command.ts
+│   │   ├── update-task.command.ts
+│   │   ├── delete-task.command.ts
+│   │   ├── update-progress.command.ts
+│   │   └── assign-task.command.ts
+│   ├── handlers/
+│   │   ├── create-task.handler.ts
+│   │   ├── update-task.handler.ts
+│   │   ├── qc-passed-event.handler.ts
+│   │   └── issue-resolved-event.handler.ts
+│   ├── queries/
+│   │   ├── get-tasks.query.ts
+│   │   ├── get-task-by-id.query.ts
+│   │   └── get-tasks-by-status.query.ts
+│   └── stores/
+│       └── tasks.store.ts
+│
+├── infrastructure/tasks/
+│   ├── repositories/
+│   │   └── task.repository.ts
+│   └── adapters/
+│       └── firebase-tasks.adapter.ts
+│
+└── presentation/tasks/
+    ├── components/
+    │   ├── task-list/
+    │   ├── task-kanban/
+    │   ├── task-gantt/
+    │   ├── task-editor/
+    │   └── task-detail/
+    └── pages/
+        └── tasks-page.component.ts
+```
+
+---
+
+## 五、預計新增檔案
+
+### Domain Layer (src/app/domain/tasks/)
+- `aggregates/task.aggregate.ts` - 任務聚合根
+- `entities/subtask.entity.ts` - 子任務實體
+- `entities/task-dependency.entity.ts` - 任務依賴實體
+- `value-objects/task-id.vo.ts` - 任務 ID 值物件
+- `value-objects/task-status.vo.ts` - 任務狀態值物件
+- `value-objects/task-priority.vo.ts` - 任務優先級值物件
+- `value-objects/money.vo.ts` - 金額值物件
+- `value-objects/progress.vo.ts` - 進度值物件
+- `events/task-created.event.ts` - 任務建立事件
+- `events/task-updated.event.ts` - 任務更新事件
+- `events/task-completed.event.ts` - 任務完成事件
+- `events/task-ready-for-qc.event.ts` - 任務準備質檢事件
+- `events/task-blocked.event.ts` - 任務阻塞事件
+- `repositories/task.repository.interface.ts` - Repository 介面
+
+### Application Layer (src/app/application/tasks/)
+- `commands/create-task.command.ts` - 建立任務命令
+- `commands/update-task.command.ts` - 更新任務命令
+- `commands/delete-task.command.ts` - 刪除任務命令
+- `commands/update-progress.command.ts` - 更新進度命令
+- `commands/assign-task.command.ts` - 指派任務命令
+- `handlers/create-task.handler.ts` - 建立任務處理器
+- `handlers/update-task.handler.ts` - 更新任務處理器
+- `handlers/qc-passed-event.handler.ts` - QC 通過事件處理器
+- `handlers/issue-resolved-event.handler.ts` - 問題解決事件處理器
+- `queries/get-tasks.query.ts` - 取得任務列表查詢
+- `queries/get-task-by-id.query.ts` - 依 ID 取得任務查詢
+- `queries/get-tasks-by-status.query.ts` - 依狀態取得任務查詢
+- `stores/tasks.store.ts` - 任務 Signal Store
+
+### Infrastructure Layer (src/app/infrastructure/tasks/)
+- `repositories/task.repository.ts` - Repository 實作
+- `adapters/firebase-tasks.adapter.ts` - Firebase 適配器
+
+### Presentation Layer (src/app/presentation/tasks/)
+- `components/task-list/task-list.component.ts` - 任務列表元件
+- `components/task-kanban/task-kanban.component.ts` - 看板視圖元件
+- `components/task-gantt/task-gantt.component.ts` - 甘特圖元件
+- `components/task-editor/task-editor.component.ts` - 任務編輯器元件
+- `components/task-detail/task-detail.component.ts` - 任務詳情元件
+- `pages/tasks-page.component.ts` - 任務頁面元件
+
+---
+
+## 六、功能需求規格
 
 ### 1. 單一狀態來源 (Single Source of Truth) + 派生視圖
 
@@ -128,7 +299,7 @@
 
 ---
 
-## 三、現代化實作要求
+## 七、現代化實作要求
 
 ### Angular 20+ 最佳實踐
 
@@ -157,7 +328,7 @@
 
 ---
 
-## 四、事件整合
+## 八、事件整合
 
 ### 發布事件 (Published Events)
 - **TaskCreated**
@@ -188,7 +359,7 @@
 
 ---
 
-## 五、架構合規性
+## 九、架構合規性
 
 ### Workspace Context 邊界
 - 本模組不修改 Workspace Context
@@ -200,7 +371,7 @@
 - 不允許其他模組直接讀寫本模組狀態
 - 狀態變更必須透過 Domain Event 公告
 
-## 六、禁止事項 (Forbidden Practices)
+## 十、禁止事項 (Forbidden Practices)
 
 - ❌ TasksModule 直接修改 Permissions/Issues 狀態
 - ❌ 在 Component 中直接操作 Task Entity
@@ -210,7 +381,7 @@
 
 ---
 
-## 七、測試策略
+## 十一、測試策略
 
 ### Unit Tests
 - 測試 computed 邏輯是否正確反映 source signal 的變化
@@ -228,7 +399,7 @@
 
 ---
 
-## 八、UI/UX 規範
+## 十二、UI/UX 規範
 
 ### 設計系統
 - 使用 Angular Material (M3)
@@ -247,7 +418,7 @@
 
 ---
 
-## 九、DDD 實作規範
+## 十三、DDD 實作規範
 
 ### Aggregate Root
 - 支援 Creation (create()) 與 Reconstruction (reconstruct())
@@ -264,7 +435,7 @@
 
 ---
 
-## 十、開發檢查清單
+## 十四、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -283,7 +454,7 @@
 
 ---
 
-## 十一、參考資料
+## 十五、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md
