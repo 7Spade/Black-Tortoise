@@ -4,7 +4,7 @@ import { TEMPLATE_EVENT_BUS_TOKEN, TEMPLATE_EVENT_STORE_TOKEN } from '@template-
 import { Template } from '@template-core/domain/aggregates/template.aggregate';
 import { ITemplateRepository } from '@template-core/domain/repositories/template.repository';
 import { TemplateId } from '@template-core/domain/value-objects/template-id.vo';
-import { TemplateFirestoreMapper } from '../mappers/template-firestore.mapper';
+import { TemplateFirestoreMapper } from '@template-core/infrastructure/mappers/template-firestore.mapper';
 
 @Injectable()
 export class TemplateFirebaseRepository implements ITemplateRepository {

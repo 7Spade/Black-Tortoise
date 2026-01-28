@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { GetTemplateByIdQuery } from '../queries/get-template.query';
-import { GetTemplateUseCase } from '../use-cases/get-template.use-case';
+import { GetTemplateByIdQuery } from '@template-core/application/queries/get-template.query';
+import { GetTemplateUseCase } from '@template-core/application/use-cases/get-template.use-case';
 
 export const canActivateTemplate: CanActivateFn = async (route, state) => {
   const getTemplateUseCase = inject(GetTemplateUseCase);

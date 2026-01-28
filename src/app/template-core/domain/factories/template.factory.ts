@@ -1,7 +1,7 @@
 // Factory Pattern Example
 // Encapsulates complex creation logic, often involving policies or external dependencies
-import { Template } from '../aggregates/template.aggregate';
-import { TemplateNamingPolicy } from '../policies/template-naming.policy';
+import { Template } from '@template-core/domain/aggregates/template.aggregate';
+import { TemplateNamingPolicy } from '@template-core/domain/policies/template-naming.policy';
 
 export class TemplateFactory {
   public static createValidTemplate(name: string, content: string, metadata?: { correlationId?: string, causationId?: string, userId?: string }): Template {

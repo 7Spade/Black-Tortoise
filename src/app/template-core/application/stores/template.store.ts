@@ -5,14 +5,14 @@ import { pipe, switchMap, tap } from 'rxjs';
 import { AddSectionToTemplateUseCase } from '@template-core/application/use-cases/add-section.use-case';
 import { CreateTemplateUseCase } from '@template-core/application/use-cases/create-template.use-case';
 import { GetAllTemplatesUseCase } from '@template-core/application/use-cases/get-all-templates.use-case';
-import { AddTemplateSectionCommand, CreateTemplateCommand } from '../commands/template.commands';
-import { TemplateDto } from '../dtos/template.dto';
-import { TemplateToDtoMapper } from '../mappers/template.mapper';
+import { AddTemplateSectionCommand, CreateTemplateCommand } from '@template-core/application/commands/template.commands';
+import { TemplateDto } from '@template-core/application/dtos/template.dto';
+import { TemplateToDtoMapper } from '@template-core/application/mappers/template.mapper';
 
-import { TemplateEventDto } from '../dtos/template-event.dto';
-import { TemplateEventMapper } from '../mappers/template-event.mapper';
-import { GetTemplateHistoryQuery } from '../queries/get-template-history.query';
-import { GetTemplateHistoryUseCase } from '../use-cases/get-template-history.use-case';
+import { TemplateEventDto } from '@template-core/application/dtos/template-event.dto';
+import { TemplateEventMapper } from '@template-core/application/mappers/template-event.mapper';
+import { GetTemplateHistoryQuery } from '@template-core/application/queries/get-template-history.query';
+import { GetTemplateHistoryUseCase } from '@template-core/application/use-cases/get-template-history.use-case';
 
 type TemplateState = {
   templateDtos: TemplateDto[]; // Use DTOs for UI State

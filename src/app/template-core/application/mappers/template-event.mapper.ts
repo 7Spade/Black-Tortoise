@@ -1,5 +1,5 @@
 import { TemplateDomainEvent } from '@template-core/domain/base/domain-event';
-import { TemplateEventDto } from '../dtos/template-event.dto';
+import { TemplateEventDto } from '@template-core/application/dtos/template-event.dto';
 
 export class TemplateEventMapper {
   static toDto(event: TemplateDomainEvent): TemplateEventDto {

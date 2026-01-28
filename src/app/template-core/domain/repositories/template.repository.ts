@@ -1,4 +1,4 @@
-import { Template } from '../aggregates/template.aggregate';
+import { Template } from '@template-core/domain/aggregates/template.aggregate';
 
 export interface ITemplateRepository {
   findById(id: string): Promise<Template | null>;

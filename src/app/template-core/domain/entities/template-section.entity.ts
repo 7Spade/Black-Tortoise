@@ -1,4 +1,4 @@
-import { SectionId } from '../value-objects/section-id.vo';
+import { SectionId } from '@template-core/domain/value-objects/section-id.vo';
 
 // Child Entity
 // Has identity (SectionId) but its lifecycle is managed by the Aggregate Root (Template)

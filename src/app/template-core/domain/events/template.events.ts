@@ -1,4 +1,4 @@
-import { TemplateDomainEvent } from '../base/domain-event';
+import { TemplateDomainEvent } from '@template-core/domain/base/domain-event';
 
 export class TemplateCreatedEvent extends TemplateDomainEvent {
   constructor(

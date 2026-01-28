@@ -1,6 +1,6 @@
 // Specification Pattern Example
 // Used to encapsulate complex business rules that can be tested in isolation
-import { Template } from '../aggregates/template.aggregate';
+import { Template } from '@template-core/domain/aggregates/template.aggregate';
 
 export abstract class TemplateSpecification {
   abstract isSatisfiedBy(template: Template): boolean;

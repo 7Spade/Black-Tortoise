@@ -45,7 +45,10 @@ export class UpdateSettingsHandler {
 
     // 3. Update Notification Config
     if (command.notificationConfig) {
-      const notif = NotificationConfig.reconstitute(
-        'notification-config',
+      // TODO: FIX BROKEN CODE
+      // const notif = NotificationConfig.reconstitute(
+      //   'notification-config',
+      // }
+    }
   }
-  }
+}

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CreateTemplateCommand } from '../commands/template.commands';
-import { CreateTemplateUseCase } from '../use-cases/create-template.use-case';
+import { CreateTemplateCommand } from '@template-core/application/commands/template.commands';
+import { CreateTemplateUseCase } from '@template-core/application/use-cases/create-template.use-case';
 
 @Injectable({ providedIn: 'root' })
 export class CreateTemplateHandler {

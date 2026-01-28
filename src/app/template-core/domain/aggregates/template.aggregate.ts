@@ -1,9 +1,9 @@
-import { TemplateAggregateRoot } from '../base/aggregate-root';
-import { TemplateDomainEvent } from '../base/domain-event';
-import { TemplateSection } from '../entities/template-section.entity';
-import { TemplateContentUpdatedEvent, TemplateCreatedEvent, TemplateSectionAddedEvent, TemplateSectionRemovedEvent } from '../events/template.events';
-import { SectionId } from '../value-objects/section-id.vo';
-import { TemplateId } from '../value-objects/template-id.vo';
+import { TemplateAggregateRoot } from '@template-core/domain/base/aggregate-root';
+import { TemplateDomainEvent } from '@template-core/domain/base/domain-event';
+import { TemplateSection } from '@template-core/domain/entities/template-section.entity';
+import { TemplateContentUpdatedEvent, TemplateCreatedEvent, TemplateSectionAddedEvent, TemplateSectionRemovedEvent } from '@template-core/domain/events/template.events';
+import { SectionId } from '@template-core/domain/value-objects/section-id.vo';
+import { TemplateId } from '@template-core/domain/value-objects/template-id.vo';
 
 export interface TemplateProps {
   id: TemplateId;

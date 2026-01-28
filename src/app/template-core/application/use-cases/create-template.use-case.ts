@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@angular/core';
 import { TemplateFactory } from '@template-core/domain/factories/template.factory';
 import { ITemplateRepository } from '@template-core/domain/repositories/template.repository';
-import { CreateTemplateCommand } from '../commands/template.commands';
-import { TEMPLATE_REPOSITORY_TOKEN } from '../tokens/template-repository.token';
+import { CreateTemplateCommand } from '@template-core/application/commands/template.commands';
+import { TEMPLATE_REPOSITORY_TOKEN } from '@template-core/application/tokens/template-repository.token';
 
 @Injectable({ providedIn: 'root' })
 export class CreateTemplateUseCase {

@@ -21,16 +21,10 @@ export class SettingsRepositoryImpl implements WorkspaceSettingsRepository {
     }
 
     async save(settings: WorkspaceSettingsAggregate): Promise<void> {
-        // TODO: Implement save
-        throw new Error('Method not implemented.');
-    }
-}
-
-    async save(settings: WorkspaceSettingsAggregate): Promise < void> {
-    const dto = WorkspaceSettingsMapper.toDto(settings);
-    await setDoc(
-        doc(this.firestore, `${this.collectionName}/${settings.workspaceId.value}`),
-    dto,
+        const dto = WorkspaceSettingsMapper.toDto(settings);
+        await setDoc(
+            doc(this.firestore, `${this.collectionName}/${settings.workspaceId.value}`),
+            dto
         );
     }
 }

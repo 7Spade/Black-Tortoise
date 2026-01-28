@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { TemplateStore } from '../stores/template.store';
+import { TemplateStore } from '@template-core/application/stores/template.store';
 
 @Injectable({ providedIn: 'root' })
 export class TemplateFacade {

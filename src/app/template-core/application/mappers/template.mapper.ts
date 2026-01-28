@@ -1,5 +1,5 @@
 import { Template } from '@template-core/domain/aggregates/template.aggregate';
-import { TemplateDto } from '../dtos/template.dto';
+import { TemplateDto } from '@template-core/application/dtos/template.dto';
 
 export class TemplateToDtoMapper {
   public static toDto(template: Template): TemplateDto {
