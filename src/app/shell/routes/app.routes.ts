@@ -29,7 +29,7 @@ export const routes: Routes = [
     pathMatch: 'full',
     canActivate: [canActivatePublic],
     loadComponent: () =>
-      import('@presentation/pages/landing').then((m) => m.LandingPage),
+      import('src/app/shell/pages/landing').then((m) => m.LandingPage),
   },
 
   // Auth Routes
@@ -51,7 +51,7 @@ export const routes: Routes = [
   {
     path: 'demo',
     loadComponent: () =>
-      import('@presentation/pages/dashboard').then(
+      import('src/app/shell/pages/dashboard').then(
         (m) => m.DemoDashboardComponent,
       ),
   },
