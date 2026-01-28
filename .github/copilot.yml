@@ -39,3 +39,10 @@ files:
   - pattern: "**/*.spec.ts"
     suggestion:
       enable: false
+include:
+  - "src/app/domain/**"
+  - "src/app/application/**"
+exclude:
+  - "node_modules/**"
+  - "dist/**"
+
