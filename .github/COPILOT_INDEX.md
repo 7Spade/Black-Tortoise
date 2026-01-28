@@ -1,103 +1,118 @@
 # GitHub Copilot Knowledge Base Index
 
-> **Quick Navigation for AI Assistants and Developers**
-
-This document provides a structured index of all Copilot-related resources in this repository, organized by purpose and priority.
+> **快速導航 - 為 AI 助手與開發者設計**
 
 ---
 
-## 🎯 Start Here
+## 🎯 必讀核心文件
 
-| Resource | Purpose | Priority |
-|----------|---------|----------|
-| [Main Instructions](.github/copilot-instructions.md) | Core architecture rules and constraints | ⭐⭐⭐ |
-| [AGENTS.md](AGENTS.md) | AI agent context and quick reference | ⭐⭐⭐ |
-| [README.md](README.md) | Project overview and architecture | ⭐⭐⭐ |
-| [Forbidden Rules](.github/forbidden-copilot-instructions.md) | Files that must not be modified | ⭐⭐⭐ |
-
----
-
-## 📚 Instruction Files
-
-### Architecture & Design Patterns
-
-| File | Focus Area | Apply To |
-|------|------------|----------|
-| [Project Structure](./instructions/project-structure.instructions.md) | File organization, naming, dependencies | `**` |
-| [DDD Architecture](./instructions/ng-ddd-architecture.instructions.md) | Domain-driven design patterns | `src/app/domain/**/*.ts` |
-| [NgRx Signals](./instructions/ngrx-signals.instructions.md) | State management with signals | `**/*store.ts` |
-
-### Angular-Specific
-
-| File | Focus Area | Apply To |
-|------|------------|----------|
-| [Angular Core](./instructions/angular.instructions.md) | General Angular best practices | `**/*.ts, **/*.html` |
-| [Angular 20 Control Flow](./instructions/ng-angular-20-control-flow.instructions.md) | @if/@for/@switch syntax | `**/*.html` |
-| [Angular Material](./instructions/ng-angular-material.instructions.md) | Material Design components | `**/*.ts, **/*.html` |
-| [Angular CDK](./instructions/ng-angular-cdk.instructions.md) | Component Dev Kit | `**/*.ts` |
-| [Angular Router](./instructions/ng-angular-router.instructions.md) | Routing and navigation | `**/*.routes.ts` |
-| [Angular Forms](./instructions/ng-angular-forms.instructions.md) | Reactive forms | `**/*form*.ts` |
-
-### Firebase Integration
-
-| File | Focus Area | Apply To |
-|------|------------|----------|
-| [AngularFire](./instructions/ng-angularfire.instructions.md) | Firebase integration | `**/*.ts` |
-| [Firebase Data Connect](./instructions/ng-firebase-data-connect.instructions.md) | GraphQL with Firebase | `dataconnect/**/*.gql` |
-
-### Code Quality & Standards
-
-| File | Focus Area | Apply To |
-|------|------------|----------|
-| [TypeScript Standards](./instructions/typescript-5-es2022.instructions.md) | TypeScript best practices | `**/*.ts` |
-| [RxJS Patterns](./instructions/ng-rxjs-patterns.instructions.md) | Reactive programming | `**/*.ts` |
-| [Self-Explanatory Code](./instructions/self-explanatory-code-commenting.instructions.md) | Commenting guidelines | `**` |
-| [Security & OWASP](./instructions/security-and-owasp.instructions.md) | Security best practices | `**` |
-| [Performance Optimization](./instructions/performance-optimization.instructions.md) | Performance guidelines | `**` |
-
-### Development Workflow
-
-| File | Focus Area | Apply To |
-|------|------------|----------|
-| [Spec-Driven Workflow](./instructions/spec-driven-workflow-v1.instructions.md) | Development process | `**` |
-| [Task Implementation](./instructions/task-implementation.instructions.md) | Task execution guidelines | `.copilot-tracking/changes/*.md` |
-| [Update Documentation](./instructions/update-docs-on-code-change.instructions.md) | Documentation maintenance | `**/*.md` |
-
-### Meta & AI
-
-| File | Focus Area | Apply To |
-|------|------------|----------|
-| [Agent Skills](./instructions/agent-skills.instructions.md) | Creating agent skills | `**/.github/skills/**/SKILL.md` |
-| [Custom Instructions](./instructions/instructions.instructions.md) | Writing instruction files | `**/*.instructions.md` |
-| [Prompt Engineering](./instructions/prompt.instructions.md) | Prompt file creation | `**/*.prompt.md` |
-| [AI Prompt Safety](./instructions/ai-prompt-engineering-safety-best-practices.instructions.md) | Safe AI usage | `**` |
-
-### Tools & CI/CD
-
-| File | Focus Area | Apply To |
-|------|------------|----------|
-| [GitHub Actions](./instructions/github-actions-ci-cd-best-practices.instructions.md) | CI/CD workflows | `.github/workflows/*.yml` |
-| [Codacy](./instructions/codacy.instructions.md) | Code quality tools | `**` |
+| 資源 | 用途 | 優先級 |
+|------|------|--------|
+| [copilot-instructions.md](.github/copilot-instructions.md) | **架構規則與限制** | ⭐⭐⭐ |
+| [AGENTS.md](AGENTS.md) | AI 代理上下文 | ⭐⭐⭐ |
+| [forbidden-copilot-instructions.md](.github/forbidden-copilot-instructions.md) | 禁止修改規則 | ⭐⭐⭐ |
 
 ---
 
-## 🎨 Agent Skills
+## 📂 指令檔案組織
 
-Skills are automatically loaded by Copilot based on context. They are located in `.github/skills/`.
+### 架構與設計模式
+- **[DDD Architecture](./instructions/ng-ddd-architecture.instructions.md)** - Domain-driven design
+- **[Project Structure](./instructions/project-structure.instructions.md)** - 檔案組織與命名
+- **[NgRx Signals](./instructions/ngrx-signals.instructions.md)** - 狀態管理
 
-### Framework Skills
+### Angular 框架
+- **[Angular Core](./instructions/angular.instructions.md)** - 通用最佳實踐
+- **[Angular 20 Control Flow](./instructions/ng-angular-20-control-flow.instructions.md)** - `@if/@for/@switch`
+- **[Angular Material](./instructions/ng-angular-material.instructions.md)** - Material Design
+- **[Angular Router](./instructions/ng-angular-router.instructions.md)** - 路由與導航
+- **[Angular Forms](./instructions/ng-angular-forms.instructions.md)** - Reactive Forms
 
-| Skill | Description | Triggers |
-|-------|-------------|----------|
-| [Angular 20](.github/skills/angular-20/) | Angular 20 features and patterns | Angular development |
-| [Angular Control Flow](.github/skills/angular-20-control-flow/) | @if/@for/@switch syntax | Template editing |
-| [Angular Material](.github/skills/angular-material/) | Material components | Material UI work |
-| [Angular CDK](.github/skills/angular-cdk/) | Component Dev Kit | Custom components |
-| [Angular Router](.github/skills/angular-router/) | Routing patterns | Navigation work |
-| [Angular Forms](.github/skills/angular-forms/) | Form handling | Form development |
-| [Angular Google Maps](.github/skills/angular-google-maps/) | Maps integration | Map features |
+### Firebase 整合
+- **[AngularFire](./instructions/ng-angularfire.instructions.md)** - Firebase 整合
+- **[Firebase Data Connect](./instructions/ng-firebase-data-connect.instructions.md)** - GraphQL
 
-### State Management Skills
+### 程式碼品質
+- **[TypeScript](./instructions/typescript-5-es2022.instructions.md)** - TS 標準
+- **[RxJS Patterns](./instructions/ng-rxjs-patterns.instructions.md)** - Reactive 程式設計
+- **[Security & OWASP](./instructions/security-and-owasp.instructions.md)** - 安全最佳實踐
+- **[Performance](./instructions/performance-optimization.instructions.md)** - 效能優化
+
+---
+
+## 🎨 技能 (Skills)
+
+自動根據上下文載入，位於 `.github/skills/`
+
+### 框架技能
+- **[@ngrx/signals](.github/skills/@ngrx-signals/)** - Signal 狀態管理
+- **[Angular 20](.github/skills/angular-20/)** - Angular 20 功能
+- **[Angular Material](.github/skills/angular-material/)** - Material 元件
+- **[AngularFire](.github/skills/angularfire/)** - Firebase 整合
+
+### 設計與架構
+- **[DDD Architecture](.github/skills/ddd-architecture/)** - 領域驅動設計
+- **[Material Design 3](.github/skills/material-design-3/)** - MD3 主題
+
+---
+
+## 💬 提示模板 (Prompts)
+
+位於 `.github/prompts/`
+
+### 規劃與架構
+- `breakdown-epic-arch.prompt.md` - 架構規劃
+- `create-architectural-decision-record.prompt.md` - ADR 建立
+- `create-specification.prompt.md` - 規格文件
+
+### 實作
+- `create-implementation-plan.prompt.md` - 實作計畫
+- `breakdown-feature-implementation.prompt.md` - 功能拆解
+
+### 測試
+- `breakdown-test.prompt.md` - 測試規劃
+- `playwright-generate-test.prompt.md` - E2E 測試
+
+---
+
+## 🤖 自訂代理 (Agents)
+
+位於 `.github/agents/`
+
+- **GPT-5.2-Codex** - Angular 20 + DDD + NgRx Signals 主力開發
+- **Planner** - 策略規劃
+- **Arch** - 架構設計
+- **Janitor** - 程式碼清理
+- **Context7** - 最新函式庫文件
+
+---
+
+## 🚫 禁止模式
+
+來自 [forbidden-copilot-instructions.md](.github/forbidden-copilot-instructions.md):
+
+- ❌ **永不修改**: `src/index.html`, `src/dataconnect-generated/**`
+- ❌ **永不使用**: Traditional NgRx (actions/reducers/effects)
+- ❌ **永不使用**: Zone.js 依賴
+- ❌ **永不使用**: Legacy control flow (`*ngIf`, `*ngFor`, `*ngSwitch`)
+
+---
+
+## 🎯 快速任務參考
+
+| 任務 | 參考資源 |
+|------|----------|
+| 新增功能 | DDD Architecture + NgRx Signals |
+| 狀態管理 | @ngrx/signals Skill + Instructions |
+| Firebase 整合 | AngularFire Skill + Instructions |
+| UI 元件 | Angular Material + Control Flow |
+| 撰寫測試 | Webapp Testing + Breakdown Test Prompt |
+| 架構規劃 | Arch Agent + Create ADR Prompt |
+
+---
+
+**最後更新**: 2026-01-28  
+**維護者**: Project maintainers
 
 | Skill | Description | Triggers |
 |-------|-------------|----------|

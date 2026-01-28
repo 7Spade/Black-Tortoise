@@ -9,33 +9,104 @@ All rules, forbidden constructs, and enforcement are fully declared in this file
 
 ---
 
-## 2. Architecture Compliance
+## 2. Layer Architecture (Hard Constraints)
 
-### 2.1 Domain-Layer Rules
-- Domain entities are **minimal, intention-free, factual**.
-- No UI or presentation fields (`name`, `displayName`, `label`, `avatarUrl`) exist in domain entities.
-- Any attempt to access non-existent fields is a **TS2339 violation**.
-- Do not fix by:
-  - casting (`as any`)  
-  - optional chaining  
-  - adding fields to domain entities
-- Correct approach: create an **Application ViewModel** or DTO that maps domain → UI.
+### 2.0 Dependency Direction Law
+**Allowed dependency graph:**
+```
+presentation → application → domain
+application  → infrastructure
+```
 
-### 2.2 Application Layer Rules
-- All domain state updates go through **NgRx Signals** stores.
-- Single store per domain. Example domains: User, Org, Team, Partner, Menu, Workspace.
-- Stores are **public API contracts**:
-  - Do not add methods to satisfy other stores.
-  - Direct store-to-store manipulation is forbidden.
-  - Missing functionality must go through:
-    - Application service, or
-    - Context / Facade store
+**Forbidden:**
+- `domain` importing from ANY other layer
+- `application` importing from `presentation`
+- `presentation` importing from `domain` or `infrastructure`
+- `infrastructure` importing from `domain` or `presentation`
+- Any cross-layer imports not shown above
 
-### 2.3 UI Layer Rules
-- UI must not modify domain state directly.
-- UI may use component-local signals **only if the state is not shared globally**.
-- Event handling in UI must call **store signals or application services**.
-- No business logic, persistence, or I/O in templates.
+**Self-Check Before Every Code Change:**
+1. Would this change compile if layer imports were strictly enforced?
+2. Does this introduce a new dependency direction?
+3. Does this add logic to a forbidden layer?
+
+> If any answer is "maybe", **STOP and ASK**.
+
+---
+
+## 3. Architecture Compliance
+
+### 3.1 Domain Layer Rules (`src/app/domain/`)
+**Purpose:** Pure business logic, framework-independent.
+
+**MUST:**
+- Be pure TypeScript (no Angular, RxJS, Firebase imports)
+- Define entities as minimal, intention-free, factual models
+- Use Value Objects (immutable, validated at creation)
+- Define Repository interfaces ONLY (returning `Promise<Entity>`)
+- Contain Aggregates as consistency boundaries
+- Define Domain Events as immutable definitions
+
+**MUST NOT:**
+- Import from `application`, `infrastructure`, or `presentation`
+- Contain UI fields (`displayName`, `avatarUrl`, etc.)
+- Handle persistence, I/O, or network calls
+- Depend on any framework
+
+**Violation Fix:**
+- TS2339 on domain field → Create Application ViewModel, NOT add field
+- Never use `as any`, `?`, or field additions to suppress errors
+
+### 3.2 Application Layer Rules (`src/app/application/`)
+**Purpose:** State management and orchestration.
+
+**MUST:**
+- Use **NgRx Signals** stores ONLY (single store per domain)
+- Coordinate domain logic via Commands/Queries/Handlers
+- Define Repository interfaces (implemented in Infrastructure)
+- M4p Domain ↔ DTOs via Mappers
+- Emit Domain Events
+
+**MUST NOT:**
+- Contain UI logic
+- Use traditional NgRx (actions/reducers/effects)
+- Use RxJS for state (async via `rxMethod` only)
+- Import from `presentation`
+- Import concrete Infrastructure classes (use interfaces)
+- Have stores call other stores directly
+
+**Stores are Public API contracts:**
+- Do NOT add methods to satisfy other stores
+- Missing functionality → Application service or Facade
+
+### 3.3 Infrastructure Layer Rules (`src/app/infrastructure/`)
+**Purpose:** Frameworks, SDKs, external systems.
+
+**MUST:**
+- Implement Domain/Application interfaces
+- Confine DTOs to this layer ONLY
+- Handle Firebase, HTTP, persistence
+
+**MUST NOT:**
+- Contain business rules
+- Leak DTOs outside this layer
+- Be imported by Domain or Presentation
+
+### 3.4 Presentation Layer Rules (`src/app/presentation/`)
+**Purpose:** UI and user interaction ONLY.
+
+**MUST:**
+- Consume state via Application stores/facades
+- Use Signals for reactive primitives
+- Be standalone Angular 20 components
+- Use modern control flow (`@if`, `@for`, `@switch`)
+
+**MUST NOT:**
+- Contain business logic
+- Mutate domain entities directly
+- Inject Infrastructure services
+- Access Domain layer directly
+- Use component-local signals for global state
 
 ---
 
@@ -48,7 +119,7 @@ All rules, forbidden constructs, and enforcement are fully declared in this file
 
 ---
 
-## 4. Sequential Planning (MCP)
+## 5. Sequential Planning (MCP)
 - For every non-trivial task:
   1. List all **assumptions** (domain, inputs, context)
   2. Decompose requirements into **atomic, sequential, actionable tasks**
@@ -58,7 +129,7 @@ All rules, forbidden constructs, and enforcement are fully declared in this file
 
 ---
 
-## 5. Forbidden Constructs
+## 6. Forbidden Constructs
 - Any direct RxJS usage for state management
 - Any traditional NgRx (actions / reducers / effects)
 - Any direct persistence in domain layer
@@ -70,7 +141,7 @@ All rules, forbidden constructs, and enforcement are fully declared in this file
 
 ---
 
-## 6. Passive Enforcement – TypeScript as Law
+## 7. Passive Enforcement – TypeScript as Law
 - **TS2339** on domain fields → architectural violation
 - **TS2345** type mismatch → architectural violation
 - **TS7053** invalid index → architectural violation
@@ -81,7 +152,7 @@ All rules, forbidden constructs, and enforcement are fully declared in this file
 
 ---
 
-## 7. CI Enforcement
+## 8. CI Enforcement
 - All code must pass: `pnpm build --strict`
 - No TS errors allowed
 - No unused imports or variables
@@ -90,7 +161,7 @@ All rules, forbidden constructs, and enforcement are fully declared in this file
 
 ---
 
-## 8. Identity / Workspace Switcher Enforcement
+## 9. Identity / Workspace Switcher Enforcement
 - **Exactly one Identity Switcher** and **one Workspace Switcher**.
 - Only one active identity signal and workspace signal per application.
 - Any other components must delegate to the canonical store.
@@ -110,7 +181,7 @@ All rules, forbidden constructs, and enforcement are fully declared in this file
 
 ---
 
-## 9. Output Format Enforcement
+## 10. Output Format Enforcement
 When generating code:
 
 1. **Assumptions** – explicitly list all assumptions
@@ -121,7 +192,7 @@ When generating code:
 
 ---
 
-## 10. Summary of Non-Negotiables
+## 11. Summary of Non-Negotiables
 - Angular Signals + NgRx Signals only
 - Domain entities are minimal, cannot be extended for UI
 - Single store per domain, API finality enforced

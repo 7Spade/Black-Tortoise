@@ -1,87 +1,74 @@
-# Copilot Quick Reference Guide
+# Copilot Quick Reference
 
-> **Essential patterns and commands for AI-assisted development**
+> **常用模式與指令速查**
 
 ---
 
-## 🚀 Quick Start Commands
+## 🚀 基本指令
 
-### Using Copilot Chat
+### Copilot Chat 對話
+```bash
+# 開始任務
+/new 建立新的 workspace 功能,遵循 DDD 架構
 
-```
-# Start a focused task
-/new Create a new workspace feature following DDD architecture
+# 架構指導
+@workspace 新增領域實體應該如何組織結構?
 
-# Get architecture guidance
-@workspace How should I structure a new domain entity?
+# 程式碼審查
+/fix 檢查此元件是否符合 Angular 20 最佳實踐
 
-# Review code
-/fix Review this component for Angular 20 best practices
-
-# Generate tests
-/tests Create unit tests for this store using @ngrx/signals
-```
-
-### Using Prompts
-
-```
-# Open command palette: Cmd/Ctrl + Shift + P
-# Type: "Chat: Run Prompt"
-# Select from available prompts
+# 產生測試
+/tests 為此 store 建立單元測試,使用 @ngrx/signals
 ```
 
 ---
 
-## 📋 Common Patterns
+## 📋 核心模式
 
-### Creating a New Feature (DDD)
+### DDD 新功能架構
 
 ```typescript
-// 1. Domain Layer (models/)
-// Define entity with business rules
+// 1️⃣ Domain Layer (domain/entities/)
 export interface WorkspaceEntity {
   id: string;
   name: string;
-  // ... pure domain model
+  // 純領域模型,無 UI 欄位
 }
 
-// 2. Application Layer (stores/)
-// Create signal store
+// 2️⃣ Application Layer (application/stores/)
 export const WorkspaceStore = signalStore(
   { providedIn: 'root' },
   withState({ workspaces: [] }),
   withMethods((store, service = inject(WorkspaceService)) => ({
-    loadWorkspaces: rxMethod<void>(
+    load: rxMethod<void>(
       pipe(
-        switchMap(() => service.getWorkspaces()),
+        switchMap(() => service.get()),
         tapResponse({
-          next: (workspaces) => patchState(store, { workspaces }),
-          error: (error) => console.error(error)
+          next: (ws) => patchState(store, { workspaces: ws }),
+          error: (e) => console.error(e)
         })
       )
     )
   }))
 );
 
-// 3. Infrastructure Layer (services/)
-// Firebase integration
+// 3️⃣ Infrastructure Layer (infrastructure/services/)
 @Injectable({ providedIn: 'root' })
 export class WorkspaceService {
   private firestore = inject(Firestore);
   
-  getWorkspaces(): Observable<Workspace[]> {
-    // Firebase logic
+  get(): Observable<Workspace[]> {
+    // Firebase 邏輯
   }
 }
 
-// 4. Interface Layer (features/)
-// Component using the store
+// 4️⃣ Presentation Layer (presentation/components/)
 @Component({
-  selector: 'app-workspace-list',
+  standalone: true,
   template: `
-    @if (store.workspaces(); as workspaces) {
-      @for (workspace of workspaces; track workspace.id) {
-        <div>{{ workspace.name }}</div>
+    @if (store.workspaces(); as ws) {
+      @for (w of ws; track w.id) {
+        <div>{{ w.name }}</div>
       }
     }
   `
@@ -89,15 +76,113 @@ export class WorkspaceService {
 export class WorkspaceListComponent {
   store = inject(WorkspaceStore);
   
-  ngOnInit() {
-    this.store.loadWorkspaces();
-  }
+  ngOnInit() { this.store.load(); }
 }
 ```
 
-### Angular 20 Control Flow
+---
+
+## 🎯 Angular 20 Control Flow
+
+```html
+<!-- ✅ 使用現代語法 -->
+@if (condition()) {
+  <p>顯示內容</p>
+} @else {
+  <p>替代內容</p>
+}
+
+@for (item of items(); track item.id) {
+  <div>{{ item.name }}</div>
+}
+
+@switch (status()) {
+  @case ('active') { <span>啟用</span> }
+  @case ('inactive') { <span>停用</span> }
+  @default { <span>未知</span> }
+}
+
+<!-- ❌ 禁止使用 -->
+<p *ngIf="condition">...</p>
+<div *ngFor="let item of items">...</div>
+```
+
+---
+
+## 🔧 NgRx Signals 狀態管理
 
 ```typescript
+// Signal Store 基本結構
+export const FeatureStore = signalStore(
+  { providedIn: 'root' },
+  
+  // 狀態定義
+  withState({ 
+    items: [] as Item[],
+    loading: false,
+    error: null as string | null
+  }),
+  
+  // 計算屬性
+  withComputed((state) => ({
+    count: computed(() => state.items().length)
+  })),
+  
+  // 方法
+  withMethods((store) => ({
+    // 同步更新
+    add: (item: Item) => {
+      patchState(store, { 
+        items: [...store.items(), item] 
+      });
+    },
+    
+    // 非同步操作
+    load: rxMethod<void>(
+      pipe(
+        tap(() => patchState(store, { loading: true })),
+        switchMap(() => service.getItems()),
+        tapResponse({
+          next: (items) => patchState(store, { 
+            items, 
+            loading: false 
+          }),
+          error: (error) => patchState(store, { 
+            error: error.message,
+            loading: false 
+          })
+        })
+      )
+    )
+  }))
+);
+```
+
+---
+
+## 🚫 常見錯誤模式
+
+| ❌ 錯誤 | ✅ 正確 |
+|---------|---------|
+| `*ngIf="condition"` | `@if (condition()) { }` |
+| `*ngFor="let x of items"` | `@for (x of items(); track x.id) { }` |
+| `createAction('@ngrx/store')` | `signalStore('@ngrx/signals')` |
+| `.subscribe(data => ...)` | `rxMethod(...tapResponse(...))` |
+| `@Component({})` | `@Component({ standalone: true })` |
+
+---
+
+## 📖 快速參考連結
+
+- **架構規則**: [copilot-instructions.md](.github/copilot-instructions.md)
+- **禁止項目**: [forbidden-copilot-instructions.md](.github/forbidden-copilot-instructions.md)
+- **完整索引**: [COPILOT_INDEX.md](.github/COPILOT_INDEX.md)
+- **Skills**: `.github/skills/`
+- **Prompts**: `.github/prompts/`
+
+---
+
+**最後更新**: 2026-01-28
 // ✅ DO: Use new control flow
 @if (isLoading()) {
   <app-spinner />

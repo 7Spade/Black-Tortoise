@@ -1,454 +1,190 @@
 # Copilot Troubleshooting Guide
 
-> **Common issues and solutions when using GitHub Copilot with this project**
+> **常見問題與解決方案**
 
 ---
 
-## 🔍 Issue Categories
+## 🔍 問題分類
 
-- [Copilot Not Responding](#copilot-not-responding)
-- [Wrong Suggestions](#wrong-suggestions)
-- [Skills Not Loading](#skills-not-loading)
-- [Performance Issues](#performance-issues)
-- [Configuration Problems](#configuration-problems)
-- [Architecture Violations](#architecture-violations)
+1. [Copilot 沒有回應](#copilot-沒有回應)
+2. [建議錯誤的程式碼](#建議錯誤的程式碼)
+3. [Skills 沒有載入](#skills-沒有載入)
+4. [架構違規](#架構違規)
 
 ---
 
-## Copilot Not Responding
+## Copilot 沒有回應
 
-### Symptom
-Copilot doesn't provide suggestions or chat responses
+### 症狀
+Copilot 不提供建議或聊天回應
 
-### Solutions
+### 解決方案
 
-1. **Check Extension Status**
-   - Open VS Code Command Palette (Cmd/Ctrl+Shift+P)
-   - Type "GitHub Copilot: Check Status"
-   - Ensure you're logged in and have an active subscription
+1. **檢查擴充功能狀態**
+   - 開啟 VS Code Command Palette (Cmd/Ctrl+Shift+P)
+   - 輸入 "GitHub Copilot: Check Status"
+   - 確認已登入且有有效訂閱
 
-2. **Verify Network Connection**
-   - Copilot requires internet connectivity
-   - Check firewall/proxy settings
-   - Test with: `ping github.com`
+2. **驗證網路連線**
+   - Copilot 需要網際網路連線
+   - 檢查防火牆/代理設定
+   - 測試: `ping github.com`
 
-3. **Restart Extension**
+3. **重新啟動擴充功能**
    ```
-   1. Cmd/Ctrl+Shift+P
-   2. "Developer: Reload Window"
+   Cmd/Ctrl+Shift+P → "Developer: Reload Window"
    ```
 
-4. **Clear Cache**
+4. **清除快取**
    ```bash
-   # Close VS Code first
+   # 先關閉 VS Code
    rm -rf ~/.vscode/extensions/github.copilot-*
-   # Restart VS Code and reinstall Copilot
+   # 重新啟動 VS Code 並重新安裝 Copilot
    ```
-
-5. **Check Settings**
-   - Open `.vscode/settings.json`
-   - Verify `"github.copilot.enable": { "*": true }`
 
 ---
 
-## Wrong Suggestions
+## 建議錯誤的程式碼
 
-### Symptom
-Copilot suggests patterns that violate project rules (e.g., traditional NgRx, *ngIf)
+### 症狀
+Copilot 建議違反專案規則的模式 (例如 traditional NgRx, *ngIf)
 
-### Solutions
+### 解決方案
 
-1. **Context Not Loaded**
-   - Open `.github/copilot-instructions.md` in editor
-   - Copilot needs project context to be active
-   - Keep important instruction files open in tabs
+1. **上下文未載入**
+   - 在編輯器中開啟 `.github/copilot-instructions.md`
+   - Copilot 需要專案上下文為活動狀態
+   - 保持重要指令檔案在分頁中開啟
 
-2. **Be More Specific**
+2. **更具體的提示**
    ```
-   ❌ Bad: "Create a component"
-   ✅ Good: "Create a standalone Angular 20 component using @if/@for control flow and inject() for dependencies"
-   ```
-
-3. **Reference Instructions**
-   ```
-   @copilot Follow the NgRx Signals instructions in .github/instructions/ngrx-signals.instructions.md
+   ❌ 不好: "建立一個元件"
+   ✅ 好: "建立 standalone Angular 20 元件,使用 @if/@for 控制流程和 inject() 注入依賴"
    ```
 
-4. **Use Skills Explicitly**
+3. **引用指令**
    ```
-   Load the @ngrx-signals skill and create a signal store for workspace management
+   @copilot 遵循 .github/instructions/ngrx-signals.instructions.md 中的 NgRx Signals 指令
    ```
 
-5. **Correct and Teach**
-   - When Copilot suggests wrong patterns, correct it
-   - Add feedback: "No, use @if instead of *ngIf"
-   - Copilot learns from your corrections in the session
+4. **明確使用 Skills**
+   ```
+   載入 @ngrx-signals skill 並建立 workspace 管理的 signal store
+   ```
 
-### Common Wrong Patterns
+5. **糾正並教導**
+   - 當 Copilot 建議錯誤模式時,糾正它
+   - 加入回饋: "不,使用 @if 而非 *ngIf"
+   - Copilot 在該會話中會從您的糾正學習
 
-| Wrong | Correct |
-|-------|---------|
+### 常見錯誤模式
+
+| 錯誤 | 正確 |
+|------|------|
 | `*ngIf="condition"` | `@if (condition()) { }` |
 | `*ngFor="let item of items"` | `@for (item of items(); track item.id) { }` |
 | `import { createAction } from '@ngrx/store'` | `import { signalStore } from '@ngrx/signals'` |
 | `.subscribe(data => ...)` | `rxMethod(...tapResponse(...))` |
-| `@Component({ })` without standalone | `@Component({ standalone: true })` |
+| `@Component({ })` 無 standalone | `@Component({ standalone: true })` |
 
 ---
 
-## Skills Not Loading
+## Skills 沒有載入
 
-### Symptom
-Agent skills not automatically discovered or suggestions don't follow skill patterns
+### 症狀
+Copilot 不識別專案特定的 skills
 
-### Solutions
+### 解決方案
 
-1. **Verify Skill Structure**
-   ```
-   .github/skills/my-skill/
-   ├── SKILL.md          ✅ Must be named exactly SKILL.md
-   ├── references/       ✅ Optional supporting docs
-   └── templates/        ✅ Optional templates
-   ```
-
-2. **Check SKILL.md Frontmatter**
-   ```yaml
-   ---
-   name: my-skill
-   description: >
-     Clear description with WHEN to use this skill.
-     Include keywords that match user prompts.
-   license: MIT
-   ---
-   ```
-
-3. **Verify Skill Naming**
-   - Skill directory name should match `name` in frontmatter
-   - Use lowercase with hyphens: `angular-material` not `AngularMaterial`
-
-4. **Check Description Quality**
-   ```yaml
-   # ❌ Bad: Too vague
-   description: Angular helpers
-   
-   # ✅ Good: Specific triggers
-   description: >
-     Angular Material component patterns for Angular 20+.
-     Use when working with Material Design components, 
-     theming, or UI development.
-   ```
-
-5. **Force Load Skill**
-   ```
-   @copilot Load the angular-material skill and help me create a Material dialog
-   ```
-
-6. **Check File Permissions**
+1. **確認 Skills 存在**
    ```bash
-   # Skills must be readable
-   chmod -R 644 .github/skills/*/SKILL.md
+   ls .github/skills/
+   ```
+
+2. **檢查 SKILL.md 格式**
+   - 每個 skill 資料夾必須包含 `SKILL.md`
+   - 確保 frontmatter 正確
+
+3. **重新載入視窗**
+   ```
+   Cmd/Ctrl+Shift+P → "Developer: Reload Window"
+   ```
+
+4. **明確引用 Skill**
+   ```
+   使用 @ngrx-signals skill 建立狀態管理
    ```
 
 ---
 
-## Performance Issues
+## 架構違規
 
-### Symptom
-Copilot is slow, suggestions take too long, or chat is laggy
+### 症狀
+Copilot 產生違反 DDD 層次邊界的程式碼
 
-### Solutions
+### 解決方案
 
-1. **Reduce Context Size**
-   - Close unnecessary files
-   - Don't open entire large directories
-   - Use `.copilot.yml` to exclude large files:
-     ```yaml
-     indexing:
-       exclude:
-         - "node_modules/**"
-         - "dist/**"
-         - "*.min.js"
-     ```
+1. **確認已讀取指令**
+   - 開啟 `.github/copilot-instructions.md`
+   - 確保檔案在編輯器中可見
 
-2. **Optimize Workspace**
-   - Close other CPU-intensive applications
-   - Ensure at least 4GB free RAM
-   - Check VS Code CPU usage in Activity Monitor/Task Manager
-
-3. **Limit Concurrent Files**
-   ```json
-   // .vscode/settings.json
-   {
-     "github.copilot.advanced": {
-       "inlineSuggest.count": 1  // Reduce from 3
-     }
-   }
+2. **明確指定層次**
+   ```
+   在 domain 層建立實體,不要加入任何 Angular 或 Firebase imports
    ```
 
-4. **Clear Workspace Cache**
+3. **使用架構檢查**
    ```bash
-   # Close VS Code
-   rm -rf .vscode/.cache
-   rm -rf .angular
+   # 執行 TypeScript 編譯檢查
+   pnpm build --strict
    ```
 
-5. **Use Faster Model**
-   ```json
-   {
-     "github.copilot.advanced": {
-       "debug.overrideEngine": "gpt-3.5-turbo"  // Faster but less accurate
-     }
-   }
-   ```
-
-6. **Reduce File Watchers**
-   ```json
-   // .vscode/settings.json
-   {
-     "files.watcherExclude": {
-       "**/node_modules/**": true,
-       "**/.angular/**": true,
-       "**/dist/**": true
-     }
-   }
-   ```
+4. **檢查常見違規**
+   - ❌ Domain 匯入 Application/Infrastructure/Presentation
+   - ❌ Application 匯入 Presentation
+   - ❌ UI 欄位在 Domain 實體中
+   - ❌ 使用 `as any` 繞過型別檢查
 
 ---
 
-## Configuration Problems
+## 🛠️ 其他常見問題
 
-### Symptom
-Copilot ignores project settings or doesn't apply custom configurations
+### Copilot 建議過時的語法
 
-### Solutions
+**原因**: 訓練資料可能包含舊版本程式碼
 
-1. **Check Configuration Priority**
-   ```
-   1. .github/copilot.yml          (highest priority)
-   2. .vscode/settings.json
-   3. User settings
-   4. Default settings
-   ```
+**解決**: 
+- 在提示中明確指定 "Angular 20"
+- 引用相關 instructions 檔案
+- 使用 `@workspace` 提供專案上下文
 
-2. **Validate YAML Syntax**
-   ```bash
-   # Install yamllint
-   npm install -g yaml-lint
-   
-   # Validate config
-   yamllint .github/copilot.yml
-   ```
+### Copilot 產生的測試無法執行
 
-3. **Check JSON Syntax**
-   ```bash
-   # Validate settings.json
-   node -e "JSON.parse(require('fs').readFileSync('.vscode/settings.json'))"
-   ```
+**原因**: 測試框架版本或配置不符
 
-4. **Reload Configuration**
-   ```
-   1. Cmd/Ctrl+Shift+P
-   2. "Developer: Reload Window"
-   ```
+**解決**:
+- 檢查 `package.json` 中的測試框架版本
+- 引用現有測試檔案作為範例
+- 使用 `/tests` 指令並指定框架
 
-5. **Verify File Paths**
-   - Use absolute paths from project root
-   - Check file actually exists: `ls -la .github/copilot.yml`
+### Copilot 忽略專案慣例
 
-6. **Check Permissions**
-   ```bash
-   # Ensure readable
-   chmod 644 .github/copilot.yml
-   chmod 644 .vscode/settings.json
-   ```
+**原因**: 上下文不足或指令不明確
+
+**解決**:
+- 開啟相關的慣例檔案 (如 `project-structure.instructions.md`)
+- 在提示中明確提及慣例
+- 提供具體範例
 
 ---
 
-## Architecture Violations
+## 📖 更多資源
 
-### Symptom
-Copilot suggests code that violates DDD architecture or layer boundaries
-
-### Solutions
-
-1. **Load Architecture Context**
-   - Open `.github/copilot-instructions.md`
-   - Open `AGENTS.md`
-   - Open `.github/project-layer-mapping.yml`
-   - Keep these files in active tabs
-
-2. **Be Explicit About Layer**
-   ```
-   ❌ Bad: "Create a user service"
-   
-   ✅ Good: "Create a user service in the infrastructure layer 
-            that implements the IUserRepository interface from 
-            the domain layer"
-   ```
-
-3. **Reference Layer Mapping**
-   ```
-   @copilot Check .github/project-layer-mapping.yml and create 
-           a workspace entity in the correct domain layer
-   ```
-
-4. **Use DDD Agents**
-   ```
-   Use the GPT-5.2-Codex agent to create a DDD-compliant 
-   workspace feature
-   ```
-
-5. **Enforce with Prompts**
-   ```
-   Use the breakdown-feature-implementation prompt to plan 
-   this feature following DDD architecture
-   ```
-
-6. **Common Violations to Watch**
-
-   | Violation | Solution |
-   |-----------|----------|
-   | Domain imports Angular | Move to application layer |
-   | UI directly injects Firebase | Use application store |
-   | Business logic in component | Move to domain/application |
-   | Store talks to another store | Use EventBus pattern |
-   | Service has business rules | Move to domain layer |
+- **完整架構指南**: [copilot-instructions.md](.github/copilot-instructions.md)
+- **快速參考**: [COPILOT_QUICK_REFERENCE.md](.github/COPILOT_QUICK_REFERENCE.md)
+- **指令索引**: [COPILOT_INDEX.md](.github/COPILOT_INDEX.md)
+- **禁止規則**: [forbidden-copilot-instructions.md](.github/forbidden-copilot-instructions.md)
 
 ---
 
-## Debugging Checklist
-
-When Copilot isn't working as expected:
-
-- [ ] Copilot extension is active and logged in
-- [ ] Network connection is stable
-- [ ] Project `.github/copilot-instructions.md` is open in editor
-- [ ] `.vscode/settings.json` has Copilot enabled
-- [ ] No syntax errors in config files (`.yml`, `.json`)
-- [ ] Relevant instruction files are discoverable
-- [ ] Skills have proper SKILL.md with frontmatter
-- [ ] Using specific, context-aware prompts
-- [ ] Not violating forbidden patterns
-- [ ] Following layer architecture rules
-
----
-
-## Getting Better Results
-
-### Best Practices
-
-1. **Start with Context**
-   ```
-   I need to create a workspace switcher component.
-   Context:
-   - This is an Angular 20 app using @ngrx/signals
-   - Follow DDD architecture
-   - Component should be in presentation layer
-   - State in WorkspaceStore (application layer)
-   - Data from WorkspaceService (infrastructure layer)
-   ```
-
-2. **Reference Examples**
-   ```
-   Create a component similar to the identity-switcher,
-   but for workspace selection
-   ```
-
-3. **Iterate and Refine**
-   ```
-   That's close, but use @if instead of *ngIf
-   Also inject the store with inject() not constructor injection
-   ```
-
-4. **Use Commands**
-   ```
-   /new Create workspace entity following DDD
-   /fix Review this for Angular 20 patterns
-   /tests Generate store tests
-   ```
-
-5. **Leverage Skills**
-   - Copilot automatically loads skills based on context
-   - Mention skill names explicitly if needed
-   - Keep skill descriptions clear and trigger-rich
-
----
-
-## Advanced Troubleshooting
-
-### Enable Debug Logging
-
-```json
-// .vscode/settings.json
-{
-  "github.copilot.advanced": {
-    "debug.enable": true,
-    "debug.overrideProxyUrl": ""
-  }
-}
-```
-
-View logs:
-```
-1. Cmd/Ctrl+Shift+P
-2. "Developer: Open Extension Logs Folder"
-3. Find "github.copilot" folder
-```
-
-### Test Configuration
-
-```bash
-# Verify copilot.yml is valid
-cat .github/copilot.yml | python -c "import yaml,sys; yaml.safe_load(sys.stdin)"
-
-# Verify settings.json is valid
-cat .vscode/settings.json | node -e "JSON.parse(require('fs').readFileSync('/dev/stdin'))"
-
-# Check skill frontmatter
-head -20 .github/skills/angular-20/SKILL.md
-```
-
-### Report Issues
-
-If problems persist:
-
-1. **Collect Information**
-   - Copilot version
-   - VS Code version
-   - Operating system
-   - Error messages from logs
-
-2. **Create Minimal Reproduction**
-   - Isolate the issue
-   - Remove unrelated code
-   - Document steps to reproduce
-
-3. **Check Known Issues**
-   - [Copilot GitHub Issues](https://github.com/github/copilot-docs/issues)
-   - [VS Code Issues](https://github.com/microsoft/vscode/issues)
-
----
-
-## Quick Fixes
-
-| Problem | Quick Fix |
-|---------|-----------|
-| No suggestions | Restart VS Code |
-| Wrong patterns | Open instruction files |
-| Slow performance | Close unused files |
-| Skills not loading | Check SKILL.md frontmatter |
-| Config ignored | Reload window |
-| Architecture violations | Use DDD agents |
-
----
-
-## Support Resources
-
-- **Project Documentation**: [COPILOT_INDEX.md](./COPILOT_INDEX.md)
-- **Quick Reference**: [COPILOT_QUICK_REFERENCE.md](./COPILOT_QUICK_REFERENCE.md)
-- **Architecture Rules**: [copilot-instructions.md](./copilot-instructions.md)
-- **Copilot Docs**: https://docs.github.com/copilot
-
----
-
-**Pro Tip**: When in doubt, be more specific and provide more context. Copilot works best with clear, detailed instructions!
+**最後更新**: 2026-01-28
