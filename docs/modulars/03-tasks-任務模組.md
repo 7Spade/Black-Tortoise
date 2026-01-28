@@ -13,7 +13,7 @@
 核心任務與專案管理，支援單價/數量/進度/指派、無限拆分子任務、狀態流轉
 
 ### 邊界定義
-作為工作流的發起點，響應 QC/Acceptance 的回饋，但不直接修改其他模組狀態
+作為工作流的發起點，透過事件發布狀態變更，響應來自其他模組的事件回饋
 
 ### 在架構中的位置
 本模組是 Workspace 的能力模組 (Capability Module) 之一，遵循 Domain → Application → Infrastructure → Presentation 的分層架構。模組自主管理自身狀態，不依賴或修改 Workspace Context，僅透過事件與其他模組協作。
@@ -83,16 +83,16 @@
 #### 需求清單
 1. 任務生命週期：Draft → InProgress → ReadyForQC → QCPassed → ReadyForAcceptance → Accepted → Completed
 2. 任何階段可能因失敗流轉到 Blocked 狀態
-3. 進度達到 100% 時，自動流轉到 ReadyForQC 狀態
-4. ReadyForQC 狀態的任務自動出現在質檢模組的待辦清單
-5. QCPassed 狀態的任務自動流轉到 ReadyForAcceptance
-6. Accepted 狀態的任務自動流轉到 Completed
+3. 進度達到 100% 時，流轉到 ReadyForQC 狀態並發布 TaskReadyForQC 事件
+4. 質檢模組訂閱 TaskReadyForQC 事件，自動建立質檢項目
+5. 接收 QCPassed 事件時，流轉到 ReadyForAcceptance 並發布 TaskReadyForAcceptance 事件
+6. 接收 AcceptanceApproved 事件時，流轉到 Completed
 7. 任務完成 (100%) 時，發布 TaskReadyForQC 事件
-8. 質檢通過時，任務接收 QCPassed 事件
-9. 質檢失敗時，任務接收 QCFailed 事件，流轉到 Blocked
-10. QC 通過後，任務發布 TaskReadyForAcceptance 事件
-11. 驗收通過時，任務接收 AcceptanceApproved 事件
-12. 驗收失敗時，任務接收 AcceptanceRejected 事件
+8. 訂閱並接收 QCPassed 事件，觸發狀態流轉
+9. 訂閱並接收 QCFailed 事件，流轉到 Blocked
+10. QC 通過後，發布 TaskReadyForAcceptance 事件
+11. 訂閱並接收 AcceptanceApproved 事件
+12. 訂閱並接收 AcceptanceRejected 事件
 13. 任何任務可建立關聯的問題單
 14. 任務狀態為 Blocked 時，必須關聯至少一個未解決的問題單
 15. 所有關聯問題單解決後，任務自動解除 Blocked 狀態
@@ -100,13 +100,13 @@
 ### 5. 自動化工作流與閉環處理 (Automated Workflow & Closed-Loop Behavior)
 
 #### 需求清單
-1. **無人工介入自動流轉**：進度達 100% → 自動發布 TaskReadyForQC → QC 模組自動接收 → QC 通過自動發布 QCPassed → 任務自動流轉 ReadyForAcceptance → Acceptance 模組自動接收
+1. **無人工介入自動流轉**：進度達 100% → 發布 TaskReadyForQC 事件 → (QC 模組訂閱並處理) → 接收 QCPassed 事件 → 流轉 ReadyForAcceptance 並發布事件 → (Acceptance 模組訂閱並處理)
 2. **明確的通過/失敗閘門**：
    - QC 閘門：所有必檢項目通過 → QCPassed 事件；任一必檢項目失敗 → QCFailed 事件
    - Acceptance 閘門：所有必檢標準滿足 → AcceptanceApproved 事件；任一標準未滿足 → AcceptanceRejected 事件
-3. **失敗自動觸發問題單建立**：
-   - 接收 QCFailed 事件 → 任務流轉到 Blocked → 訂閱 IssueCreated 事件確認問題單已建立
-   - 接收 AcceptanceRejected 事件 → 任務流轉到 Blocked → 訂閱 IssueCreated 事件確認問題單已建立
+3. **失敗觸發問題單建立**：
+   - 接收 QCFailed 事件 → 流轉到 Blocked → (Issues 模組訂閱 QCFailed 自動建立問題單並發布 IssueCreated)
+   - 接收 AcceptanceRejected 事件 → 流轉到 Blocked → (Issues 模組訂閱 AcceptanceRejected 自動建立問題單並發布 IssueCreated)
 4. **閉環行為：問題解決後重新進入適當階段**：
    - 接收 IssueResolved 事件 → 檢查所有關聯問題單是否已解決 → 若全部解決，依問題來源自動流轉：
      - QC 失敗來源：Blocked → InProgress (待開發者重新完成並觸發 100% 進度)
@@ -117,12 +117,12 @@
 ### 6. 提交任務完成數量時自動發布每日紀錄
 
 #### 需求清單
-1. 使用者更新任務進度或完成數量時，自動觸發每日紀錄建立
-2. 每日紀錄包含：任務 ID、完成數量、工作日期、工作者 ID
-3. 若當日已有該任務的記錄，則累加數量
+1. 使用者更新任務進度或完成數量時，發布 TaskProgressUpdated 事件
+2. 事件包含：任務 ID、完成數量、工作日期、工作者 ID
+3. DailyModule 訂閱 TaskProgressUpdated 事件，自動建立或更新每日紀錄
 4. 任務進度更新時，發布 TaskProgressUpdated 事件
-5. DailyModule 訂閱此事件，自動建立或更新每日紀錄
-6. 完成後發布 DailyEntryCreated 事件
+5. (DailyModule 訂閱並處理，建立或累加當日記錄)
+6. (DailyModule 處理完成後發布 DailyEntryCreated 事件)
 7. 提供「自動記錄」開關
 8. 關閉時，使用者需手動到 DailyModule 建立記錄
 

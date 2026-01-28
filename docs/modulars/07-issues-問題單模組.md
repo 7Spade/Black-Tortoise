@@ -13,7 +13,7 @@
 異常與缺失追蹤 (Defect Tracking)，管理所有工作流中的問題
 
 ### 邊界定義
-追蹤問題的生命週期，與任務狀態掛鉤，確保閉環
+追蹤問題的生命週期，透過事件訂閱接收失敗通知，透過事件發布通知問題解決狀態
 
 ### 在架構中的位置
 本模組是 Workspace 的能力模組 (Capability Module) 之一，遵循 Domain → Application → Infrastructure → Presentation 的分層架構。模組自主管理自身狀態，不依賴或修改 Workspace Context，僅透過事件與其他模組協作。
@@ -25,7 +25,7 @@
 ### 1. 問題單建立
 
 #### 需求清單
-1. 自動建立：QC 失敗 / 驗收失敗時系統自動建立
+1. 自動建立：訂閱 QCFailed / AcceptanceRejected 事件，接收到事件時自動建立
 2. 手動建立：使用者在任務頁面或問題單模組手動建立
 3. 問題單屬性：標題、描述、類型、優先級、狀態、關聯任務、指派人員、報告者
 4. 類型：Defect、Bug、Requirement Change、Question
@@ -44,22 +44,22 @@
 5. Resolved：問題已解決，等待驗證
 6. Closed：問題已驗證關閉，不可再修改
 7. Reopened：問題驗證未通過，重新開啟
-8. 問題單為 Open / InProgress 時，關聯任務狀態為 Blocked
-9. 問題單 Resolved 時，通知任務負責人驗證
-10. 問題單 Closed 時，檢查是否所有關聯問題單都已關閉
-11. 若所有問題單都已關閉，任務自動解除 Blocked 狀態
+8. 問題單為 Open / InProgress 時，發布狀態供任務模組訂閱
+9. 問題單 Resolved 時，發布 IssueResolved 事件通知
+10. 問題單 Closed 時，發布 IssueClosed 事件
+11. (任務模組訂閱 IssueResolved 事件，檢查所有關聯問題單後決定是否解除 Blocked)
 
 ### 3. 問題單根據處理狀態流轉到模組完成閉環
 
 #### 需求清單
-1. QC 失敗產生的問題單 → 解決後 → 任務回到 ReadyForQC
-2. 驗收失敗產生的問題單 → 解決後 → 任務回到 ReadyForAcceptance
-3. 手動建立的問題單 → 解決後 → 任務繼續原流程
-4. 當所有關聯問題單解決後，系統自動提示任務可重新提交
+1. QC 失敗產生的問題單 → 解決後發布 IssueResolved (含 sourceEvent) → (任務模組訂閱並流轉回 InProgress)
+2. 驗收失敗產生的問題單 → 解決後發布 IssueResolved (含 sourceEvent) → (任務模組訂閱並流轉回 ReadyForQC)
+3. 手動建立的問題單 → 解決後發布 IssueResolved → (任務模組訂閱並繼續原流程)
+4. 發布 IssueResolved 事件包含 sourceEvent 資訊
 5. 發布 IssueResolved 事件
-6. 任務模組訂閱並更新狀態
-7. 任務完成前，系統檢查是否有未關閉的問題單
-8. 若有，禁止標記任務為 Completed
+6. (任務模組訂閱 IssueResolved 並依 sourceEvent 更新狀態)
+7. (任務模組完成前訂閱 IssueClosed 檢查是否有未關閉問題單)
+8. (任務模組依檢查結果決定是否允許標記為 Completed)
 
 ### 4. 自動問題單建立與閉環處理 (Automated Issue Creation & Closed-Loop)
 
@@ -98,7 +98,21 @@
 9. 支援批次關閉
 10. 支援批次匯出
 
-### 5. 問題單統計與報表
+### 5. 問題單列表與篩選
+
+#### 需求清單
+1. 顯示所有問題單，支援排序、篩選、分組
+2. 預設依建立時間降序排列
+3. 依狀態篩選
+4. 依類型篩選
+5. 依優先級篩選
+6. 依指派人員篩選
+7. 依關聯任務篩選
+8. 支援批次指派
+9. 支援批次關閉
+10. 支援批次匯出
+
+### 6. 問題單統計與報表
 
 #### 需求清單
 1. 問題單總數 / 開啟數 / 解決數 / 關閉數
