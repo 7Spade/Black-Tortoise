@@ -1,9 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { TASK_REPOSITORY } from '@application/interfaces';
-import { TaskStatus, updateTaskStatus } from '@quality-control/domain';
+import { TASK_REPOSITORY } from '@tasks/domain';
+import { TaskStatus, TaskId } from '@tasks/domain';
 import { createQCFailedEvent } from '@events';
-import { TaskId } from '@domain/value-objects';
 
 export interface FailQCRequest {
   readonly taskId: string;
@@ -28,27 +27,29 @@ export class FailQCHandler {
   async execute(request: FailQCRequest): Promise<FailQCResponse> {
     try {
       // 1. Load
-      const task = await this.repo.findById(TaskId.create(request.taskId));
+      const task = await this.repo.findById(new TaskId(request.taskId));
       if (!task) {
         throw new Error(`Task not found: ${request.taskId}`);
       }
 
       // 2. Logic (Update Status)
-      const updatedTask = updateTaskStatus(task, TaskStatus.QC_FAILED);
+      const updatedTask = task.cloneWith({
+        status: TaskStatus.qcFailed()
+      });
 
       // 3. Save
       await this.repo.save(updatedTask);
 
       // 4. Publish Event
-      const event = createQCFailedEvent({
-        taskId: updatedTask.id,
-        workspaceId: updatedTask.workspaceId,
-        taskTitle: updatedTask.title,
-        failureReason: request.failureReason,
-        reviewedById: request.reviewedBy,
-        correlationId: request.correlationId,
-        causationId: request.causationId,
-      });
+      const event = createQCFailedEvent(
+        {
+          taskId: updatedTask.id.value,
+          qcId: crypto.randomUUID(),
+          reasons: [request.failureReason],
+        },
+        request.correlationId || crypto.randomUUID(),
+        request.causationId
+      );
 
       await this.publishEvent.execute({ event });
       return { success: true };

@@ -3,7 +3,7 @@ PS D:\GitHub\7s\Black-Tortoise> pnpm start
 > stackblitz-starters-vxcrzm@0.0.0 start D:\GitHub\7s\Black-Tortoise
 > ng serve
 
-Application bundle generation failed. [4.330 seconds]
+Application bundle generation failed. [4.236 seconds]
 
 ✘ [ERROR] TS2305: Module '"@application/handlers"' has no exported member 'provideEventHandlers'. [plugin angular-compiler]
 
@@ -1322,90 +1322,179 @@ Application bundle generation failed. [4.330 seconds]
         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2724: '"@events"' has no exported member named 'IssueResolvedEvent'. Did you mean 'IssueResolved'? [plugin angular-compiler]
+✘ [ERROR] TS2339: Property 'create' does not exist on type 'typeof TaskId'. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:4:2:
-      4 │   IssueResolvedEvent,
-        ╵   ~~~~~~~~~~~~~~~~~~
-
-  'IssueResolved' is declared here.
-
-    src/app/events/issues/issues.events.ts:36:13:
-      36 │ export class IssueResolved implements DomainEvent<IssueResolvedPay...
-         ╵              ~~~~~~~~~~~~~
+    src/app/modules/tasks/application/handlers/submit-task-for-qc.handler.ts:32:34:
+      32 │             const taskId = TaskId.create(request.taskId);
+         ╵                                   ~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@events"' has no exported member 'QCFailedEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2305: Module '"@events"' has no exported member 'TaskSubmittedForQC'. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:5:2:
-      5 │   QCFailedEvent,
-        ╵   ~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2724: '"@events"' has no exported member named 'TaskCreatedEvent'. Did you mean 'TaskCreated'? [plugin angular-compiler]
-
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:6:2:
-      6 │   TaskCreatedEvent,
-        ╵   ~~~~~~~~~~~~~~~~
-
-  'TaskCreated' is declared here.
-
-    src/app/events/tasks/tasks.events.ts:5:13:
-      5 │ export class TaskCreated implements DomainEvent<{ taskId: string; t...
-        ╵              ~~~~~~~~~~~
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:11:2:
+      11 │   TaskSubmittedForQC,
+         ╵   ~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@events"' has no exported member 'TaskSubmittedForQCEvent'. [plugin angular-compiler]
+✘ [ERROR] TS2307: Cannot find module '@application/interfaces/event-bus.interface' or its corresponding type declarations. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:7:2:
-      7 │   TaskSubmittedForQCEvent,
-        ╵   ~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2554: Expected 3 arguments, but got 1. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:19:31:
-      19 │     const task = TaskAggregate.create({
-         ╵                                ~~~~~~
-
-  An argument for 'workspaceId' was not provided.
-
-    src/app/modules/tasks/domain/aggregates/task.aggregate.ts:60:8:
-      60 │         workspaceId: WorkspaceId,
-         ╵         ~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:13:25:
+      13 │ ...t { EventBus } from '@application/interfaces/event-bus.interface';
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2322: Type 'import("D:/GitHub/7s/Black-Tortoise/src/app/modules/tasks/domain/value-objects/task-status.vo").TaskStatusEnum' is not assignable to type 'TaskStatus'. [plugin angular-compiler]
+✘ [ERROR] TS2307: Cannot find module '@application/stores/tasks.store' or its corresponding type declarations. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:39:10:
-      39 │           status: TaskStatusEnum.IN_QC,
-         ╵           ~~~~~~
-
-  The expected type comes from property 'status' which is declared here on type 'Partial<TaskProps>'
-
-    src/app/modules/tasks/domain/aggregates/task.aggregate.ts:16:4:
-      16 │     status: TaskStatus;
-         ╵     ~~~~~~
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:14:27:
+      14 │ import { TasksStore } from '@application/stores/tasks.store';
+         ╵                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2322: Type 'import("D:/GitHub/7s/Black-Tortoise/src/app/modules/tasks/domain/value-objects/task-status.vo").TaskStatusEnum' is not assignable to type 'TaskStatus'. [plugin angular-compiler]
+✘ [ERROR] TS18046: 'eventBus' is of type 'unknown'. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:53:8:
-      53 │         status: TaskStatusEnum.QC_FAILED,
-         ╵         ~~~~~~
-
-  The expected type comes from property 'status' which is declared here on type 'Partial<TaskProps>'
-
-    src/app/modules/tasks/domain/aggregates/task.aggregate.ts:16:4:
-      16 │     status: TaskStatus;
-         ╵     ~~~~~~
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:25:2:
+      25 │   eventBus.subscribe<TaskCreated['payload']>('TaskCreated', (event...
+         ╵   ~~~~~~~~
 
 
-✘ [ERROR] TS2339: Property 'resolveIssue' does not exist on type 'TaskAggregate'. [plugin angular-compiler]
+✘ [ERROR] TS7006: Parameter 'event' implicitly has an 'any' type. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:66:39:
-      66 │ ... const updatedTask = existingTask.resolveIssue(event.aggregateId);
-         ╵                                      ~~~~~~~~~~~~
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:25:61:
+      25 │ ...tBus.subscribe<TaskCreated['payload']>('TaskCreated', (event) => {
+         ╵                                                           ~~~~~
+
+
+✘ [ERROR] TS2339: Property 'create' does not exist on type 'typeof TaskId'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:32:13:
+      32 │       TaskId.create(event.payload.taskId),
+         ╵              ~~~~~~
+
+
+✘ [ERROR] TS18046: 'tasksStore' is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:36:4:
+      36 │     tasksStore.syncTask(task);
+         ╵     ~~~~~~~~~~
+
+
+✘ [ERROR] TS18046: 'eventBus' is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:40:2:
+      40 │   eventBus.subscribe<TaskSubmittedForQC['payload']>(
+         ╵   ~~~~~~~~
+
+
+✘ [ERROR] TS7006: Parameter 'event' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:42:5:
+      42 │     (event) => {
+         ╵      ~~~~~
+
+
+✘ [ERROR] TS18046: 'tasksStore' is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:44:27:
+      44 │       const existingTask = tasksStore
+         ╵                            ~~~~~~~~~~
+
+
+✘ [ERROR] TS7006: Parameter 't' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:46:15:
+      46 │         .find((t) => t.id.value === (event.payload as any).taskId ...
+         ╵                ^
+
+
+✘ [ERROR] TS18046: 'tasksStore' is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:51:8:
+      51 │         tasksStore.syncTask(updatedTask);
+         ╵         ~~~~~~~~~~
+
+
+✘ [ERROR] TS18046: 'eventBus' is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:57:2:
+      57 │   eventBus.subscribe<QCFailed['payload']>('QCFailed', (event) => {
+         ╵   ~~~~~~~~
+
+
+✘ [ERROR] TS7006: Parameter 'event' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:57:55:
+      57 │   eventBus.subscribe<QCFailed['payload']>('QCFailed', (event) => {
+         ╵                                                        ~~~~~
+
+
+✘ [ERROR] TS18046: 'tasksStore' is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:59:25:
+      59 │     const existingTask = tasksStore
+         ╵                          ~~~~~~~~~~
+
+
+✘ [ERROR] TS7006: Parameter 't' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:61:13:
+      61 │       .find((t) => t.id.value === (event.payload as any).taskId ||...
+         ╵              ^
+
+
+✘ [ERROR] TS18046: 'tasksStore' is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:66:6:
+      66 │       tasksStore.syncTask(updatedTask);
+         ╵       ~~~~~~~~~~
+
+
+✘ [ERROR] TS18046: 'eventBus' is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:71:2:
+      71 │   eventBus.subscribe<IssueResolved['payload']>('IssueResolved', (e...
+         ╵   ~~~~~~~~
+
+
+✘ [ERROR] TS7006: Parameter 'event' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:71:65:
+      71 │ ....subscribe<IssueResolved['payload']>('IssueResolved', (event) => {
+         ╵                                                           ~~~~~
+
+
+✘ [ERROR] TS18046: 'tasksStore' is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:76:25:
+      76 │     const existingTask = tasksStore.tasks().find((t) => t.id.value...
+         ╵                          ~~~~~~~~~~
+
+
+✘ [ERROR] TS7006: Parameter 't' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:76:50:
+      76 │ ...stingTask = tasksStore.tasks().find((t) => t.id.value === taskId);
+         ╵                                         ^
+
+
+✘ [ERROR] TS18046: 'tasksStore' is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:80:6:
+      80 │       tasksStore.syncTask(updatedTask);
+         ╵       ~~~~~~~~~~
+
+
+✘ [ERROR] TS18046: 'eventBus' is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:85:2:
+      85 │   eventBus.subscribe('WorkspaceSwitched', () => {
+         ╵   ~~~~~~~~
+
+
+✘ [ERROR] TS18046: 'tasksStore' is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:87:4:
+      87 │     tasksStore.reset();
+         ╵     ~~~~~~~~~~
 
 
 ✘ [ERROR] TS2345: Argument of type 'string' is not assignable to parameter of type 'WorkspaceId'. [plugin angular-compiler]

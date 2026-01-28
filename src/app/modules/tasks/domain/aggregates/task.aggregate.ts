@@ -110,6 +110,26 @@ export class TaskAggregate extends AggregateRoot<TaskId> {
 
         return newInstance;
     }
+
+    /**
+     * Mark the task as blocked by an issue
+     */
+    public markAsBlocked(issueId: string): TaskAggregate {
+        const cloned = this.cloneWith({});
+        if (!cloned.blockedByIssueIds.includes(issueId)) {
+            cloned.blockedByIssueIds.push(issueId);
+        }
+        return cloned;
+    }
+
+    /**
+     * Resolve an issue that was blocking this task
+     */
+    public resolveIssue(issueId: string): TaskAggregate {
+        const cloned = this.cloneWith({});
+        cloned.blockedByIssueIds = cloned.blockedByIssueIds.filter(id => id !== issueId);
+        return cloned;
+    }
 }
 
 // Factory function

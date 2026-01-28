@@ -36,20 +36,21 @@ export class SubmitTaskForQCHandler {
             }
 
             // 2. Logic: Update Status to IN_QC
-            // Direct assignment as TaskAggregate allows manual status update
-            task.status = TaskStatus.IN_QC;
+            const updatedTask = task.cloneWith({
+                status: TaskStatus.inQc()
+            });
 
             // 3. Save
-            await this.repo.save(task);
+            await this.repo.save(updatedTask);
 
             // 4. Publish
             const event = createTaskSubmittedForQCEvent({
-                taskId: task.id.value,
-                workspaceId: task.workspaceId.getValue(),
-                taskTitle: task.title,
+                taskId: updatedTask.id.value,
+                workspaceId: updatedTask.workspaceId.value,
+                taskTitle: updatedTask.title,
                 submittedById: request.submittedBy,
-                ...(request.correlationId ? { correlationId: request.correlationId } : {}),
-                ...(request.causationId ? { causationId: request.causationId } : {})
+                correlationId: request.correlationId || undefined,
+                causationId: request.causationId || undefined
             });
 
             await this.publishEvent.execute({ event });

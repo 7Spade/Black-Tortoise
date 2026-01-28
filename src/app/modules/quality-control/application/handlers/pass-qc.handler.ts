@@ -35,15 +35,15 @@ export class PassQCUseCase {
 
   async execute(request: PassQCRequest): Promise<PassQCResponse> {
     try {
-      const event = createQCPassedEvent({
-        taskId: request.taskId,
-        workspaceId: request.workspaceId,
-        taskTitle: request.taskTitle,
-        reviewerId: request.reviewedBy,
-        reviewNotes: request.reviewNotes,
-        correlationId: request.correlationId,
-        causationId: request.causationId
-      });
+      const event = createQCPassedEvent(
+        {
+          taskId: request.taskId,
+          qcId: crypto.randomUUID(), // Assuming a new QC record ID is needed
+          notes: request.reviewNotes,
+        },
+        request.correlationId || crypto.randomUUID(),
+        request.causationId
+      );
 
       const result = await this.publishEvent.execute({ event });
       return result;
