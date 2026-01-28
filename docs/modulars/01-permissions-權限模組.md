@@ -20,7 +20,179 @@
 
 ---
 
-## 二、功能需求規格
+## 二、架構指引遵循
+
+本模組的實作必須嚴格遵循以下架構指引文件：
+
+1. **使用者層級指引**  
+   `.github/instructions/00-user-guidelines.instructions.md`  
+   定義使用者體驗、無障礙設計、互動模式等前端規範
+
+2. **組織層級指引**  
+   `.github/instructions/01-organization-guidelines.instructions.md`  
+   定義多組織管理、權限隔離、資源分配等規範
+
+3. **工作區層級指引**  
+   `.github/instructions/02-workspace-guidelines.instructions.md`  
+   定義 Workspace Context 邊界、模組協作、狀態管理等核心規範
+
+4. **模組開發指引**  
+   `.github/instructions/03-modules-guidelines.instructions.md`  
+   定義模組分層架構、DDD 實作、事件驅動等開發規範
+
+5. **事件溯源與因果關係**  
+   `.github/instructions/04-event-sourcing-and-causality.instructions.md`  
+   定義事件設計、因果鏈追蹤、事件處理順序等規範
+
+**重要提醒**：所有實作決策若與上述指引衝突，必須以指引文件為準。若指引之間有衝突，優先順序為 04 > 03 > 02 > 01 > 00。
+
+---
+
+## 三、開發流程與方法
+
+本模組採用 **Sub-Agent + Software Planning + Sequential Thinking** 的開發流程：
+
+### 流程說明
+
+1. **Software Planning 階段**  
+   - 使用 `software-planning-mcp` 工具建立模組開發計劃
+   - 分解功能需求為可執行的開發任務
+   - 定義各層級（Domain/Application/Infrastructure/Presentation）的職責邊界
+   - 建立事件流轉與模組互動的序列圖
+
+2. **Sequential Thinking 階段**  
+   - 使用 `server-sequential-thinking` 工具進行逐步推理
+   - 驗證架構設計是否符合 DDD 原則
+   - 檢查事件設計是否滿足因果完整性
+   - 確認模組邊界是否清晰且無循環依賴
+
+3. **Sub-Agent 協作**  
+   - Domain Agent: 負責 Aggregate、Entity、Value Object 設計
+   - Application Agent: 負責 Use Case、Command Handler、Event Handler 實作
+   - Infrastructure Agent: 負責 Repository、Adapter、外部服務整合
+   - Presentation Agent: 負責 Component、Store、UI 互動邏輯
+
+4. **迭代與驗證**  
+   - 每完成一個功能需求，回到 Planning 階段驗證
+   - 使用 Sequential Thinking 檢查是否引入技術債
+   - 確保所有變更都有對應的測試覆蓋
+
+---
+
+## 四、模組結構規劃
+
+以下是本模組預期的檔案結構樹（按分層展示）：
+
+```
+src/app/
+├── domain/permissions/
+│   ├── aggregates/
+│   │   └── permission-matrix.aggregate.ts
+│   ├── entities/
+│   │   ├── role.entity.ts
+│   │   └── permission.entity.ts
+│   ├── value-objects/
+│   │   ├── role-id.vo.ts
+│   │   ├── permission-id.vo.ts
+│   │   └── resource-action.vo.ts
+│   ├── events/
+│   │   ├── permission-changed.event.ts
+│   │   ├── role-created.event.ts
+│   │   ├── role-updated.event.ts
+│   │   └── role-deleted.event.ts
+│   └── repositories/
+│       └── permission-matrix.repository.interface.ts
+│
+├── application/permissions/
+│   ├── commands/
+│   │   ├── create-role.command.ts
+│   │   ├── update-role.command.ts
+│   │   ├── delete-role.command.ts
+│   │   └── update-permissions.command.ts
+│   ├── handlers/
+│   │   ├── create-role.handler.ts
+│   │   ├── update-role.handler.ts
+│   │   ├── delete-role.handler.ts
+│   │   └── update-permissions.handler.ts
+│   ├── queries/
+│   │   ├── get-permission-matrix.query.ts
+│   │   └── get-roles.query.ts
+│   └── stores/
+│       └── permissions.store.ts
+│
+├── infrastructure/permissions/
+│   ├── repositories/
+│   │   └── permission-matrix.repository.ts
+│   └── adapters/
+│       └── firebase-permissions.adapter.ts
+│
+└── presentation/permissions/
+    ├── components/
+    │   ├── permission-matrix/
+    │   │   ├── permission-matrix.component.ts
+    │   │   ├── permission-matrix.component.html
+    │   │   └── permission-matrix.component.scss
+    │   ├── role-editor/
+    │   │   ├── role-editor.component.ts
+    │   │   ├── role-editor.component.html
+    │   │   └── role-editor.component.scss
+    │   └── role-list/
+    │       ├── role-list.component.ts
+    │       ├── role-list.component.html
+    │       └── role-list.component.scss
+    └── pages/
+        └── permissions-page.component.ts
+```
+
+---
+
+## 五、預計新增檔案
+
+### Domain Layer (src/app/domain/permissions/)
+- `aggregates/permission-matrix.aggregate.ts` - 權限矩陣聚合根
+- `entities/role.entity.ts` - 角色實體
+- `entities/permission.entity.ts` - 權限實體
+- `value-objects/role-id.vo.ts` - 角色 ID 值物件
+- `value-objects/permission-id.vo.ts` - 權限 ID 值物件
+- `value-objects/resource-action.vo.ts` - 資源操作值物件
+- `events/permission-changed.event.ts` - 權限變更事件
+- `events/role-created.event.ts` - 角色建立事件
+- `events/role-updated.event.ts` - 角色更新事件
+- `events/role-deleted.event.ts` - 角色刪除事件
+- `repositories/permission-matrix.repository.interface.ts` - Repository 介面
+
+### Application Layer (src/app/application/permissions/)
+- `commands/create-role.command.ts` - 建立角色命令
+- `commands/update-role.command.ts` - 更新角色命令
+- `commands/delete-role.command.ts` - 刪除角色命令
+- `commands/update-permissions.command.ts` - 更新權限命令
+- `handlers/create-role.handler.ts` - 建立角色處理器
+- `handlers/update-role.handler.ts` - 更新角色處理器
+- `handlers/delete-role.handler.ts` - 刪除角色處理器
+- `handlers/update-permissions.handler.ts` - 更新權限處理器
+- `queries/get-permission-matrix.query.ts` - 取得權限矩陣查詢
+- `queries/get-roles.query.ts` - 取得角色列表查詢
+- `stores/permissions.store.ts` - 權限 Signal Store
+
+### Infrastructure Layer (src/app/infrastructure/permissions/)
+- `repositories/permission-matrix.repository.ts` - Repository 實作
+- `adapters/firebase-permissions.adapter.ts` - Firebase 適配器
+
+### Presentation Layer (src/app/presentation/permissions/)
+- `components/permission-matrix/permission-matrix.component.ts` - 權限矩陣元件
+- `components/permission-matrix/permission-matrix.component.html` - 權限矩陣模板
+- `components/permission-matrix/permission-matrix.component.scss` - 權限矩陣樣式
+- `components/role-editor/role-editor.component.ts` - 角色編輯器元件
+- `components/role-editor/role-editor.component.html` - 角色編輯器模板
+- `components/role-editor/role-editor.component.scss` - 角色編輯器樣式
+- `components/role-list/role-list.component.ts` - 角色列表元件
+- `components/role-list/role-list.component.html` - 角色列表模板
+- `components/role-list/role-list.component.scss` - 角色列表樣式
+- `pages/permissions-page.component.ts` - 權限頁面元件
+
+---
+
+## 六、功能需求規格
 
 ### 1. 權限矩陣 (Permission Matrix)
 
@@ -53,7 +225,7 @@
 
 ---
 
-## 三、現代化實作要求
+## 七、現代化實作要求
 
 ### Angular 20+ 最佳實踐
 
@@ -81,7 +253,7 @@
 
 ---
 
-## 四、事件整合
+## 八、事件整合
 
 ### 發布事件 (Published Events)
 - **PermissionChanged**
@@ -101,7 +273,7 @@
 
 ---
 
-## 五、架構合規性
+## 九、架構合規性
 
 ### Workspace Context 邊界
 - 本模組不修改 Workspace Context
@@ -113,7 +285,7 @@
 - 不允許其他模組直接讀寫本模組狀態
 - 狀態變更必須透過 Domain Event 公告
 
-## 六、禁止事項 (Forbidden Practices)
+## 十、禁止事項 (Forbidden Practices)
 
 - ❌ 將「我是誰」的判斷混入此模組 (那是 Identity 的職責)
 - ❌ 在 Component 中直接操作權限資料，必須透過 Store
@@ -123,7 +295,7 @@
 
 ---
 
-## 七、測試策略
+## 十一、測試策略
 
 ### Unit Tests
 - 測試 computed 邏輯是否正確反映 source signal 的變化
@@ -141,7 +313,7 @@
 
 ---
 
-## 八、UI/UX 規範
+## 十二、UI/UX 規範
 
 ### 設計系統
 - 使用 Angular Material (M3)
@@ -160,7 +332,7 @@
 
 ---
 
-## 九、DDD 實作規範
+## 十三、DDD 實作規範
 
 ### Aggregate Root
 - 支援 Creation (create()) 與 Reconstruction (reconstruct())
@@ -177,7 +349,7 @@
 
 ---
 
-## 十、開發檢查清單
+## 十四、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -196,7 +368,7 @@
 
 ---
 
-## 十一、參考資料
+## 十五、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md

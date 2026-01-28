@@ -20,7 +20,146 @@
 
 ---
 
-## 二、功能需求規格
+## 二、架構指引遵循
+
+本模組的實作必須嚴格遵循以下架構指引文件：
+
+1. **使用者層級指引**  
+   `.github/instructions/00-user-guidelines.instructions.md`  
+   定義使用者體驗、無障礙設計、互動模式等前端規範
+
+2. **組織層級指引**  
+   `.github/instructions/01-organization-guidelines.instructions.md`  
+   定義多組織管理、權限隔離、資源分配等規範
+
+3. **工作區層級指引**  
+   `.github/instructions/02-workspace-guidelines.instructions.md`  
+   定義 Workspace Context 邊界、模組協作、狀態管理等核心規範
+
+4. **模組開發指引**  
+   `.github/instructions/03-modules-guidelines.instructions.md`  
+   定義模組分層架構、DDD 實作、事件驅動等開發規範
+
+5. **事件溯源與因果關係**  
+   `.github/instructions/04-event-sourcing-and-causality.instructions.md`  
+   定義事件設計、因果鏈追蹤、事件處理順序等規範
+
+**重要提醒**：所有實作決策若與上述指引衝突，必須以指引文件為準。若指引之間有衝突，優先順序為 04 > 03 > 02 > 01 > 00。
+
+---
+
+## 三、開發流程與方法
+
+本模組採用 **Sub-Agent + Software Planning + Sequential Thinking** 的開發流程：
+
+### 流程說明
+
+1. **Software Planning 階段**  
+   - 使用 `software-planning-mcp` 工具建立模組開發計劃
+   - 分解功能需求為可執行的開發任務
+   - 定義各層級（Domain/Application/Infrastructure/Presentation）的職責邊界
+   - 建立事件流轉與模組互動的序列圖
+
+2. **Sequential Thinking 階段**  
+   - 使用 `server-sequential-thinking` 工具進行逐步推理
+   - 驗證架構設計是否符合 DDD 原則
+   - 檢查事件設計是否滿足因果完整性
+   - 確認模組邊界是否清晰且無循環依賴
+
+3. **Sub-Agent 協作**  
+   - Domain Agent: 負責 Aggregate、Entity、Value Object 設計
+   - Application Agent: 負責 Use Case、Command Handler、Event Handler 實作
+   - Infrastructure Agent: 負責 Repository、Adapter、外部服務整合
+   - Presentation Agent: 負責 Component、Store、UI 互動邏輯
+
+4. **迭代與驗證**  
+   - 每完成一個功能需求，回到 Planning 階段驗證
+   - 使用 Sequential Thinking 檢查是否引入技術債
+   - 確保所有變更都有對應的測試覆蓋
+
+---
+
+## 四、模組結構規劃
+
+以下是本模組預期的檔案結構樹（按分層展示）：
+
+```
+src/app/
+├── domain/calendar/
+│   ├── aggregates/
+│   │   └── calendar-event.aggregate.ts
+│   ├── value-objects/
+│   │   ├── calendar-event-id.vo.ts
+│   │   ├── date-range.vo.ts
+│   │   └── event-type.vo.ts
+│   └── repositories/
+│       └── calendar-event.repository.interface.ts
+│
+├── application/calendar/
+│   ├── commands/
+│   │   └── update-task-due-date.command.ts
+│   ├── handlers/
+│   │   ├── task-created-event.handler.ts
+│   │   ├── task-updated-event.handler.ts
+│   │   ├── daily-entry-created-event.handler.ts
+│   │   └── update-task-due-date.handler.ts
+│   ├── queries/
+│   │   ├── get-calendar-events.query.ts
+│   │   └── get-events-by-date-range.query.ts
+│   └── stores/
+│       └── calendar.store.ts
+│
+├── infrastructure/calendar/
+│   ├── repositories/
+│   │   └── calendar-event.repository.ts
+│   └── adapters/
+│       └── firebase-calendar.adapter.ts
+│
+└── presentation/calendar/
+    ├── components/
+    │   ├── calendar-month-view/
+    │   ├── calendar-week-view/
+    │   ├── calendar-day-view/
+    │   └── event-card/
+    └── pages/
+        └── calendar-page.component.ts
+```
+
+---
+
+## 五、預計新增檔案
+
+### Domain Layer (src/app/domain/calendar/)
+- `aggregates/calendar-event.aggregate.ts` - 行事曆事件聚合根
+- `value-objects/calendar-event-id.vo.ts` - 行事曆事件 ID 值物件
+- `value-objects/date-range.vo.ts` - 日期範圍值物件
+- `value-objects/event-type.vo.ts` - 事件類型值物件
+- `repositories/calendar-event.repository.interface.ts` - Repository 介面
+
+### Application Layer (src/app/application/calendar/)
+- `commands/update-task-due-date.command.ts` - 更新任務到期日命令
+- `handlers/task-created-event.handler.ts` - 任務建立事件處理器
+- `handlers/task-updated-event.handler.ts` - 任務更新事件處理器
+- `handlers/daily-entry-created-event.handler.ts` - 每日紀錄建立事件處理器
+- `handlers/update-task-due-date.handler.ts` - 更新到期日處理器
+- `queries/get-calendar-events.query.ts` - 取得行事曆事件查詢
+- `queries/get-events-by-date-range.query.ts` - 依日期範圍取得事件查詢
+- `stores/calendar.store.ts` - 行事曆 Signal Store
+
+### Infrastructure Layer (src/app/infrastructure/calendar/)
+- `repositories/calendar-event.repository.ts` - Repository 實作
+- `adapters/firebase-calendar.adapter.ts` - Firebase 適配器
+
+### Presentation Layer (src/app/presentation/calendar/)
+- `components/calendar-month-view/calendar-month-view.component.ts` - 月視圖元件
+- `components/calendar-week-view/calendar-week-view.component.ts` - 週視圖元件
+- `components/calendar-day-view/calendar-day-view.component.ts` - 日視圖元件
+- `components/event-card/event-card.component.ts` - 事件卡片元件
+- `pages/calendar-page.component.ts` - 行事曆頁面元件
+
+---
+
+## 六、功能需求規格
 
 ### 1. 任務行事曆 (基礎版)
 
@@ -63,7 +202,7 @@
 
 ---
 
-## 三、現代化實作要求
+## 七、現代化實作要求
 
 ### Angular 20+ 最佳實踐
 
@@ -91,7 +230,7 @@
 
 ---
 
-## 四、事件整合
+## 八、事件整合
 
 ### 發布事件 (Published Events)
 - 無
@@ -110,7 +249,7 @@
 
 ---
 
-## 五、架構合規性
+## 九、架構合規性
 
 ### Workspace Context 邊界
 - 本模組不修改 Workspace Context
@@ -127,7 +266,7 @@
 - 不重複請求 API，僅透過事件訂閱獲取資料
 - 不實作業務邏輯，僅負責時間維度聚合與視覺化
 
-## 六、禁止事項 (Forbidden Practices)
+## 十、禁止事項 (Forbidden Practices)
 
 - ❌ 重新 fetch 資料，應訂閱原模組的 Store
 - ❌ 在 CalendarModule 中實作業務邏輯
@@ -136,7 +275,7 @@
 
 ---
 
-## 七、測試策略
+## 十一、測試策略
 
 ### Unit Tests
 - 測試 computed 邏輯是否正確反映 source signal 的變化
@@ -154,7 +293,7 @@
 
 ---
 
-## 八、UI/UX 規範
+## 十二、UI/UX 規範
 
 ### 設計系統
 - 使用 Angular Material (M3)
@@ -173,7 +312,7 @@
 
 ---
 
-## 九、DDD 實作規範
+## 十三、DDD 實作規範
 
 ### Aggregate Root
 - 支援 Creation (create()) 與 Reconstruction (reconstruct())
@@ -190,7 +329,7 @@
 
 ---
 
-## 十、開發檢查清單
+## 十四、開發檢查清單
 
 實作本模組時，請確認以下項目：
 
@@ -209,7 +348,7 @@
 
 ---
 
-## 十一、參考資料
+## 十五、參考資料
 
 - **父文件**：workspace-modular-architecture_constitution_enhanced.md
 - **DDD 規範**：.github/skills/ddd/SKILL.md
