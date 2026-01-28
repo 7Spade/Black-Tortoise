@@ -9,7 +9,6 @@ export * from './value-objects';
 export * from './events';
 export * from './repositories';
 export * from './services';
-export * from './policies';
 export * from './types';
 
 // Functional Modules
