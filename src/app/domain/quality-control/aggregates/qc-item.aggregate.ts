@@ -3,7 +3,7 @@ import { QcItemId } from '../value-objects/qc-item-id.vo';
 import { QcStatus } from '../value-objects/qc-status.vo';
 import { QcResult } from '../value-objects/qc-result.vo';
 import { QcChecklistItem } from '../entities/qc-checklist-item.entity';
-import { TaskId } from '@domain/value-objects/task-id.vo';
+import { TaskId } from '@domain/tasks/value-objects/task-id.vo';
 import { UserId } from '@domain/value-objects/user-id.vo';
 
 /**

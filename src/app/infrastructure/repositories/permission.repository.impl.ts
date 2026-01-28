@@ -10,8 +10,7 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { RoleEntity } from '@domain/aggregates';
-import { PermissionRepository } from '@domain/repositories';
+import { RoleEntity, PermissionRepository } from '@domain/permissions';
 
 @Injectable({ providedIn: 'root' })
 export class PermissionRepositoryImpl implements PermissionRepository {
