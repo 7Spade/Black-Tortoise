@@ -9,7 +9,7 @@ import { Timestamp } from '@angular/fire/firestore';
 export interface WorkspaceSettingsDto {
     workspaceId: string;
     theme: 'light' | 'dark' | 'system';
-    
+
     // Serialized Map<string, ModuleConfig> -> Record<string, any>
     moduleConfigs: Record<string, {
         moduleId: string;

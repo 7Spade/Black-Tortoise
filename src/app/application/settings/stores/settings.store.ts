@@ -22,11 +22,11 @@ export const SettingsStore = signalStore(
     { providedIn: 'root' },
     withState(initialState),
     withMethods((store, repo = inject(SettingsRepository)) => ({
-        
+
         loadSettings: rxMethod<string>(
             pipe(
                 tap(() => patchState(store, { loading: true })),
-                switchMap((workspaceId) => 
+                switchMap((workspaceId) =>
                     repo.getSettings(workspaceId).then(entity => {
                         // Map Domain Entity to View Model
                         const vm: WorkspaceSettingsViewModel = {

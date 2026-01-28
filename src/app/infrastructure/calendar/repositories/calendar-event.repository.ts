@@ -15,9 +15,9 @@ export class CalendarEventRepository implements CalendarRepository {
             collection(this.firestore, this.collectionName),
             where('workspaceId', '==', workspaceId)
         );
-        
+
         const snapshot = await getDocs(q);
-        return snapshot.docs.map(doc => 
+        return snapshot.docs.map(doc =>
             CalendarEventMapper.toDomain(doc.data() as CalendarEventDto)
         );
     }

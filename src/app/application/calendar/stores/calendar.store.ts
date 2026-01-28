@@ -29,11 +29,11 @@ export const CalendarStore = signalStore(
         eventCount: computed(() => events().length)
     })),
     withMethods((store, repo = inject(CalendarRepository)) => ({
-        
+
         loadEvents: rxMethod<string>(
             pipe(
                 tap(() => patchState(store, { loading: true, error: null })),
-                switchMap((workspaceId) => 
+                switchMap((workspaceId) =>
                     repo.findByWorkspaceId(workspaceId).then(events => {
                         // Mapper logic domain -> view model
                         return events.map(e => ({
@@ -82,9 +82,9 @@ export const CalendarStore = signalStore(
                             end: savedEvent.period.end,
                             isAllDay: savedEvent.isAllDay
                         };
-                        patchState(store, (state) => ({ 
+                        patchState(store, (state) => ({
                             events: [...state.events, vm],
-                            loading: false 
+                            loading: false
                         }));
                     },
                     error: (err: any) => patchState(store, { loading: false, error: err.message })

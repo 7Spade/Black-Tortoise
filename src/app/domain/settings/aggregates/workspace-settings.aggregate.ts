@@ -29,13 +29,13 @@ export class WorkspaceSettingsAggregate extends AggregateRoot<WorkspaceSettingsI
     }
 
     public static reconstitute(
-        id: string, 
-        workspaceId: string, 
+        id: string,
+        workspaceId: string,
         moduleConfigs: ModuleConfig[],
         notificationConfig: NotificationConfig | null
     ): WorkspaceSettingsAggregate {
         const aggregate = new WorkspaceSettingsAggregate(
-            { value: id }, 
+            { value: id },
             new WorkspaceId(workspaceId)
         );
         moduleConfigs.forEach(conf => aggregate.setModuleConfig(conf));

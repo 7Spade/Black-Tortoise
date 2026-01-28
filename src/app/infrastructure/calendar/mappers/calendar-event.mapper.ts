@@ -12,7 +12,7 @@ export class CalendarEventMapper {
     static toDomain(dto: CalendarEventDto): CalendarEventAggregate {
         // Converting Firestore Timestamp to logic handled in Domain or via simple Date check
         // Assuming ActionDate can be constructed from Date
-        
+
         return CalendarEventAggregate.reconstitute(
             dto.id,
             dto.workspaceId,
