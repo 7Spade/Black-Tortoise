@@ -8,7 +8,8 @@
  */
 
 import { MemberAggregate } from '@members/domain/aggregates/member.aggregate';
-import { MemberRole } from '@members/domain/value-objects/member-role.vo';
+import { MemberRole, MemberRoleType } from '@members/domain/value-objects/member-role.vo';
+import { MemberStatusEnum } from '@members/domain/value-objects/member-status.vo';
 
 /**
  * Check if the member can be promoted to the target role
@@ -17,15 +18,15 @@ export function canChangeMemberRole(
   member: MemberAggregate,
   targetRole: MemberRole
 ): { allowed: boolean; reason?: string } {
-  if (member.status !== 'active') {
+  if (member.status.value !== MemberStatusEnum.ACTIVE) {
     return { allowed: false, reason: 'Only active members can have their role changed.' };
   }
 
-  if (member.role === 'owner') {
+  if (member.role.value === MemberRoleType.OWNER) {
     return { allowed: false, reason: 'Cannot change the role of the Workspace Owner directly. Use transfer ownership.' };
   }
 
-  if (targetRole === 'owner') {
+  if (targetRole.value === MemberRoleType.OWNER) {
     return { allowed: false, reason: 'Cannot promote a member to Owner directly. Use transfer ownership.' };
   }
 
@@ -36,15 +37,15 @@ export function canChangeMemberRole(
  * Check if the member can be suspended
  */
 export function canSuspendMember(member: MemberAggregate): { allowed: boolean; reason?: string } {
-  if (member.role === 'owner') {
+  if (member.role.value === MemberRoleType.OWNER) {
     return { allowed: false, reason: 'Cannot suspend the Workspace Owner.' };
   }
 
-  if (member.status === 'suspended') {
+  if (member.status.value === MemberStatusEnum.SUSPENDED) {
     return { allowed: false, reason: 'Member is already suspended.' };
   }
 
-  if (member.status === 'removed') {
+  if (member.status.value === MemberStatusEnum.REMOVED) {
     return { allowed: false, reason: 'Cannot suspend a removed member.' };
   }
 
@@ -55,11 +56,11 @@ export function canSuspendMember(member: MemberAggregate): { allowed: boolean; r
  * Check if the member can be activated (e.g. from pending or suspended)
  */
 export function canActivateMember(member: MemberAggregate): { allowed: boolean; reason?: string } {
-  if (member.status === 'active') {
+  if (member.status.value === MemberStatusEnum.ACTIVE) {
     return { allowed: false, reason: 'Member is already active.' };
   }
 
-  if (member.status === 'removed') {
+  if (member.status.value === MemberStatusEnum.REMOVED) {
     return { allowed: false, reason: 'Cannot activate a removed member. Needs re-invitation.' };
   }
 
@@ -79,7 +80,7 @@ export function validateInvitation(
     errors.push('Invalid email address.');
   }
 
-  if (role === 'owner') {
+  if (role.value === MemberRoleType.OWNER) {
     errors.push('Cannot invite a user as Owner.');
   }
 

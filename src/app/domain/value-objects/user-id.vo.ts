@@ -5,7 +5,7 @@
  * DDD Pattern: Value Object
  */
 export class UserId {
-  private readonly value: string;
+  public readonly value: string;
 
   private constructor(value: string) {
     if (!value || value.trim().length === 0) {

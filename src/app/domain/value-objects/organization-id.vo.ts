@@ -6,7 +6,7 @@
  */
 
 export class OrganizationId {
-    constructor(private readonly value: string) {
+    constructor(public readonly value: string) {
         if (!value) {
             throw new Error('OrganizationId cannot be empty');
         }

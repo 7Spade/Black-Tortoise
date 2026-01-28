@@ -8,7 +8,8 @@ export enum MemberStatusEnum {
     ACTIVE = 'ACTIVE',
     INACTIVE = 'INACTIVE',
     INVITED = 'INVITED',
-    SUSPENDED = 'SUSPENDED'
+    SUSPENDED = 'SUSPENDED',
+    REMOVED = 'REMOVED'
 }
 
 export class MemberStatus {
@@ -18,8 +19,20 @@ export class MemberStatus {
         return new MemberStatus(MemberStatusEnum.ACTIVE);
     }
 
+    public static inactive(): MemberStatus {
+        return new MemberStatus(MemberStatusEnum.INACTIVE);
+    }
+
     public static invited(): MemberStatus {
         return new MemberStatus(MemberStatusEnum.INVITED);
+    }
+
+    public static suspended(): MemberStatus {
+        return new MemberStatus(MemberStatusEnum.SUSPENDED);
+    }
+
+    public static removed(): MemberStatus {
+        return new MemberStatus(MemberStatusEnum.REMOVED);
     }
 
     public static create(value: MemberStatusEnum): MemberStatus {

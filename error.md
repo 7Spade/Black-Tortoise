@@ -3,7 +3,7 @@ PS D:\GitHub\7s\Black-Tortoise> pnpm start
 > stackblitz-starters-vxcrzm@0.0.0 start D:\GitHub\7s\Black-Tortoise
 > ng serve
 
-Application bundle generation failed. [4.403 seconds]
+Application bundle generation failed. [4.330 seconds]
 
 ✘ [ERROR] TS2305: Module '"@application/handlers"' has no exported member 'provideEventHandlers'. [plugin angular-compiler]
 
@@ -578,19 +578,6 @@ Application bundle generation failed. [4.403 seconds]
          ╵                           ~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2554: Expected 2-3 arguments, but got 1. [plugin angular-compiler]
-
-    src/app/modules/issues/application/handlers/create-issue.handler.ts:39:20:
-      39 │       const event = createIssueCreatedEvent({
-         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~
-
-  An argument for 'correlationId' was not provided.
-
-    src/app/events/issues/issues.events.ts:53:70:
-      53 │ ...IssueCreatedPayload, correlationId: string, causationId?: strin...
-         ╵                         ~~~~~~~~~~~~~~~~~~~~~
-
-
 ✘ [ERROR] TS2305: Module '"@issues/domain"' has no exported member 'createIssue'. [plugin angular-compiler]
 
     src/app/modules/issues/application/handlers/issues.event-handlers.ts:9:9:
@@ -598,179 +585,80 @@ Application bundle generation failed. [4.403 seconds]
         ╵          ~~~~~~~~~~~
 
 
-✘ [ERROR] TS2724: '"@events"' has no exported member named 'IssueCreatedEvent'. Did you mean 'IssueCreated'? [plugin angular-compiler]
+✘ [ERROR] TS2339: Property 'workspaceId' does not exist on type 'IssueCreated'. [plugin angular-compiler]
 
-    src/app/modules/issues/application/handlers/issues.event-handlers.ts:10:9:
-      10 │ import { IssueCreatedEvent, IssueResolvedEvent } from '@events';
-         ╵          ~~~~~~~~~~~~~~~~~
-
-  'IssueCreated' is declared here.
-
-    src/app/events/issues/issues.events.ts:14:13:
-      14 │ export class IssueCreated implements DomainEvent<IssueCreatedPaylo...
-         ╵              ~~~~~~~~~~~~
+    src/app/modules/issues/application/handlers/issues.event-handlers.ts:25:41:
+      25 │         WorkspaceId.create(event.payload.workspaceId),
+         ╵                                          ~~~~~~~~~~~
 
 
-✘ [ERROR] TS2724: '"@events"' has no exported member named 'IssueResolvedEvent'. Did you mean 'IssueResolved'? [plugin angular-compiler]
+✘ [ERROR] TS2339: Property 'title' does not exist on type 'IssueCreated'. [plugin angular-compiler]
 
-    src/app/modules/issues/application/handlers/issues.event-handlers.ts:10:28:
-      10 │ import { IssueCreatedEvent, IssueResolvedEvent } from '@events';
-         ╵                             ~~~~~~~~~~~~~~~~~~
-
-  'IssueResolved' is declared here.
-
-    src/app/events/issues/issues.events.ts:36:13:
-      36 │ export class IssueResolved implements DomainEvent<IssueResolvedPay...
-         ╵              ~~~~~~~~~~~~~
+    src/app/modules/issues/application/handlers/issues.event-handlers.ts:26:22:
+      26 │         event.payload.title,
+         ╵                       ~~~~~
 
 
-✘ [ERROR] TS2551: Property 'BUG' does not exist on type 'typeof IssueType'. Did you mean 'bug'? [plugin angular-compiler]
+✘ [ERROR] TS2339: Property 'description' does not exist on type 'IssueCreated'. [plugin angular-compiler]
 
-    src/app/modules/issues/application/handlers/issues.event-handlers.ts:28:18:
-      28 │         IssueType.BUG, // Defaulting to BUG as type isn't in event...
-         ╵                   ~~~
-
-  'bug' is declared here.
-
-    src/app/modules/issues/domain/value-objects/issue-type.vo.ts:17:18:
-      17 │     public static bug(): IssueType {
-         ╵                   ~~~
+    src/app/modules/issues/application/handlers/issues.event-handlers.ts:27:22:
+      27 │         event.payload.description,
+         ╵                       ~~~~~~~~~~~
 
 
-✘ [ERROR] TS2551: Property 'HIGH' does not exist on type 'typeof IssuePriority'. Did you mean 'high'? [plugin angular-compiler]
+✘ [ERROR] TS2339: Property 'createdById' does not exist on type 'IssueCreated'. [plugin angular-compiler]
 
-    src/app/modules/issues/application/handlers/issues.event-handlers.ts:29:22:
-      29 │         IssuePriority.HIGH,
-         ╵                       ~~~~
-
-  'high' is declared here.
-
-    src/app/modules/issues/domain/value-objects/issue-priority.vo.ts:25:18:
-      25 │     public static high(): IssuePriority {
-         ╵                   ~~~~
+    src/app/modules/issues/application/handlers/issues.event-handlers.ts:30:22:
+      30 │         event.payload.createdById,
+         ╵                       ~~~~~~~~~~~
 
 
-✘ [ERROR] TS2339: Property 'RESOLVED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
+✘ [ERROR] TS2339: Property 'taskId' does not exist on type 'IssueCreated'. [plugin angular-compiler]
 
-    src/app/modules/issues/application/handlers/issues.event-handlers.ts:45:28:
-      45 │         status: IssueStatus.RESOLVED,
-         ╵                             ~~~~~~~~
+    src/app/modules/issues/application/handlers/issues.event-handlers.ts:32:22:
+      32 │         event.payload.taskId
+         ╵                       ~~~~~~
 
 
 ✘ [ERROR] TS2353: Object literal may only specify known properties, and 'resolvedAt' does not exist in type 'Partial<IssueAggregate>'. [plugin angular-compiler]
 
-    src/app/modules/issues/application/handlers/issues.event-handlers.ts:46:8:
-      46 │         resolvedAt: event.timestamp
+    src/app/modules/issues/application/handlers/issues.event-handlers.ts:49:8:
+      49 │         resolvedAt: event.timestamp
          ╵         ~~~~~~~~~~
 
 
-✘ [ERROR] TS2307: Cannot find module '@domain/aggregates/issue.aggregate' or its corresponding type declarations. [plugin angular-compiler]
+✘ [ERROR] TS2304: Cannot find name 'IssueStatus'. [plugin angular-compiler]
 
-    src/app/modules/issues/application/handlers/resolve-issue.handler.ts:4:29:
-      4 │ import { resolveIssue } from '@domain/aggregates/issue.aggregate';
-        ╵                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2345: Argument of type 'string' is not assignable to parameter of type 'IssueId'. [plugin angular-compiler]
-
-    src/app/modules/issues/application/handlers/resolve-issue.handler.ts:30:45:
-      30 │       const issue = await this.repo.findById(request.issueId);
-         ╵                                              ~~~~~~~~~~~~~~~
+    src/app/modules/issues/application/stores/issues.store.ts:84:72:
+      84 │ ...().some(i => i.status === IssueStatus.OPEN || i.status === Issu...
+         ╵                              ~~~~~~~~~~~
 
 
-✘ [ERROR] TS2554: Expected 2-3 arguments, but got 7. [plugin angular-compiler]
+✘ [ERROR] TS2304: Cannot find name 'IssueStatus'. [plugin angular-compiler]
 
-    src/app/modules/issues/application/handlers/resolve-issue.handler.ts:48:8:
-      48 │         request.resolvedBy,
-         ╵         ~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2551: Property 'OPEN' does not exist on type 'typeof IssueStatus'. Did you mean 'open'? [plugin angular-compiler]
-
-    src/app/modules/issues/application/stores/issues.store.ts:55:58:
-      55 │ ...i => i.status === IssueStatus.OPEN || i.status === IssueStatus....
-         ╵                                  ~~~~
-
-  'open' is declared here.
-
-    src/app/modules/issues/domain/value-objects/issue-status.vo.ts:18:18:
-      18 │     public static open(): IssueStatus {
-         ╵                   ~~~~
-
-
-✘ [ERROR] TS2339: Property 'IN_PROGRESS' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/application/stores/issues.store.ts:55:91:
-      55 │ ...atus === IssueStatus.OPEN || i.status === IssueStatus.IN_PROGRESS)
-         ╵                                                          ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'RESOLVED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/application/stores/issues.store.ts:62:58:
-      62 │ ...=> i.status === IssueStatus.RESOLVED || i.status === IssueStatu...
-         ╵                                ~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'CLOSED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/application/stores/issues.store.ts:62:95:
-      62 │ ...tatus === IssueStatus.RESOLVED || i.status === IssueStatus.CLOSED)
-         ╵                                                               ~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'taskId' does not exist on type 'IssueAggregate'. [plugin angular-compiler]
-
-    src/app/modules/issues/application/stores/issues.store.ts:69:35:
-      69 │       state.issues().filter(i => i.taskId === taskId)
-         ╵                                    ~~~~~~
-
-
-✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'IssueId' and 'string' have no overlap. [plugin angular-compiler]
-
-    src/app/modules/issues/application/stores/issues.store.ts:77:43:
-      77 │ ... return id ? state.issues().find(i => i.id === id) || null : null;
-         ╵                                          ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2551: Property 'OPEN' does not exist on type 'typeof IssueStatus'. Did you mean 'open'? [plugin angular-compiler]
-
-    src/app/modules/issues/application/stores/issues.store.ts:83:84:
-      83 │ ...i => i.status === IssueStatus.OPEN || i.status === IssueStatus....
-         ╵                                  ~~~~
-
-  'open' is declared here.
-
-    src/app/modules/issues/domain/value-objects/issue-status.vo.ts:18:18:
-      18 │     public static open(): IssueStatus {
-         ╵                   ~~~~
-
-
-✘ [ERROR] TS2339: Property 'IN_PROGRESS' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/application/stores/issues.store.ts:83:117:
-      83 │ ...us === IssueStatus.OPEN || i.status === IssueStatus.IN_PROGRESS)),
-         ╵                                                        ~~~~~~~~~~~
+    src/app/modules/issues/application/stores/issues.store.ts:84:105:
+      84 │ ...us === IssueStatus.OPEN || i.status === IssueStatus.IN_PROGRESS)),
+         ╵                                            ~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2339: Property 'findByWorkspaceId' does not exist on type 'IssueRepository'. [plugin angular-compiler]
 
-    src/app/modules/issues/application/stores/issues.store.ts:95:27:
-      95 │           return from(repo.findByWorkspaceId(workspaceId)).pipe(
+    src/app/modules/issues/application/stores/issues.store.ts:96:27:
+      96 │           return from(repo.findByWorkspaceId(workspaceId)).pipe(
          ╵                            ~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'IssueId' and 'string' have no overlap. [plugin angular-compiler]
 
-    src/app/modules/issues/application/stores/issues.store.ts:126:47:
-      126 │         const issue = store.issues().find(i => i.id === issueId);
-          ╵                                                ~~~~~~~~~~~~~~~~
+    src/app/modules/issues/application/stores/issues.store.ts:127:45:
+      127 │       const issue = store.issues().find(i => i.id === issueId);
+          ╵                                              ~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'IssueId' and 'string' have no overlap. [plugin angular-compiler]
 
-    src/app/modules/issues/application/stores/issues.store.ts:138:48:
-      138 │ ...tore.issues().map(i => i.id === issueId ? (updatedIssue as Iss...
+    src/app/modules/issues/application/stores/issues.store.ts:139:42:
+      139 │ ...tore.issues().map(i => i.id === issueId ? (updatedIssue as Iss...
           ╵                           ~~~~~~~~~~~~~~~~
 
 
@@ -779,227 +667,6 @@ Application bundle generation failed. [4.403 seconds]
     src/app/modules/issues/domain/aggregates/issue.aggregate.ts:6:23:
       6 │ import { TaskId } from '@domain/value-objects/task-id.vo';
         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2344: Type 'IssueStatus' does not satisfy the constraint 'string | number | symbol'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:22:28:
-      22 │   const transitions: Record<IssueStatus, IssueStatus[]> = {
-         ╵                             ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2551: Property 'OPEN' does not exist on type 'typeof IssueStatus'. Did you mean 'open'? [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:23:17:
-      23 │     [IssueStatus.OPEN]: [IssueStatus.IN_PROGRESS, IssueStatus.RESO...
-         ╵                  ~~~~
-
-  'open' is declared here.
-
-    src/app/modules/issues/domain/value-objects/issue-status.vo.ts:18:18:
-      18 │     public static open(): IssueStatus {
-         ╵                   ~~~~
-
-
-✘ [ERROR] TS2339: Property 'IN_PROGRESS' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:23:37:
-      23 │ ...tatus.OPEN]: [IssueStatus.IN_PROGRESS, IssueStatus.RESOLVED, Is...
-         ╵                              ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'RESOLVED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:23:62:
-      23 │ ...us.IN_PROGRESS, IssueStatus.RESOLVED, IssueStatus.CLOSED, Issue...
-         ╵                                ~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'CLOSED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:23:84:
-      23 │ ..., IssueStatus.RESOLVED, IssueStatus.CLOSED, IssueStatus.WONT_FIX],
-         ╵                                        ~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'WONT_FIX' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:23:104:
-      23 │ ..., IssueStatus.RESOLVED, IssueStatus.CLOSED, IssueStatus.WONT_FIX],
-         ╵                                                            ~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'IN_PROGRESS' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:24:17:
-      24 │     [IssueStatus.IN_PROGRESS]: [IssueStatus.RESOLVED, IssueStatus....
-         ╵                  ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'RESOLVED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:24:44:
-      24 │ ....IN_PROGRESS]: [IssueStatus.RESOLVED, IssueStatus.CLOSED, Issue...
-         ╵                                ~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'CLOSED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:24:66:
-      24 │ ...Status.RESOLVED, IssueStatus.CLOSED, IssueStatus.WONT_FIX, Issu...
-         ╵                                 ~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'WONT_FIX' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:24:86:
-      24 │ ...eStatus.CLOSED, IssueStatus.WONT_FIX, IssueStatus.OPEN], // Can...
-         ╵                                ~~~~~~~~
-
-
-✘ [ERROR] TS2551: Property 'OPEN' does not exist on type 'typeof IssueStatus'. Did you mean 'open'? [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:24:108:
-      24 │ ...ueStatus.WONT_FIX, IssueStatus.OPEN], // Can go back to open? Yes.
-         ╵                                   ~~~~
-
-  'open' is declared here.
-
-    src/app/modules/issues/domain/value-objects/issue-status.vo.ts:18:18:
-      18 │     public static open(): IssueStatus {
-         ╵                   ~~~~
-
-
-✘ [ERROR] TS2339: Property 'RESOLVED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:25:17:
-      25 │     [IssueStatus.RESOLVED]: [IssueStatus.CLOSED, IssueStatus.OPEN]...
-         ╵                  ~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'CLOSED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:25:41:
-      25 │ ...atus.RESOLVED]: [IssueStatus.CLOSED, IssueStatus.OPEN], // Reop...
-         ╵                                 ~~~~~~
-
-
-✘ [ERROR] TS2551: Property 'OPEN' does not exist on type 'typeof IssueStatus'. Did you mean 'open'? [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:25:61:
-      25 │ ...OLVED]: [IssueStatus.CLOSED, IssueStatus.OPEN], // Reopen or Close
-         ╵                                             ~~~~
-
-  'open' is declared here.
-
-    src/app/modules/issues/domain/value-objects/issue-status.vo.ts:18:18:
-      18 │     public static open(): IssueStatus {
-         ╵                   ~~~~
-
-
-✘ [ERROR] TS2339: Property 'CLOSED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:26:17:
-      26 │     [IssueStatus.CLOSED]: [IssueStatus.OPEN], // Only Reopen
-         ╵                  ~~~~~~
-
-
-✘ [ERROR] TS2551: Property 'OPEN' does not exist on type 'typeof IssueStatus'. Did you mean 'open'? [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:26:39:
-      26 │     [IssueStatus.CLOSED]: [IssueStatus.OPEN], // Only Reopen
-         ╵                                        ~~~~
-
-  'open' is declared here.
-
-    src/app/modules/issues/domain/value-objects/issue-status.vo.ts:18:18:
-      18 │     public static open(): IssueStatus {
-         ╵                   ~~~~
-
-
-✘ [ERROR] TS2339: Property 'WONT_FIX' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:27:17:
-      27 │     [IssueStatus.WONT_FIX]: [IssueStatus.OPEN, IssueStatus.CLOSED]...
-         ╵                  ~~~~~~~~
-
-
-✘ [ERROR] TS2551: Property 'OPEN' does not exist on type 'typeof IssueStatus'. Did you mean 'open'? [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:27:41:
-      27 │ ...tatus.WONT_FIX]: [IssueStatus.OPEN, IssueStatus.CLOSED] // Reop...
-         ╵                                  ~~~~
-
-  'open' is declared here.
-
-    src/app/modules/issues/domain/value-objects/issue-status.vo.ts:18:18:
-      18 │     public static open(): IssueStatus {
-         ╵                   ~~~~
-
-
-✘ [ERROR] TS2339: Property 'CLOSED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:27:59:
-      27 │ ...[IssueStatus.OPEN, IssueStatus.CLOSED] // Reopen or explicit Close
-         ╵                                   ~~~~~~
-
-
-✘ [ERROR] TS2538: Type 'IssueStatus' cannot be used as an index type. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:30:19:
-      30 │   if (!transitions[currentStatus].includes(newStatus)) {
-         ╵                    ~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2551: Property 'OPEN' does not exist on type 'typeof IssueStatus'. Did you mean 'open'? [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:38:32:
-      38 │   return status === IssueStatus.OPEN;
-         ╵                                 ~~~~
-
-  'open' is declared here.
-
-    src/app/modules/issues/domain/value-objects/issue-status.vo.ts:18:18:
-      18 │     public static open(): IssueStatus {
-         ╵                   ~~~~
-
-
-✘ [ERROR] TS2339: Property 'RESOLVED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:42:32:
-      42 │ ...turn status !== IssueStatus.RESOLVED && status !== IssueStatus....
-         ╵                                ~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'CLOSED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:42:67:
-      42 │ ... status !== IssueStatus.RESOLVED && status !== IssueStatus.CLOSED;
-         ╵                                                               ~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'CLOSED' does not exist on type 'typeof IssueStatus'. [plugin angular-compiler]
-
-    src/app/modules/issues/domain/policies/issue-workflow.policy.ts:46:32:
-      46 │   return status !== IssueStatus.CLOSED;
-         ╵                                 ~~~~~~
-
-
-✘ [ERROR] TS2416: Property 'findById' in type 'IssueRepositoryImpl' is not assignable to the same property in base type 'IssueRepository'.
-  Type '(id: string) => Promise<IssueAggregate | null>' is not assignable to type '(id: IssueId) => Promise<IssueAggregate | null>'.
-    Types of parameters 'id' and 'id' are incompatible.
-      Type 'IssueId' is not assignable to type 'string'. [plugin angular-compiler]
-
-    src/app/modules/issues/infrastructure/repositories/issue.repository.impl.ts:30:8:
-      30 │   async findById(id: string): Promise<IssueAggregate | null> {
-         ╵         ~~~~~~~~
-
-
-✘ [ERROR] TS2345: Argument of type 'IssueId' is not assignable to parameter of type 'string'. [plugin angular-compiler]
-
-    src/app/modules/issues/infrastructure/repositories/issue.repository.impl.ts:48:32:
-      48 │     await setDoc(this.getDocRef(issue.id), issue);
-         ╵                                 ~~~~~~~~
 
 
 ✘ [ERROR] TS2307: Cannot find module '@application/handlers/create-issue.handler' or its corresponding type declarations. [plugin angular-compiler]
@@ -1070,102 +737,6 @@ Application bundle generation failed. [4.403 seconds]
     src/app/modules/issues/presentation/pages/issues.component.ts:140:20:
       140 │       taskId: issue.taskId,
           ╵                     ~~~~~~
-
-
-✘ [ERROR] TS2551: Property 'inactive' does not exist on type 'typeof MemberStatus'. Did you mean 'active'? [plugin angular-compiler]
-
-    src/app/modules/members/domain/aggregates/member.aggregate.ts:63:35:
-      63 │         this.status = MemberStatus.inactive();
-         ╵                                    ~~~~~~~~
-
-  'active' is declared here.
-
-    src/app/modules/members/domain/value-objects/member-status.vo.ts:17:18:
-      17 │     public static active(): MemberStatus {
-         ╵                   ~~~~~~
-
-
-✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'MemberStatus' and 'string' have no overlap. [plugin angular-compiler]
-
-    src/app/modules/members/domain/policies/member-role.policy.ts:20:6:
-      20 │   if (member.status !== 'active') {
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'MemberRole' and 'string' have no overlap. [plugin angular-compiler]
-
-    src/app/modules/members/domain/policies/member-role.policy.ts:24:6:
-      24 │   if (member.role === 'owner') {
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'MemberRole' and 'string' have no overlap. [plugin angular-compiler]
-
-    src/app/modules/members/domain/policies/member-role.policy.ts:28:6:
-      28 │   if (targetRole === 'owner') {
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'MemberRole' and 'string' have no overlap. [plugin angular-compiler]
-
-    src/app/modules/members/domain/policies/member-role.policy.ts:39:6:
-      39 │   if (member.role === 'owner') {
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'MemberStatus' and 'string' have no overlap. [plugin angular-compiler]
-
-    src/app/modules/members/domain/policies/member-role.policy.ts:43:6:
-      43 │   if (member.status === 'suspended') {
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'MemberStatus' and 'string' have no overlap. [plugin angular-compiler]
-
-    src/app/modules/members/domain/policies/member-role.policy.ts:47:6:
-      47 │   if (member.status === 'removed') {
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'MemberStatus' and 'string' have no overlap. [plugin angular-compiler]
-
-    src/app/modules/members/domain/policies/member-role.policy.ts:58:6:
-      58 │   if (member.status === 'active') {
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'MemberStatus' and 'string' have no overlap. [plugin angular-compiler]
-
-    src/app/modules/members/domain/policies/member-role.policy.ts:62:6:
-      62 │   if (member.status === 'removed') {
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'MemberRole' and 'string' have no overlap. [plugin angular-compiler]
-
-    src/app/modules/members/domain/policies/member-role.policy.ts:82:6:
-      82 │   if (role === 'owner') {
-         ╵       ~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2416: Property 'findById' in type 'MemberRepositoryImpl' is not assignable to the same property in base type 'MemberRepository'.
-  Type '(id: string) => Promise<MemberAggregate | null>' is not assignable to type '(id: MemberId) => Promise<MemberAggregate | null>'.
-    Types of parameters 'id' and 'id' are incompatible.
-      Type 'MemberId' is not assignable to type 'string'. [plugin angular-compiler]
-
-    src/app/modules/members/infrastructure/repositories/member.repository.impl.ts:20:8:
-      20 │   async findById(id: string): Promise<MemberAggregate | null> {
-         ╵         ~~~~~~~~
-
-
-✘ [ERROR] TS2416: Property 'delete' in type 'MemberRepositoryImpl' is not assignable to the same property in base type 'MemberRepository'.
-  Type '(id: string) => Promise<void>' is not assignable to type '(id: MemberId) => Promise<void>'.
-    Types of parameters 'id' and 'id' are incompatible.
-      Type 'MemberId' is not assignable to type 'string'. [plugin angular-compiler]
-
-    src/app/modules/members/infrastructure/repositories/member.repository.impl.ts:44:8:
-      44 │   async delete(id: string): Promise<void> {
-         ╵         ~~~~~~
 
 
 ✘ [ERROR] TS2305: Module '"@overview/domain"' has no exported member 'OverviewRepository'. [plugin angular-compiler]
@@ -1487,13 +1058,6 @@ Application bundle generation failed. [4.403 seconds]
          ╵                     ~~~~
 
 
-✘ [ERROR] TS2341: Property 'value' is private and only accessible within class 'WorkspaceId'. [plugin angular-compiler]
-
-    src/app/modules/settings/application/stores/settings.store.ts:36:60:
-      36 │                             workspaceId: entity.workspaceId.value,
-         ╵                                                             ~~~~~
-
-
 ✘ [ERROR] TS2322: Type 'unknown' is not assignable to type 'WorkspaceSettingsViewModel | null | undefined'. [plugin angular-compiler]
 
     src/app/modules/settings/application/stores/settings.store.ts:51:60:
@@ -1548,20 +1112,6 @@ Application bundle generation failed. [4.403 seconds]
     src/app/modules/settings/domain/entities/module-config.entity.ts:3:29:
       3 │ ...tingValue } from '@settings/domain/value-objects/setting-value.vo';
         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2341: Property 'value' is private and only accessible within class 'WorkspaceId'. [plugin angular-compiler]
-
-    src/app/modules/settings/infrastructure/mappers/workspace-settings.mapper.ts:48:44:
-      48 │             workspaceId: domain.workspaceId.value,
-         ╵                                             ~~~~~
-
-
-✘ [ERROR] TS2341: Property 'value' is private and only accessible within class 'WorkspaceId'. [plugin angular-compiler]
-
-    src/app/modules/settings/infrastructure/repositories/settings.repository.ts:26:79:
-      26 │ ...irestore, `${this.collectionName}/${settings.workspaceId.value}`),
-         ╵                                                             ~~~~~
 
 
 ✘ [ERROR] TS2305: Module '"@settings/application/stores/settings.store"' has no exported member 'TaskPriority'. [plugin angular-compiler]
@@ -1739,86 +1289,6 @@ Application bundle generation failed. [4.403 seconds]
           ╵                        ~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2307: Cannot find module '@quality-control/application/handlers/submit-task-for-qc.handler' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/facades/tasks.facade.ts:11:39:
-      11 │ ...er } from '@quality-control/application/handlers/submit-task-fo...
-         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2554: Expected 3 arguments, but got 1. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/facades/tasks.facade.ts:68:17:
-      68 │     const task = createTask({
-         ╵                  ~~~~~~~~~~
-
-  An argument for 'workspaceId' was not provided.
-
-    src/app/modules/tasks/domain/aggregates/task.aggregate.ts:118:4:
-      118 │     workspaceId: WorkspaceId,
-          ╵     ~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2322: Type 'WorkspaceId' is not assignable to type 'string'. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/facades/tasks.facade.ts:78:6:
-      78 │       workspaceId: task.workspaceId,
-         ╵       ~~~~~~~~~~~
-
-  The expected type comes from property 'workspaceId' which is declared here on type 'CreateTaskCommand'
-
-    src/app/modules/tasks/application/commands/create-task.command.ts:6:2:
-      6 │   workspaceId: string;
-        ╵   ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'createdById' does not exist on type 'TaskAggregate'. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/facades/tasks.facade.ts:82:24:
-      82 │       createdById: task.createdById,
-         ╵                         ~~~~~~~~~~~
-
-
-✘ [ERROR] TS2339: Property 'success' does not exist on type 'TaskAggregate'. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/facades/tasks.facade.ts:85:18:
-      85 │     return result.success;
-         ╵                   ~~~~~~~
-
-
-✘ [ERROR] TS2571: Object is of type 'unknown'. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/facades/tasks.facade.ts:92:10:
-      92 │     await this.submitTaskForQCHandler.execute({
-         ╵           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2322: Type 'TaskId' is not assignable to type 'string'. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/facades/tasks.facade.ts:105:6:
-      105 │       taskId: task.id,
-          ╵       ~~~~~~
-
-  The expected type comes from property 'taskId' which is declared here on type 'FailQCRequest'
-
-    src/app/modules/quality-control/application/handlers/fail-qc.handler.ts:9:11:
-      9 │   readonly taskId: string;
-        ╵            ~~~~~~
-
-
-✘ [ERROR] TS2322: Type 'TaskId' is not assignable to type 'string'. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/facades/tasks.facade.ts:122:6:
-      122 │       taskId: task.id,
-          ╵       ~~~~~~
-
-  The expected type comes from property 'taskId' which is declared here on type 'ResolveIssueRequest'
-
-    src/app/modules/issues/application/handlers/resolve-issue.handler.ts:9:11:
-      9 │   readonly taskId: string;
-        ╵            ~~~~~~
-
-
 ✘ [ERROR] TS2554: Expected 2-3 arguments, but got 1. [plugin angular-compiler]
 
     src/app/modules/tasks/application/handlers/approve-task.handler.ts:45:20:
@@ -1845,11 +1315,11 @@ Application bundle generation failed. [4.403 seconds]
          ╵                         ~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2305: Module '"@tasks/domain"' has no exported member 'updateTaskStatus'. [plugin angular-compiler]
+✘ [ERROR] TS2307: Cannot find module '@tasks/domain/events/task-submitted-for-qc.event' or its corresponding type declarations. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:2:33:
-      2 │ ... { createTask, TaskStatus, updateTaskStatus } from '@tasks/domain';
-        ╵                               ~~~~~~~~~~~~~~~~
+    src/app/modules/tasks/application/handlers/submit-task-for-qc.handler.ts:5:46:
+      5 │ ...rQCEvent } from '@tasks/domain/events/task-submitted-for-qc.event';
+        ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2724: '"@events"' has no exported member named 'IssueResolvedEvent'. Did you mean 'IssueResolved'? [plugin angular-compiler]
@@ -1894,75 +1364,55 @@ Application bundle generation failed. [4.403 seconds]
 
 ✘ [ERROR] TS2554: Expected 3 arguments, but got 1. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:17:17:
-      17 │     const task = createTask({
-         ╵                  ~~~~~~~~~~
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:19:31:
+      19 │     const task = TaskAggregate.create({
+         ╵                                ~~~~~~
 
   An argument for 'workspaceId' was not provided.
 
-    src/app/modules/tasks/domain/aggregates/task.aggregate.ts:118:4:
-      118 │     workspaceId: WorkspaceId,
-          ╵     ~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/modules/tasks/domain/aggregates/task.aggregate.ts:60:8:
+      60 │         workspaceId: WorkspaceId,
+         ╵         ~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'TaskId' and 'string' have no overlap. [plugin angular-compiler]
+✘ [ERROR] TS2322: Type 'import("D:/GitHub/7s/Black-Tortoise/src/app/modules/tasks/domain/value-objects/task-status.vo").TaskStatusEnum' is not assignable to type 'TaskStatus'. [plugin angular-compiler]
 
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:34:21:
-      34 │         .find((t) => t.id === event.aggregateId);
-         ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:39:10:
+      39 │           status: TaskStatusEnum.IN_QC,
+         ╵           ~~~~~~
 
+  The expected type comes from property 'status' which is declared here on type 'Partial<TaskProps>'
 
-✘ [ERROR] TS2367: This comparison appears to be unintentional because the types 'TaskId' and 'string' have no overlap. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:46:19:
-      46 │       .find((t) => t.id === event.aggregateId);
-         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2345: Argument of type 'TaskId' is not assignable to parameter of type 'string'. [plugin angular-compiler]
-
-    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:71:30:
-      71 │         tasksStore.updateTask(updatedTask.id, updatedTask);
-         ╵                               ~~~~~~~~~~~~~~
+    src/app/modules/tasks/domain/aggregates/task.aggregate.ts:16:4:
+      16 │     status: TaskStatus;
+         ╵     ~~~~~~
 
 
-✘ [ERROR] TS4115: This parameter property must have an 'override' modifier because it overrides a member in base class 'Entity<any>'. [plugin angular-compiler]
+✘ [ERROR] TS2322: Type 'import("D:/GitHub/7s/Black-Tortoise/src/app/modules/tasks/domain/value-objects/task-status.vo").TaskStatusEnum' is not assignable to type 'TaskStatus'. [plugin angular-compiler]
 
-    src/app/modules/tasks/domain/entities/subtask.entity.ts:13:8:
-      13 │         public readonly id: string,
-         ╵         ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:53:8:
+      53 │         status: TaskStatusEnum.QC_FAILED,
+         ╵         ~~~~~~
 
+  The expected type comes from property 'status' which is declared here on type 'Partial<TaskProps>'
 
-✘ [ERROR] TS2307: Cannot find module '../../value-objects/task-id.vo' or its corresponding type declarations. [plugin angular-compiler]
-
-    src/app/modules/tasks/domain/entities/task-dependency.entity.ts:2:23:
-      2 │ import { TaskId } from '../../value-objects/task-id.vo';
-        ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-✘ [ERROR] TS2365: Operator '<' cannot be applied to types 'Date' and 'number'. [plugin angular-compiler]
-
-    src/app/modules/tasks/domain/policies/task.policy.ts:144:9:
-      144 │   return task.dueDate < now.getTime();
-          ╵          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/modules/tasks/domain/aggregates/task.aggregate.ts:16:4:
+      16 │     status: TaskStatus;
+         ╵     ~~~~~~
 
 
-✘ [ERROR] TS2416: Property 'findById' in type 'TaskRepositoryImpl' is not assignable to the same property in base type 'TaskRepository'.
-  Type '(id: TaskId) => Promise<TaskAggregate | undefined>' is not assignable to type '(id: TaskId) => Promise<TaskAggregate | null>'.
-    Type 'Promise<TaskAggregate | undefined>' is not assignable to type 'Promise<TaskAggregate | null>'.
-      Type 'TaskAggregate | undefined' is not assignable to type 'TaskAggregate | null'.
-        Type 'undefined' is not assignable to type 'TaskAggregate | null'. [plugin angular-compiler]
+✘ [ERROR] TS2339: Property 'resolveIssue' does not exist on type 'TaskAggregate'. [plugin angular-compiler]
 
-    src/app/modules/tasks/infrastructure/repositories/task.repository.impl.ts:32:8:
-      32 │   async findById(id: TaskId): Promise<TaskAggregate | undefined> {
-         ╵         ~~~~~~~~
+    src/app/modules/tasks/application/handlers/tasks.event-handlers.ts:66:39:
+      66 │ ... const updatedTask = existingTask.resolveIssue(event.aggregateId);
+         ╵                                      ~~~~~~~~~~~~
 
 
-✘ [ERROR] TS2345: Argument of type 'TaskId' is not assignable to parameter of type 'string'. [plugin angular-compiler]
+✘ [ERROR] TS2345: Argument of type 'string' is not assignable to parameter of type 'WorkspaceId'. [plugin angular-compiler]
 
-    src/app/modules/tasks/infrastructure/repositories/task.repository.impl.ts:125:32:
-      125 │     await setDoc(this.getDocRef(task.id), task);
-          ╵                                 ~~~~~~~
+    src/app/modules/tasks/application/stores/tasks.store.ts:118:45:
+      118 │             return from(repo.findByWorkspace(workspaceId)).pipe(
+          ╵                                              ~~~~~~~~~~~
 
 
 ✘ [ERROR] TS2307: Cannot find module '@presentation/pages/settings' or its corresponding type declarations. [plugin angular-compiler]

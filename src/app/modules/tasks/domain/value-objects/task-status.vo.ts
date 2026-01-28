@@ -14,7 +14,7 @@ export enum TaskStatusEnum {
 }
 
 export class TaskStatus {
-    private readonly value: TaskStatusEnum;
+    public readonly value: TaskStatusEnum;
     private static readonly cache = new Map<string, TaskStatus>();
 
     private constructor(value: TaskStatusEnum) {

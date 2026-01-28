@@ -10,14 +10,14 @@ import { TaskStatus } from '@tasks/domain/value-objects/task-status.vo';
  */
 export class Subtask extends Entity<any> { // Generic ID for now
     private constructor(
-        public readonly id: string,
+        id: any,
         public title: string,
         public status: TaskStatus
     ) {
-        super({ value: id });
+        super(id);
     }
 
     public static create(id: string, title: string): Subtask {
-        return new Subtask(id, title, TaskStatus.todo());
+        return new Subtask({ value: id }, title, TaskStatus.todo());
     }
 }

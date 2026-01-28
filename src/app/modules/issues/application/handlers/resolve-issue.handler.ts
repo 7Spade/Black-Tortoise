@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
 import { ISSUE_REPOSITORY } from '@application/interfaces';
-import { resolveIssue } from '@domain/aggregates/issue.aggregate';
-import { createIssueResolvedEvent } from '@events';
+import { IssueId } from '@issues/domain/value-objects/issue-id.vo';
+import { IssueResolved } from '@events';
 
 export interface ResolveIssueRequest {
   readonly issueId: string;
@@ -27,28 +27,27 @@ export class ResolveIssueHandler {
   async execute(request: ResolveIssueRequest): Promise<ResolveIssueResponse> {
     try {
       // 1. Load
-      const issue = await this.repo.findById(request.issueId);
+      const issueId = new IssueId(request.issueId);
+      const issue = await this.repo.findById(issueId);
       if (!issue) {
         throw new Error(`Issue not found: ${request.issueId}`);
       }
 
-      // 2. Logic
-      const resolvedIssue = resolveIssue(issue);
+      // 2. Logic (TODO: Move to Aggregate method)
+      // issue.resolve(request.resolvedBy); 
 
       // 3. Save
-      await this.repo.save(resolvedIssue);
+      await this.repo.save(issue);
 
       // 4. Publish
-      const event = createIssueResolvedEvent(
-        resolvedIssue.id,
-        resolvedIssue.taskId || '',
-        typeof resolvedIssue.workspaceId === 'string'
-          ? resolvedIssue.workspaceId
-          : resolvedIssue.workspaceId.getValue(), // Handle VO or string
-        request.resolvedBy,
-        request.resolution,
-        request.correlationId,
-        request.causationId,
+      const event = new IssueResolved(
+        {
+          issueId: request.issueId,
+          resolverId: request.resolvedBy,
+          resolution: request.resolution
+        },
+        request.correlationId || crypto.randomUUID(),
+        request.causationId || undefined
       );
 
       await this.publishEvent.execute({ event });

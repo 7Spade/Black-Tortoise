@@ -12,7 +12,7 @@ export enum TaskPriorityEnum {
 }
 
 export class TaskPriority {
-    private readonly value: TaskPriorityEnum;
+    public readonly value: TaskPriorityEnum;
     private static readonly cache = new Map<string, TaskPriority>();
 
     private constructor(value: TaskPriorityEnum) {

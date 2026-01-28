@@ -10,38 +10,52 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { MemberAggregate, MemberRepository } from '@members/domain';
+import { MemberAggregate } from '@members/domain/aggregates/member.aggregate';
+import { MemberRepository } from '@members/domain/repositories/member.repository.interface';
+import { MemberId } from '@members/domain/value-objects/member-id.vo';
+import { WorkspaceId, UserId } from '@domain/value-objects';
 
 @Injectable({ providedIn: 'root' })
 export class MemberRepositoryImpl implements MemberRepository {
   private firestore = inject(Firestore);
   private collectionName = 'members';
 
-  async findById(id: string): Promise<MemberAggregate | null> {
-    const d = await getDoc(doc(this.firestore, `${this.collectionName}/${id}`));
+  async findById(id: MemberId): Promise<MemberAggregate | null> {
+    const d = await getDoc(doc(this.firestore, `${this.collectionName}/${id.value}`));
     return d.exists() ? (d.data() as MemberAggregate) : null;
   }
-  async findByUserId(userId: string): Promise<MemberAggregate[]> {
+  async findByWorkspace(workspaceId: WorkspaceId): Promise<MemberAggregate[]> {
     const q = query(
       collection(this.firestore, this.collectionName),
-      where('userId', '==', userId),
+      where('workspaceId', '==', workspaceId.value),
     );
     return (await getDocs(q)).docs.map((d) => d.data() as MemberAggregate);
   }
-  async findByWorkspaceId(workspaceId: string): Promise<MemberAggregate[]> {
+  async findByUserId(userId: UserId): Promise<MemberAggregate[]> {
     const q = query(
       collection(this.firestore, this.collectionName),
-      where('workspaceId', '==', workspaceId),
+      where('userId', '==', userId.value),
     );
     return (await getDocs(q)).docs.map((d) => d.data() as MemberAggregate);
+  }
+  async findByUserAndWorkspace(userId: UserId, workspaceId: WorkspaceId): Promise<MemberAggregate | null> {
+    const q = query(
+      collection(this.firestore, this.collectionName),
+      where('userId', '==', userId.value),
+      where('workspaceId', '==', workspaceId.value),
+    );
+    const docs = await getDocs(q);
+    const firstDoc = docs.docs[0];
+    if (!firstDoc) return null;
+    return firstDoc.data() as MemberAggregate;
   }
   async save(member: MemberAggregate): Promise<void> {
     await setDoc(
-      doc(this.firestore, `${this.collectionName}/${member.id}`),
+      doc(this.firestore, `${this.collectionName}/${member.id.value}`),
       member,
     );
   }
-  async delete(id: string): Promise<void> {
-    await deleteDoc(doc(this.firestore, `${this.collectionName}/${id}`));
+  async delete(id: MemberId): Promise<void> {
+    await deleteDoc(doc(this.firestore, `${this.collectionName}/${id.value}`));
   }
 }

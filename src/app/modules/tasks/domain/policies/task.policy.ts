@@ -3,6 +3,27 @@ import { TaskPriority, TaskPriorityEnum } from '@tasks/domain/value-objects/task
 import { TaskStatus, TaskStatusEnum } from '@tasks/domain/value-objects/task-status.vo';
 
 /**
+ * Updates a task's status while maintaining immutability.
+ */
+export function updateTaskStatus(task: TaskAggregate, newStatus: TaskStatus): TaskAggregate {
+  return task.cloneWith({ status: newStatus });
+}
+
+/**
+ * Blocks a task by changing its status to BLOCKED.
+ */
+export function blockTask(task: TaskAggregate): TaskAggregate {
+  return updateTaskStatus(task, TaskStatus.BLOCKED);
+}
+
+/**
+ * Unblocks a task by changing its status back to TODO (or previous state).
+ */
+export function unblockTask(task: TaskAggregate): TaskAggregate {
+  return updateTaskStatus(task, TaskStatus.TODO);
+}
+
+/**
  * Validates task title according to business rules
  */
 export function validateTaskTitle(title: string): {
@@ -141,15 +162,15 @@ export function isTaskOverdue(task: TaskAggregate): boolean {
   }
 
   const now = new Date();
-  return task.dueDate < now.getTime();
+  return task.dueDate.getTime() < now.getTime();
 }
 
 /**
  * Calculate days until due
  */
-export function getDaysUntilDue(dueDate: number): number {
+export function getDaysUntilDue(dueDate: Date): number {
   const now = new Date();
-  const diffTime = dueDate - now.getTime();
+  const diffTime = dueDate.getTime() - now.getTime();
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 

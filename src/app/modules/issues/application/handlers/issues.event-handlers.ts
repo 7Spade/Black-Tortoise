@@ -7,26 +7,26 @@
 
 import { inject } from '@angular/core';
 import { createIssue, IssuePriority, IssueStatus, IssueType } from '@issues/domain';
-import { IssueCreatedEvent, IssueResolvedEvent } from '@events';
+import { IssueCreated, IssueResolved } from '@events/issues/issues.events';
 import { EventBus } from '@domain/types';
 import { WorkspaceId } from '@domain/value-objects';
 import { IssuesStore } from '@issues/application/stores/issues.store';
 
 export function registerIssuesEventHandlers(eventBus: EventBus): void {
   const issuesStore = inject(IssuesStore);
-  
-  eventBus.subscribe<IssueCreatedEvent['payload']>(
+
+  eventBus.subscribe<IssueCreated>(
     'IssueCreated',
     (event) => {
       console.log('[IssuesEventHandlers] IssueCreated:', event);
-      
+
       const issue = createIssue(
         event.aggregateId,
         WorkspaceId.create(event.payload.workspaceId),
         event.payload.title,
         event.payload.description,
-        IssueType.BUG, // Defaulting to BUG as type isn't in event payload yet
-        IssuePriority.HIGH,
+        IssueType.bug(), // Using static factory
+        IssuePriority.high(),
         event.payload.createdById,
         undefined,
         event.payload.taskId
@@ -35,18 +35,21 @@ export function registerIssuesEventHandlers(eventBus: EventBus): void {
       issuesStore.createIssue(issue);
     }
   );
-  
-  eventBus.subscribe<IssueResolvedEvent['payload']>(
+
+  eventBus.subscribe<IssueResolved>(
     'IssueResolved',
     (event) => {
       console.log('[IssuesEventHandlers] IssueResolved:', event);
-      
+
+      // issuesStore.updateIssue currently uses IssueAggregate method or something?
+      // Actually issuesStore.updateIssue in issues.store.ts expects (id, props)
+      // We need to pass the VO for status
       issuesStore.updateIssue(event.aggregateId, {
-        status: IssueStatus.RESOLVED,
+        status: IssueStatus.resolved(),
         resolvedAt: event.timestamp
       });
     }
   );
-  
+
   console.log('[IssuesEventHandlers] Registered event handlers for workspace');
 }

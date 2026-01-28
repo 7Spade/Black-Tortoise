@@ -11,8 +11,10 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { TaskAggregate, TaskStatus, TaskRepository, TaskId } from '@tasks/domain';
-import { WorkspaceId } from '@domain/value-objects';
+import { TaskAggregate, TaskRepository } from '@tasks/domain';
+import { TaskId } from '@tasks/domain/value-objects/task-id.vo';
+import { TaskStatus } from '@tasks/domain/value-objects/task-status.vo';
+import { WorkspaceId, UserId } from '@domain/value-objects';
 
 @Injectable({
   providedIn: 'root',
@@ -29,27 +31,27 @@ export class TaskRepositoryImpl implements TaskRepository {
     return doc(this.firestore, `${this.collectionName}/${id}`);
   }
 
-  async findById(id: TaskId): Promise<TaskAggregate | undefined> {
-    const docSnap = await getDoc(this.getDocRef(id.toString()));
+  async findById(id: TaskId): Promise<TaskAggregate | null> {
+    const docSnap = await getDoc(this.getDocRef(id.value));
     if (!docSnap.exists()) {
-      return undefined;
+      return null;
     }
     return docSnap.data() as TaskAggregate;
   }
 
-  async findByWorkspaceId(workspaceId: WorkspaceId): Promise<TaskAggregate[]> {
+  async findByWorkspace(workspaceId: WorkspaceId): Promise<TaskAggregate[]> {
     const q = query(
       this.getCollectionRef(),
-      where('workspaceId', '==', workspaceId),
+      where('workspaceId', '==', workspaceId.value),
     );
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => doc.data() as TaskAggregate);
   }
 
-  async findByAssigneeId(assigneeId: string): Promise<TaskAggregate[]> {
+  async findByAssignee(assigneeId: UserId): Promise<TaskAggregate[]> {
     const q = query(
       this.getCollectionRef(),
-      where('assigneeId', '==', assigneeId),
+      where('assigneeId', '==', assigneeId.value),
     );
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => doc.data() as TaskAggregate);
@@ -61,7 +63,7 @@ export class TaskRepositoryImpl implements TaskRepository {
   ): Promise<TaskAggregate[]> {
     const q = query(
       this.getCollectionRef(),
-      where('workspaceId', '==', workspaceId),
+      where('workspaceId', '==', workspaceId.value),
       where('status', '==', status),
     );
     const querySnapshot = await getDocs(q);
@@ -74,7 +76,7 @@ export class TaskRepositoryImpl implements TaskRepository {
   ): Promise<TaskAggregate[]> {
     const q = query(
       this.getCollectionRef(),
-      where('workspaceId', '==', workspaceId),
+      where('workspaceId', '==', workspaceId.value),
       where('priority', '==', priority),
     );
     const querySnapshot = await getDocs(q);
@@ -83,18 +85,13 @@ export class TaskRepositoryImpl implements TaskRepository {
 
   async findOverdue(workspaceId: WorkspaceId): Promise<TaskAggregate[]> {
     const now = Date.now();
+    // Simplified status check for overdue
     const q = query(
       this.getCollectionRef(),
-      where('workspaceId', '==', workspaceId),
+      where('workspaceId', '==', workspaceId.value),
       where('dueDate', '<', now),
-      where('status', '!=', TaskStatus.COMPLETED),
+      where('status', '!=', 'COMPLETED'),
     );
-    // Note: status '!=' query requires composite index with dueDate probably.
-    // Simplifying to client-side filter if complex indexes are not set up,
-    // but for now let's try strict query.
-    // Actually != is supported but restrictions apply.
-    // Safer to query by dueDate < now and filter in memory for status/workspace if needed
-    // or just let Firestore handle it if index exists.
 
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => doc.data() as TaskAggregate);
@@ -108,11 +105,9 @@ export class TaskRepositoryImpl implements TaskRepository {
     const start = startDate.getTime();
     const end = endDate.getTime();
 
-    // Firestore range queries on multiple fields can be tricky.
-    // Query by workspaceId and filter by date range.
     const q = query(
       this.getCollectionRef(),
-      where('workspaceId', '==', workspaceId),
+      where('workspaceId', '==', workspaceId.value),
       where('dueDate', '>=', start),
       where('dueDate', '<=', end),
     );
@@ -122,22 +117,22 @@ export class TaskRepositoryImpl implements TaskRepository {
   }
 
   async save(task: TaskAggregate): Promise<void> {
-    await setDoc(this.getDocRef(task.id), task);
+    await setDoc(this.getDocRef(task.id.value), task);
   }
 
   async delete(id: TaskId): Promise<void> {
-    await deleteDoc(this.getDocRef(id.toString()));
+    await deleteDoc(this.getDocRef(id.value));
   }
 
   async exists(id: TaskId): Promise<boolean> {
-    const docSnap = await getDoc(this.getDocRef(id.toString()));
+    const docSnap = await getDoc(this.getDocRef(id.value));
     return docSnap.exists();
   }
 
   async countByWorkspace(workspaceId: WorkspaceId): Promise<number> {
     const q = query(
       this.getCollectionRef(),
-      where('workspaceId', '==', workspaceId),
+      where('workspaceId', '==', workspaceId.value),
     );
     const snapshot = await getCountFromServer(q);
     return snapshot.data().count;
@@ -149,7 +144,7 @@ export class TaskRepositoryImpl implements TaskRepository {
   ): Promise<number> {
     const q = query(
       this.getCollectionRef(),
-      where('workspaceId', '==', workspaceId),
+      where('workspaceId', '==', workspaceId.value),
       where('status', '==', status),
     );
     const snapshot = await getCountFromServer(q);

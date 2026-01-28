@@ -7,7 +7,7 @@
  * Represents a workspace identifier with validation.
  */
 export class WorkspaceId {
-  private readonly value: string;
+  public readonly value: string;
 
   private constructor(value: string) {
     if (!value || value.trim().length === 0) {

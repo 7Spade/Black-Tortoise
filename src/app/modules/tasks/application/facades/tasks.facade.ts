@@ -1,14 +1,13 @@
 import { Injectable, inject, signal } from '@angular/core';
 import {
   TaskAggregate,
-  createTask,
 } from '@tasks/domain/aggregates/task.aggregate';
 import { TaskPriority } from '@tasks/domain/value-objects/task-priority.vo';
 import { TaskStatus } from '@tasks/domain/value-objects/task-status.vo';
 import { CreateTaskHandler } from '@tasks/application/handlers/create-task.handler';
 import { FailQCHandler } from '@quality-control/application/handlers/fail-qc.handler';
 import { ResolveIssueHandler } from '@issues/application/handlers/resolve-issue.handler';
-import { SubmitTaskForQCHandler } from '@quality-control/application/handlers/submit-task-for-qc.handler';
+import { SubmitTaskForQCHandler } from '@tasks/application/handlers/submit-task-for-qc.handler';
 import { IModuleEventBus } from '@application/interfaces/module-event-bus.interface';
 import { TasksStore } from '@tasks/application/stores/tasks.store';
 
@@ -65,24 +64,15 @@ export class TasksFacade {
     const wsId = this.workspaceId();
     if (!wsId || !this.eventBus) return false;
 
-    const task = createTask({
+    const result = await this.createTaskHandler.execute({
       workspaceId: wsId,
       title,
       description,
-      createdById: this.currentUserId(),
-      priority,
+      priority: priority.value,
+      assigneeId: this.currentUserId(),
     });
 
-    const result = await this.createTaskHandler.execute({
-      taskId: task.id,
-      workspaceId: task.workspaceId,
-      title: task.title,
-      description: task.description,
-      priority: task.priority,
-      createdById: task.createdById,
-    });
-
-    return result.success;
+    return !!result;
   }
 
   async submitForQC(task: TaskAggregate): Promise<void> {
@@ -90,7 +80,7 @@ export class TasksFacade {
     if (!wsId || !this.eventBus) return;
 
     await this.submitTaskForQCHandler.execute({
-      taskId: task.id,
+      taskId: task.id.value,
       workspaceId: wsId,
       taskTitle: task.title,
       submittedBy: this.currentUserId(),
@@ -102,7 +92,7 @@ export class TasksFacade {
     if (!wsId || !this.eventBus) return;
 
     await this.failQCUseCase.execute({
-      taskId: task.id,
+      taskId: task.id.value,
       workspaceId: wsId,
       taskTitle: task.title,
       failureReason: reason,
@@ -119,7 +109,7 @@ export class TasksFacade {
     if (!wsId || !this.eventBus) return;
 
     await this.resolveIssueHandler.execute({
-      taskId: task.id,
+      taskId: task.id.value,
       issueId,
       workspaceId: wsId,
       resolvedBy: this.currentUserId(),
@@ -129,10 +119,10 @@ export class TasksFacade {
 
   // Helpers
   isTaskBlocked(task: TaskAggregate): boolean {
-    return task.status === TaskStatus.BLOCKED;
+    return task.status.value === 'BLOCKED';
   }
 
   isTaskFailed(task: TaskAggregate): boolean {
-    return task.status === TaskStatus.QC_FAILED;
+    return task.status.value === 'QC_FAILED';
   }
 }

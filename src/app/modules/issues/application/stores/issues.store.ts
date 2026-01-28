@@ -17,7 +17,8 @@
 
 import { computed, inject } from '@angular/core';
 import { ISSUE_REPOSITORY } from '@application/interfaces';
-import { IssueAggregate, IssueStatus } from '@issues/domain';
+import { IssueAggregate } from '@issues/domain';
+import { IssueStatusEnum } from '@issues/domain/value-objects/issue-status.vo';
 import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
@@ -52,21 +53,21 @@ export const IssuesStore = signalStore(
      * Open issues
      */
     openIssues: computed(() =>
-      state.issues().filter(i => i.status === IssueStatus.OPEN || i.status === IssueStatus.IN_PROGRESS)
+      state.issues().filter(i => i.status.value === IssueStatusEnum.OPEN || i.status.value === IssueStatusEnum.IN_PROGRESS)
     ),
 
     /**
      * Resolved issues
      */
     resolvedIssues: computed(() =>
-      state.issues().filter(i => i.status === IssueStatus.RESOLVED || i.status === IssueStatus.CLOSED)
+      state.issues().filter(i => i.status.value === IssueStatusEnum.RESOLVED || i.status.value === IssueStatusEnum.CLOSED)
     ),
 
     /**
      * Issues by task
      */
     getIssuesByTask: computed(() => (taskId: string) =>
-      state.issues().filter(i => i.taskId === taskId)
+      state.issues().filter(i => i.relatedTaskId?.value === taskId)
     ),
 
     /**
@@ -74,7 +75,7 @@ export const IssuesStore = signalStore(
      */
     selectedIssue: computed(() => {
       const id = state.selectedIssueId();
-      return id ? state.issues().find(i => i.id === id) || null : null;
+      return id ? state.issues().find(i => i.id.value === id) || null : null;
     }),
 
     /**
@@ -84,7 +85,7 @@ export const IssuesStore = signalStore(
   })),
 
   withMethods((store, repo = inject(ISSUE_REPOSITORY)) => ({
-    
+
     /**
      * Load issues for a workspace
      */
@@ -123,25 +124,25 @@ export const IssuesStore = signalStore(
      * Update Issue
      */
     async updateIssue(issueId: string, updates: Partial<IssueAggregate>): Promise<void> {
-        const issue = store.issues().find(i => i.id === issueId);
-        if (!issue) {
-            patchState(store, { error: `Issue ${issueId} not found` });
-            return;
-        }
+      const issue = store.issues().find(i => i.id === issueId);
+      if (!issue) {
+        patchState(store, { error: `Issue ${issueId} not found` });
+        return;
+      }
 
-        const updatedIssue = { ...issue, ...updates }; // Aggregate structure copy
-        patchState(store, { isProcessing: true, error: null });
+      const updatedIssue = { ...issue, ...updates }; // Aggregate structure copy
+      patchState(store, { isProcessing: true, error: null });
 
-        try {
-            await repo.save(updatedIssue as IssueAggregate); // Cast might be needed if Partial doesn't align perfectly but save expects full
-            patchState(store, {
-                issues: store.issues().map(i => i.id === issueId ? (updatedIssue as IssueAggregate) : i),
-                isProcessing: false,
-                error: null
-            });
-        } catch (err: any) {
-            patchState(store, { error: err.message, isProcessing: false });
-        }
+      try {
+        await repo.save(updatedIssue as IssueAggregate); // Cast might be needed if Partial doesn't align perfectly but save expects full
+        patchState(store, {
+          issues: store.issues().map(i => i.id === issueId ? (updatedIssue as IssueAggregate) : i),
+          isProcessing: false,
+          error: null
+        });
+      } catch (err: any) {
+        patchState(store, { error: err.message, isProcessing: false });
+      }
     },
 
     /**

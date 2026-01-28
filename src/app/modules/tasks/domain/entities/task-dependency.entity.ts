@@ -1,5 +1,5 @@
 import { Entity } from '@domain/base/entity';
-import { TaskId } from '../../value-objects/task-id.vo';
+import { TaskId } from '@tasks/domain/value-objects/task-id.vo';
 
 /**
  * Task Dependency Entity

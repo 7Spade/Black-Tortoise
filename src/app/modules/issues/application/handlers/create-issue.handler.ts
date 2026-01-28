@@ -12,7 +12,7 @@
 
 import { inject, Injectable } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { createIssueCreatedEvent } from '@events';
+import { IssueCreated } from '@events';
 
 export interface CreateIssueRequest {
   readonly issueId: string;
@@ -21,6 +21,7 @@ export interface CreateIssueRequest {
   readonly title: string;
   readonly description: string;
   readonly createdBy: string;
+  readonly severity?: string;
   readonly correlationId?: string;
   readonly causationId?: string | null;
 }
@@ -36,16 +37,18 @@ export class CreateIssueHandler {
 
   async execute(request: CreateIssueRequest): Promise<CreateIssueResponse> {
     try {
-      const event = createIssueCreatedEvent({
-        issueId: request.issueId,
-        taskId: request.taskId,
-        workspaceId: request.workspaceId,
-        title: request.title,
-        description: request.description,
-        createdById: request.createdBy,
-        correlationId: request.correlationId,
-        causationId: request.causationId
-      });
+      const event = new IssueCreated(
+        {
+          issueId: request.issueId,
+          title: request.title,
+          reporterId: request.createdBy,
+          description: request.description,
+          relatedTaskId: request.taskId,
+          severity: request.severity || 'medium'
+        },
+        request.correlationId || crypto.randomUUID(),
+        request.causationId || undefined
+      );
 
       const result = await this.publishEvent.execute({ event });
       return result;

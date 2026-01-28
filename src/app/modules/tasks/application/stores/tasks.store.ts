@@ -72,7 +72,7 @@ export const TasksStore = signalStore(
      */
     tasksByStatus: computed(
       () => (status: TaskStatus) =>
-        state.tasks().filter((t) => t.status.getValue() === status.getValue()),
+        state.tasks().filter((t) => t.status.value === status.value),
     ),
 
     /**
@@ -81,21 +81,21 @@ export const TasksStore = signalStore(
     blockedTasks: computed(() =>
       state
         .tasks()
-        .filter((t) => t.status.getValue() === TaskStatusEnum.BLOCKED),
+        .filter((t) => t.status.value === TaskStatusEnum.BLOCKED),
     ),
 
     /**
      * Ready tasks
      */
     readyTasks: computed(() =>
-      state.tasks().filter((t) => t.status.getValue() === TaskStatusEnum.READY),
+      state.tasks().filter((t) => t.status.value === TaskStatusEnum.READY),
     ),
 
     /**
      * Tasks in QC
      */
     tasksInQC: computed(() =>
-      state.tasks().filter((t) => t.status.getValue() === TaskStatusEnum.IN_QC),
+      state.tasks().filter((t) => t.status.value === TaskStatusEnum.IN_QC),
     ),
 
     /**
@@ -144,7 +144,7 @@ export const TasksStore = signalStore(
        */
       updateTask(taskId: string, updates: Partial<TaskProps>): void {
         const task = store.tasks().find((t) => t.id.value === taskId);
-        if (!task) return; // Should we log warning?
+        if (!task) return;
 
         const updatedTask = task.cloneWith(updates);
 
@@ -152,6 +152,20 @@ export const TasksStore = signalStore(
           tasks: store
             .tasks()
             .map((t) => (t.id.value === taskId ? updatedTask : t)),
+          error: null,
+        });
+      },
+
+      /**
+       * Sync an existing task aggregate into the state (Reactive Update)
+       */
+      syncTask(updatedTask: TaskAggregate): void {
+        patchState(store, {
+          tasks: store
+            .tasks()
+            .map((t) =>
+              t.id.value === updatedTask.id.value ? updatedTask : t,
+            ),
           error: null,
         });
       },
