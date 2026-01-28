@@ -14,7 +14,9 @@ import { TASK_REPOSITORY } from '@tasks/application/interfaces/task-repository.t
 import {
   TaskAggregate,
   TaskPriority,
+  TaskProps,
   TaskStatus,
+  TaskStatusEnum,
   createTask,
 } from '@tasks/domain';
 import { WorkspaceId } from '@domain/value-objects';
@@ -30,7 +32,14 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { from, pipe, switchMap } from 'rxjs';
 
 // Re-export domain types for presentation layer use
-export { TaskAggregate, TaskPriority, TaskStatus, createTask };
+export {
+  TaskAggregate,
+  TaskPriority,
+  TaskProps,
+  TaskStatus,
+  TaskStatusEnum,
+  createTask,
+};
 
 /**
  * Tasks State
@@ -63,28 +72,30 @@ export const TasksStore = signalStore(
      */
     tasksByStatus: computed(
       () => (status: TaskStatus) =>
-        state.tasks().filter((t) => t.status === status),
+        state.tasks().filter((t) => t.status.getValue() === status.getValue()),
     ),
 
     /**
      * Blocked tasks
      */
     blockedTasks: computed(() =>
-      state.tasks().filter((t) => t.status === 'blocked'),
+      state
+        .tasks()
+        .filter((t) => t.status.getValue() === TaskStatusEnum.BLOCKED),
     ),
 
     /**
      * Ready tasks
      */
     readyTasks: computed(() =>
-      state.tasks().filter((t) => t.status === 'ready'),
+      state.tasks().filter((t) => t.status.getValue() === TaskStatusEnum.READY),
     ),
 
     /**
      * Tasks in QC
      */
     tasksInQC: computed(() =>
-      state.tasks().filter((t) => t.status === 'in-qc'),
+      state.tasks().filter((t) => t.status.getValue() === TaskStatusEnum.IN_QC),
     ),
 
     /**
@@ -104,9 +115,7 @@ export const TasksStore = signalStore(
         pipe(
           switchMap((workspaceId) => {
             patchState(store, { isLoading: true, error: null });
-            return from(
-              repo.findByWorkspaceId(WorkspaceId.create(workspaceId)),
-            ).pipe(
+            return from(repo.findByWorkspace(workspaceId)).pipe(
               tapResponse({
                 next: (tasks) =>
                   patchState(store, { tasks, isLoading: false, error: null }),
@@ -133,18 +142,16 @@ export const TasksStore = signalStore(
        * Update task in local state (Reactive Update)
        * Triggered by: EventBus (TaskUpdated, etc.)
        */
-      updateTask(
-        taskId: string,
-        updates: Partial<TaskAggregate>,
-        updatedAt: number = Date.now(),
-      ): void {
-        const task = store.tasks().find((t) => t.id === taskId);
+      updateTask(taskId: string, updates: Partial<TaskProps>): void {
+        const task = store.tasks().find((t) => t.id.value === taskId);
         if (!task) return; // Should we log warning?
 
-        const updatedTask = { ...task, ...updates, updatedAt };
+        const updatedTask = task.cloneWith(updates);
 
         patchState(store, {
-          tasks: store.tasks().map((t) => (t.id === taskId ? updatedTask : t)),
+          tasks: store
+            .tasks()
+            .map((t) => (t.id.value === taskId ? updatedTask : t)),
           error: null,
         });
       },
@@ -155,7 +162,7 @@ export const TasksStore = signalStore(
        */
       deleteTask(taskId: string): void {
         patchState(store, {
-          tasks: store.tasks().filter((t) => t.id !== taskId),
+          tasks: store.tasks().filter((t) => t.id.value !== taskId),
           error: null,
         });
       },

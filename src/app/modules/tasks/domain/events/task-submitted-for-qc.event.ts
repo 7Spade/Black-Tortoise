@@ -7,7 +7,7 @@
  * Emitted when a task is submitted for quality control.
  */
 
-import { DomainEvent } from '@tasks/events/domain-event';
+import { DomainEvent } from '@domain/events';
 
 export interface TaskSubmittedForQCPayload {
   readonly workspaceId: string;

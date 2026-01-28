@@ -1,83 +1,54 @@
-/**
- * Create Task Use Case
- *
- * Layer: Application - Use Case
- * Purpose: Execute task creation workflow
- *
- * Responsibilities:
- * - Create Domain Entity (Factory)
- * - Persist to Repository (Command Side)
- * - Create TaskCreatedEvent
- * - Publish via PublishEventHandler (append ??publish)
- * - Returns success/failure
- *
- * DDD Pattern: Application Service
- */
-
-import { inject, Injectable } from '@angular/core';
-import { PublishEventHandler } from '@application/handlers/publish-event.handler';
+import { Injectable, inject } from '@angular/core';
+import { v4 as uuidv4 } from 'uuid';
+import { CreateTaskCommand } from '@tasks/application/commands/create-task.command';
 import { TASK_REPOSITORY } from '@tasks/application/interfaces/task-repository.token';
-import { createTask, TaskPriority } from '@tasks/domain';
-import { createTaskCreatedEvent } from '@domain/events';
+import { createTask, TaskAggregate } from '@tasks/domain/aggregates/task.aggregate';
+import { TaskId } from '@tasks/domain/value-objects/task-id.vo';
+import { WorkspaceId } from '@domain/value-objects/workspace-id.vo';
+import { TaskPriority } from '@tasks/domain/value-objects/task-priority.vo';
+import { TaskStatus } from '@tasks/domain/value-objects/task-status.vo';
+import { UserId } from '@domain/value-objects/user-id.vo';
 
-export interface CreateTaskRequest {
-  readonly taskId: string;
-  readonly workspaceId: string;
-  readonly title: string;
-  readonly description: string;
-  readonly priority: TaskPriority;
-  readonly createdById: string;
-  readonly correlationId?: string;
-  readonly causationId?: string | null;
-}
-
-export interface CreateTaskResponse {
-  readonly success: boolean;
-  readonly error?: string;
-}
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class CreateTaskHandler {
-  private readonly publishEvent = inject(PublishEventHandler);
   private readonly repository = inject(TASK_REPOSITORY);
 
-  async execute(request: CreateTaskRequest): Promise<CreateTaskResponse> {
-    try {
-      // 1. Create Domain Entity
-      const task = createTask({
-        id: request.taskId,
-        workspaceId: request.workspaceId,
-        title: request.title,
-        description: request.description,
-        createdById: request.createdById,
-        priority: request.priority,
-      });
+  async execute(command: CreateTaskCommand): Promise<TaskAggregate> {
+    const id = new TaskId(uuidv4());
+    const workspaceId = WorkspaceId.create(command.workspaceId);
 
-      // 2. Persist to Repository (Command Side)
-      await this.repository.save(task);
+    // Create new task with required fields
+    const task = createTask(
+      id,
+      workspaceId,
+      command.title
+    );
 
-      // 3. Create Event
-      const event = createTaskCreatedEvent({
-        taskId: task.id,
-        workspaceId: task.workspaceId,
-        title: task.title,
-        description: task.description,
-        priority: task.priority,
-        createdById: task.createdById,
-        correlationId: request.correlationId,
-        causationId: request.causationId,
-      });
-
-      // 4. Publish Event
-      await this.publishEvent.execute({ event });
-
-      return { success: true };
-    } catch (error: any) {
-      console.error('[CreateTaskHandler] Error:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
+    // Apply optional fields
+    if (command.description) {
+      task.description = command.description;
     }
+
+    if (command.priority) {
+      task.priority = TaskPriority.create(command.priority);
+    }
+
+    if (command.status) {
+      task.status = TaskStatus.create(command.status);
+    }
+
+    if (command.dueDate) {
+      task.dueDate = command.dueDate;
+    }
+
+    if (command.assigneeId) {
+      task.assigneeId = UserId.create(command.assigneeId);
+    }
+
+    await this.repository.save(task);
+
+    return task;
   }
 }

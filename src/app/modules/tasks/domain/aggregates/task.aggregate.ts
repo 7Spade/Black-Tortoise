@@ -18,6 +18,7 @@ export interface TaskProps {
     assigneeId: UserId | null;
     estimatedCost: Money | null;
     progress: Progress;
+    dueDate: Date | null;
 }
 
 /**
@@ -35,6 +36,7 @@ export class TaskAggregate extends AggregateRoot<TaskId> {
     public assigneeId: UserId | null;
     public estimatedCost: Money | null;
     public progress: Progress;
+    public dueDate: Date | null;
     public blockedByIssueIds: string[] = [];
 
     private constructor(
@@ -50,6 +52,7 @@ export class TaskAggregate extends AggregateRoot<TaskId> {
         this.assigneeId = props.assigneeId;
         this.estimatedCost = props.estimatedCost;
         this.progress = props.progress;
+        this.dueDate = props.dueDate;
     }
 
     public static create(
@@ -65,7 +68,8 @@ export class TaskAggregate extends AggregateRoot<TaskId> {
             priority: TaskPriority.medium(),
             assigneeId: null,
             estimatedCost: null,
-            progress: Progress.zero()
+            progress: Progress.zero(),
+            dueDate: null
         };
         return new TaskAggregate(id, props);
     }
@@ -83,6 +87,28 @@ export class TaskAggregate extends AggregateRoot<TaskId> {
 
     public get subtasks(): ReadonlyArray<Subtask> {
         return [...this._subtasks];
+    }
+
+    public cloneWith(updates: Partial<TaskProps>): TaskAggregate {
+        const currentProps: TaskProps = {
+            workspaceId: this.workspaceId,
+            title: this.title,
+            description: this.description,
+            status: this.status,
+            priority: this.priority,
+            assigneeId: this.assigneeId,
+            estimatedCost: this.estimatedCost,
+            progress: this.progress,
+            dueDate: this.dueDate
+        };
+        const newInstance = new TaskAggregate(this.id, { ...currentProps, ...updates });
+
+        // Copy private internal state
+        newInstance._subtasks = [...this._subtasks];
+        newInstance._dependencies = [...this._dependencies];
+        newInstance.blockedByIssueIds = [...this.blockedByIssueIds];
+
+        return newInstance;
     }
 }
 

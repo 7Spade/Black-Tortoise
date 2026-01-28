@@ -1,6 +1,6 @@
 ﻿import { TaskAggregate } from '@tasks/domain/aggregates/task.aggregate';
-import { TaskPriority } from '@tasks/domain/value-objects/task-priority.vo';
-import { TaskStatus } from '@tasks/domain/value-objects/task-status.vo';
+import { TaskPriority, TaskPriorityEnum } from '@tasks/domain/value-objects/task-priority.vo';
+import { TaskStatus, TaskStatusEnum } from '@tasks/domain/value-objects/task-status.vo';
 
 /**
  * Validates task title according to business rules
@@ -136,7 +136,7 @@ export function canCompleteTask(
  * Check if a task is overdue
  */
 export function isTaskOverdue(task: TaskAggregate): boolean {
-  if (!task.dueDate || task.status === TaskStatus.COMPLETED) {
+  if (!task.dueDate || task.status.getValue() === TaskStatusEnum.COMPLETED) {
     return false;
   }
 
@@ -163,8 +163,11 @@ export function isValidStatusTransition(
   isValid: boolean;
   reason?: string;
 } {
+  const current = currentStatus.getValue();
+  const newSt = newStatus.getValue();
+
   // Cannot transition to the same status
-  if (currentStatus === newStatus) {
+  if (current === newSt) {
     return {
       isValid: false,
       reason: 'Task is already in this status',
@@ -172,24 +175,24 @@ export function isValidStatusTransition(
   }
 
   // Define valid transitions
-  const validTransitions: Partial<Record<TaskStatus, TaskStatus[]>> = {
-    [TaskStatus.DRAFT]: [TaskStatus.READY],
-    [TaskStatus.READY]: [TaskStatus.IN_PROGRESS, TaskStatus.BLOCKED],
-    [TaskStatus.IN_PROGRESS]: [TaskStatus.IN_QC, TaskStatus.BLOCKED, TaskStatus.READY],
-    [TaskStatus.IN_QC]: [TaskStatus.COMPLETED, TaskStatus.IN_PROGRESS, TaskStatus.BLOCKED, TaskStatus.QC_FAILED],
-    [TaskStatus.QC_FAILED]: [TaskStatus.IN_PROGRESS, TaskStatus.BLOCKED],
-    [TaskStatus.IN_ACCEPTANCE]: [TaskStatus.ACCEPTED, TaskStatus.REJECTED],
-    [TaskStatus.ACCEPTED]: [TaskStatus.COMPLETED],
-    [TaskStatus.REJECTED]: [TaskStatus.IN_PROGRESS],
-    [TaskStatus.COMPLETED]: [TaskStatus.READY, TaskStatus.IN_PROGRESS],
-    [TaskStatus.BLOCKED]: [TaskStatus.READY, TaskStatus.IN_PROGRESS],
+  const validTransitions: Partial<Record<TaskStatusEnum, TaskStatusEnum[]>> = {
+    [TaskStatusEnum.DRAFT]: [TaskStatusEnum.READY],
+    [TaskStatusEnum.READY]: [TaskStatusEnum.IN_PROGRESS, TaskStatusEnum.BLOCKED],
+    [TaskStatusEnum.IN_PROGRESS]: [TaskStatusEnum.IN_QC, TaskStatusEnum.BLOCKED, TaskStatusEnum.READY],
+    [TaskStatusEnum.IN_QC]: [TaskStatusEnum.COMPLETED, TaskStatusEnum.IN_PROGRESS, TaskStatusEnum.BLOCKED, TaskStatusEnum.QC_FAILED],
+    [TaskStatusEnum.QC_FAILED]: [TaskStatusEnum.IN_PROGRESS, TaskStatusEnum.BLOCKED],
+    [TaskStatusEnum.IN_ACCEPTANCE]: [TaskStatusEnum.ACCEPTED, TaskStatusEnum.REJECTED],
+    [TaskStatusEnum.ACCEPTED]: [TaskStatusEnum.COMPLETED],
+    [TaskStatusEnum.REJECTED]: [TaskStatusEnum.IN_PROGRESS],
+    [TaskStatusEnum.COMPLETED]: [TaskStatusEnum.READY, TaskStatusEnum.IN_PROGRESS],
+    [TaskStatusEnum.BLOCKED]: [TaskStatusEnum.READY, TaskStatusEnum.IN_PROGRESS],
   };
 
-  const allowedStatuses = validTransitions[currentStatus] || [];
-  if (!allowedStatuses.includes(newStatus)) {
+  const allowedStatuses = validTransitions[current] || [];
+  if (!allowedStatuses.includes(newSt)) {
     return {
       isValid: false,
-      reason: 'Cannot transition from ' + currentStatus + ' to ' + newStatus,
+      reason: 'Cannot transition from ' + current + ' to ' + newSt,
     };
   }
 
@@ -211,21 +214,21 @@ export function estimateCompletionPercentage(
   }
 
   // Otherwise estimate based on status
-  switch (status) {
-    case TaskStatus.DRAFT:
-    case TaskStatus.READY:
-    case TaskStatus.BLOCKED:
+  switch (status.getValue()) {
+    case TaskStatusEnum.DRAFT:
+    case TaskStatusEnum.READY:
+    case TaskStatusEnum.BLOCKED:
       return 0;
-    case TaskStatus.IN_PROGRESS:
+    case TaskStatusEnum.IN_PROGRESS:
       return 40;
-    case TaskStatus.IN_QC:
-    case TaskStatus.QC_FAILED:
+    case TaskStatusEnum.IN_QC:
+    case TaskStatusEnum.QC_FAILED:
       return 80;
-    case TaskStatus.IN_ACCEPTANCE:
-    case TaskStatus.REJECTED:
+    case TaskStatusEnum.IN_ACCEPTANCE:
+    case TaskStatusEnum.REJECTED:
       return 90;
-    case TaskStatus.ACCEPTED:
-    case TaskStatus.COMPLETED:
+    case TaskStatusEnum.ACCEPTED:
+    case TaskStatusEnum.COMPLETED:
       return 100;
     default:
       return 0;
@@ -237,45 +240,50 @@ export function estimateCompletionPercentage(
  */
 export function generateTaskSummary(tasks: TaskAggregate[]): {
   total: number;
-  byStatus: Record<TaskStatus, number>;
-  byPriority: Record<TaskPriority, number>;
+  byStatus: Record<TaskStatusEnum, number>;
+  byPriority: Record<TaskPriorityEnum, number>;
   overdue: number;
   completionRate: number;
 } {
   const summary = {
     total: tasks.length,
     byStatus: {
-      [TaskStatus.DRAFT]: 0,
-      [TaskStatus.READY]: 0,
-      [TaskStatus.IN_PROGRESS]: 0,
-      [TaskStatus.IN_QC]: 0,
-      [TaskStatus.QC_FAILED]: 0,
-      [TaskStatus.IN_ACCEPTANCE]: 0,
-      [TaskStatus.ACCEPTED]: 0,
-      [TaskStatus.REJECTED]: 0,
-      [TaskStatus.COMPLETED]: 0,
-      [TaskStatus.BLOCKED]: 0,
-    } as Record<TaskStatus, number>,
+      [TaskStatusEnum.DRAFT]: 0,
+      [TaskStatusEnum.READY]: 0,
+      [TaskStatusEnum.IN_PROGRESS]: 0,
+      [TaskStatusEnum.IN_QC]: 0,
+      [TaskStatusEnum.QC_FAILED]: 0,
+      [TaskStatusEnum.IN_ACCEPTANCE]: 0,
+      [TaskStatusEnum.ACCEPTED]: 0,
+      [TaskStatusEnum.REJECTED]: 0,
+      [TaskStatusEnum.COMPLETED]: 0,
+      [TaskStatusEnum.BLOCKED]: 0,
+      [TaskStatusEnum.TODO]: 0,
+      [TaskStatusEnum.IN_REVIEW]: 0,
+    } as Record<TaskStatusEnum, number>,
     byPriority: {
-      [TaskPriority.LOW]: 0,
-      [TaskPriority.MEDIUM]: 0,
-      [TaskPriority.HIGH]: 0,
-      [TaskPriority.CRITICAL]: 0,
-    } as Record<TaskPriority, number>,
+      [TaskPriorityEnum.LOW]: 0,
+      [TaskPriorityEnum.MEDIUM]: 0,
+      [TaskPriorityEnum.HIGH]: 0,
+      [TaskPriorityEnum.CRITICAL]: 0,
+    } as Record<TaskPriorityEnum, number>,
     overdue: 0,
     completionRate: 0,
   };
 
   tasks.forEach((task: TaskAggregate) => {
-    summary.byStatus[task.status] = (summary.byStatus[task.status] || 0) + 1;
-    summary.byPriority[task.priority] = (summary.byPriority[task.priority] || 0) + 1;
+    const status = task.status.getValue();
+    const priority = task.priority.getValue();
+
+    summary.byStatus[status] = (summary.byStatus[status] || 0) + 1;
+    summary.byPriority[priority] = (summary.byPriority[priority] || 0) + 1;
 
     if (isTaskOverdue(task)) {
       summary.overdue++;
     }
   });
 
-  const completedCount = summary.byStatus[TaskStatus.COMPLETED] + summary.byStatus[TaskStatus.ACCEPTED];
+  const completedCount = summary.byStatus[TaskStatusEnum.COMPLETED] + summary.byStatus[TaskStatusEnum.ACCEPTED];
   summary.completionRate = tasks.length > 0 ? (completedCount / tasks.length) * 100 : 0;
 
   return summary;

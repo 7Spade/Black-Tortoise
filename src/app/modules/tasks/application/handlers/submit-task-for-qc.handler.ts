@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { TASK_REPOSITORY } from '@application/interfaces';
-import { TaskStatus, updateTaskStatus } from '@quality-control/domain';
-import { createTaskSubmittedForQCEvent } from '@domain/events';
-import { TaskId } from '@domain/value-objects';
+import { TASK_REPOSITORY } from '@tasks/application/interfaces/task-repository.token';
+import { TaskStatus } from '@tasks/domain/value-objects/task-status.vo';
+import { createTaskSubmittedForQCEvent } from '@tasks/domain/events/task-submitted-for-qc.event';
+import { TaskId } from '@tasks/domain/value-objects/task-id.vo';
 
 export interface SubmitTaskForQCRequest {
   readonly taskId: string;
@@ -29,31 +29,34 @@ export class SubmitTaskForQCHandler {
   ): Promise<SubmitTaskForQCResponse> {
     try {
       // 1. Load
-      const task = await this.repo.findById(TaskId.create(request.taskId));
+      const taskId = new TaskId(request.taskId);
+      const task = await this.repo.findById(taskId);
       if (!task) {
         throw new Error(`Task not found: ${request.taskId}`);
       }
 
-      // 2. Logic
-      const updatedTask = updateTaskStatus(task, TaskStatus.IN_QC);
+      // 2. Logic: Update Status to IN_QC
+      // Direct assignment as TaskAggregate allows manual status update
+      task.status = TaskStatus.IN_QC;
 
       // 3. Save
-      await this.repo.save(updatedTask);
+      await this.repo.save(task);
 
       // 4. Publish
       const event = createTaskSubmittedForQCEvent({
-        taskId: updatedTask.id,
-        workspaceId: updatedTask.workspaceId,
-        taskTitle: updatedTask.title,
+        taskId: task.id.value,
+        workspaceId: task.workspaceId.getValue(),
+        taskTitle: task.title,
         submittedById: request.submittedBy,
-        correlationId: request.correlationId,
-        causationId: request.causationId,
+        ...(request.correlationId ? { correlationId: request.correlationId } : {}),
+        ...(request.causationId ? { causationId: request.causationId } : {})
       });
 
       await this.publishEvent.execute({ event });
+
       return { success: true };
     } catch (error) {
-      console.error('[SubmitTaskForQCHandler] Failed', error);
+      console.error('SubmitTaskForQCHandler error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
