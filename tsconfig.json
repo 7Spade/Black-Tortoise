@@ -27,6 +27,7 @@
       "@presentation/pipes": ["src/app/presentation/pipes/index.ts"],
       "@presentation/styles": ["src/app/presentation/styles/index.ts"],
       "@presentation/*": ["src/app/presentation/*"],
+      "@modules/*": ["src/app/modules/*"],
       "@account/application": ["src/app/account/application/index.ts"],
       "@account/domain": ["src/app/account/domain/index.ts"],
       "@account/infrastructure": ["src/app/account/infrastructure/index.ts"],
