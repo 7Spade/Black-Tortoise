@@ -6,43 +6,20 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    # This job has no 'needs' so the workflow contains at least one job without dependencies
-    steps:
-      - uses: actions/checkout@v3
-      - name: Prepare
-        run: echo "Preparation step for build workflow"
-
   build:
     runs-on: ubuntu-latest
-    needs: [prepare]
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: 25
-          # Do not enable setup-node's pnpm cache here because pnpm
-          # is not yet installed. Install pnpm in the next step first.
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+          version: 9
+      - uses: actions/setup-node@v4
         with:
-          version: 8
-      - name: Cache pnpm store
-        uses: actions/cache@v4
-        with:
-          # Cache pnpm global store to speed up installs across runs
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Build (production)
-        run: pnpm run build -- --configuration=production
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+          node-version: 22
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build --configuration=production
+      - uses: actions/upload-artifact@v4
         with:
           name: build-dist
           path: dist
