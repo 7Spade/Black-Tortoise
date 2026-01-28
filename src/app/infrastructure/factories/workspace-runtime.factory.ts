@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { IWorkspaceRuntimeFactory, WorkspaceRuntime } from '@application/interfaces/workspace-runtime-factory.interface';
 import { WorkspaceContext, createWorkspaceContext } from '@domain/types';
 import { WorkspaceEntity } from '@domain/aggregates';
-import { InMemoryEventBus } from './in-memory-event-bus';
+import { WorkspaceInMemoryEventBus } from './in-memory-event-bus';
 
 /**
  * Workspace Runtime Factory Implementation
@@ -25,7 +25,7 @@ import { InMemoryEventBus } from './in-memory-event-bus';
 @Injectable()
 export class WorkspaceRuntimeFactory implements IWorkspaceRuntimeFactory {
   private readonly runtimes = new Map<string, WorkspaceRuntime>();
-  
+
   /**
    * Create or get workspace runtime
    */
@@ -34,10 +34,10 @@ export class WorkspaceRuntimeFactory implements IWorkspaceRuntimeFactory {
     if (existingRuntime) {
       return existingRuntime;
     }
-    
+
     // Create scoped event bus for this workspace
-    const eventBus = new InMemoryEventBus(workspace.id);
-    
+    const eventBus = new WorkspaceInMemoryEventBus(workspace.id);
+
     // Create workspace context with default permissions
     // In real app, permissions would be loaded based on user role
     const context = createWorkspaceContext(workspace, {
@@ -46,26 +46,26 @@ export class WorkspaceRuntimeFactory implements IWorkspaceRuntimeFactory {
       canInviteMembers: true,
       canDeleteWorkspace: true,
     });
-    
+
     const runtime: WorkspaceRuntime = {
       context,
       eventBus,
     };
-    
+
     this.runtimes.set(workspace.id, runtime);
-    
+
     console.log('[WorkspaceRuntimeFactory] Created runtime for:', workspace.id);
-    
+
     return runtime;
   }
-  
+
   /**
    * Get existing runtime
    */
   getRuntime(workspaceId: string): WorkspaceRuntime | null {
     return this.runtimes.get(workspaceId) || null;
   }
-  
+
   /**
    * Destroy runtime and cleanup resources
    */
@@ -77,7 +77,7 @@ export class WorkspaceRuntimeFactory implements IWorkspaceRuntimeFactory {
       console.log('[WorkspaceRuntimeFactory] Destroyed runtime for:', workspaceId);
     }
   }
-  
+
   /**
    * Cleanup all runtimes
    */
