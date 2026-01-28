@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
 import { ISSUE_REPOSITORY } from '@application/interfaces';
 import { resolveIssue } from '@domain/aggregates/issue.aggregate';
-import { createIssueResolvedEvent } from '@domain/events';
+import { createIssueResolvedEvent } from '@events';
 
 export interface ResolveIssueRequest {
   readonly issueId: string;

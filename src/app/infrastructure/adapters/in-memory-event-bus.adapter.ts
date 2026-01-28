@@ -1,4 +1,4 @@
-﻿/**
+/**
  * InMemoryEventBus Implementation
  * 
  * Layer: Infrastructure
@@ -21,7 +21,7 @@
 
 import { Injectable } from '@angular/core';
 import { EventBus, EventHandler } from '@domain/types';
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '@events';
 
 @Injectable()
 export class InMemoryEventBus implements EventBus {

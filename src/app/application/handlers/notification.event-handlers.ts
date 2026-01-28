@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { NotificationFacade } from '@application/facades/notification.facade';
-import { TaskCreatedEvent } from '@domain/events';
+import { TaskCreatedEvent } from '@events';
 import { EventBus } from '@domain/types';
 
 /**

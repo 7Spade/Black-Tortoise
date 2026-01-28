@@ -36,7 +36,6 @@
       "@application/*": ["src/app/application/*"],
       "@domain/aggregates": ["src/app/domain/aggregates/index.ts"],
       "@domain/entities": ["src/app/domain/entities/index.ts"],
-      "@domain/events": ["src/app/events/index.ts"],
       "@events": ["src/app/events/index.ts"],
       "@events/*": ["src/app/events/*"],
       "@domain/factories": ["src/app/domain/factories/index.ts"],

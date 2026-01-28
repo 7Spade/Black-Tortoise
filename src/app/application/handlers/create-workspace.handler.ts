@@ -9,7 +9,7 @@ import { inject, Injectable } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
 import { WORKSPACE_REPOSITORY } from '@application/interfaces/workspace-repository.token';
 import { createWorkspaceEntity, WorkspaceEntity } from '@domain/aggregates';
-import { createWorkspaceCreatedEvent } from '@domain/events';
+import { createWorkspaceCreatedEvent } from '@events';
 import { WorkspaceId } from '@domain/value-objects';
 
 /**

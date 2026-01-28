@@ -22,7 +22,7 @@
  * This is a PURE interface. Concrete implementations belong in Infrastructure layer.
  */
 
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '@events';
 
 export type EventHandler<T extends DomainEvent<TPayload>, TPayload = unknown> = (event: T) => void | Promise<void>;
 

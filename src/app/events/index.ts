@@ -13,3 +13,4 @@ export * from './members/members.events';
 export * from './audit/audit.events';
 export * from './calendar/calendar.events';
 export * from './settings/settings.events';
+export * from './workspace/workspace.events';

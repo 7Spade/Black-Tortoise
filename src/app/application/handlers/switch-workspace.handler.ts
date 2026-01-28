@@ -6,7 +6,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { createWorkspaceSwitchedEvent } from '@domain/events';
+import { createWorkspaceSwitchedEvent } from '@events';
 
 /**
  * Switch Workspace Command

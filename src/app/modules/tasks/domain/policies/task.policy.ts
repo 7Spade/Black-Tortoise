@@ -1,4 +1,4 @@
-﻿import { TaskAggregate } from '@tasks/domain/aggregates/task.aggregate';
+import { TaskAggregate } from '@tasks/domain/aggregates/task.aggregate';
 import { TaskPriority, TaskPriorityEnum } from '@tasks/domain/value-objects/task-priority.vo';
 import { TaskStatus, TaskStatusEnum } from '@tasks/domain/value-objects/task-status.vo';
 

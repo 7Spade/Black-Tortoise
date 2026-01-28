@@ -11,7 +11,7 @@
  */
 
 import { inject } from '@angular/core';
-import { DailyEntryCreatedEvent } from '@domain/events';
+import { DailyEntryCreatedEvent } from '@events';
 import { EventBus } from '@domain/types';
 import { DailyEntry, DailyStore } from '@daily/application/stores/daily.store';
 

@@ -5,7 +5,7 @@ import {
   QCFailedEvent,
   TaskCreatedEvent,
   TaskSubmittedForQCEvent,
-} from '@domain/events';
+} from '@events';
 import { EventBus } from '@domain/types';
 import { TasksStore } from '@tasks/application/stores/tasks.store';
 

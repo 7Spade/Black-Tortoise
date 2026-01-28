@@ -22,7 +22,7 @@ import { PresentationStore } from '@application/stores/presentation.store';
  * - No side effects or business logic
  *
  * Control Flow:
- * 1. User types → onQueryChange → facade.executeSearch()
+ * 1. User types ??onQueryChange ??facade.executeSearch()
  * 2. Facade updates PresentationStore
  * 3. Component reads searchQuery() signal from store
  * 4. Template binds to store signals (single source of truth)
@@ -34,7 +34,7 @@ import { PresentationStore } from '@application/stores/presentation.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./search.component.scss'],
   template: `
-    <!-- SearchComponent（Presentation, Shared） -->
+    <!-- SearchComponent（Presentation, Shared�?-->
     <!-- Pure UI: Consumes state from PresentationStore, forwards events to SearchFacade -->
     <!-- No local state, no business logic - fully reactive control flow -->
     <section class="search">
@@ -55,7 +55,7 @@ import { PresentationStore } from '@application/stores/presentation.store';
           aria-label="Submit search"
           [disabled]="!store.isSearchQueryValid()"
         >
-          搜尋
+          ?��?
         </button>
         @if (store.isSearchActive()) {
           <button

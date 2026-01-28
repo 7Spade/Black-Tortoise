@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Handle Domain Event Use Case
  * 
  * Layer: Application
@@ -6,7 +6,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '@events';
 
 /**
  * Domain Event Handler Use Case

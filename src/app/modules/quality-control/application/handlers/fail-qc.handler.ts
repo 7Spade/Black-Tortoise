@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
 import { TASK_REPOSITORY } from '@application/interfaces';
 import { TaskStatus, updateTaskStatus } from '@quality-control/domain';
-import { createQCFailedEvent } from '@domain/events';
+import { createQCFailedEvent } from '@events';
 import { TaskId } from '@domain/value-objects';
 
 export interface FailQCRequest {

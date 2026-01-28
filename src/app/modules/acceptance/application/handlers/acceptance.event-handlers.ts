@@ -7,7 +7,7 @@
 
 import { inject } from '@angular/core';
 import { AcceptanceCheckEntity, AcceptanceStatus } from '@acceptance/domain';
-import { AcceptanceApprovedEvent, AcceptanceRejectedEvent, QCPassedEvent } from '@domain/events';
+import { AcceptanceApprovedEvent, AcceptanceRejectedEvent, QCPassedEvent } from '@events';
 import { EventBus } from '@domain/types';
 import { AcceptanceStore } from '@acceptance/application/stores/acceptance.store';
 

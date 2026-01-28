@@ -17,7 +17,7 @@
  * This is a PURE interface. Concrete implementations belong in Infrastructure layer.
  */
 
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '@events';
 
 export interface EventStore {
   /**

@@ -155,7 +155,7 @@ import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.comp
         >
           <mat-icon>folder</mat-icon>
           <span class="workspace-name">
-            {{ facade.currentWorkspaceName() || 'é¸æ“‡å·¥ä½œå€' }}
+            {{ facade.currentWorkspaceName() || '?¸æ?å·¥ä??€' }}
           </span>
           <mat-icon iconPositionEnd>expand_more</mat-icon>
         </button>
@@ -180,7 +180,7 @@ import { WorkspaceCreateTriggerComponent } from './workspace-create-trigger.comp
               </button>
             } @empty {
               <div class="workspace-menu-item disabled">
-                <span class="no-workspace-label">æ²’æœ‰å·¥ä½œå€</span>
+                <span class="no-workspace-label">æ²’æ?å·¥ä??€</span>
               </div>
             }
             <div class="divider"></div>

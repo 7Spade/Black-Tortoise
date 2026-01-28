@@ -7,7 +7,7 @@
  * This is where RxJS Subject/Observable are used (not in domain layer)
  */
 
-import { DomainEvent } from '@domain/events';
+import { DomainEvent } from '@events';
 import { EventHandler, WorkspaceEventBus } from '@domain/types';
 import { Subject, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';

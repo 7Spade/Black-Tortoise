@@ -12,7 +12,7 @@
 
 import { inject, Injectable } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { createDailyEntryCreatedEvent } from '@domain/events';
+import { createDailyEntryCreatedEvent } from '@events';
 
 export interface CreateDailyEntryRequest {
   readonly entryId: string;

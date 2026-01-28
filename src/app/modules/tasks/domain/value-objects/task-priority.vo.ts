@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TaskPriority Value Object
  * 
  * Layer: Domain

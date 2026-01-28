@@ -71,8 +71,8 @@ import { TemplateStore } from '@template-core/application/stores/template.store'
       @if (store.selectedTemplateId()) {
         <div class="col-4 history-panel">
           <div class="history-header">
-            <h2>🔗 Causality Audit Log</h2>
-            <button mat-icon-button aria-label="Clear history" (click)="store.clearHistory()">✖</button>
+            <h2>?? Causality Audit Log</h2>
+            <button mat-icon-button aria-label="Clear history" (click)="store.clearHistory()">??/button>
           </div>
           
           <div class="timeline">

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Event Infrastructure Injection Tokens
  * 
  * Layer: Application

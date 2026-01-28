@@ -15,7 +15,7 @@
 
 import { inject, Injectable } from '@angular/core';
 import { PublishEventHandler } from '@application/handlers/publish-event.handler';
-import { createAcceptanceRejectedEvent } from '@domain/events';
+import { createAcceptanceRejectedEvent } from '@events';
 
 export interface RejectTaskRequest {
   readonly taskId: string;

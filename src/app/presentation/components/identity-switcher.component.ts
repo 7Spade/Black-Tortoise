@@ -81,7 +81,7 @@ import { OrganizationCreateTriggerComponent } from './organization-create-trigge
               </div>
             } @empty {
               <div class="identity-menu-item disabled">
-                <span class="no-org-label">沒有任何組織</span>
+                <span class="no-org-label">沒�?任�?組�?</span>
               </div>
             }
 

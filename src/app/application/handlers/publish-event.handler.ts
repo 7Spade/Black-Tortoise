@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Publish Event Use Case
  * 
  * Layer: Application - Use Case

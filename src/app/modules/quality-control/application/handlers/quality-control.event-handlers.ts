@@ -18,9 +18,9 @@
 
 import { inject } from '@angular/core';
 import { CreateIssueHandler } from '@application/handlers/create-issue.handler';
-import { QCFailedEvent } from '@domain/events';
-import { QCPassedEvent } from '@domain/events';
-import { TaskSubmittedForQCEvent } from '@domain/events';
+import { QCFailedEvent } from '@events';
+import { QCPassedEvent } from '@events';
+import { TaskSubmittedForQCEvent } from '@events';
 import { EventBus } from '@domain/types';
 import { QualityControlStore } from '@quality-control/application/stores/quality-control.store';
 

@@ -20,8 +20,8 @@ import {
  * - No business logic (no filtering, no mutation)
  *
  * Control Flow:
- * 1. User clicks dismiss → facade.dismissNotification()
- * 2. User clicks notification → facade.handleNotificationClick()
+ * 1. User clicks dismiss ??facade.dismissNotification()
+ * 2. User clicks notification ??facade.handleNotificationClick()
  * 3. Facade updates PresentationStore
  * 4. Component reads notifications() signal from store
  * 5. Template binds to store signals (single source of truth)
@@ -33,7 +33,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./notification.component.scss'],
   template: `
-    <!-- NotificationComponent（Presentation, Shared） -->
+    <!-- NotificationComponent（Presentation, Shared�?-->
     <!-- Pure UI: Consumes state from PresentationStore, forwards events to NotificationFacade -->
     <!-- No local state, no business logic - fully reactive control flow -->
     <!-- Architecture: Angular 20 control flow (@for instead of *ngFor) -->
@@ -61,7 +61,7 @@ import {
             type="button"
             aria-label="Dismiss notification"
           >
-            ✕
+            ??
           </button>
         </li>
       } @empty {

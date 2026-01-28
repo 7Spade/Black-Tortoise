@@ -5,7 +5,7 @@
  * Purpose: Complete task management with feedback loop
  * Architecture: Workspace-scoped, Event-driven, Pure Signal-based, NO RxJS
  *
- * Implements: Taskâ†’QCâ†’Failâ†’Issueâ†’Task Ready feedback loop
+ * Implements: Task?’QC?’Fail?’Issue?’Task Ready feedback loop
  *
  * Constitution Compliance:
  * - No manual .subscribe() calls
@@ -46,7 +46,7 @@ import { TaskStatus } from '@tasks/domain/value-objects/task-status.vo';
   template: `
     <div class="tasks-module">
       <div class="module-header">
-        <h2>ðŸ“‹ Tasks Module</h2>
+        <h2>?? Tasks Module</h2>
         <p>Workspace: {{ workspaceId() }}</p>
       </div>
 
@@ -227,7 +227,7 @@ import { TaskStatus } from '@tasks/domain/value-objects/task-status.vo';
 
       <!-- Event Log -->
       <div class="event-log">
-        <h3>ðŸ“¡ Event Log</h3>
+        <h3>?“¡ Event Log</h3>
         <div class="events-list">
           @for (event of eventLog(); track event.eventId) {
             <div class="event-item">
