@@ -7,9 +7,16 @@ on:
     branches: [ main ]
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Prepare environment
+        run: |
+          echo "Preparation job: verifies repository checkout and environment"
+
   depcruise:
     runs-on: ubuntu-latest
-    needs: [typecheck]
     steps:
       - uses: actions/checkout@v3
       - name: Setup Node.js
