@@ -4,7 +4,7 @@
  * Layer: Domain
  * DDD Pattern: Value Object
  */
-export enum EventTypeEnum {
+export enum CalendarEventTypeEnum {
     TASK_DUE = 'TASK_DUE',
     DAILY_ENTRY = 'DAILY_ENTRY',
     MEETING = 'MEETING',
@@ -12,18 +12,18 @@ export enum EventTypeEnum {
     REMINDER = 'REMINDER'
 }
 
-export class EventType {
-    constructor(public readonly value: EventTypeEnum) { }
+export class CalendarEventType {
+    constructor(public readonly value: CalendarEventTypeEnum) { }
 
-    public static taskDue(): EventType {
-        return new EventType(EventTypeEnum.TASK_DUE);
+    public static taskDue(): CalendarEventType {
+        return new CalendarEventType(CalendarEventTypeEnum.TASK_DUE);
     }
 
-    public static create(value: EventTypeEnum): EventType {
-        return new EventType(value);
+    public static create(value: CalendarEventTypeEnum): CalendarEventType {
+        return new CalendarEventType(value);
     }
 
-    public equals(other: EventType): boolean {
+    public equals(other: CalendarEventType): boolean {
         return this.value === other.value;
     }
 }
